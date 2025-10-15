@@ -24,7 +24,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_module_object_t*>( hModule )->dditable;
         auto pfnGetDebugInfo = dditable->zet.Module.pfnGetDebugInfo;
@@ -49,7 +49,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGetDebugProperties = dditable->zet.Device.pfnGetDebugProperties;
@@ -75,7 +75,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnAttach = dditable->zet.Debug.pfnAttach;
@@ -113,7 +113,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnDetach = dditable->zet.Debug.pfnDetach;
@@ -151,7 +151,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnReadEvent = dditable->zet.Debug.pfnReadEvent;
@@ -176,7 +176,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnAcknowledgeEvent = dditable->zet.Debug.pfnAcknowledgeEvent;
@@ -201,7 +201,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnInterrupt = dditable->zet.Debug.pfnInterrupt;
@@ -226,7 +226,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnResume = dditable->zet.Debug.pfnResume;
@@ -254,7 +254,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnReadMemory = dditable->zet.Debug.pfnReadMemory;
@@ -282,7 +282,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnWriteMemory = dditable->zet.Debug.pfnWriteMemory;
@@ -316,7 +316,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGetRegisterSetProperties = dditable->zet.Debug.pfnGetRegisterSetProperties;
@@ -351,7 +351,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnGetThreadRegisterSetProperties = dditable->zet.Debug.pfnGetThreadRegisterSetProperties;
@@ -384,7 +384,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnReadRegisters = dditable->zet.Debug.pfnReadRegisters;
@@ -417,7 +417,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnWriteRegisters = dditable->zet.Debug.pfnWriteRegisters;
@@ -450,7 +450,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGet = dditable->zet.MetricGroup.pfnGet;
@@ -490,7 +490,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnGetProperties = dditable->zet.MetricGroup.pfnGetProperties;
@@ -526,7 +526,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnCalculateMetricValues = dditable->zet.MetricGroup.pfnCalculateMetricValues;
@@ -558,7 +558,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnGet = dditable->zet.Metric.pfnGet;
@@ -598,7 +598,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_object_t*>( hMetric )->dditable;
         auto pfnGetProperties = dditable->zet.Metric.pfnGetProperties;
@@ -629,7 +629,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnActivateMetricGroups = dditable->zet.Context.pfnActivateMetricGroups;
@@ -667,7 +667,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnOpen = dditable->zet.MetricStreamer.pfnOpen;
@@ -716,7 +716,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricStreamerMarker = dditable->zet.CommandList.pfnAppendMetricStreamerMarker;
@@ -743,7 +743,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_streamer_object_t*>( hMetricStreamer )->dditable;
         auto pfnClose = dditable->zet.MetricStreamer.pfnClose;
@@ -784,7 +784,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_streamer_object_t*>( hMetricStreamer )->dditable;
         auto pfnReadData = dditable->zet.MetricStreamer.pfnReadData;
@@ -812,7 +812,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->zet.MetricQueryPool.pfnCreate;
@@ -856,7 +856,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_query_pool_object_t*>( hMetricQueryPool )->dditable;
         auto pfnDestroy = dditable->zet.MetricQueryPool.pfnDestroy;
@@ -888,7 +888,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_query_pool_object_t*>( hMetricQueryPool )->dditable;
         auto pfnCreate = dditable->zet.MetricQuery.pfnCreate;
@@ -926,7 +926,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->dditable;
         auto pfnDestroy = dditable->zet.MetricQuery.pfnDestroy;
@@ -956,7 +956,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->dditable;
         auto pfnReset = dditable->zet.MetricQuery.pfnReset;
@@ -981,7 +981,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricQueryBegin = dditable->zet.CommandList.pfnAppendMetricQueryBegin;
@@ -1012,7 +1012,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricQueryEnd = dditable->zet.CommandList.pfnAppendMetricQueryEnd;
@@ -1048,7 +1048,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricMemoryBarrier = dditable->zet.CommandList.pfnAppendMetricMemoryBarrier;
@@ -1081,7 +1081,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->dditable;
         auto pfnGetData = dditable->zet.MetricQuery.pfnGetData;
@@ -1106,7 +1106,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_kernel_object_t*>( hKernel )->dditable;
         auto pfnGetProfileInfo = dditable->zet.Kernel.pfnGetProfileInfo;
@@ -1132,7 +1132,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->zet.TracerExp.pfnCreate;
@@ -1170,7 +1170,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnDestroy = dditable->zet.TracerExp.pfnDestroy;
@@ -1201,7 +1201,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnSetPrologues = dditable->zet.TracerExp.pfnSetPrologues;
@@ -1226,7 +1226,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnSetEpilogues = dditable->zet.TracerExp.pfnSetEpilogues;
@@ -1251,7 +1251,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnSetEnabled = dditable->zet.TracerExp.pfnSetEnabled;
@@ -1283,7 +1283,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGetConcurrentMetricGroupsExp = dditable->zet.DeviceExp.pfnGetConcurrentMetricGroupsExp;
@@ -1316,7 +1316,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnCreateExp = dditable->zet.MetricTracerExp.pfnCreateExp;
@@ -1366,7 +1366,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
         auto pfnDestroyExp = dditable->zet.MetricTracerExp.pfnDestroyExp;
@@ -1395,7 +1395,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
         auto pfnEnableExp = dditable->zet.MetricTracerExp.pfnEnableExp;
@@ -1425,7 +1425,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
         auto pfnDisableExp = dditable->zet.MetricTracerExp.pfnDisableExp;
@@ -1458,7 +1458,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
         auto pfnReadDataExp = dditable->zet.MetricTracerExp.pfnReadDataExp;
@@ -1483,7 +1483,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
         auto pfnCreateExp = dditable->zet.MetricDecoderExp.pfnCreateExp;
@@ -1521,7 +1521,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->dditable;
         auto pfnDestroyExp = dditable->zet.MetricDecoderExp.pfnDestroyExp;
@@ -1556,7 +1556,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( hMetricDecoder )->dditable;
         auto pfnGetDecodableMetricsExp = dditable->zet.MetricDecoderExp.pfnGetDecodableMetricsExp;
@@ -1634,7 +1634,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->dditable;
         auto pfnDecodeExp = dditable->zet.MetricTracerExp.pfnDecodeExp;
@@ -1668,7 +1668,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMarkerExp = dditable->zet.CommandListExp.pfnAppendMarkerExp;
@@ -1695,7 +1695,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnEnableMetricsExp = dditable->zet.DeviceExp.pfnEnableMetricsExp;
@@ -1719,7 +1719,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnDisableMetricsExp = dditable->zet.DeviceExp.pfnDisableMetricsExp;
@@ -1765,7 +1765,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnCalculateMultipleMetricValuesExp = dditable->zet.MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
@@ -1792,7 +1792,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnGetGlobalTimestampsExp = dditable->zet.MetricGroupExp.pfnGetGlobalTimestampsExp;
@@ -1824,7 +1824,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnGetExportDataExp = dditable->zet.MetricGroupExp.pfnGetExportDataExp;
@@ -1871,7 +1871,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnCalculateMetricExportDataExp = dditable->zet.MetricGroupExp.pfnCalculateMetricExportDataExp;
@@ -1904,7 +1904,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGetExp = dditable->zet.MetricProgrammableExp.pfnGetExp;
@@ -1944,7 +1944,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_programmable_exp_object_t*>( hMetricProgrammable )->dditable;
         auto pfnGetPropertiesExp = dditable->zet.MetricProgrammableExp.pfnGetPropertiesExp;
@@ -1976,7 +1976,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_programmable_exp_object_t*>( hMetricProgrammable )->dditable;
         auto pfnGetParamInfoExp = dditable->zet.MetricProgrammableExp.pfnGetParamInfoExp;
@@ -2009,7 +2009,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_programmable_exp_object_t*>( hMetricProgrammable )->dditable;
         auto pfnGetParamValueInfoExp = dditable->zet.MetricProgrammableExp.pfnGetParamValueInfoExp;
@@ -2049,7 +2049,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_programmable_exp_object_t*>( hMetricProgrammable )->dditable;
         auto pfnCreateFromProgrammableExp2 = dditable->zet.MetricExp.pfnCreateFromProgrammableExp2;
@@ -2104,7 +2104,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_programmable_exp_object_t*>( hMetricProgrammable )->dditable;
         auto pfnCreateFromProgrammableExp = dditable->zet.MetricExp.pfnCreateFromProgrammableExp;
@@ -2162,7 +2162,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnCreateMetricGroupsFromMetricsExp = dditable->zet.DeviceExp.pfnCreateMetricGroupsFromMetricsExp;
@@ -2208,7 +2208,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnCreateExp = dditable->zet.MetricGroupExp.pfnCreateExp;
@@ -2254,7 +2254,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnAddMetricExp = dditable->zet.MetricGroupExp.pfnAddMetricExp;
@@ -2282,7 +2282,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnRemoveMetricExp = dditable->zet.MetricGroupExp.pfnRemoveMetricExp;
@@ -2309,7 +2309,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnCloseExp = dditable->zet.MetricGroupExp.pfnCloseExp;
@@ -2333,7 +2333,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnDestroyExp = dditable->zet.MetricGroupExp.pfnDestroyExp;
@@ -2357,7 +2357,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_object_t*>( hMetric )->dditable;
         auto pfnDestroyExp = dditable->zet.MetricExp.pfnDestroyExp;

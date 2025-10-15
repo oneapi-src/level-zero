@@ -11,7 +11,7 @@ from templates import helper as th
  * ***THIS FILE IS GENERATED. ***
  * See valddi.cpp.mako for modifications
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -41,12 +41,19 @@ namespace validation_layer
     }
 
     %for obj in th.extract_objs(specs, r"function"):
-    ///////////////////////////////////////////////////////////////////////////////
+    <%
+    ret_type = obj['return_type']
+    failure_return = None
+    if ret_type != 'ze_result_t':
+        failure_return = th.get_first_failure_return(obj)
+    param_lines = [line for line in th.make_param_lines(n, tags, obj, format=['name','delim'])]
+    is_void_params = len(param_lines) == 0
+    %>///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for ${th.make_func_name(n, tags, obj)}
     %if 'condition' in obj:
     #if ${th.subt(n, tags, obj['condition'])}
     %endif
-    __${x}dlllocal ${x}_result_t ${X}_APICALL
+    __${x}dlllocal ${ret_type} ${X}_APICALL
     ${th.make_func_name(n, tags, obj)}(
         %for line in th.make_param_lines(n, tags, obj):
         ${line}
@@ -58,16 +65,25 @@ namespace validation_layer
         auto ${th.make_pfn_name(n, tags, obj)} = context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
 
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
+        %if ret_type == "ze_result_t":
             return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE);
+        %else:
+            return ${failure_return};
+        %endif
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Prologue( \
-% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
+% for line in param_lines:
 ${line} \
 %endfor
 );
-            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+            if(result!=${X}_RESULT_SUCCESS) \
+%if ret_type == "ze_result_t":
+return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+%else:
+return ${failure_return};
+%endif
         }
 
 
@@ -81,11 +97,16 @@ ${line} \
         %>
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->${n}HandleLifetime.${th.make_func_name(n, tags, obj)}Prologue( \
-% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
+% for line in param_lines:
 ${line} \
 %endfor
 );
-            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+            if(result!=${X}_RESULT_SUCCESS) \
+%if ret_type == "ze_result_t":
+return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+%else:
+return ${failure_return};
+%endif
         }
 
         auto driver_result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
@@ -103,11 +124,20 @@ ${line} \
 
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Epilogue( \
-% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
+%if not is_void_params:
+% for line in param_lines:
 ${line} \
 %endfor
 ,driver_result);
-            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+%else:
+driver_result );
+%endif
+            if(result!=${X}_RESULT_SUCCESS) \
+%if ret_type == "ze_result_t":
+return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+%else:
+return ${failure_return};
+%endif
         }
 
         %if generate_post_call:
@@ -142,7 +172,11 @@ ${line} \
             %endfor
         }
         %endif
+        %if ret_type == "ze_result_t":
         return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", driver_result);
+        %else:
+        return driver_result;
+        %endif
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}

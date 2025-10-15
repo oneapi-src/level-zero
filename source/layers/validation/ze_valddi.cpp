@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See valddi.cpp.mako for modifications
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -449,6 +449,47 @@ namespace validation_layer
         }
 
         return logAndPropagateResult("zeDriverGetLastErrorDescription", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetDefaultContext
+    __zedlllocal ze_context_handle_t ZE_APICALL
+    zeDriverGetDefaultContext(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+        )
+    {
+        context.logger->log_trace("zeDriverGetDefaultContext(hDriver)");
+
+        auto pfnGetDefaultContext = context.zeDdiTable.Driver.pfnGetDefaultContext;
+
+        if( nullptr == pfnGetDefaultContext )
+            return nullptr;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetDefaultContextPrologue( hDriver );
+            if(result!=ZE_RESULT_SUCCESS) return nullptr;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetDefaultContextPrologue( hDriver );
+            if(result!=ZE_RESULT_SUCCESS) return nullptr;
+        }
+
+        auto driver_result = pfnGetDefaultContext( hDriver );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetDefaultContextEpilogue( hDriver ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return nullptr;
+        }
+
+        return driver_result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1186,6 +1227,47 @@ namespace validation_layer
         }
 
         return logAndPropagateResult("zeDeviceGetGlobalTimestamps", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSynchronize(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
+        )
+    {
+        context.logger->log_trace("zeDeviceSynchronize(hDevice)");
+
+        auto pfnSynchronize = context.zeDdiTable.Device.pfnSynchronize;
+
+        if( nullptr == pfnSynchronize )
+            return logAndPropagateResult("zeDeviceSynchronize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceSynchronizePrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceSynchronize", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceSynchronizePrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceSynchronize", result);
+        }
+
+        auto driver_result = pfnSynchronize( hDevice );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceSynchronizeEpilogue( hDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceSynchronize", result);
+        }
+
+        return logAndPropagateResult("zeDeviceSynchronize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5829,6 +5911,106 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendLaunchKernelWithParameters(hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendLaunchKernelWithParameters = context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithParameters;
+
+        if( nullptr == pfnAppendLaunchKernelWithParameters )
+            return logAndPropagateResult("zeCommandListAppendLaunchKernelWithParameters", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelWithParametersPrologue( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelWithParameters", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelWithParametersPrologue( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelWithParameters", result);
+        }
+
+        auto driver_result = pfnAppendLaunchKernelWithParameters( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelWithParametersEpilogue( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelWithParameters", result);
+        }
+
+        return logAndPropagateResult("zeCommandListAppendLaunchKernelWithParameters", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithArguments
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithArguments(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendLaunchKernelWithArguments = context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithArguments;
+
+        if( nullptr == pfnAppendLaunchKernelWithArguments )
+            return logAndPropagateResult("zeCommandListAppendLaunchKernelWithArguments", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelWithArgumentsPrologue( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelWithArguments", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelWithArgumentsPrologue( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelWithArguments", result);
+        }
+
+        auto driver_result = pfnAppendLaunchKernelWithArguments( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelWithArgumentsEpilogue( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelWithArguments", result);
+        }
+
+        return logAndPropagateResult("zeCommandListAppendLaunchKernelWithArguments", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendLaunchCooperativeKernel
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendLaunchCooperativeKernel(
@@ -7439,6 +7621,61 @@ namespace validation_layer
         }
 
         return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        context.logger->log_trace("zeKernelGetAllocationPropertiesExp(hKernel, pCount, pAllocationProperties)");
+
+        auto pfnGetAllocationPropertiesExp = context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp;
+
+        if( nullptr == pfnGetAllocationPropertiesExp )
+            return logAndPropagateResult("zeKernelGetAllocationPropertiesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetAllocationPropertiesExpPrologue( hKernel, pCount, pAllocationProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetAllocationPropertiesExp", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetAllocationPropertiesExpPrologue( hKernel, pCount, pAllocationProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetAllocationPropertiesExp", result);
+        }
+
+        auto driver_result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetAllocationPropertiesExpEpilogue( hKernel, pCount, pAllocationProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetAllocationPropertiesExp", result);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult("zeKernelGetAllocationPropertiesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -9780,6 +10017,10 @@ zeGetDriverProcAddrTable(
         dditable.pfnRTASFormatCompatibilityCheckExt          = pDdiTable->pfnRTASFormatCompatibilityCheckExt;
         pDdiTable->pfnRTASFormatCompatibilityCheckExt        = validation_layer::zeDriverRTASFormatCompatibilityCheckExt;
     }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnGetDefaultContext                        = pDdiTable->pfnGetDefaultContext;
+        pDdiTable->pfnGetDefaultContext                      = validation_layer::zeDriverGetDefaultContext;
+    }
     if (version >= ZE_API_VERSION_1_6) {
         dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
         pDdiTable->pfnGetLastErrorDescription                = validation_layer::zeDriverGetLastErrorDescription;
@@ -9913,6 +10154,10 @@ zeGetDeviceProcAddrTable(
     if (version >= ZE_API_VERSION_1_13) {
         dditable.pfnGetVectorWidthPropertiesExt              = pDdiTable->pfnGetVectorWidthPropertiesExt;
         pDdiTable->pfnGetVectorWidthPropertiesExt            = validation_layer::zeDeviceGetVectorWidthPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
+        pDdiTable->pfnSynchronize                            = validation_layer::zeDeviceSynchronize;
     }
     if (version >= ZE_API_VERSION_1_2) {
         dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
@@ -10213,6 +10458,14 @@ zeGetCommandListProcAddrTable(
     if (version >= ZE_API_VERSION_1_12) {
         dditable.pfnAppendWaitExternalSemaphoreExt           = pDdiTable->pfnAppendWaitExternalSemaphoreExt;
         pDdiTable->pfnAppendWaitExternalSemaphoreExt         = validation_layer::zeCommandListAppendWaitExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnAppendLaunchKernelWithParameters         = pDdiTable->pfnAppendLaunchKernelWithParameters;
+        pDdiTable->pfnAppendLaunchKernelWithParameters       = validation_layer::zeCommandListAppendLaunchKernelWithParameters;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnAppendLaunchKernelWithArguments          = pDdiTable->pfnAppendLaunchKernelWithArguments;
+        pDdiTable->pfnAppendLaunchKernelWithArguments        = validation_layer::zeCommandListAppendLaunchKernelWithArguments;
     }
     if (version >= ZE_API_VERSION_1_3) {
         dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
@@ -10708,6 +10961,10 @@ zeGetKernelExpProcAddrTable(
     if (version >= ZE_API_VERSION_1_11) {
         dditable.pfnGetBinaryExp                             = pDdiTable->pfnGetBinaryExp;
         pDdiTable->pfnGetBinaryExp                           = validation_layer::zeKernelGetBinaryExp;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnGetAllocationPropertiesExp               = pDdiTable->pfnGetAllocationPropertiesExp;
+        pDdiTable->pfnGetAllocationPropertiesExp             = validation_layer::zeKernelGetAllocationPropertiesExp;
     }
     if (version >= ZE_API_VERSION_1_2) {
         dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;

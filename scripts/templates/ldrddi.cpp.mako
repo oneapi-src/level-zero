@@ -23,23 +23,33 @@ using namespace loader_driver_ddi;
 namespace loader
 {
     %for obj in th.extract_objs(specs, r"function"):
-    ///////////////////////////////////////////////////////////////////////////////
+    <%
+    ret_type = obj['return_type']
+    failure_return = None
+    if ret_type != 'ze_result_t':
+        failure_return = th.get_first_failure_return(obj)
+    %>///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for ${th.make_func_name(n, tags, obj)}
     %if 'condition' in obj:
     #if ${th.subt(n, tags, obj['condition'])}
     %endif
-    __${x}dlllocal ${x}_result_t ${X}_APICALL
+    __${x}dlllocal ${ret_type} ${X}_APICALL
     ${th.make_func_name(n, tags, obj)}(
         %for line in th.make_param_lines(n, tags, obj):
         ${line}
         %endfor
         )
     {
-        ${x}_result_t result = ${X}_RESULT_SUCCESS;<%
+        %if ret_type == "ze_result_t":
+        ${x}_result_t result = ${X}_RESULT_SUCCESS;
+        %else:
+        ${ret_type} result {};
+        %endif
+        <%
         add_local = False
         arrays_to_delete = []
     %>
-
+        %if namespace != "zer":
         %if re.match(r"Init", obj['name']) and not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         bool atLeastOneDriverValid = false;
         %if namespace != "zes":
@@ -88,10 +98,14 @@ namespace loader
                 %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
                 std::call_once(loader::context->coreDriverSortOnce, []() {
                     loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
+                    loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+                    loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 %else:
                 std::call_once(loader::context->coreDriverSortOnce, [desc]() {
                     loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
+                    loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+                    loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 %endif
                 %else:
@@ -166,8 +180,36 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
+                        drv.zerDriverHandle = phDrivers[ driver_index ];
                         %if namespace != "zes":
                         if (drv.driverDDIHandleSupportQueried == false) {
+                            uint32_t extensionCount = 0;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
+                            res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, extensionProperties.data());
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            if (extensionCount > 0) {
+                                for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
+                                    if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
+                                        // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
+                                        drv.zerDriverHandle = nullptr;
+                                        break;
+                                    }
+                                }
+                            }
                             drv.properties = {};
                             drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
                             drv.properties.pNext = nullptr;
@@ -175,7 +217,7 @@ namespace loader
                             driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
                             driverProperties.pNext = nullptr;
                             driverProperties.pNext = &drv.properties;
-                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(${obj['params'][1]['name']}[ driver_index ], &driverProperties);
+                            res = drv.dditable.ze.Driver.pfnGetProperties(${obj['params'][1]['name']}[ driver_index ], &driverProperties);
                             if (res != ZE_RESULT_SUCCESS) {
                                 if (loader::context->debugTraceEnabled) {
                                     std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
@@ -231,7 +273,11 @@ namespace loader
         %endif
         auto ${th.make_pfn_name(n, tags, obj)} = dditable->${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
+            %if ret_type == "ze_result_t":
             return ${X}_RESULT_ERROR_UNINITIALIZED;
+            %else:
+            return ${failure_return};
+            %endif
 
         %endif
         %if 'range' in item:
@@ -377,6 +423,27 @@ namespace loader
         %endif
         %endfor
         %endif
+        %else: ## for zer API's
+        %if re.match(r"\w+GetLastErrorDescription", th.make_func_name(n, tags, obj)):
+        error_state::getErrorDesc(ppString);
+        if (ppString && *ppString && strlen(*ppString) > 0)
+        {
+            return ZE_RESULT_SUCCESS;
+        }
+
+        %endif
+        auto ${th.make_pfn_name(n, tags, obj)} = loader::defaultZerDdiTable->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+        if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
+            %if ret_type == 'ze_result_t':
+            return ${X}_RESULT_ERROR_UNINITIALIZED;
+            %else:
+            error_state::setErrorDesc("ERROR UNINITIALIZED");
+            return ${failure_return};
+            %endif  
+        }
+        // forward to device-driver
+        result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        %endif
         return result;
     }
     %if 'condition' in obj:
@@ -407,6 +474,8 @@ ${tbl['export']['name']}Legacy()
     loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
     %elif namespace == "zes":
     loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zer":
+    loader::loaderDispatch->pRuntime->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
     %endif
     %if 'condition' in obj:
 #else
@@ -416,6 +485,8 @@ ${tbl['export']['name']}Legacy()
     loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
     %elif namespace == "zes":
     loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zer":
+    loader::loaderDispatch->pRuntime->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
     %endif
 #endif
     %endif
@@ -522,6 +593,8 @@ ${tbl['export']['name']}(
             loader::loaderDispatch->pTools->${tbl['name']} = new ${tbl['type']};
             %elif namespace == "zes":
             loader::loaderDispatch->pSysman->${tbl['name']} = new ${tbl['type']};
+            %elif namespace == "zer":
+            loader::loaderDispatch->pRuntime->${tbl['name']} = new ${tbl['type']};
             %endif
             %for obj in tbl['functions']:
             if (version >= ${th.get_version(obj)}) {
@@ -567,7 +640,7 @@ ${tbl['export']['name']}(
         result = getTable( version, pDdiTable );
     }
 
-    %if namespace == "ze":
+    %if namespace == "ze" or namespace == "zer":
     // If the API tracing layer is enabled, then intercept the loader's DDIs
     if(( ${X}_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
     {

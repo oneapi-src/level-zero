@@ -17,6 +17,7 @@ namespace driver
     ze_dditable_driver_t pCore;
     zet_dditable_driver_t pTools;
     zes_dditable_driver_t pSysman;
+    zer_dditable_driver_t pRuntime;
 
     //////////////////////////////////////////////////////////////////////////
     context_t::context_t()

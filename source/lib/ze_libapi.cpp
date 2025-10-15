@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -620,6 +620,53 @@ zeDriverGetLastErrorDescription(
     }
 
     return pfnGetLastErrorDescription( hDriver, ppString );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves handle to default context from the driver.
+/// 
+/// @details
+///     - The implementation of this function should be lock-free.
+///     - This returned context contains all the devices available in the
+///       driver.
+///     - This function does not return error code, to get info about failure
+///       user may use ::zeDriverGetLastErrorDescription function.
+///     - In case of failure, this function returns null.
+///     - Details on the error can be retrieved using
+///       ::zeDriverGetLastErrorDescription function.
+/// 
+/// @returns
+///     - handle of the default context
+///     - nullptr
+ze_context_handle_t ZE_APICALL
+zeDriverGetDefaultContext(
+    ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return nullptr;
+    }
+    static const ze_pfnDriverGetDefaultContext_t pfnGetDefaultContext = [] {
+        auto pfnGetDefaultContext = ze_lib::context->zeDdiTable.load()->Driver.pfnGetDefaultContext;
+        return pfnGetDefaultContext;
+    }();
+    if (nullptr == pfnGetDefaultContext) {
+        return nullptr;
+    }    
+    return pfnGetDefaultContext( hDriver );
+    #else
+    if(ze_lib::destruction) {
+        return nullptr;
+    }
+
+    auto pfnGetDefaultContext = ze_lib::context->zeDdiTable.load()->Driver.pfnGetDefaultContext;
+    if( nullptr == pfnGetDefaultContext ) {
+        return nullptr;
+    }
+
+    return pfnGetDefaultContext( hDriver );
     #endif
 }
 
@@ -1651,6 +1698,65 @@ zeDeviceGetGlobalTimestamps(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Synchronizes all command queues related to the device.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads with
+///       the same device handle.
+///     - The implementation of this function should be thread-safe.
+///     - This function blocks until all preceding submissions to all queues on
+///       the device are completed.
+///     - This function returns an error if device execution fails.
+///     - This function hangs indefinitely if the device is blocked on a
+///       non-signaled event.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ze_result_t ZE_APICALL
+zeDeviceSynchronize(
+    ze_device_handle_t hDevice                      ///< [in] handle of the device
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnDeviceSynchronize_t pfnSynchronize = [&result] {
+        auto pfnSynchronize = ze_lib::context->zeDdiTable.load()->Device.pfnSynchronize;
+        if( nullptr == pfnSynchronize ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSynchronize;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSynchronize( hDevice );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSynchronize = ze_lib::context->zeDdiTable.load()->Device.pfnSynchronize;
+    if( nullptr == pfnSynchronize ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSynchronize( hDevice );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Creates a context for the driver.
 /// 
 /// @details
@@ -1931,7 +2037,7 @@ zeContextGetStatus(
 ///         + `nullptr == desc`
 ///         + `nullptr == phCommandQueue`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < desc->flags`
+///         + `0x7 < desc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode`
 ///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < desc->priority`
 ze_result_t ZE_APICALL
@@ -2394,7 +2500,7 @@ zeCommandListCreate(
 ///         + `nullptr == altdesc`
 ///         + `nullptr == phCommandList`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < altdesc->flags`
+///         + `0x7 < altdesc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode`
 ///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority`
 ze_result_t ZE_APICALL
@@ -3345,11 +3451,12 @@ zeCommandListAppendMemoryCopy(
 /// @brief Initializes host, device, or shared memory.
 /// 
 /// @details
-///     - The application must ensure the memory pointed to by dstptr is
-///       accessible by the device on which the command list was created.
-///     - The implementation must not access the memory pointed to by dstptr as
-///       it is free to be modified by either the Host or device up until
+///     - The application must ensure the memory pointed to by ptr is accessible
+///       by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by ptr as it
+///       is free to be modified by either the Host or device up until
 ///       execution.
+///     - The ptr must be aligned to pattern_size
 ///     - The value to initialize memory to is described by the pattern and the
 ///       pattern size.
 ///     - The pattern size must be a power-of-two and less than or equal to the
@@ -6371,6 +6478,7 @@ zeMemGetAllocProperties(
 ///         + `nullptr == hContext`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == ptr`
+///     - ::ZE_RESULT_ERROR_ADDRESS_NOT_FOUND
 ze_result_t ZE_APICALL
 zeMemGetAddressRange(
     ze_context_handle_t hContext,                   ///< [in] handle of the context object
@@ -7895,6 +8003,8 @@ zeKernelSuggestMaxCooperativeGroupCount(
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same kernel handle.
 ///     - The implementation of this function should be lock-free.
+///     - If argument is SLM (size), then SLM size in bytes for this resource is
+///       provided as argument size and argument value is null
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -7906,6 +8016,7 @@ zeKernelSuggestMaxCooperativeGroupCount(
 ///         + `nullptr == hKernel`
 ///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_INDEX
 ///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_SIZE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT
 ze_result_t ZE_APICALL
 zeKernelSetArgumentValue(
     ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
@@ -8383,6 +8494,174 @@ zeCommandListAppendLaunchKernel(
     }
 
     return pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Launch kernel over one or more work groups and allow to pass
+///        additional parameters.
+/// 
+/// @details
+///     - The application must ensure the kernel and events are accessible by
+///       the device on which the command list was created.
+///     - This may **only** be called for a command list created with command
+///       queue group ordinal that supports compute.
+///     - The application must ensure the command list, kernel and events were
+///       created on the same context.
+///     - This function may **not** be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+///     - This function allows to pass additional parameters in the form of
+///       `${x}_base_desc_t`
+///     - This function can replace ::zeCommandListAppendLaunchCooperativeKernel
+///       with additional parameter
+///       `${x}_command_list_append_launch_kernel_param_cooperative_desc_t`
+///     - This function supports both immediate and regular command lists.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pGroupCounts`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + when passed additional parameters are invalid or incompatible with the device or command list
+ze_result_t ZE_APICALL
+zeCommandListAppendLaunchKernelWithParameters(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+    const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+    const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListAppendLaunchKernelWithParameters_t pfnAppendLaunchKernelWithParameters = [&result] {
+        auto pfnAppendLaunchKernelWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchKernelWithParameters;
+        if( nullptr == pfnAppendLaunchKernelWithParameters ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendLaunchKernelWithParameters;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendLaunchKernelWithParameters( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendLaunchKernelWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchKernelWithParameters;
+    if( nullptr == pfnAppendLaunchKernelWithParameters ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendLaunchKernelWithParameters( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Launch kernel over one or more work groups with specifying work group
+///        size and all kernel arguments and allow to pass additional extensions.
+/// 
+/// @details
+///     - The application must ensure the kernel and events are accessible by
+///       the device on which the command list was created.
+///     - This may **only** be called for a command list created with command
+///       queue group ordinal that supports compute.
+///     - The application must ensure the command list, kernel and events were
+///       created on the same context.
+///     - This function may **not** be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+///     - This function supports both immediate and regular command lists.
+///     - This function changes kernel state as if separate
+///       ${x}KernelSetGroupSize and ${x}KernelSetArgumentValue functions were
+///       called.
+///     - This function allows to pass additional extensions in the form of
+///       `${x}_base_desc_t`
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + when passed additional extensions are invalid or incompatible with the device or command list
+///     - ::ZE_RESULT_ERROR_INVALID_GROUP_SIZE_DIMENSION - "as per ${x}KernelSetGroupSize"
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT - "as per ${x}KernelSetArgumentValue"
+ze_result_t ZE_APICALL
+zeCommandListAppendLaunchKernelWithArguments(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+    const ze_group_count_t groupCounts,             ///< [in] thread group counts
+    const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+    void ** pArguments,                             ///< [in]pointer to an array of pointers
+    const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListAppendLaunchKernelWithArguments_t pfnAppendLaunchKernelWithArguments = [&result] {
+        auto pfnAppendLaunchKernelWithArguments = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchKernelWithArguments;
+        if( nullptr == pfnAppendLaunchKernelWithArguments ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendLaunchKernelWithArguments;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendLaunchKernelWithArguments( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendLaunchKernelWithArguments = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchKernelWithArguments;
+    if( nullptr == pfnAppendLaunchKernelWithArguments ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendLaunchKernelWithArguments( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
     #endif
 }
 
@@ -10745,6 +11024,73 @@ zeDeviceGetVectorWidthPropertiesExt(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves kernel allocation properties.
+/// 
+/// @details
+///     - A valid kernel handle must be created with ::zeKernelCreate.
+///     - Returns array of kernel allocation properties for kernel handle.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zeKernelGetAllocationPropertiesExp(
+    ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of kernel allocation properties available.
+                                                    ///< if count is greater than the number of kernel allocation properties
+                                                    ///< available, then the driver shall update the value with the correct
+                                                    ///< number of kernel allocation properties.
+    ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                    ///< if count is less than the number of kernel allocation properties
+                                                    ///< available, then driver shall only retrieve that number of kernel
+                                                    ///< allocation properties.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnKernelGetAllocationPropertiesExp_t pfnGetAllocationPropertiesExp = [&result] {
+        auto pfnGetAllocationPropertiesExp = ze_lib::context->zeDdiTable.load()->KernelExp.pfnGetAllocationPropertiesExp;
+        if( nullptr == pfnGetAllocationPropertiesExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetAllocationPropertiesExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetAllocationPropertiesExp = ze_lib::context->zeDdiTable.load()->KernelExp.pfnGetAllocationPropertiesExp;
+    if( nullptr == pfnGetAllocationPropertiesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Reserve Cache on Device
 /// 
 /// @details
@@ -12853,7 +13199,8 @@ zeRTASParallelOperationDestroyExp(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Allocate pitched USM memory for images
+/// @brief Retrieves pitch information that can be used to allocate USM memory
+///        for a given image.
 /// 
 /// @details
 ///     - Retrieves pitch for 2D image given the width, height and size in bytes

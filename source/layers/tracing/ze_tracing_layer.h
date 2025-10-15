@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -8,6 +8,7 @@
  */
 #pragma once
 #include "ze_ddi.h"
+#include "zer_ddi.h"
 #include "ze_util.h"
 #include "tracing_imp.h"
 
@@ -20,6 +21,7 @@ namespace tracing_layer
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
 
         ze_dditable_t   zeDdiTable = {};
+        zer_dditable_t  zerDdiTable = {};
 
         context_t();
         ~context_t();

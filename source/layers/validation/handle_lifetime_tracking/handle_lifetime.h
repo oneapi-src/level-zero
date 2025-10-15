@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Intel Corporation
+ * Copyright (C) 2023-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -10,6 +10,7 @@
 #include "ze_handle_lifetime.h"
 #include "zes_handle_lifetime.h"
 #include "zet_handle_lifetime.h"
+#include "zer_handle_lifetime.h"
 #include <memory>
 #include <type_traits>
 #include <unordered_map>
@@ -26,6 +27,7 @@ public:
   ZEHandleLifetimeValidation zeHandleLifetime;
   ZESHandleLifetimeValidation zesHandleLifetime;
   ZETHandleLifetimeValidation zetHandleLifetime;
+  ZERHandleLifetimeValidation zerHandleLifetime;
 
   // default methods
   template <class T> void addHandle(T handle) {

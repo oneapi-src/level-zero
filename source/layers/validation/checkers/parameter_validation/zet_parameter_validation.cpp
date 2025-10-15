@@ -1,8 +1,8 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See valddi.cpp.mako for modifications
+ * See param.cpp.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -167,7 +167,7 @@ namespace validation_layer
         if( nullptr == buffer )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( ZET_DEBUG_MEMORY_SPACE_TYPE_ELF < desc->type )
+        if( ZET_DEBUG_MEMORY_SPACE_TYPE_BARRIER < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ParameterValidation::validateExtensions(desc);
@@ -192,7 +192,7 @@ namespace validation_layer
         if( nullptr == buffer )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( ZET_DEBUG_MEMORY_SPACE_TYPE_ELF < desc->type )
+        if( ZET_DEBUG_MEMORY_SPACE_TYPE_BARRIER < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ParameterValidation::validateExtensions(desc);

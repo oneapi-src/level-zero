@@ -6,6 +6,7 @@
 #include "ze_parameter_validation.h"
 #include "zet_parameter_validation.h"
 #include "zes_parameter_validation.h"
+#include "zer_parameter_validation.h"
 #include <vector>
 
 
@@ -25,6 +26,7 @@ namespace validation_layer
         ZEParameterValidation zeParamValidation;
         ZESParameterValidation zesParamValidation;
         ZETParameterValidation zetParamValidation;
+        ZERParameterValidation zerParamValidation;
         template <typename T> static ze_result_t validateExtensions(T descriptor);
     };
 

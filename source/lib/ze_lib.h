@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -14,6 +14,8 @@
 #include "zet_ddi.h"
 #include "zes_api.h"
 #include "zes_ddi.h"
+#include "zer_api.h"
+#include "zer_ddi.h"
 #include "layers/zel_tracing_api.h"
 #include "layers/zel_tracing_ddi.h"
 #include "../utils/logging.h"
@@ -161,12 +163,16 @@ namespace ze_lib
         ze_result_t zesDdiTableInit(ze_api_version_t version);
         std::atomic<zes_dditable_t *> zesDdiTable = {nullptr};
 
+        ze_result_t zerDdiTableInit(ze_api_version_t version);
+        std::atomic<zer_dditable_t *> zerDdiTable = {nullptr};
+
         ze_result_t zelTracingDdiTableInit(ze_api_version_t version);
         zel_tracing_dditable_t  zelTracingDdiTable = {};
         std::atomic<ze_dditable_t *> pTracingZeDdiTable = {nullptr};
         ze_dditable_t initialzeDdiTable;
         zet_dditable_t initialzetDdiTable;
         zes_dditable_t initialzesDdiTable;
+        zer_dditable_t initialzerDdiTable;
         std::atomic_uint32_t tracingLayerEnableCounter{0};
 
         HMODULE tracing_lib = nullptr;

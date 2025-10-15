@@ -1,8 +1,8 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See valddi.cpp.mako for modifications
+ * See param.cpp.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -202,6 +202,15 @@ namespace validation_layer
         if( nullptr == ppString )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeDriverGetDefaultContextPrologue(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+        )
+    {
         return ZE_RESULT_SUCCESS;
     }
 
@@ -514,6 +523,18 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeDeviceSynchronizePrologue(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeContextCreatePrologue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
         const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
@@ -616,7 +637,7 @@ namespace validation_layer
         if( nullptr == phCommandQueue )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x3 < desc->flags )
+        if( 0x7 < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         if( ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode )
@@ -761,7 +782,7 @@ namespace validation_layer
         if( nullptr == phCommandList )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x3 < altdesc->flags )
+        if( 0x7 < altdesc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         if( ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode )
@@ -2597,6 +2618,63 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeCommandListAppendLaunchKernelWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hKernel )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pGroupCounts )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListAppendLaunchKernelWithArgumentsPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hKernel )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeCommandListAppendLaunchCooperativeKernelPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
@@ -3414,6 +3492,31 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeKernelGetAllocationPropertiesExpPrologue(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        if( nullptr == hKernel )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pAllocationProperties);
     }
 
 

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -20,15 +20,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Global callback functions pointers
-typedef struct _zel_global_callbacks_t
+typedef struct _zel_ze_global_callbacks_t
 {
     ze_pfnInitCb_t                                                  pfnInitCb;
     ze_pfnInitDriversCb_t                                           pfnInitDriversCb;
-} zel_global_callbacks_t;
+} zel_ze_global_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of RTASBuilder callback functions pointers
-typedef struct _zel_rtas_builder_callbacks_t
+typedef struct _zel_ze_rtas_builder_callbacks_t
 {
     ze_pfnRTASBuilderCreateExtCb_t                                  pfnCreateExtCb;
     ze_pfnRTASBuilderGetBuildPropertiesExtCb_t                      pfnGetBuildPropertiesExtCb;
@@ -39,11 +39,11 @@ typedef struct _zel_rtas_builder_callbacks_t
     ze_pfnRTASBuilderGetBuildPropertiesExpCb_t                      pfnGetBuildPropertiesExpCb;
     ze_pfnRTASBuilderBuildExpCb_t                                   pfnBuildExpCb;
     ze_pfnRTASBuilderDestroyExpCb_t                                 pfnDestroyExpCb;
-} zel_rtas_builder_callbacks_t;
+} zel_ze_rtas_builder_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of RTASParallelOperation callback functions pointers
-typedef struct _zel_rtas_parallel_operation_callbacks_t
+typedef struct _zel_ze_rtas_parallel_operation_callbacks_t
 {
     ze_pfnRTASParallelOperationCreateExtCb_t                        pfnCreateExtCb;
     ze_pfnRTASParallelOperationGetPropertiesExtCb_t                 pfnGetPropertiesExtCb;
@@ -53,11 +53,11 @@ typedef struct _zel_rtas_parallel_operation_callbacks_t
     ze_pfnRTASParallelOperationGetPropertiesExpCb_t                 pfnGetPropertiesExpCb;
     ze_pfnRTASParallelOperationJoinExpCb_t                          pfnJoinExpCb;
     ze_pfnRTASParallelOperationDestroyExpCb_t                       pfnDestroyExpCb;
-} zel_rtas_parallel_operation_callbacks_t;
+} zel_ze_rtas_parallel_operation_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver callback functions pointers
-typedef struct _zel_driver_callbacks_t
+typedef struct _zel_ze_driver_callbacks_t
 {
     ze_pfnDriverGetCb_t                                             pfnGetCb;
     ze_pfnDriverGetApiVersionCb_t                                   pfnGetApiVersionCb;
@@ -66,13 +66,14 @@ typedef struct _zel_driver_callbacks_t
     ze_pfnDriverGetExtensionPropertiesCb_t                          pfnGetExtensionPropertiesCb;
     ze_pfnDriverGetExtensionFunctionAddressCb_t                     pfnGetExtensionFunctionAddressCb;
     ze_pfnDriverRTASFormatCompatibilityCheckExtCb_t                 pfnRTASFormatCompatibilityCheckExtCb;
+    ze_pfnDriverGetDefaultContextCb_t                               pfnGetDefaultContextCb;
     ze_pfnDriverGetLastErrorDescriptionCb_t                         pfnGetLastErrorDescriptionCb;
     ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t                 pfnRTASFormatCompatibilityCheckExpCb;
-} zel_driver_callbacks_t;
+} zel_ze_driver_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device callback functions pointers
-typedef struct _zel_device_callbacks_t
+typedef struct _zel_ze_device_callbacks_t
 {
     ze_pfnDeviceGetCb_t                                             pfnGetCb;
     ze_pfnDeviceGetSubDevicesCb_t                                   pfnGetSubDevicesCb;
@@ -92,16 +93,17 @@ typedef struct _zel_device_callbacks_t
     ze_pfnDeviceImportExternalSemaphoreExtCb_t                      pfnImportExternalSemaphoreExtCb;
     ze_pfnDeviceReleaseExternalSemaphoreExtCb_t                     pfnReleaseExternalSemaphoreExtCb;
     ze_pfnDeviceGetVectorWidthPropertiesExtCb_t                     pfnGetVectorWidthPropertiesExtCb;
+    ze_pfnDeviceSynchronizeCb_t                                     pfnSynchronizeCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
     ze_pfnDeviceGetFabricVertexExpCb_t                              pfnGetFabricVertexExpCb;
     ze_pfnDeviceGetRootDeviceCb_t                                   pfnGetRootDeviceCb;
-} zel_device_callbacks_t;
+} zel_ze_device_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Context callback functions pointers
-typedef struct _zel_context_callbacks_t
+typedef struct _zel_ze_context_callbacks_t
 {
     ze_pfnContextCreateCb_t                                         pfnCreateCb;
     ze_pfnContextDestroyCb_t                                        pfnDestroyCb;
@@ -112,11 +114,11 @@ typedef struct _zel_context_callbacks_t
     ze_pfnContextMakeImageResidentCb_t                              pfnMakeImageResidentCb;
     ze_pfnContextEvictImageCb_t                                     pfnEvictImageCb;
     ze_pfnContextCreateExCb_t                                       pfnCreateExCb;
-} zel_context_callbacks_t;
+} zel_ze_context_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandQueue callback functions pointers
-typedef struct _zel_command_queue_callbacks_t
+typedef struct _zel_ze_command_queue_callbacks_t
 {
     ze_pfnCommandQueueCreateCb_t                                    pfnCreateCb;
     ze_pfnCommandQueueDestroyCb_t                                   pfnDestroyCb;
@@ -124,11 +126,11 @@ typedef struct _zel_command_queue_callbacks_t
     ze_pfnCommandQueueSynchronizeCb_t                               pfnSynchronizeCb;
     ze_pfnCommandQueueGetOrdinalCb_t                                pfnGetOrdinalCb;
     ze_pfnCommandQueueGetIndexCb_t                                  pfnGetIndexCb;
-} zel_command_queue_callbacks_t;
+} zel_ze_command_queue_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandList callback functions pointers
-typedef struct _zel_command_list_callbacks_t
+typedef struct _zel_ze_command_list_callbacks_t
 {
     ze_pfnCommandListCreateCb_t                                     pfnCreateCb;
     ze_pfnCommandListCreateImmediateCb_t                            pfnCreateImmediateCb;
@@ -160,6 +162,8 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t             pfnUpdateMutableCommandKernelsExpCb;
     ze_pfnCommandListAppendSignalExternalSemaphoreExtCb_t           pfnAppendSignalExternalSemaphoreExtCb;
     ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t             pfnAppendWaitExternalSemaphoreExtCb;
+    ze_pfnCommandListAppendLaunchKernelWithParametersCb_t           pfnAppendLaunchKernelWithParametersCb;
+    ze_pfnCommandListAppendLaunchKernelWithArgumentsCb_t            pfnAppendLaunchKernelWithArgumentsCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
     ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;
@@ -174,11 +178,11 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListUpdateMutableCommandsExpCb_t                   pfnUpdateMutableCommandsExpCb;
     ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t         pfnUpdateMutableCommandSignalEventExpCb;
     ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t          pfnUpdateMutableCommandWaitEventsExpCb;
-} zel_command_list_callbacks_t;
+} zel_ze_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Event callback functions pointers
-typedef struct _zel_event_callbacks_t
+typedef struct _zel_ze_event_callbacks_t
 {
     ze_pfnEventCreateCb_t                                           pfnCreateCb;
     ze_pfnEventDestroyCb_t                                          pfnDestroyCb;
@@ -192,11 +196,11 @@ typedef struct _zel_event_callbacks_t
     ze_pfnEventGetEventPoolCb_t                                     pfnGetEventPoolCb;
     ze_pfnEventGetSignalScopeCb_t                                   pfnGetSignalScopeCb;
     ze_pfnEventGetWaitScopeCb_t                                     pfnGetWaitScopeCb;
-} zel_event_callbacks_t;
+} zel_ze_event_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of EventPool callback functions pointers
-typedef struct _zel_event_pool_callbacks_t
+typedef struct _zel_ze_event_pool_callbacks_t
 {
     ze_pfnEventPoolCreateCb_t                                       pfnCreateCb;
     ze_pfnEventPoolDestroyCb_t                                      pfnDestroyCb;
@@ -206,22 +210,22 @@ typedef struct _zel_event_pool_callbacks_t
     ze_pfnEventPoolPutIpcHandleCb_t                                 pfnPutIpcHandleCb;
     ze_pfnEventPoolGetContextHandleCb_t                             pfnGetContextHandleCb;
     ze_pfnEventPoolGetFlagsCb_t                                     pfnGetFlagsCb;
-} zel_event_pool_callbacks_t;
+} zel_ze_event_pool_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Fence callback functions pointers
-typedef struct _zel_fence_callbacks_t
+typedef struct _zel_ze_fence_callbacks_t
 {
     ze_pfnFenceCreateCb_t                                           pfnCreateCb;
     ze_pfnFenceDestroyCb_t                                          pfnDestroyCb;
     ze_pfnFenceHostSynchronizeCb_t                                  pfnHostSynchronizeCb;
     ze_pfnFenceQueryStatusCb_t                                      pfnQueryStatusCb;
     ze_pfnFenceResetCb_t                                            pfnResetCb;
-} zel_fence_callbacks_t;
+} zel_ze_fence_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Image callback functions pointers
-typedef struct _zel_image_callbacks_t
+typedef struct _zel_ze_image_callbacks_t
 {
     ze_pfnImageGetPropertiesCb_t                                    pfnGetPropertiesCb;
     ze_pfnImageCreateCb_t                                           pfnCreateCb;
@@ -231,11 +235,11 @@ typedef struct _zel_image_callbacks_t
     ze_pfnImageGetAllocPropertiesExtCb_t                            pfnGetAllocPropertiesExtCb;
     ze_pfnImageViewCreateExtCb_t                                    pfnViewCreateExtCb;
     ze_pfnImageGetDeviceOffsetExpCb_t                               pfnGetDeviceOffsetExpCb;
-} zel_image_callbacks_t;
+} zel_ze_image_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Kernel callback functions pointers
-typedef struct _zel_kernel_callbacks_t
+typedef struct _zel_ze_kernel_callbacks_t
 {
     ze_pfnKernelCreateCb_t                                          pfnCreateCb;
     ze_pfnKernelDestroyCb_t                                         pfnDestroyCb;
@@ -251,12 +255,13 @@ typedef struct _zel_kernel_callbacks_t
     ze_pfnKernelGetNameCb_t                                         pfnGetNameCb;
     ze_pfnKernelSetGlobalOffsetExpCb_t                              pfnSetGlobalOffsetExpCb;
     ze_pfnKernelGetBinaryExpCb_t                                    pfnGetBinaryExpCb;
+    ze_pfnKernelGetAllocationPropertiesExpCb_t                      pfnGetAllocationPropertiesExpCb;
     ze_pfnKernelSchedulingHintExpCb_t                               pfnSchedulingHintExpCb;
-} zel_kernel_callbacks_t;
+} zel_ze_kernel_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Mem callback functions pointers
-typedef struct _zel_mem_callbacks_t
+typedef struct _zel_ze_mem_callbacks_t
 {
     ze_pfnMemAllocSharedCb_t                                        pfnAllocSharedCb;
     ze_pfnMemAllocDeviceCb_t                                        pfnAllocDeviceCb;
@@ -274,11 +279,11 @@ typedef struct _zel_mem_callbacks_t
     ze_pfnMemSetAtomicAccessAttributeExpCb_t                        pfnSetAtomicAccessAttributeExpCb;
     ze_pfnMemGetAtomicAccessAttributeExpCb_t                        pfnGetAtomicAccessAttributeExpCb;
     ze_pfnMemGetPitchFor2dImageCb_t                                 pfnGetPitchFor2dImageCb;
-} zel_mem_callbacks_t;
+} zel_ze_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Module callback functions pointers
-typedef struct _zel_module_callbacks_t
+typedef struct _zel_ze_module_callbacks_t
 {
     ze_pfnModuleCreateCb_t                                          pfnCreateCb;
     ze_pfnModuleDestroyCb_t                                         pfnDestroyCb;
@@ -289,35 +294,35 @@ typedef struct _zel_module_callbacks_t
     ze_pfnModuleGetPropertiesCb_t                                   pfnGetPropertiesCb;
     ze_pfnModuleGetFunctionPointerCb_t                              pfnGetFunctionPointerCb;
     ze_pfnModuleInspectLinkageExtCb_t                               pfnInspectLinkageExtCb;
-} zel_module_callbacks_t;
+} zel_ze_module_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of ModuleBuildLog callback functions pointers
-typedef struct _zel_module_build_log_callbacks_t
+typedef struct _zel_ze_module_build_log_callbacks_t
 {
     ze_pfnModuleBuildLogDestroyCb_t                                 pfnDestroyCb;
     ze_pfnModuleBuildLogGetStringCb_t                               pfnGetStringCb;
-} zel_module_build_log_callbacks_t;
+} zel_ze_module_build_log_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of PhysicalMem callback functions pointers
-typedef struct _zel_physical_mem_callbacks_t
+typedef struct _zel_ze_physical_mem_callbacks_t
 {
     ze_pfnPhysicalMemCreateCb_t                                     pfnCreateCb;
     ze_pfnPhysicalMemDestroyCb_t                                    pfnDestroyCb;
-} zel_physical_mem_callbacks_t;
+} zel_ze_physical_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Sampler callback functions pointers
-typedef struct _zel_sampler_callbacks_t
+typedef struct _zel_ze_sampler_callbacks_t
 {
     ze_pfnSamplerCreateCb_t                                         pfnCreateCb;
     ze_pfnSamplerDestroyCb_t                                        pfnDestroyCb;
-} zel_sampler_callbacks_t;
+} zel_ze_sampler_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of VirtualMem callback functions pointers
-typedef struct _zel_virtual_mem_callbacks_t
+typedef struct _zel_ze_virtual_mem_callbacks_t
 {
     ze_pfnVirtualMemReserveCb_t                                     pfnReserveCb;
     ze_pfnVirtualMemFreeCb_t                                        pfnFreeCb;
@@ -326,53 +331,53 @@ typedef struct _zel_virtual_mem_callbacks_t
     ze_pfnVirtualMemUnmapCb_t                                       pfnUnmapCb;
     ze_pfnVirtualMemSetAccessAttributeCb_t                          pfnSetAccessAttributeCb;
     ze_pfnVirtualMemGetAccessAttributeCb_t                          pfnGetAccessAttributeCb;
-} zel_virtual_mem_callbacks_t;
+} zel_ze_virtual_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of FabricEdge callback functions pointers
-typedef struct _zel_fabric_edge_callbacks_t
+typedef struct _zel_ze_fabric_edge_callbacks_t
 {
     ze_pfnFabricEdgeGetExpCb_t                                      pfnGetExpCb;
     ze_pfnFabricEdgeGetVerticesExpCb_t                              pfnGetVerticesExpCb;
     ze_pfnFabricEdgeGetPropertiesExpCb_t                            pfnGetPropertiesExpCb;
-} zel_fabric_edge_callbacks_t;
+} zel_ze_fabric_edge_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of FabricVertex callback functions pointers
-typedef struct _zel_fabric_vertex_callbacks_t
+typedef struct _zel_ze_fabric_vertex_callbacks_t
 {
     ze_pfnFabricVertexGetExpCb_t                                    pfnGetExpCb;
     ze_pfnFabricVertexGetSubVerticesExpCb_t                         pfnGetSubVerticesExpCb;
     ze_pfnFabricVertexGetPropertiesExpCb_t                          pfnGetPropertiesExpCb;
     ze_pfnFabricVertexGetDeviceExpCb_t                              pfnGetDeviceExpCb;
-} zel_fabric_vertex_callbacks_t;
+} zel_ze_fabric_vertex_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all callbacks
-typedef struct _zel_all_core_callbacks_t
+typedef struct _zel_ze_all_callbacks_t
 {
-    zel_global_callbacks_t              Global;
-    zel_rtas_builder_callbacks_t        RTASBuilder;
-    zel_rtas_parallel_operation_callbacks_t RTASParallelOperation;
-    zel_driver_callbacks_t              Driver;
-    zel_device_callbacks_t              Device;
-    zel_context_callbacks_t             Context;
-    zel_command_queue_callbacks_t       CommandQueue;
-    zel_command_list_callbacks_t        CommandList;
-    zel_event_callbacks_t               Event;
-    zel_event_pool_callbacks_t          EventPool;
-    zel_fence_callbacks_t               Fence;
-    zel_image_callbacks_t               Image;
-    zel_kernel_callbacks_t              Kernel;
-    zel_mem_callbacks_t                 Mem;
-    zel_module_callbacks_t              Module;
-    zel_module_build_log_callbacks_t    ModuleBuildLog;
-    zel_physical_mem_callbacks_t        PhysicalMem;
-    zel_sampler_callbacks_t             Sampler;
-    zel_virtual_mem_callbacks_t         VirtualMem;
-    zel_fabric_edge_callbacks_t         FabricEdge;
-    zel_fabric_vertex_callbacks_t       FabricVertex;
-} zel_all_core_callbacks_t;
+    zel_ze_global_callbacks_t           Global;
+    zel_ze_rtas_builder_callbacks_t     RTASBuilder;
+    zel_ze_rtas_parallel_operation_callbacks_t  RTASParallelOperation;
+    zel_ze_driver_callbacks_t           Driver;
+    zel_ze_device_callbacks_t           Device;
+    zel_ze_context_callbacks_t          Context;
+    zel_ze_command_queue_callbacks_t    CommandQueue;
+    zel_ze_command_list_callbacks_t     CommandList;
+    zel_ze_event_callbacks_t            Event;
+    zel_ze_event_pool_callbacks_t       EventPool;
+    zel_ze_fence_callbacks_t            Fence;
+    zel_ze_image_callbacks_t            Image;
+    zel_ze_kernel_callbacks_t           Kernel;
+    zel_ze_mem_callbacks_t              Mem;
+    zel_ze_module_callbacks_t           Module;
+    zel_ze_module_build_log_callbacks_t ModuleBuildLog;
+    zel_ze_physical_mem_callbacks_t     PhysicalMem;
+    zel_ze_sampler_callbacks_t          Sampler;
+    zel_ze_virtual_mem_callbacks_t      VirtualMem;
+    zel_ze_fabric_edge_callbacks_t      FabricEdge;
+    zel_ze_fabric_vertex_callbacks_t    FabricVertex;
+} zel_ze_all_callbacks_t;
 
 
 

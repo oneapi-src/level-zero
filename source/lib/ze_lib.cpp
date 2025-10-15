@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -209,6 +209,7 @@ namespace ze_lib
             ze_lib::context->zeDdiTable.exchange(&ze_lib::context->initialzeDdiTable);
             ze_lib::context->zetDdiTable.exchange(&ze_lib::context->initialzetDdiTable);
             ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);
+            ze_lib::context->zerDdiTable.exchange(&ze_lib::context->initialzerDdiTable);
         }
 
         // Given zesInit, then zesDrivers needs to be used as the sysmanInstanceDrivers;
@@ -249,6 +250,16 @@ namespace ze_lib
             result = zesDdiTableInit(version);
             if (result != ZE_RESULT_SUCCESS) {
                 std::string message = "ze_lib Context Init() zesDdiTableInit failed with ";
+                debug_trace_message(message, to_string(result));
+            }
+        }
+        // Init the ZER DDI Tables
+        if (ZE_RESULT_SUCCESS == result)
+        {
+            result = zerDdiTableInit(version);
+            if (result != ZE_RESULT_SUCCESS)
+            {
+                std::string message = "ze_lib Context Init() zerDdiTableInit failed with ";
                 debug_trace_message(message, to_string(result));
             }
         }
@@ -323,7 +334,12 @@ namespace ze_lib
                     {
                         result = zetDdiTableInit(version);
                     }
-                    // If ze/zet ddi tables have been reinit and no longer use the intercept layer, then handles passed to zelLoaderTranslateHandleInternal do not require translation.
+                    // reInit the ZER DDI Tables
+                    if (ZE_RESULT_SUCCESS == result)
+                    {
+                        result = zerDdiTableInit(version);
+                    }
+                    // If ze/zet/zer ddi tables have been reinit and no longer use the intercept layer, then handles passed to zelLoaderTranslateHandleInternal do not require translation.
                     // Setting intercept_enabled==false changes the behavior of zelLoaderTranslateHandleInternal to avoid translation.
                     // Translation is only required if the intercept layer is enabled for the ZE handle types.
                     loaderContext->intercept_enabled = false;

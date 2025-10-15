@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Intel Corporation
+# Copyright (C) 2020-2025 Intel Corporation
 # SPDX-License-Identifier: MIT
 set(TARGET_NAME ze_tracing_layer)
 
@@ -14,10 +14,13 @@ add_library(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/tracing_imp.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_layer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_trcddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_trcddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tracing_imp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_cb_structs.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_tracing_cb_structs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_register_cb.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_tracing_register_cb.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/ZeTracingLayerVersion.rc
 )
 

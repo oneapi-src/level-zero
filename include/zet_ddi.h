@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.13-r1.13.1
+ * @version v1.14-r1.14.33
  *
  */
 #ifndef _ZET_DDI_H

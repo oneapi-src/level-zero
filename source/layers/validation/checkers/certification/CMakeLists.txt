@@ -9,4 +9,5 @@ target_sources(${TARGET_NAME}
         ${CMAKE_CURRENT_LIST_DIR}/generated/ze_certification.h
         ${CMAKE_CURRENT_LIST_DIR}/generated/zes_certification.h
         ${CMAKE_CURRENT_LIST_DIR}/generated/zet_certification.h
+        ${CMAKE_CURRENT_LIST_DIR}/generated/zer_certification.h
 )

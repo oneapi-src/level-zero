@@ -1609,10 +1609,13 @@ Public:
 def make_tracing_func_name(namespace, tags, obj):
     cname = obj_traits.class_name(obj)
     x_tag = tags['$x']
+    r_tag = tags['$r']
     tags['$x'] = '' #temporaly remove namespace tag so funx doesn't contain "ze"
+    tags['$r'] = '' #temporaly remove namespace tag so funx doesn't contain "zer"
     fname =  subt(namespace, tags, "%s%s"%(cname, obj['name']), cpp=False)
     fname = "zelTracer" + fname + "RegisterCallback" 
     tags['$x'] = x_tag
+    tags['$r'] = r_tag
     return fname
 
 
@@ -1685,6 +1688,18 @@ def make_baseclass_ctor(namespace, tags, obj):
     base = subt(namespace, tags, obj['base'], cpp=True)
     ctor = base.split("::")[-1]
     return "%s::%s"%(base, ctor)
+
+"""
+Public:
+    Extracts the failure return value from a function spec object.
+    Returns the second key (index 1) in the 'returns' list.
+"""
+def get_first_failure_return(obj):
+    returns = obj.get('returns', [])
+    if len(returns) > 1:
+        second_ret = returns[1]
+        return next(iter(second_ret))
+    return None
 
 """
 Public:
@@ -1846,8 +1861,10 @@ def get_zel_pfncbtables(specs, meta, namespace, tags):
     for cname in sorted(meta['class'], key=lambda x: meta['class'][x]['ordinal']):
         objs = get_class_function_objs(specs, cname, 1.0, 9999)
         if len(objs) > 0:
-            name = get_table_name(namespace, tags, {'class': cname})
-            table = "zel_%s_callbacks_t"%(_camel_to_snake(name))
+            name = get_table_name(namespace, tags, {'class': cname})  # e.g., "Global", "Driver", ...
+            # Namespace-unique internal type name: zel_ze_* or zel_zer_* ....
+            ns_prefix = f"zel_{namespace}"
+            table = f"{ns_prefix}_{_camel_to_snake(name)}_callbacks_t"
             tables.append({
                 'name': name, 
                 'type': table,

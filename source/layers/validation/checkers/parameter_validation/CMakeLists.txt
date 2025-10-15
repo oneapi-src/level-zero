@@ -7,5 +7,7 @@ target_sources(${TARGET_NAME}
         ${CMAKE_CURRENT_LIST_DIR}/zes_parameter_validation.h
         ${CMAKE_CURRENT_LIST_DIR}/zet_parameter_validation.cpp    
         ${CMAKE_CURRENT_LIST_DIR}/zet_parameter_validation.h
+        ${CMAKE_CURRENT_LIST_DIR}/zer_parameter_validation.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/zer_parameter_validation.h
 )
 

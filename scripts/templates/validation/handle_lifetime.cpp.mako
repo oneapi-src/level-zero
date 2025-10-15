@@ -11,7 +11,7 @@ from templates import helper as th
  * ***THIS FILE IS GENERATED. ***
  * See handle_lifetime.cpp.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *

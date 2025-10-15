@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -22,11 +22,11 @@ from templates import helper as th
 #include "layers/zel_tracing_api.h"
 #include "layers/zel_tracing_ddi.h"
 #include "layers/zel_tracing_register_cb.h"
-#include "${x}_api.h"
+#include "${n}_api.h"
 
 extern "C" { 
 
-/// APIs to register callbacks for each core API
+/// APIs to register callbacks for each ${n} API
 %for s in specs:
 %for obj in th.filter_items(s['objects'], 'type', 'function'):
 
@@ -38,7 +38,11 @@ ${th.make_tracing_func_name(n, tags, obj)}(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    %if n == "ze":
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    %elif n == "zer":
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZerProEpilogues(callback_type, result);
+    % endif
     if (result == ZE_RESULT_SUCCESS)
         cbs.${th.get_callback_table_name(n, tags, obj)}.${th.make_pfncb_name(n, tags, obj)} = ${th.make_pfncb_name(n, tags, obj)};
 

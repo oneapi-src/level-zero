@@ -36,8 +36,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDebugInfo = dditable->Module->pfnGetDebugInfo;
-        if( nullptr == pfnGetDebugInfo )
+        if( nullptr == pfnGetDebugInfo ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetDebugInfo( hModule, format, pSize, pDebugInfo );
         return result;
@@ -66,8 +67,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDebugProperties = dditable->Device->pfnGetDebugProperties;
-        if( nullptr == pfnGetDebugProperties )
+        if( nullptr == pfnGetDebugProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetDebugProperties( hDevice, pDebugProperties );
         return result;
@@ -97,8 +99,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAttach = dditable->Debug->pfnAttach;
-        if( nullptr == pfnAttach )
+        if( nullptr == pfnAttach ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAttach( hDevice, config, phDebug );
         return result;
@@ -126,8 +129,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDetach = dditable->Debug->pfnDetach;
-        if( nullptr == pfnDetach )
+        if( nullptr == pfnDetach ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDetach( hDebug );
         return result;
@@ -163,8 +167,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReadEvent = dditable->Debug->pfnReadEvent;
-        if( nullptr == pfnReadEvent )
+        if( nullptr == pfnReadEvent ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReadEvent( hDebug, timeout, event );
         return result;
@@ -193,8 +198,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAcknowledgeEvent = dditable->Debug->pfnAcknowledgeEvent;
-        if( nullptr == pfnAcknowledgeEvent )
+        if( nullptr == pfnAcknowledgeEvent ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAcknowledgeEvent( hDebug, event );
         return result;
@@ -223,8 +229,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnInterrupt = dditable->Debug->pfnInterrupt;
-        if( nullptr == pfnInterrupt )
+        if( nullptr == pfnInterrupt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnInterrupt( hDebug, thread );
         return result;
@@ -253,8 +260,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnResume = dditable->Debug->pfnResume;
-        if( nullptr == pfnResume )
+        if( nullptr == pfnResume ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnResume( hDebug, thread );
         return result;
@@ -286,8 +294,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReadMemory = dditable->Debug->pfnReadMemory;
-        if( nullptr == pfnReadMemory )
+        if( nullptr == pfnReadMemory ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReadMemory( hDebug, thread, desc, size, buffer );
         return result;
@@ -319,8 +328,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnWriteMemory = dditable->Debug->pfnWriteMemory;
-        if( nullptr == pfnWriteMemory )
+        if( nullptr == pfnWriteMemory ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnWriteMemory( hDebug, thread, desc, size, buffer );
         return result;
@@ -358,8 +368,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetRegisterSetProperties = dditable->Debug->pfnGetRegisterSetProperties;
-        if( nullptr == pfnGetRegisterSetProperties )
+        if( nullptr == pfnGetRegisterSetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
         return result;
@@ -398,8 +409,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetThreadRegisterSetProperties = dditable->Debug->pfnGetThreadRegisterSetProperties;
-        if( nullptr == pfnGetThreadRegisterSetProperties )
+        if( nullptr == pfnGetThreadRegisterSetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
         return result;
@@ -436,8 +448,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReadRegisters = dditable->Debug->pfnReadRegisters;
-        if( nullptr == pfnReadRegisters )
+        if( nullptr == pfnReadRegisters ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
         return result;
@@ -474,8 +487,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnWriteRegisters = dditable->Debug->pfnWriteRegisters;
-        if( nullptr == pfnWriteRegisters )
+        if( nullptr == pfnWriteRegisters ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
         return result;
@@ -512,8 +526,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGet = dditable->MetricGroup->pfnGet;
-        if( nullptr == pfnGet )
+        if( nullptr == pfnGet ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGet( hDevice, pCount, phMetricGroups );
         return result;
@@ -542,8 +557,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->MetricGroup->pfnGetProperties;
-        if( nullptr == pfnGetProperties )
+        if( nullptr == pfnGetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProperties( hMetricGroup, pProperties );
         return result;
@@ -583,8 +599,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCalculateMetricValues = dditable->MetricGroup->pfnCalculateMetricValues;
-        if( nullptr == pfnCalculateMetricValues )
+        if( nullptr == pfnCalculateMetricValues ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
         return result;
@@ -620,8 +637,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGet = dditable->Metric->pfnGet;
-        if( nullptr == pfnGet )
+        if( nullptr == pfnGet ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGet( hMetricGroup, pCount, phMetrics );
         return result;
@@ -650,8 +668,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->Metric->pfnGetProperties;
-        if( nullptr == pfnGetProperties )
+        if( nullptr == pfnGetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProperties( hMetric, pProperties );
         return result;
@@ -686,8 +705,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnActivateMetricGroups = dditable->Context->pfnActivateMetricGroups;
-        if( nullptr == pfnActivateMetricGroups )
+        if( nullptr == pfnActivateMetricGroups ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
         return result;
@@ -720,8 +740,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnOpen = dditable->MetricStreamer->pfnOpen;
-        if( nullptr == pfnOpen )
+        if( nullptr == pfnOpen ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
         return result;
@@ -751,8 +772,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMetricStreamerMarker = dditable->CommandList->pfnAppendMetricStreamerMarker;
-        if( nullptr == pfnAppendMetricStreamerMarker )
+        if( nullptr == pfnAppendMetricStreamerMarker ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
         return result;
@@ -780,8 +802,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnClose = dditable->MetricStreamer->pfnClose;
-        if( nullptr == pfnClose )
+        if( nullptr == pfnClose ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnClose( hMetricStreamer );
         return result;
@@ -820,8 +843,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReadData = dditable->MetricStreamer->pfnReadData;
-        if( nullptr == pfnReadData )
+        if( nullptr == pfnReadData ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
         return result;
@@ -853,8 +877,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->MetricQueryPool->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
         return result;
@@ -882,8 +907,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->MetricQueryPool->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hMetricQueryPool );
         return result;
@@ -913,8 +939,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->MetricQuery->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hMetricQueryPool, index, phMetricQuery );
         return result;
@@ -942,8 +969,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->MetricQuery->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hMetricQuery );
         return result;
@@ -971,8 +999,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReset = dditable->MetricQuery->pfnReset;
-        if( nullptr == pfnReset )
+        if( nullptr == pfnReset ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReset( hMetricQuery );
         return result;
@@ -1001,8 +1030,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMetricQueryBegin = dditable->CommandList->pfnAppendMetricQueryBegin;
-        if( nullptr == pfnAppendMetricQueryBegin )
+        if( nullptr == pfnAppendMetricQueryBegin ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMetricQueryBegin( hCommandList, hMetricQuery );
         return result;
@@ -1034,8 +1064,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMetricQueryEnd = dditable->CommandList->pfnAppendMetricQueryEnd;
-        if( nullptr == pfnAppendMetricQueryEnd )
+        if( nullptr == pfnAppendMetricQueryEnd ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1063,8 +1094,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMetricMemoryBarrier = dditable->CommandList->pfnAppendMetricMemoryBarrier;
-        if( nullptr == pfnAppendMetricMemoryBarrier )
+        if( nullptr == pfnAppendMetricMemoryBarrier ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMetricMemoryBarrier( hCommandList );
         return result;
@@ -1101,8 +1133,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetData = dditable->MetricQuery->pfnGetData;
-        if( nullptr == pfnGetData )
+        if( nullptr == pfnGetData ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetData( hMetricQuery, pRawDataSize, pRawData );
         return result;
@@ -1131,8 +1164,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProfileInfo = dditable->Kernel->pfnGetProfileInfo;
-        if( nullptr == pfnGetProfileInfo )
+        if( nullptr == pfnGetProfileInfo ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProfileInfo( hKernel, pProfileProperties );
         return result;
@@ -1162,8 +1196,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->TracerExp->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, desc, phTracer );
         return result;
@@ -1191,8 +1226,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->TracerExp->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hTracer );
         return result;
@@ -1221,8 +1257,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetPrologues = dditable->TracerExp->pfnSetPrologues;
-        if( nullptr == pfnSetPrologues )
+        if( nullptr == pfnSetPrologues ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetPrologues( hTracer, pCoreCbs );
         return result;
@@ -1251,8 +1288,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetEpilogues = dditable->TracerExp->pfnSetEpilogues;
-        if( nullptr == pfnSetEpilogues )
+        if( nullptr == pfnSetEpilogues ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetEpilogues( hTracer, pCoreCbs );
         return result;
@@ -1281,8 +1319,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetEnabled = dditable->TracerExp->pfnSetEnabled;
-        if( nullptr == pfnSetEnabled )
+        if( nullptr == pfnSetEnabled ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetEnabled( hTracer, enable );
         return result;
@@ -1318,8 +1357,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetConcurrentMetricGroupsExp = dditable->DeviceExp->pfnGetConcurrentMetricGroupsExp;
-        if( nullptr == pfnGetConcurrentMetricGroupsExp )
+        if( nullptr == pfnGetConcurrentMetricGroupsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
         return result;
@@ -1356,8 +1396,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExp = dditable->MetricTracerExp->pfnCreateExp;
-        if( nullptr == pfnCreateExp )
+        if( nullptr == pfnCreateExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
         return result;
@@ -1385,8 +1426,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->MetricTracerExp->pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
+        if( nullptr == pfnDestroyExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExp( hMetricTracer );
         return result;
@@ -1419,8 +1461,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnEnableExp = dditable->MetricTracerExp->pfnEnableExp;
-        if( nullptr == pfnEnableExp )
+        if( nullptr == pfnEnableExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnEnableExp( hMetricTracer, synchronous );
         return result;
@@ -1454,8 +1497,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDisableExp = dditable->MetricTracerExp->pfnDisableExp;
-        if( nullptr == pfnDisableExp )
+        if( nullptr == pfnDisableExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDisableExp( hMetricTracer, synchronous );
         return result;
@@ -1492,8 +1536,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReadDataExp = dditable->MetricTracerExp->pfnReadDataExp;
-        if( nullptr == pfnReadDataExp )
+        if( nullptr == pfnReadDataExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
         return result;
@@ -1522,8 +1567,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExp = dditable->MetricDecoderExp->pfnCreateExp;
-        if( nullptr == pfnCreateExp )
+        if( nullptr == pfnCreateExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateExp( hMetricTracer, phMetricDecoder );
         return result;
@@ -1551,8 +1597,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->MetricDecoderExp->pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
+        if( nullptr == pfnDestroyExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExp( phMetricDecoder );
         return result;
@@ -1591,8 +1638,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDecodableMetricsExp = dditable->MetricDecoderExp->pfnGetDecodableMetricsExp;
-        if( nullptr == pfnGetDecodableMetricsExp )
+        if( nullptr == pfnGetDecodableMetricsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
         return result;
@@ -1659,8 +1707,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDecodeExp = dditable->MetricTracerExp->pfnDecodeExp;
-        if( nullptr == pfnDecodeExp )
+        if( nullptr == pfnDecodeExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
         return result;
@@ -1692,8 +1741,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMarkerExp = dditable->CommandListExp->pfnAppendMarkerExp;
-        if( nullptr == pfnAppendMarkerExp )
+        if( nullptr == pfnAppendMarkerExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
         return result;
@@ -1721,8 +1771,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnEnableMetricsExp = dditable->DeviceExp->pfnEnableMetricsExp;
-        if( nullptr == pfnEnableMetricsExp )
+        if( nullptr == pfnEnableMetricsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnEnableMetricsExp( hDevice );
         return result;
@@ -1750,8 +1801,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDisableMetricsExp = dditable->DeviceExp->pfnDisableMetricsExp;
-        if( nullptr == pfnDisableMetricsExp )
+        if( nullptr == pfnDisableMetricsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDisableMetricsExp( hDevice );
         return result;
@@ -1801,8 +1853,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCalculateMultipleMetricValuesExp = dditable->MetricGroupExp->pfnCalculateMultipleMetricValuesExp;
-        if( nullptr == pfnCalculateMultipleMetricValuesExp )
+        if( nullptr == pfnCalculateMultipleMetricValuesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
         return result;
@@ -1833,8 +1886,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetGlobalTimestampsExp = dditable->MetricGroupExp->pfnGetGlobalTimestampsExp;
-        if( nullptr == pfnGetGlobalTimestampsExp )
+        if( nullptr == pfnGetGlobalTimestampsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
         return result;
@@ -1870,8 +1924,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExportDataExp = dditable->MetricGroupExp->pfnGetExportDataExp;
-        if( nullptr == pfnGetExportDataExp )
+        if( nullptr == pfnGetExportDataExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
         return result;
@@ -1922,8 +1977,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCalculateMetricExportDataExp = dditable->MetricGroupExp->pfnCalculateMetricExportDataExp;
-        if( nullptr == pfnCalculateMetricExportDataExp )
+        if( nullptr == pfnCalculateMetricExportDataExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
         return result;
@@ -1960,8 +2016,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExp = dditable->MetricProgrammableExp->pfnGetExp;
-        if( nullptr == pfnGetExp )
+        if( nullptr == pfnGetExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetExp( hDevice, pCount, phMetricProgrammables );
         return result;
@@ -1990,8 +2047,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetPropertiesExp = dditable->MetricProgrammableExp->pfnGetPropertiesExp;
-        if( nullptr == pfnGetPropertiesExp )
+        if( nullptr == pfnGetPropertiesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetPropertiesExp( hMetricProgrammable, pProperties );
         return result;
@@ -2027,8 +2085,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetParamInfoExp = dditable->MetricProgrammableExp->pfnGetParamInfoExp;
-        if( nullptr == pfnGetParamInfoExp )
+        if( nullptr == pfnGetParamInfoExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
         return result;
@@ -2065,8 +2124,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetParamValueInfoExp = dditable->MetricProgrammableExp->pfnGetParamValueInfoExp;
-        if( nullptr == pfnGetParamValueInfoExp )
+        if( nullptr == pfnGetParamValueInfoExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
         return result;
@@ -2110,8 +2170,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateFromProgrammableExp2 = dditable->MetricExp->pfnCreateFromProgrammableExp2;
-        if( nullptr == pfnCreateFromProgrammableExp2 )
+        if( nullptr == pfnCreateFromProgrammableExp2 ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateFromProgrammableExp2( hMetricProgrammable, parameterCount, pParameterValues, pName, pDescription, pMetricHandleCount, phMetricHandles );
         return result;
@@ -2155,8 +2216,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateFromProgrammableExp = dditable->MetricExp->pfnCreateFromProgrammableExp;
-        if( nullptr == pfnCreateFromProgrammableExp )
+        if( nullptr == pfnCreateFromProgrammableExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
         return result;
@@ -2203,8 +2265,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateMetricGroupsFromMetricsExp = dditable->DeviceExp->pfnCreateMetricGroupsFromMetricsExp;
-        if( nullptr == pfnCreateMetricGroupsFromMetricsExp )
+        if( nullptr == pfnCreateMetricGroupsFromMetricsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateMetricGroupsFromMetricsExp( hDevice, metricCount, phMetrics, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup );
         return result;
@@ -2239,8 +2302,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExp = dditable->MetricGroupExp->pfnCreateExp;
-        if( nullptr == pfnCreateExp )
+        if( nullptr == pfnCreateExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
         return result;
@@ -2276,8 +2340,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAddMetricExp = dditable->MetricGroupExp->pfnAddMetricExp;
-        if( nullptr == pfnAddMetricExp )
+        if( nullptr == pfnAddMetricExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
         return result;
@@ -2306,8 +2371,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnRemoveMetricExp = dditable->MetricGroupExp->pfnRemoveMetricExp;
-        if( nullptr == pfnRemoveMetricExp )
+        if( nullptr == pfnRemoveMetricExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnRemoveMetricExp( hMetricGroup, hMetric );
         return result;
@@ -2335,8 +2401,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCloseExp = dditable->MetricGroupExp->pfnCloseExp;
-        if( nullptr == pfnCloseExp )
+        if( nullptr == pfnCloseExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCloseExp( hMetricGroup );
         return result;
@@ -2364,8 +2431,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->MetricGroupExp->pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
+        if( nullptr == pfnDestroyExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExp( hMetricGroup );
         return result;
@@ -2393,8 +2461,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->MetricExp->pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
+        if( nullptr == pfnDestroyExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExp( hMetric );
         return result;

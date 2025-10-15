@@ -26,6 +26,8 @@ if(BUILD_STATIC)
     ${CMAKE_SOURCE_DIR}/source/loader/zet_ldrddi_driver_ddi.cpp
     ${CMAKE_SOURCE_DIR}/source/loader/zes_ldrddi.cpp
     ${CMAKE_SOURCE_DIR}/source/loader/zes_ldrddi_driver_ddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/zer_ldrddi_driver_ddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/zer_ldrddi.cpp
     ${CMAKE_SOURCE_DIR}/source/loader/zel_tracing_ldrddi.cpp
   )
   

@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -22,7 +22,7 @@ from templates import helper as th
 #pragma once
 #endif
 
-#include "${x}_api.h"
+#include "${n}_api.h"
 #include "layers/zel_tracing_register_cb.h"
 
 
@@ -40,12 +40,12 @@ typedef struct _${tbl['type']}
 %endfor
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all callbacks
-typedef struct _zel_all_core_callbacks_t
+typedef struct _zel_${n}_all_callbacks_t
 {
 %for tbl in th.get_zel_pfncbtables(specs, meta, n, tags):
     ${th.append_ws(tbl['type'], 35)} ${tbl['name']};
 %endfor
-} zel_all_core_callbacks_t;
+} zel_${n}_all_callbacks_t;
 
 
 

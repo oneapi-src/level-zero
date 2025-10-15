@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -82,7 +82,7 @@ ze_result_t APITracerImp::setEpilogues(zel_core_callbacks_t *pCoreCbs) {
     return ZE_RESULT_SUCCESS;
 }
 
-zel_all_core_callbacks_t& APITracerImp::getProEpilogues(zel_tracer_reg_t callback_type, ze_result_t& result) {
+zel_ze_all_callbacks_t& APITracerImp::getZeProEpilogues(zel_tracer_reg_t callback_type, ze_result_t& result) {
 
     result = ZE_RESULT_SUCCESS;
 
@@ -95,6 +95,19 @@ zel_all_core_callbacks_t& APITracerImp::getProEpilogues(zel_tracer_reg_t callbac
         return this->tracerFunctions.coreEpilogues;
 }
 
+zel_zer_all_callbacks_t& APITracerImp::getZerProEpilogues(zel_tracer_reg_t callback_type, ze_result_t &result) {
+
+    result = ZE_RESULT_SUCCESS;
+
+    if (this->tracingState != disabledState)
+        result = ZE_RESULT_ERROR_INVALID_ARGUMENT;
+
+    if (callback_type == ZEL_REGISTER_PROLOGUE)
+        return this->tracerFunctions.runtimePrologues;
+    else
+        return this->tracerFunctions.runtimeEpilogues;
+}
+
 ze_result_t APITracerImp::resetAllCallbacks() {
 
     if (this->tracingState != disabledState) {
@@ -103,6 +116,8 @@ ze_result_t APITracerImp::resetAllCallbacks() {
 
     this->tracerFunctions.corePrologues = {};
     this->tracerFunctions.coreEpilogues = {};
+    this->tracerFunctions.runtimePrologues = {};
+    this->tracerFunctions.runtimeEpilogues = {};
 
     return ZE_RESULT_SUCCESS;
 }
@@ -111,7 +126,7 @@ ze_result_t APITracerImp::enableTracer(ze_bool_t enable) {
     return pGlobalAPITracerContextImp->enableTracingImp(this, enable);
 }
 
-void APITracerImp::copyCoreCbsToAllCbs(zel_all_core_callbacks_t& allCbs, zel_core_callbacks_t& cbs) {
+void APITracerImp::copyCoreCbsToAllCbs(zel_ze_all_callbacks_t& allCbs, zel_core_callbacks_t& cbs) {
 
     allCbs.Global.pfnInitCb = cbs.Global.pfnInitCb;
     allCbs.Driver.pfnGetCb = cbs.Driver.pfnGetCb;

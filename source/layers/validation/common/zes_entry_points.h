@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See entry_points.h.mako for modifications
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *

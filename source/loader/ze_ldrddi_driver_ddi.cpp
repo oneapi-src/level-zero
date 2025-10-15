@@ -34,8 +34,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetApiVersion = dditable->Driver->pfnGetApiVersion;
-        if( nullptr == pfnGetApiVersion )
+        if( nullptr == pfnGetApiVersion ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetApiVersion( hDriver, version );
         return result;
@@ -64,8 +65,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->Driver->pfnGetProperties;
-        if( nullptr == pfnGetProperties )
+        if( nullptr == pfnGetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProperties( hDriver, pDriverProperties );
         return result;
@@ -94,8 +96,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetIpcProperties = dditable->Driver->pfnGetIpcProperties;
-        if( nullptr == pfnGetIpcProperties )
+        if( nullptr == pfnGetIpcProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetIpcProperties( hDriver, pIpcProperties );
         return result;
@@ -133,8 +136,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExtensionProperties = dditable->Driver->pfnGetExtensionProperties;
-        if( nullptr == pfnGetExtensionProperties )
+        if( nullptr == pfnGetExtensionProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
         return result;
@@ -164,8 +168,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExtensionFunctionAddress = dditable->Driver->pfnGetExtensionFunctionAddress;
-        if( nullptr == pfnGetExtensionFunctionAddress )
+        if( nullptr == pfnGetExtensionFunctionAddress ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
         return result;
@@ -195,10 +200,41 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetLastErrorDescription = dditable->Driver->pfnGetLastErrorDescription;
-        if( nullptr == pfnGetLastErrorDescription )
+        if( nullptr == pfnGetLastErrorDescription ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetLastErrorDescription( hDriver, ppString );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetDefaultContext
+    __zedlllocal ze_context_handle_t ZE_APICALL
+    zeDriverGetDefaultContext(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+        )
+    {
+        ze_context_handle_t result {};
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return nullptr;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_14) {
+            return nullptr;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Driver == nullptr) {
+            return nullptr;
+        }
+        auto pfnGetDefaultContext = dditable->Driver->pfnGetDefaultContext;
+        if( nullptr == pfnGetDefaultContext ) {
+            return nullptr;
+        }
+        // forward to device-driver
+        result = pfnGetDefaultContext( hDriver );
         return result;
     }
 
@@ -232,8 +268,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGet = dditable->Device->pfnGet;
-        if( nullptr == pfnGet )
+        if( nullptr == pfnGet ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGet( hDriver, pCount, phDevices );
         return result;
@@ -262,8 +299,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetRootDevice = dditable->Device->pfnGetRootDevice;
-        if( nullptr == pfnGetRootDevice )
+        if( nullptr == pfnGetRootDevice ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetRootDevice( hDevice, phRootDevice );
         return result;
@@ -299,8 +337,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetSubDevices = dditable->Device->pfnGetSubDevices;
-        if( nullptr == pfnGetSubDevices )
+        if( nullptr == pfnGetSubDevices ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
         return result;
@@ -329,8 +368,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->Device->pfnGetProperties;
-        if( nullptr == pfnGetProperties )
+        if( nullptr == pfnGetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProperties( hDevice, pDeviceProperties );
         return result;
@@ -359,8 +399,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetComputeProperties = dditable->Device->pfnGetComputeProperties;
-        if( nullptr == pfnGetComputeProperties )
+        if( nullptr == pfnGetComputeProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetComputeProperties( hDevice, pComputeProperties );
         return result;
@@ -389,8 +430,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetModuleProperties = dditable->Device->pfnGetModuleProperties;
-        if( nullptr == pfnGetModuleProperties )
+        if( nullptr == pfnGetModuleProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetModuleProperties( hDevice, pModuleProperties );
         return result;
@@ -429,8 +471,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetCommandQueueGroupProperties = dditable->Device->pfnGetCommandQueueGroupProperties;
-        if( nullptr == pfnGetCommandQueueGroupProperties )
+        if( nullptr == pfnGetCommandQueueGroupProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
         return result;
@@ -468,8 +511,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetMemoryProperties = dditable->Device->pfnGetMemoryProperties;
-        if( nullptr == pfnGetMemoryProperties )
+        if( nullptr == pfnGetMemoryProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
         return result;
@@ -498,8 +542,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetMemoryAccessProperties = dditable->Device->pfnGetMemoryAccessProperties;
-        if( nullptr == pfnGetMemoryAccessProperties )
+        if( nullptr == pfnGetMemoryAccessProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
         return result;
@@ -536,8 +581,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetCacheProperties = dditable->Device->pfnGetCacheProperties;
-        if( nullptr == pfnGetCacheProperties )
+        if( nullptr == pfnGetCacheProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
         return result;
@@ -566,8 +612,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetImageProperties = dditable->Device->pfnGetImageProperties;
-        if( nullptr == pfnGetImageProperties )
+        if( nullptr == pfnGetImageProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetImageProperties( hDevice, pImageProperties );
         return result;
@@ -596,8 +643,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExternalMemoryProperties = dditable->Device->pfnGetExternalMemoryProperties;
-        if( nullptr == pfnGetExternalMemoryProperties )
+        if( nullptr == pfnGetExternalMemoryProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
         return result;
@@ -627,8 +675,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetP2PProperties = dditable->Device->pfnGetP2PProperties;
-        if( nullptr == pfnGetP2PProperties )
+        if( nullptr == pfnGetP2PProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
         return result;
@@ -658,8 +707,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCanAccessPeer = dditable->Device->pfnCanAccessPeer;
-        if( nullptr == pfnCanAccessPeer )
+        if( nullptr == pfnCanAccessPeer ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCanAccessPeer( hDevice, hPeerDevice, value );
         return result;
@@ -687,8 +737,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetStatus = dditable->Device->pfnGetStatus;
-        if( nullptr == pfnGetStatus )
+        if( nullptr == pfnGetStatus ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetStatus( hDevice );
         return result;
@@ -720,10 +771,41 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetGlobalTimestamps = dditable->Device->pfnGetGlobalTimestamps;
-        if( nullptr == pfnGetGlobalTimestamps )
+        if( nullptr == pfnGetGlobalTimestamps ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSynchronize(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Device == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnSynchronize = dditable->Device->pfnSynchronize;
+        if( nullptr == pfnSynchronize ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnSynchronize( hDevice );
         return result;
     }
 
@@ -751,8 +833,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->Context->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hDriver, desc, phContext );
         return result;
@@ -792,8 +875,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateEx = dditable->Context->pfnCreateEx;
-        if( nullptr == pfnCreateEx )
+        if( nullptr == pfnCreateEx ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
         return result;
@@ -821,8 +905,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->Context->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hContext );
         return result;
@@ -850,8 +935,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetStatus = dditable->Context->pfnGetStatus;
-        if( nullptr == pfnGetStatus )
+        if( nullptr == pfnGetStatus ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetStatus( hContext );
         return result;
@@ -882,8 +968,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->CommandQueue->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
         return result;
@@ -911,8 +998,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->CommandQueue->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hCommandQueue );
         return result;
@@ -944,8 +1032,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnExecuteCommandLists = dditable->CommandQueue->pfnExecuteCommandLists;
-        if( nullptr == pfnExecuteCommandLists )
+        if( nullptr == pfnExecuteCommandLists ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
         return result;
@@ -980,8 +1069,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSynchronize = dditable->CommandQueue->pfnSynchronize;
-        if( nullptr == pfnSynchronize )
+        if( nullptr == pfnSynchronize ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSynchronize( hCommandQueue, timeout );
         return result;
@@ -1010,8 +1100,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetOrdinal = dditable->CommandQueue->pfnGetOrdinal;
-        if( nullptr == pfnGetOrdinal )
+        if( nullptr == pfnGetOrdinal ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetOrdinal( hCommandQueue, pOrdinal );
         return result;
@@ -1040,8 +1131,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetIndex = dditable->CommandQueue->pfnGetIndex;
-        if( nullptr == pfnGetIndex )
+        if( nullptr == pfnGetIndex ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetIndex( hCommandQueue, pIndex );
         return result;
@@ -1072,8 +1164,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->CommandList->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phCommandList );
         return result;
@@ -1104,8 +1197,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateImmediate = dditable->CommandList->pfnCreateImmediate;
-        if( nullptr == pfnCreateImmediate )
+        if( nullptr == pfnCreateImmediate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
         return result;
@@ -1133,8 +1227,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->CommandList->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hCommandList );
         return result;
@@ -1162,8 +1257,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnClose = dditable->CommandList->pfnClose;
-        if( nullptr == pfnClose )
+        if( nullptr == pfnClose ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnClose( hCommandList );
         return result;
@@ -1191,8 +1287,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReset = dditable->CommandList->pfnReset;
-        if( nullptr == pfnReset )
+        if( nullptr == pfnReset ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReset( hCommandList );
         return result;
@@ -1227,8 +1324,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendWriteGlobalTimestamp = dditable->CommandList->pfnAppendWriteGlobalTimestamp;
-        if( nullptr == pfnAppendWriteGlobalTimestamp )
+        if( nullptr == pfnAppendWriteGlobalTimestamp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1263,8 +1361,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnHostSynchronize = dditable->CommandList->pfnHostSynchronize;
-        if( nullptr == pfnHostSynchronize )
+        if( nullptr == pfnHostSynchronize ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnHostSynchronize( hCommandList, timeout );
         return result;
@@ -1293,8 +1392,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDeviceHandle = dditable->CommandList->pfnGetDeviceHandle;
-        if( nullptr == pfnGetDeviceHandle )
+        if( nullptr == pfnGetDeviceHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetDeviceHandle( hCommandList, phDevice );
         return result;
@@ -1323,8 +1423,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetContextHandle = dditable->CommandList->pfnGetContextHandle;
-        if( nullptr == pfnGetContextHandle )
+        if( nullptr == pfnGetContextHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetContextHandle( hCommandList, phContext );
         return result;
@@ -1353,8 +1454,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetOrdinal = dditable->CommandList->pfnGetOrdinal;
-        if( nullptr == pfnGetOrdinal )
+        if( nullptr == pfnGetOrdinal ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetOrdinal( hCommandList, pOrdinal );
         return result;
@@ -1384,8 +1486,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnImmediateGetIndex = dditable->CommandList->pfnImmediateGetIndex;
-        if( nullptr == pfnImmediateGetIndex )
+        if( nullptr == pfnImmediateGetIndex ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnImmediateGetIndex( hCommandListImmediate, pIndex );
         return result;
@@ -1415,8 +1518,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnIsImmediate = dditable->CommandList->pfnIsImmediate;
-        if( nullptr == pfnIsImmediate )
+        if( nullptr == pfnIsImmediate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnIsImmediate( hCommandList, pIsImmediate );
         return result;
@@ -1449,8 +1553,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendBarrier = dditable->CommandList->pfnAppendBarrier;
-        if( nullptr == pfnAppendBarrier )
+        if( nullptr == pfnAppendBarrier ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1486,8 +1591,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMemoryRangesBarrier = dditable->CommandList->pfnAppendMemoryRangesBarrier;
-        if( nullptr == pfnAppendMemoryRangesBarrier )
+        if( nullptr == pfnAppendMemoryRangesBarrier ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1516,8 +1622,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSystemBarrier = dditable->Context->pfnSystemBarrier;
-        if( nullptr == pfnSystemBarrier )
+        if( nullptr == pfnSystemBarrier ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSystemBarrier( hContext, hDevice );
         return result;
@@ -1553,8 +1660,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMemoryCopy = dditable->CommandList->pfnAppendMemoryCopy;
-        if( nullptr == pfnAppendMemoryCopy )
+        if( nullptr == pfnAppendMemoryCopy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1591,8 +1699,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMemoryFill = dditable->CommandList->pfnAppendMemoryFill;
-        if( nullptr == pfnAppendMemoryFill )
+        if( nullptr == pfnAppendMemoryFill ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1637,8 +1746,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMemoryCopyRegion = dditable->CommandList->pfnAppendMemoryCopyRegion;
-        if( nullptr == pfnAppendMemoryCopyRegion )
+        if( nullptr == pfnAppendMemoryCopyRegion ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1675,8 +1785,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMemoryCopyFromContext = dditable->CommandList->pfnAppendMemoryCopyFromContext;
-        if( nullptr == pfnAppendMemoryCopyFromContext )
+        if( nullptr == pfnAppendMemoryCopyFromContext ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1711,8 +1822,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendImageCopy = dditable->CommandList->pfnAppendImageCopy;
-        if( nullptr == pfnAppendImageCopy )
+        if( nullptr == pfnAppendImageCopy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1749,8 +1861,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendImageCopyRegion = dditable->CommandList->pfnAppendImageCopyRegion;
-        if( nullptr == pfnAppendImageCopyRegion )
+        if( nullptr == pfnAppendImageCopyRegion ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1786,8 +1899,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendImageCopyToMemory = dditable->CommandList->pfnAppendImageCopyToMemory;
-        if( nullptr == pfnAppendImageCopyToMemory )
+        if( nullptr == pfnAppendImageCopyToMemory ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1823,8 +1937,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendImageCopyFromMemory = dditable->CommandList->pfnAppendImageCopyFromMemory;
-        if( nullptr == pfnAppendImageCopyFromMemory )
+        if( nullptr == pfnAppendImageCopyFromMemory ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -1854,8 +1969,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMemoryPrefetch = dditable->CommandList->pfnAppendMemoryPrefetch;
-        if( nullptr == pfnAppendMemoryPrefetch )
+        if( nullptr == pfnAppendMemoryPrefetch ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMemoryPrefetch( hCommandList, ptr, size );
         return result;
@@ -1887,8 +2003,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMemAdvise = dditable->CommandList->pfnAppendMemAdvise;
-        if( nullptr == pfnAppendMemAdvise )
+        if( nullptr == pfnAppendMemAdvise ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
         return result;
@@ -1924,8 +2041,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->EventPool->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
         return result;
@@ -1953,8 +2071,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->EventPool->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hEventPool );
         return result;
@@ -1984,8 +2103,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->Event->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hEventPool, desc, phEvent );
         return result;
@@ -2013,8 +2133,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->Event->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hEvent );
         return result;
@@ -2043,8 +2164,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetIpcHandle = dditable->EventPool->pfnGetIpcHandle;
-        if( nullptr == pfnGetIpcHandle )
+        if( nullptr == pfnGetIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetIpcHandle( hEventPool, phIpc );
         return result;
@@ -2074,8 +2196,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnPutIpcHandle = dditable->EventPool->pfnPutIpcHandle;
-        if( nullptr == pfnPutIpcHandle )
+        if( nullptr == pfnPutIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnPutIpcHandle( hContext, hIpc );
         return result;
@@ -2106,8 +2229,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnOpenIpcHandle = dditable->EventPool->pfnOpenIpcHandle;
-        if( nullptr == pfnOpenIpcHandle )
+        if( nullptr == pfnOpenIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnOpenIpcHandle( hContext, hIpc, phEventPool );
         return result;
@@ -2135,8 +2259,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCloseIpcHandle = dditable->EventPool->pfnCloseIpcHandle;
-        if( nullptr == pfnCloseIpcHandle )
+        if( nullptr == pfnCloseIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCloseIpcHandle( hEventPool );
         return result;
@@ -2165,8 +2290,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendSignalEvent = dditable->CommandList->pfnAppendSignalEvent;
-        if( nullptr == pfnAppendSignalEvent )
+        if( nullptr == pfnAppendSignalEvent ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendSignalEvent( hCommandList, hEvent );
         return result;
@@ -2197,8 +2323,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendWaitOnEvents = dditable->CommandList->pfnAppendWaitOnEvents;
-        if( nullptr == pfnAppendWaitOnEvents )
+        if( nullptr == pfnAppendWaitOnEvents ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
         return result;
@@ -2226,8 +2353,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnHostSignal = dditable->Event->pfnHostSignal;
-        if( nullptr == pfnHostSignal )
+        if( nullptr == pfnHostSignal ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnHostSignal( hEvent );
         return result;
@@ -2262,8 +2390,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnHostSynchronize = dditable->Event->pfnHostSynchronize;
-        if( nullptr == pfnHostSynchronize )
+        if( nullptr == pfnHostSynchronize ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnHostSynchronize( hEvent, timeout );
         return result;
@@ -2291,8 +2420,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnQueryStatus = dditable->Event->pfnQueryStatus;
-        if( nullptr == pfnQueryStatus )
+        if( nullptr == pfnQueryStatus ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnQueryStatus( hEvent );
         return result;
@@ -2321,8 +2451,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendEventReset = dditable->CommandList->pfnAppendEventReset;
-        if( nullptr == pfnAppendEventReset )
+        if( nullptr == pfnAppendEventReset ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendEventReset( hCommandList, hEvent );
         return result;
@@ -2350,8 +2481,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnHostReset = dditable->Event->pfnHostReset;
-        if( nullptr == pfnHostReset )
+        if( nullptr == pfnHostReset ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnHostReset( hEvent );
         return result;
@@ -2380,8 +2512,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnQueryKernelTimestamp = dditable->Event->pfnQueryKernelTimestamp;
-        if( nullptr == pfnQueryKernelTimestamp )
+        if( nullptr == pfnQueryKernelTimestamp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnQueryKernelTimestamp( hEvent, dstptr );
         return result;
@@ -2421,8 +2554,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendQueryKernelTimestamps = dditable->CommandList->pfnAppendQueryKernelTimestamps;
-        if( nullptr == pfnAppendQueryKernelTimestamps )
+        if( nullptr == pfnAppendQueryKernelTimestamps ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -2451,8 +2585,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetEventPool = dditable->Event->pfnGetEventPool;
-        if( nullptr == pfnGetEventPool )
+        if( nullptr == pfnGetEventPool ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetEventPool( hEvent, phEventPool );
         return result;
@@ -2483,8 +2618,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetSignalScope = dditable->Event->pfnGetSignalScope;
-        if( nullptr == pfnGetSignalScope )
+        if( nullptr == pfnGetSignalScope ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetSignalScope( hEvent, pSignalScope );
         return result;
@@ -2515,8 +2651,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetWaitScope = dditable->Event->pfnGetWaitScope;
-        if( nullptr == pfnGetWaitScope )
+        if( nullptr == pfnGetWaitScope ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetWaitScope( hEvent, pWaitScope );
         return result;
@@ -2545,8 +2682,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetContextHandle = dditable->EventPool->pfnGetContextHandle;
-        if( nullptr == pfnGetContextHandle )
+        if( nullptr == pfnGetContextHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetContextHandle( hEventPool, phContext );
         return result;
@@ -2576,8 +2714,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetFlags = dditable->EventPool->pfnGetFlags;
-        if( nullptr == pfnGetFlags )
+        if( nullptr == pfnGetFlags ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetFlags( hEventPool, pFlags );
         return result;
@@ -2607,8 +2746,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->Fence->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hCommandQueue, desc, phFence );
         return result;
@@ -2636,8 +2776,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->Fence->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hFence );
         return result;
@@ -2672,8 +2813,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnHostSynchronize = dditable->Fence->pfnHostSynchronize;
-        if( nullptr == pfnHostSynchronize )
+        if( nullptr == pfnHostSynchronize ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnHostSynchronize( hFence, timeout );
         return result;
@@ -2701,8 +2843,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnQueryStatus = dditable->Fence->pfnQueryStatus;
-        if( nullptr == pfnQueryStatus )
+        if( nullptr == pfnQueryStatus ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnQueryStatus( hFence );
         return result;
@@ -2730,8 +2873,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReset = dditable->Fence->pfnReset;
-        if( nullptr == pfnReset )
+        if( nullptr == pfnReset ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReset( hFence );
         return result;
@@ -2761,8 +2905,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->Image->pfnGetProperties;
-        if( nullptr == pfnGetProperties )
+        if( nullptr == pfnGetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProperties( hDevice, desc, pImageProperties );
         return result;
@@ -2793,8 +2938,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->Image->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phImage );
         return result;
@@ -2822,8 +2968,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->Image->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hImage );
         return result;
@@ -2859,8 +3006,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAllocShared = dditable->Mem->pfnAllocShared;
-        if( nullptr == pfnAllocShared )
+        if( nullptr == pfnAllocShared ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
         return result;
@@ -2895,8 +3043,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAllocDevice = dditable->Mem->pfnAllocDevice;
-        if( nullptr == pfnAllocDevice )
+        if( nullptr == pfnAllocDevice ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
         return result;
@@ -2930,8 +3079,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAllocHost = dditable->Mem->pfnAllocHost;
-        if( nullptr == pfnAllocHost )
+        if( nullptr == pfnAllocHost ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAllocHost( hContext, host_desc, size, alignment, pptr );
         return result;
@@ -2960,8 +3110,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnFree = dditable->Mem->pfnFree;
-        if( nullptr == pfnFree )
+        if( nullptr == pfnFree ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnFree( hContext, ptr );
         return result;
@@ -2992,8 +3143,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetAllocProperties = dditable->Mem->pfnGetAllocProperties;
-        if( nullptr == pfnGetAllocProperties )
+        if( nullptr == pfnGetAllocProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
         return result;
@@ -3024,8 +3176,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetAddressRange = dditable->Mem->pfnGetAddressRange;
-        if( nullptr == pfnGetAddressRange )
+        if( nullptr == pfnGetAddressRange ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetAddressRange( hContext, ptr, pBase, pSize );
         return result;
@@ -3055,8 +3208,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetIpcHandle = dditable->Mem->pfnGetIpcHandle;
-        if( nullptr == pfnGetIpcHandle )
+        if( nullptr == pfnGetIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
         return result;
@@ -3086,8 +3240,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetIpcHandleFromFileDescriptorExp = dditable->MemExp->pfnGetIpcHandleFromFileDescriptorExp;
-        if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
+        if( nullptr == pfnGetIpcHandleFromFileDescriptorExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
         return result;
@@ -3117,8 +3272,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetFileDescriptorFromIpcHandleExp = dditable->MemExp->pfnGetFileDescriptorFromIpcHandleExp;
-        if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
+        if( nullptr == pfnGetFileDescriptorFromIpcHandleExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
         return result;
@@ -3147,8 +3303,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnPutIpcHandle = dditable->Mem->pfnPutIpcHandle;
-        if( nullptr == pfnPutIpcHandle )
+        if( nullptr == pfnPutIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnPutIpcHandle( hContext, handle );
         return result;
@@ -3181,8 +3338,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnOpenIpcHandle = dditable->Mem->pfnOpenIpcHandle;
-        if( nullptr == pfnOpenIpcHandle )
+        if( nullptr == pfnOpenIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
         return result;
@@ -3211,8 +3369,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCloseIpcHandle = dditable->Mem->pfnCloseIpcHandle;
-        if( nullptr == pfnCloseIpcHandle )
+        if( nullptr == pfnCloseIpcHandle ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCloseIpcHandle( hContext, ptr );
         return result;
@@ -3245,8 +3404,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetAtomicAccessAttributeExp = dditable->MemExp->pfnSetAtomicAccessAttributeExp;
-        if( nullptr == pfnSetAtomicAccessAttributeExp )
+        if( nullptr == pfnSetAtomicAccessAttributeExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
         return result;
@@ -3278,8 +3438,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetAtomicAccessAttributeExp = dditable->MemExp->pfnGetAtomicAccessAttributeExp;
-        if( nullptr == pfnGetAtomicAccessAttributeExp )
+        if( nullptr == pfnGetAtomicAccessAttributeExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
         return result;
@@ -3311,8 +3472,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->Module->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
         return result;
@@ -3340,8 +3502,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->Module->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hModule );
         return result;
@@ -3372,8 +3535,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDynamicLink = dditable->Module->pfnDynamicLink;
-        if( nullptr == pfnDynamicLink )
+        if( nullptr == pfnDynamicLink ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDynamicLink( numModules, phModules, phLinkLog );
         return result;
@@ -3401,8 +3565,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->ModuleBuildLog->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hModuleBuildLog );
         return result;
@@ -3432,8 +3597,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetString = dditable->ModuleBuildLog->pfnGetString;
-        if( nullptr == pfnGetString )
+        if( nullptr == pfnGetString ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetString( hModuleBuildLog, pSize, pBuildLog );
         return result;
@@ -3463,8 +3629,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetNativeBinary = dditable->Module->pfnGetNativeBinary;
-        if( nullptr == pfnGetNativeBinary )
+        if( nullptr == pfnGetNativeBinary ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
         return result;
@@ -3495,8 +3662,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetGlobalPointer = dditable->Module->pfnGetGlobalPointer;
-        if( nullptr == pfnGetGlobalPointer )
+        if( nullptr == pfnGetGlobalPointer ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
         return result;
@@ -3532,8 +3700,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetKernelNames = dditable->Module->pfnGetKernelNames;
-        if( nullptr == pfnGetKernelNames )
+        if( nullptr == pfnGetKernelNames ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetKernelNames( hModule, pCount, pNames );
         return result;
@@ -3562,8 +3731,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->Module->pfnGetProperties;
-        if( nullptr == pfnGetProperties )
+        if( nullptr == pfnGetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProperties( hModule, pModuleProperties );
         return result;
@@ -3593,8 +3763,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->Kernel->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hModule, desc, phKernel );
         return result;
@@ -3622,8 +3793,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->Kernel->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hKernel );
         return result;
@@ -3653,8 +3825,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetFunctionPointer = dditable->Module->pfnGetFunctionPointer;
-        if( nullptr == pfnGetFunctionPointer )
+        if( nullptr == pfnGetFunctionPointer ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
         return result;
@@ -3685,8 +3858,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetGroupSize = dditable->Kernel->pfnSetGroupSize;
-        if( nullptr == pfnSetGroupSize )
+        if( nullptr == pfnSetGroupSize ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
         return result;
@@ -3720,8 +3894,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSuggestGroupSize = dditable->Kernel->pfnSuggestGroupSize;
-        if( nullptr == pfnSuggestGroupSize )
+        if( nullptr == pfnSuggestGroupSize ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
         return result;
@@ -3750,8 +3925,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSuggestMaxCooperativeGroupCount = dditable->Kernel->pfnSuggestMaxCooperativeGroupCount;
-        if( nullptr == pfnSuggestMaxCooperativeGroupCount )
+        if( nullptr == pfnSuggestMaxCooperativeGroupCount ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
         return result;
@@ -3783,8 +3959,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetArgumentValue = dditable->Kernel->pfnSetArgumentValue;
-        if( nullptr == pfnSetArgumentValue )
+        if( nullptr == pfnSetArgumentValue ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
         return result;
@@ -3813,8 +3990,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetIndirectAccess = dditable->Kernel->pfnSetIndirectAccess;
-        if( nullptr == pfnSetIndirectAccess )
+        if( nullptr == pfnSetIndirectAccess ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetIndirectAccess( hKernel, flags );
         return result;
@@ -3843,8 +4021,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetIndirectAccess = dditable->Kernel->pfnGetIndirectAccess;
-        if( nullptr == pfnGetIndirectAccess )
+        if( nullptr == pfnGetIndirectAccess ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetIndirectAccess( hKernel, pFlags );
         return result;
@@ -3885,8 +4064,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetSourceAttributes = dditable->Kernel->pfnGetSourceAttributes;
-        if( nullptr == pfnGetSourceAttributes )
+        if( nullptr == pfnGetSourceAttributes ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetSourceAttributes( hKernel, pSize, pString );
         return result;
@@ -3916,8 +4096,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetCacheConfig = dditable->Kernel->pfnSetCacheConfig;
-        if( nullptr == pfnSetCacheConfig )
+        if( nullptr == pfnSetCacheConfig ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetCacheConfig( hKernel, flags );
         return result;
@@ -3946,8 +4127,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->Kernel->pfnGetProperties;
-        if( nullptr == pfnGetProperties )
+        if( nullptr == pfnGetProperties ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetProperties( hKernel, pKernelProperties );
         return result;
@@ -3978,8 +4160,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetName = dditable->Kernel->pfnGetName;
-        if( nullptr == pfnGetName )
+        if( nullptr == pfnGetName ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetName( hKernel, pSize, pName );
         return result;
@@ -4014,10 +4197,89 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendLaunchKernel = dditable->CommandList->pfnAppendLaunchKernel;
-        if( nullptr == pfnAppendLaunchKernel )
+        if( nullptr == pfnAppendLaunchKernel ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnAppendLaunchKernelWithParameters = dditable->CommandList->pfnAppendLaunchKernelWithParameters;
+        if( nullptr == pfnAppendLaunchKernelWithParameters ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnAppendLaunchKernelWithParameters( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithArguments
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithArguments(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnAppendLaunchKernelWithArguments = dditable->CommandList->pfnAppendLaunchKernelWithArguments;
+        if( nullptr == pfnAppendLaunchKernelWithArguments ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnAppendLaunchKernelWithArguments( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
     }
 
@@ -4050,8 +4312,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendLaunchCooperativeKernel = dditable->CommandList->pfnAppendLaunchCooperativeKernel;
-        if( nullptr == pfnAppendLaunchCooperativeKernel )
+        if( nullptr == pfnAppendLaunchCooperativeKernel ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -4087,8 +4350,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendLaunchKernelIndirect = dditable->CommandList->pfnAppendLaunchKernelIndirect;
-        if( nullptr == pfnAppendLaunchKernelIndirect )
+        if( nullptr == pfnAppendLaunchKernelIndirect ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -4128,8 +4392,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendLaunchMultipleKernelsIndirect = dditable->CommandList->pfnAppendLaunchMultipleKernelsIndirect;
-        if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
+        if( nullptr == pfnAppendLaunchMultipleKernelsIndirect ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -4160,8 +4425,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnMakeMemoryResident = dditable->Context->pfnMakeMemoryResident;
-        if( nullptr == pfnMakeMemoryResident )
+        if( nullptr == pfnMakeMemoryResident ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnMakeMemoryResident( hContext, hDevice, ptr, size );
         return result;
@@ -4192,8 +4458,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnEvictMemory = dditable->Context->pfnEvictMemory;
-        if( nullptr == pfnEvictMemory )
+        if( nullptr == pfnEvictMemory ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnEvictMemory( hContext, hDevice, ptr, size );
         return result;
@@ -4223,8 +4490,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnMakeImageResident = dditable->Context->pfnMakeImageResident;
-        if( nullptr == pfnMakeImageResident )
+        if( nullptr == pfnMakeImageResident ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnMakeImageResident( hContext, hDevice, hImage );
         return result;
@@ -4254,8 +4522,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnEvictImage = dditable->Context->pfnEvictImage;
-        if( nullptr == pfnEvictImage )
+        if( nullptr == pfnEvictImage ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnEvictImage( hContext, hDevice, hImage );
         return result;
@@ -4286,8 +4555,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->Sampler->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phSampler );
         return result;
@@ -4315,8 +4585,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->Sampler->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hSampler );
         return result;
@@ -4348,8 +4619,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReserve = dditable->VirtualMem->pfnReserve;
-        if( nullptr == pfnReserve )
+        if( nullptr == pfnReserve ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReserve( hContext, pStart, size, pptr );
         return result;
@@ -4379,8 +4651,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnFree = dditable->VirtualMem->pfnFree;
-        if( nullptr == pfnFree )
+        if( nullptr == pfnFree ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnFree( hContext, ptr, size );
         return result;
@@ -4412,8 +4685,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnQueryPageSize = dditable->VirtualMem->pfnQueryPageSize;
-        if( nullptr == pfnQueryPageSize )
+        if( nullptr == pfnQueryPageSize ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnQueryPageSize( hContext, hDevice, size, pagesize );
         return result;
@@ -4445,8 +4719,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreate = dditable->PhysicalMem->pfnCreate;
-        if( nullptr == pfnCreate )
+        if( nullptr == pfnCreate ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
         return result;
@@ -4475,8 +4750,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->PhysicalMem->pfnDestroy;
-        if( nullptr == pfnDestroy )
+        if( nullptr == pfnDestroy ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroy( hContext, hPhysicalMemory );
         return result;
@@ -4512,8 +4788,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnMap = dditable->VirtualMem->pfnMap;
-        if( nullptr == pfnMap )
+        if( nullptr == pfnMap ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
         return result;
@@ -4543,8 +4820,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnUnmap = dditable->VirtualMem->pfnUnmap;
-        if( nullptr == pfnUnmap )
+        if( nullptr == pfnUnmap ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnUnmap( hContext, ptr, size );
         return result;
@@ -4576,8 +4854,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetAccessAttribute = dditable->VirtualMem->pfnSetAccessAttribute;
-        if( nullptr == pfnSetAccessAttribute )
+        if( nullptr == pfnSetAccessAttribute ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetAccessAttribute( hContext, ptr, size, access );
         return result;
@@ -4610,8 +4889,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetAccessAttribute = dditable->VirtualMem->pfnGetAccessAttribute;
-        if( nullptr == pfnGetAccessAttribute )
+        if( nullptr == pfnGetAccessAttribute ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
         return result;
@@ -4642,8 +4922,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetGlobalOffsetExp = dditable->KernelExp->pfnSetGlobalOffsetExp;
-        if( nullptr == pfnSetGlobalOffsetExp )
+        if( nullptr == pfnSetGlobalOffsetExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
         return result;
@@ -4673,8 +4954,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetBinaryExp = dditable->KernelExp->pfnGetBinaryExp;
-        if( nullptr == pfnGetBinaryExp )
+        if( nullptr == pfnGetBinaryExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
         return result;
@@ -4704,8 +4986,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnImportExternalSemaphoreExt = dditable->Device->pfnImportExternalSemaphoreExt;
-        if( nullptr == pfnImportExternalSemaphoreExt )
+        if( nullptr == pfnImportExternalSemaphoreExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
         return result;
@@ -4733,8 +5016,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReleaseExternalSemaphoreExt = dditable->Device->pfnReleaseExternalSemaphoreExt;
-        if( nullptr == pfnReleaseExternalSemaphoreExt )
+        if( nullptr == pfnReleaseExternalSemaphoreExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReleaseExternalSemaphoreExt( hSemaphore );
         return result;
@@ -4771,8 +5055,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendSignalExternalSemaphoreExt = dditable->CommandList->pfnAppendSignalExternalSemaphoreExt;
-        if( nullptr == pfnAppendSignalExternalSemaphoreExt )
+        if( nullptr == pfnAppendSignalExternalSemaphoreExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -4809,8 +5094,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendWaitExternalSemaphoreExt = dditable->CommandList->pfnAppendWaitExternalSemaphoreExt;
-        if( nullptr == pfnAppendWaitExternalSemaphoreExt )
+        if( nullptr == pfnAppendWaitExternalSemaphoreExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -4840,8 +5126,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExt = dditable->RTASBuilder->pfnCreateExt;
-        if( nullptr == pfnCreateExt )
+        if( nullptr == pfnCreateExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
         return result;
@@ -4871,8 +5158,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetBuildPropertiesExt = dditable->RTASBuilder->pfnGetBuildPropertiesExt;
-        if( nullptr == pfnGetBuildPropertiesExt )
+        if( nullptr == pfnGetBuildPropertiesExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
         return result;
@@ -4902,8 +5190,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnRTASFormatCompatibilityCheckExt = dditable->Driver->pfnRTASFormatCompatibilityCheckExt;
-        if( nullptr == pfnRTASFormatCompatibilityCheckExt )
+        if( nullptr == pfnRTASFormatCompatibilityCheckExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
         return result;
@@ -4943,8 +5232,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnBuildExt = dditable->RTASBuilder->pfnBuildExt;
-        if( nullptr == pfnBuildExt )
+        if( nullptr == pfnBuildExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
         return result;
@@ -4982,8 +5272,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCommandListAppendCopyExt = dditable->RTASBuilder->pfnCommandListAppendCopyExt;
-        if( nullptr == pfnCommandListAppendCopyExt )
+        if( nullptr == pfnCommandListAppendCopyExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -5011,8 +5302,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExt = dditable->RTASBuilder->pfnDestroyExt;
-        if( nullptr == pfnDestroyExt )
+        if( nullptr == pfnDestroyExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExt( hBuilder );
         return result;
@@ -5041,8 +5333,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExt = dditable->RTASParallelOperation->pfnCreateExt;
-        if( nullptr == pfnCreateExt )
+        if( nullptr == pfnCreateExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateExt( hDriver, phParallelOperation );
         return result;
@@ -5071,8 +5364,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetPropertiesExt = dditable->RTASParallelOperation->pfnGetPropertiesExt;
-        if( nullptr == pfnGetPropertiesExt )
+        if( nullptr == pfnGetPropertiesExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetPropertiesExt( hParallelOperation, pProperties );
         return result;
@@ -5100,8 +5394,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnJoinExt = dditable->RTASParallelOperation->pfnJoinExt;
-        if( nullptr == pfnJoinExt )
+        if( nullptr == pfnJoinExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnJoinExt( hParallelOperation );
         return result;
@@ -5129,8 +5424,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExt = dditable->RTASParallelOperation->pfnDestroyExt;
-        if( nullptr == pfnDestroyExt )
+        if( nullptr == pfnDestroyExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExt( hParallelOperation );
         return result;
@@ -5167,10 +5463,51 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetVectorWidthPropertiesExt = dditable->Device->pfnGetVectorWidthPropertiesExt;
-        if( nullptr == pfnGetVectorWidthPropertiesExt )
+        if( nullptr == pfnGetVectorWidthPropertiesExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->KernelExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetAllocationPropertiesExp = dditable->KernelExp->pfnGetAllocationPropertiesExp;
+        if( nullptr == pfnGetAllocationPropertiesExp ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
         return result;
     }
 
@@ -5201,8 +5538,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReserveCacheExt = dditable->Device->pfnReserveCacheExt;
-        if( nullptr == pfnReserveCacheExt )
+        if( nullptr == pfnReserveCacheExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
         return result;
@@ -5233,8 +5571,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetCacheAdviceExt = dditable->Device->pfnSetCacheAdviceExt;
-        if( nullptr == pfnSetCacheAdviceExt )
+        if( nullptr == pfnSetCacheAdviceExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
         return result;
@@ -5271,8 +5610,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnQueryTimestampsExp = dditable->EventExp->pfnQueryTimestampsExp;
-        if( nullptr == pfnQueryTimestampsExp )
+        if( nullptr == pfnQueryTimestampsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
         return result;
@@ -5301,8 +5641,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetMemoryPropertiesExp = dditable->ImageExp->pfnGetMemoryPropertiesExp;
-        if( nullptr == pfnGetMemoryPropertiesExp )
+        if( nullptr == pfnGetMemoryPropertiesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
         return result;
@@ -5334,8 +5675,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnViewCreateExt = dditable->Image->pfnViewCreateExt;
-        if( nullptr == pfnViewCreateExt )
+        if( nullptr == pfnViewCreateExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
         return result;
@@ -5367,8 +5709,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnViewCreateExp = dditable->ImageExp->pfnViewCreateExp;
-        if( nullptr == pfnViewCreateExp )
+        if( nullptr == pfnViewCreateExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
         return result;
@@ -5397,8 +5740,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSchedulingHintExp = dditable->KernelExp->pfnSchedulingHintExp;
-        if( nullptr == pfnSchedulingHintExp )
+        if( nullptr == pfnSchedulingHintExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnSchedulingHintExp( hKernel, pHint );
         return result;
@@ -5427,8 +5771,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnPciGetPropertiesExt = dditable->Device->pfnPciGetPropertiesExt;
-        if( nullptr == pfnPciGetPropertiesExt )
+        if( nullptr == pfnPciGetPropertiesExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
         return result;
@@ -5468,8 +5813,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendImageCopyToMemoryExt = dditable->CommandList->pfnAppendImageCopyToMemoryExt;
-        if( nullptr == pfnAppendImageCopyToMemoryExt )
+        if( nullptr == pfnAppendImageCopyToMemoryExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -5509,8 +5855,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendImageCopyFromMemoryExt = dditable->CommandList->pfnAppendImageCopyFromMemoryExt;
-        if( nullptr == pfnAppendImageCopyFromMemoryExt )
+        if( nullptr == pfnAppendImageCopyFromMemoryExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -5540,8 +5887,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetAllocPropertiesExt = dditable->Image->pfnGetAllocPropertiesExt;
-        if( nullptr == pfnGetAllocPropertiesExt )
+        if( nullptr == pfnGetAllocPropertiesExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
         return result;
@@ -5574,8 +5922,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnInspectLinkageExt = dditable->Module->pfnInspectLinkageExt;
-        if( nullptr == pfnInspectLinkageExt )
+        if( nullptr == pfnInspectLinkageExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
         return result;
@@ -5605,8 +5954,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnFreeExt = dditable->Mem->pfnFreeExt;
-        if( nullptr == pfnFreeExt )
+        if( nullptr == pfnFreeExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
         return result;
@@ -5643,8 +5993,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExp = dditable->FabricVertexExp->pfnGetExp;
-        if( nullptr == pfnGetExp )
+        if( nullptr == pfnGetExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetExp( hDriver, pCount, phVertices );
         return result;
@@ -5681,8 +6032,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetSubVerticesExp = dditable->FabricVertexExp->pfnGetSubVerticesExp;
-        if( nullptr == pfnGetSubVerticesExp )
+        if( nullptr == pfnGetSubVerticesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
         return result;
@@ -5711,8 +6063,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetPropertiesExp = dditable->FabricVertexExp->pfnGetPropertiesExp;
-        if( nullptr == pfnGetPropertiesExp )
+        if( nullptr == pfnGetPropertiesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetPropertiesExp( hVertex, pVertexProperties );
         return result;
@@ -5741,8 +6094,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDeviceExp = dditable->FabricVertexExp->pfnGetDeviceExp;
-        if( nullptr == pfnGetDeviceExp )
+        if( nullptr == pfnGetDeviceExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetDeviceExp( hVertex, phDevice );
         return result;
@@ -5771,8 +6125,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetFabricVertexExp = dditable->DeviceExp->pfnGetFabricVertexExp;
-        if( nullptr == pfnGetFabricVertexExp )
+        if( nullptr == pfnGetFabricVertexExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetFabricVertexExp( hDevice, phVertex );
         return result;
@@ -5810,8 +6165,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExp = dditable->FabricEdgeExp->pfnGetExp;
-        if( nullptr == pfnGetExp )
+        if( nullptr == pfnGetExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
         return result;
@@ -5841,8 +6197,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetVerticesExp = dditable->FabricEdgeExp->pfnGetVerticesExp;
-        if( nullptr == pfnGetVerticesExp )
+        if( nullptr == pfnGetVerticesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
         return result;
@@ -5871,8 +6228,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetPropertiesExp = dditable->FabricEdgeExp->pfnGetPropertiesExp;
-        if( nullptr == pfnGetPropertiesExp )
+        if( nullptr == pfnGetPropertiesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
         return result;
@@ -5916,8 +6274,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnQueryKernelTimestampsExt = dditable->Event->pfnQueryKernelTimestampsExt;
-        if( nullptr == pfnQueryKernelTimestampsExt )
+        if( nullptr == pfnQueryKernelTimestampsExt ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
         return result;
@@ -5947,8 +6306,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExp = dditable->RTASBuilderExp->pfnCreateExp;
-        if( nullptr == pfnCreateExp )
+        if( nullptr == pfnCreateExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
         return result;
@@ -5978,8 +6338,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetBuildPropertiesExp = dditable->RTASBuilderExp->pfnGetBuildPropertiesExp;
-        if( nullptr == pfnGetBuildPropertiesExp )
+        if( nullptr == pfnGetBuildPropertiesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
         return result;
@@ -6009,8 +6370,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnRTASFormatCompatibilityCheckExp = dditable->DriverExp->pfnRTASFormatCompatibilityCheckExp;
-        if( nullptr == pfnRTASFormatCompatibilityCheckExp )
+        if( nullptr == pfnRTASFormatCompatibilityCheckExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
         return result;
@@ -6050,8 +6412,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnBuildExp = dditable->RTASBuilderExp->pfnBuildExp;
-        if( nullptr == pfnBuildExp )
+        if( nullptr == pfnBuildExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
         return result;
@@ -6079,8 +6442,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->RTASBuilderExp->pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
+        if( nullptr == pfnDestroyExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExp( hBuilder );
         return result;
@@ -6109,8 +6473,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExp = dditable->RTASParallelOperationExp->pfnCreateExp;
-        if( nullptr == pfnCreateExp )
+        if( nullptr == pfnCreateExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateExp( hDriver, phParallelOperation );
         return result;
@@ -6139,8 +6504,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetPropertiesExp = dditable->RTASParallelOperationExp->pfnGetPropertiesExp;
-        if( nullptr == pfnGetPropertiesExp )
+        if( nullptr == pfnGetPropertiesExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetPropertiesExp( hParallelOperation, pProperties );
         return result;
@@ -6168,8 +6534,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnJoinExp = dditable->RTASParallelOperationExp->pfnJoinExp;
-        if( nullptr == pfnJoinExp )
+        if( nullptr == pfnJoinExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnJoinExp( hParallelOperation );
         return result;
@@ -6197,8 +6564,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->RTASParallelOperationExp->pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
+        if( nullptr == pfnDestroyExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnDestroyExp( hParallelOperation );
         return result;
@@ -6231,8 +6599,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetPitchFor2dImage = dditable->Mem->pfnGetPitchFor2dImage;
-        if( nullptr == pfnGetPitchFor2dImage )
+        if( nullptr == pfnGetPitchFor2dImage ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
         return result;
@@ -6261,8 +6630,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDeviceOffsetExp = dditable->ImageExp->pfnGetDeviceOffsetExp;
-        if( nullptr == pfnGetDeviceOffsetExp )
+        if( nullptr == pfnGetDeviceOffsetExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
         return result;
@@ -6291,8 +6661,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateCloneExp = dditable->CommandListExp->pfnCreateCloneExp;
-        if( nullptr == pfnCreateCloneExp )
+        if( nullptr == pfnCreateCloneExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnCreateCloneExp( hCommandList, phClonedCommandList );
         return result;
@@ -6331,8 +6702,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnImmediateAppendCommandListsExp = dditable->CommandListExp->pfnImmediateAppendCommandListsExp;
-        if( nullptr == pfnImmediateAppendCommandListsExp )
+        if( nullptr == pfnImmediateAppendCommandListsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
@@ -6362,8 +6734,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetNextCommandIdExp = dditable->CommandListExp->pfnGetNextCommandIdExp;
-        if( nullptr == pfnGetNextCommandIdExp )
+        if( nullptr == pfnGetNextCommandIdExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
         return result;
@@ -6397,8 +6770,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetNextCommandIdWithKernelsExp = dditable->CommandListExp->pfnGetNextCommandIdWithKernelsExp;
-        if( nullptr == pfnGetNextCommandIdWithKernelsExp )
+        if( nullptr == pfnGetNextCommandIdWithKernelsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnGetNextCommandIdWithKernelsExp( hCommandList, desc, numKernels, phKernels, pCommandId );
         return result;
@@ -6428,8 +6802,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnUpdateMutableCommandsExp = dditable->CommandListExp->pfnUpdateMutableCommandsExp;
-        if( nullptr == pfnUpdateMutableCommandsExp )
+        if( nullptr == pfnUpdateMutableCommandsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnUpdateMutableCommandsExp( hCommandList, desc );
         return result;
@@ -6459,8 +6834,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnUpdateMutableCommandSignalEventExp = dditable->CommandListExp->pfnUpdateMutableCommandSignalEventExp;
-        if( nullptr == pfnUpdateMutableCommandSignalEventExp )
+        if( nullptr == pfnUpdateMutableCommandSignalEventExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
         return result;
@@ -6492,8 +6868,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnUpdateMutableCommandWaitEventsExp = dditable->CommandListExp->pfnUpdateMutableCommandWaitEventsExp;
-        if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
+        if( nullptr == pfnUpdateMutableCommandWaitEventsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
         return result;
@@ -6525,8 +6902,9 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnUpdateMutableCommandKernelsExp = dditable->CommandListExp->pfnUpdateMutableCommandKernelsExp;
-        if( nullptr == pfnUpdateMutableCommandKernelsExp )
+        if( nullptr == pfnUpdateMutableCommandKernelsExp ) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         // forward to device-driver
         result = pfnUpdateMutableCommandKernelsExp( hCommandList, numKernels, pCommandId, phKernels );
         return result;

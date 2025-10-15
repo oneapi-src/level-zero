@@ -11,7 +11,7 @@ from templates import helper as th
  * ***THIS FILE IS GENERATED. ***
  * See entry_points.h.mako for modifications
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -27,16 +27,23 @@ namespace validation_layer
 class ${N}ValidationEntryPoints {
 public:
     %for obj in th.extract_objs(specs, r"function"):
-    virtual ${x}_result_t ${th.make_func_name(n, tags, obj)}Prologue( \
-%for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
+    <%
+    param_lines = [line for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"])]
+    is_void_params = len(param_lines) == 1 and "void" in param_lines[0]
+    %>virtual ${x}_result_t ${th.make_func_name(n, tags, obj)}Prologue( \
+%for line in param_lines:
 ${line} \
 %endfor
 ) {return ZE_RESULT_SUCCESS;}
     virtual ${x}_result_t ${th.make_func_name(n, tags, obj)}Epilogue( \
-%for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
+%if not is_void_params:
+%for line in param_lines:
 ${line} \
 %endfor
-, ze_result_t result) {return ZE_RESULT_SUCCESS;}
+, ${obj['return_type']} result) {return ZE_RESULT_SUCCESS;}
+%else:
+${obj['return_type']} result ) {return ZE_RESULT_SUCCESS;}
+%endif
     %endfor
 %if n == 'ze':
     // Experimental Intel extension for counter-based events

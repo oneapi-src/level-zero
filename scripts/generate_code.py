@@ -221,8 +221,8 @@ def _mako_tracing_layer_h(path, namespace, tags, version, specs, meta):
     template = "trc_setters.h.mako"
     fin = os.path.join(tracing_templates_dir, template)
 
-    name = "zel_tracing_register_cb"
-    filename = "%s.h"%(name)
+    name = "%s_tracing_register_cb"%(namespace)
+    filename = "%s_tmp.h"%(name)
     fout = os.path.join(dstpath, filename)
 
     print("Generating %s..."%fout)
@@ -263,7 +263,7 @@ def _mako_tracing_layer_cpp(path, namespace, tags, version, specs, meta):
     template = "trc_setters.cpp.mako"
     fin = os.path.join(tracing_templates_dir, template)
 
-    name = "ze_tracing_register_cb"
+    name = "%s_tracing_register_cb"%(namespace)
     filename = "%s.cpp"%(name)
     fout = os.path.join(dstpath, filename)
 
@@ -280,7 +280,7 @@ def _mako_tracing_layer_cpp(path, namespace, tags, version, specs, meta):
     template = "trc_cb_struct.h.mako"
     fin = os.path.join(tracing_templates_dir, template)
 
-    name = "ze_tracing_cb_structs"
+    name = "%s_tracing_cb_structs"%(namespace)
     filename = "%s.h"%(name)
     fout = os.path.join(dstpath, filename)
 
@@ -306,7 +306,7 @@ def _mako_tracing_lib_cpp(path, namespace, tags, version, specs, meta):
     template = "trc_register_cb_libapi.cpp.mako"
     fin = os.path.join(tracing_templates_dir, template)
 
-    name = "ze_tracing_register_cb_libapi"
+    name = "%s_tracing_register_cb_libapi"%(namespace)
     filename = "%s.cpp"%(name)
     fout = os.path.join(dstpath, filename)
 
@@ -383,7 +383,7 @@ def generate_layers(path, section, namespace, tags, version, specs, meta):
     loc = 0
     loc += _mako_validation_layer_cpp(layer_dstpath, namespace, tags, version, specs, meta)
     print("VALIDATION Generated %s lines of code.\n"%loc)
-    if section == "core":
+    if section == "core" or section == "runtime":
         loc += _mako_tracing_layer_cpp(layer_dstpath, namespace, tags, version, specs, meta)
         print("TRACING Generated %s lines of code.\n"%loc)
         loc += _mako_tracing_lib_cpp(path, namespace, tags, version, specs, meta)

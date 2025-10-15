@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020-2022 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -38,7 +38,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnInitCb_t, Global, pfnInitCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Global.pfnInit,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Global.pfnInit,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -78,7 +78,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetCb_t, Driver, pfnGetCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGet,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnGet,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -122,7 +122,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnInitDriversCb_t, Global, pfnInitDriversCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Global.pfnInitDrivers,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Global.pfnInitDrivers,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -158,7 +158,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetApiVersionCb_t, Driver, pfnGetApiVersionCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetApiVersion,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnGetApiVersion,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -193,7 +193,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetPropertiesCb_t, Driver, pfnGetPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnGetProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -228,7 +228,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetIpcPropertiesCb_t, Driver, pfnGetIpcPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetIpcProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnGetIpcProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -273,7 +273,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetExtensionPropertiesCb_t, Driver, pfnGetExtensionPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetExtensionProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnGetExtensionProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -311,7 +311,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetExtensionFunctionAddressCb_t, Driver, pfnGetExtensionFunctionAddressCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -348,13 +348,45 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetLastErrorDescriptionCb_t, Driver, pfnGetLastErrorDescriptionCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetLastErrorDescription,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnGetLastErrorDescription,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
                                                   apiCallbackData.epilogCallbacks,
                                                   *tracerParams.phDriver,
                                                   *tracerParams.pppString);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetDefaultContext
+    __zedlllocal ze_context_handle_t ZE_APICALL
+    zeDriverGetDefaultContext(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+        )
+    {
+        auto pfnGetDefaultContext = context.zeDdiTable.Driver.pfnGetDefaultContext;
+
+        if( nullptr == pfnGetDefaultContext)
+            return nullptr;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetDefaultContext, hDriver);
+
+        // capture parameters
+        ze_driver_get_default_context_params_t tracerParams = {
+            &hDriver
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDriverGetDefaultContextCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetDefaultContextCb_t, Driver, pfnGetDefaultContextCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_context_handle_t>(context.zeDdiTable.Driver.pfnGetDefaultContext,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -391,7 +423,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetCb_t, Device, pfnGetCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGet,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGet,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -427,7 +459,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetRootDeviceCb_t, Device, pfnGetRootDeviceCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetRootDevice,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetRootDevice,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -470,7 +502,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetSubDevicesCb_t, Device, pfnGetSubDevicesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetSubDevices,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetSubDevices,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -506,7 +538,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetPropertiesCb_t, Device, pfnGetPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -541,7 +573,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetComputePropertiesCb_t, Device, pfnGetComputePropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetComputeProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetComputeProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -576,7 +608,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetModulePropertiesCb_t, Device, pfnGetModulePropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetModuleProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetModuleProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -622,7 +654,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetCommandQueueGroupPropertiesCb_t, Device, pfnGetCommandQueueGroupPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -668,7 +700,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetMemoryPropertiesCb_t, Device, pfnGetMemoryPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetMemoryProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetMemoryProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -704,7 +736,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetMemoryAccessPropertiesCb_t, Device, pfnGetMemoryAccessPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetMemoryAccessProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetMemoryAccessProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -748,7 +780,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetCachePropertiesCb_t, Device, pfnGetCachePropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetCacheProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetCacheProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -784,7 +816,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetImagePropertiesCb_t, Device, pfnGetImagePropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetImageProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetImageProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -819,7 +851,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetExternalMemoryPropertiesCb_t, Device, pfnGetExternalMemoryPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetExternalMemoryProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetExternalMemoryProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -856,7 +888,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetP2PPropertiesCb_t, Device, pfnGetP2PPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetP2PProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetP2PProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -894,7 +926,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceCanAccessPeerCb_t, Device, pfnCanAccessPeerCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnCanAccessPeer,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnCanAccessPeer,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -928,7 +960,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetStatusCb_t, Device, pfnGetStatusCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetStatus,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetStatus,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -966,7 +998,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetGlobalTimestampsCb_t, Device, pfnGetGlobalTimestampsCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetGlobalTimestamps,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetGlobalTimestamps,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -974,6 +1006,38 @@ namespace tracing_layer
                                                   *tracerParams.phDevice,
                                                   *tracerParams.phostTimestamp,
                                                   *tracerParams.pdeviceTimestamp);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSynchronize(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
+        )
+    {
+        auto pfnSynchronize = context.zeDdiTable.Device.pfnSynchronize;
+
+        if( nullptr == pfnSynchronize)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnSynchronize, hDevice);
+
+        // capture parameters
+        ze_device_synchronize_params_t tracerParams = {
+            &hDevice
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceSynchronizeCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceSynchronizeCb_t, Device, pfnSynchronizeCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnSynchronize,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1004,7 +1068,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextCreateCb_t, Context, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1054,7 +1118,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextCreateExCb_t, Context, pfnCreateExCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnCreateEx,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnCreateEx,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1090,7 +1154,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextDestroyCb_t, Context, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1122,7 +1186,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextGetStatusCb_t, Context, pfnGetStatusCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnGetStatus,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnGetStatus,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1160,7 +1224,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueCreateCb_t, CommandQueue, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandQueue.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1195,7 +1259,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueDestroyCb_t, CommandQueue, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandQueue.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1234,7 +1298,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueExecuteCommandListsCb_t, CommandQueue, pfnExecuteCommandListsCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandQueue.pfnExecuteCommandLists,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnExecuteCommandLists,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1277,7 +1341,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueSynchronizeCb_t, CommandQueue, pfnSynchronizeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandQueue.pfnSynchronize,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnSynchronize,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1312,7 +1376,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueGetOrdinalCb_t, CommandQueue, pfnGetOrdinalCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandQueue.pfnGetOrdinal,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnGetOrdinal,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1347,7 +1411,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueGetIndexCb_t, CommandQueue, pfnGetIndexCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandQueue.pfnGetIndex,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnGetIndex,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1386,7 +1450,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListCreateCb_t, CommandList, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1427,7 +1491,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListCreateImmediateCb_t, CommandList, pfnCreateImmediateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnCreateImmediate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnCreateImmediate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1462,7 +1526,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListDestroyCb_t, CommandList, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1494,7 +1558,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListCloseCb_t, CommandList, pfnCloseCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnClose,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnClose,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1526,7 +1590,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListResetCb_t, CommandList, pfnResetCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnReset,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnReset,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1569,7 +1633,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendWriteGlobalTimestampCb_t, CommandList, pfnAppendWriteGlobalTimestampCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1613,7 +1677,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListHostSynchronizeCb_t, CommandList, pfnHostSynchronizeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnHostSynchronize,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnHostSynchronize,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1648,7 +1712,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetDeviceHandleCb_t, CommandList, pfnGetDeviceHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnGetDeviceHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnGetDeviceHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1683,7 +1747,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetContextHandleCb_t, CommandList, pfnGetContextHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnGetContextHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnGetContextHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1718,7 +1782,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetOrdinalCb_t, CommandList, pfnGetOrdinalCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnGetOrdinal,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnGetOrdinal,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1754,7 +1818,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListImmediateGetIndexCb_t, CommandList, pfnImmediateGetIndexCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnImmediateGetIndex,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnImmediateGetIndex,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1790,7 +1854,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListIsImmediateCb_t, CommandList, pfnIsImmediateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnIsImmediate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnIsImmediate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1831,7 +1895,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendBarrierCb_t, CommandList, pfnAppendBarrierCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendBarrier,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendBarrier,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1880,7 +1944,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendMemoryRangesBarrierCb_t, CommandList, pfnAppendMemoryRangesBarrierCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1920,7 +1984,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextSystemBarrierCb_t, Context, pfnSystemBarrierCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnSystemBarrier,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnSystemBarrier,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -1967,7 +2031,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendMemoryCopyCb_t, CommandList, pfnAppendMemoryCopyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendMemoryCopy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendMemoryCopy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2021,7 +2085,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendMemoryFillCb_t, CommandList, pfnAppendMemoryFillCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendMemoryFill,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendMemoryFill,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2088,7 +2152,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendMemoryCopyRegionCb_t, CommandList, pfnAppendMemoryCopyRegionCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2147,7 +2211,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendMemoryCopyFromContextCb_t, CommandList, pfnAppendMemoryCopyFromContextCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2198,7 +2262,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyCb_t, CommandList, pfnAppendImageCopyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendImageCopy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2251,7 +2315,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyRegionCb_t, CommandList, pfnAppendImageCopyRegionCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopyRegion,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendImageCopyRegion,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2304,7 +2368,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyToMemoryCb_t, CommandList, pfnAppendImageCopyToMemoryCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2356,7 +2420,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyFromMemoryCb_t, CommandList, pfnAppendImageCopyFromMemoryCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2398,7 +2462,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendMemoryPrefetchCb_t, CommandList, pfnAppendMemoryPrefetchCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2440,7 +2504,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendMemAdviseCb_t, CommandList, pfnAppendMemAdviseCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendMemAdvise,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendMemAdvise,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2488,7 +2552,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolCreateCb_t, EventPool, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2524,7 +2588,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolDestroyCb_t, EventPool, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2560,7 +2624,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventCreateCb_t, Event, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2594,7 +2658,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventDestroyCb_t, Event, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2628,7 +2692,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolGetIpcHandleCb_t, EventPool, pfnGetIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnGetIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnGetIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2664,7 +2728,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolPutIpcHandleCb_t, EventPool, pfnPutIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnPutIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnPutIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2702,7 +2766,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolOpenIpcHandleCb_t, EventPool, pfnOpenIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnOpenIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnOpenIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2736,7 +2800,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolCloseIpcHandleCb_t, EventPool, pfnCloseIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnCloseIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnCloseIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2770,7 +2834,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendSignalEventCb_t, CommandList, pfnAppendSignalEventCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendSignalEvent,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendSignalEvent,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2808,7 +2872,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendWaitOnEventsCb_t, CommandList, pfnAppendWaitOnEventsCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendWaitOnEvents,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendWaitOnEvents,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2842,7 +2906,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventHostSignalCb_t, Event, pfnHostSignalCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnHostSignal,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnHostSignal,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2882,7 +2946,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventHostSynchronizeCb_t, Event, pfnHostSynchronizeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnHostSynchronize,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnHostSynchronize,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2915,7 +2979,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventQueryStatusCb_t, Event, pfnQueryStatusCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnQueryStatus,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnQueryStatus,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2949,7 +3013,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendEventResetCb_t, CommandList, pfnAppendEventResetCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendEventReset,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendEventReset,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -2982,7 +3046,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventHostResetCb_t, Event, pfnHostResetCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnHostReset,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnHostReset,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3016,7 +3080,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventQueryKernelTimestampCb_t, Event, pfnQueryKernelTimestampCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnQueryKernelTimestamp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnQueryKernelTimestamp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3068,7 +3132,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendQueryKernelTimestampsCb_t, CommandList, pfnAppendQueryKernelTimestampsCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3109,7 +3173,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventGetEventPoolCb_t, Event, pfnGetEventPoolCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnGetEventPool,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnGetEventPool,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3146,7 +3210,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventGetSignalScopeCb_t, Event, pfnGetSignalScopeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnGetSignalScope,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnGetSignalScope,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3183,7 +3247,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventGetWaitScopeCb_t, Event, pfnGetWaitScopeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnGetWaitScope,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnGetWaitScope,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3218,7 +3282,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolGetContextHandleCb_t, EventPool, pfnGetContextHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnGetContextHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnGetContextHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3254,7 +3318,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolGetFlagsCb_t, EventPool, pfnGetFlagsCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnGetFlags,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventPool.pfnGetFlags,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3291,7 +3355,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFenceCreateCb_t, Fence, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Fence.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Fence.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3325,7 +3389,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFenceDestroyCb_t, Fence, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Fence.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Fence.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3365,7 +3429,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFenceHostSynchronizeCb_t, Fence, pfnHostSynchronizeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Fence.pfnHostSynchronize,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Fence.pfnHostSynchronize,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3398,7 +3462,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFenceQueryStatusCb_t, Fence, pfnQueryStatusCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Fence.pfnQueryStatus,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Fence.pfnQueryStatus,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3430,7 +3494,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFenceResetCb_t, Fence, pfnResetCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Fence.pfnReset,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Fence.pfnReset,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3466,7 +3530,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageGetPropertiesCb_t, Image, pfnGetPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Image.pfnGetProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Image.pfnGetProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3506,7 +3570,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageCreateCb_t, Image, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Image.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Image.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3541,7 +3605,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageDestroyCb_t, Image, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Image.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Image.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3587,7 +3651,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemAllocSharedCb_t, Mem, pfnAllocSharedCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnAllocShared,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnAllocShared,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3637,7 +3701,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemAllocDeviceCb_t, Mem, pfnAllocDeviceCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnAllocDevice,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnAllocDevice,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3684,7 +3748,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemAllocHostCb_t, Mem, pfnAllocHostCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnAllocHost,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnAllocHost,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3722,7 +3786,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemFreeCb_t, Mem, pfnFreeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnFree,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnFree,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3761,7 +3825,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetAllocPropertiesCb_t, Mem, pfnGetAllocPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnGetAllocProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnGetAllocProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3802,7 +3866,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetAddressRangeCb_t, Mem, pfnGetAddressRangeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnGetAddressRange,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnGetAddressRange,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3841,7 +3905,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetIpcHandleCb_t, Mem, pfnGetIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnGetIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnGetIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3879,7 +3943,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetIpcHandleFromFileDescriptorExpCb_t, Mem, pfnGetIpcHandleFromFileDescriptorExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3917,7 +3981,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetFileDescriptorFromIpcHandleExpCb_t, Mem, pfnGetFileDescriptorFromIpcHandleExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3953,7 +4017,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemPutIpcHandleCb_t, Mem, pfnPutIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnPutIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnPutIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -3995,7 +4059,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemOpenIpcHandleCb_t, Mem, pfnOpenIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnOpenIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnOpenIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4033,7 +4097,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemCloseIpcHandleCb_t, Mem, pfnCloseIpcHandleCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnCloseIpcHandle,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnCloseIpcHandle,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4075,7 +4139,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemSetAtomicAccessAttributeExpCb_t, Mem, pfnSetAtomicAccessAttributeExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4119,7 +4183,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetAtomicAccessAttributeExpCb_t, Mem, pfnGetAtomicAccessAttributeExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4163,7 +4227,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleCreateCb_t, Module, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4199,7 +4263,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleDestroyCb_t, Module, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4236,7 +4300,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleDynamicLinkCb_t, Module, pfnDynamicLinkCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnDynamicLink,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnDynamicLink,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4270,7 +4334,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleBuildLogDestroyCb_t, ModuleBuildLog, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.ModuleBuildLog.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.ModuleBuildLog.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4306,7 +4370,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleBuildLogGetStringCb_t, ModuleBuildLog, pfnGetStringCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.ModuleBuildLog.pfnGetString,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.ModuleBuildLog.pfnGetString,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4344,7 +4408,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleGetNativeBinaryCb_t, Module, pfnGetNativeBinaryCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnGetNativeBinary,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnGetNativeBinary,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4384,7 +4448,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleGetGlobalPointerCb_t, Module, pfnGetGlobalPointerCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnGetGlobalPointer,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnGetGlobalPointer,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4429,7 +4493,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleGetKernelNamesCb_t, Module, pfnGetKernelNamesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnGetKernelNames,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnGetKernelNames,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4465,7 +4529,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleGetPropertiesCb_t, Module, pfnGetPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnGetProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnGetProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4502,7 +4566,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelCreateCb_t, Kernel, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4536,7 +4600,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelDestroyCb_t, Kernel, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4572,7 +4636,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleGetFunctionPointerCb_t, Module, pfnGetFunctionPointerCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnGetFunctionPointer,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnGetFunctionPointer,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4612,7 +4676,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetGroupSizeCb_t, Kernel, pfnSetGroupSizeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnSetGroupSize,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnSetGroupSize,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4659,7 +4723,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSuggestGroupSizeCb_t, Kernel, pfnSuggestGroupSizeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnSuggestGroupSize,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnSuggestGroupSize,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4699,7 +4763,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSuggestMaxCooperativeGroupCountCb_t, Kernel, pfnSuggestMaxCooperativeGroupCountCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4739,7 +4803,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetArgumentValueCb_t, Kernel, pfnSetArgumentValueCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnSetArgumentValue,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnSetArgumentValue,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4776,7 +4840,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetIndirectAccessCb_t, Kernel, pfnSetIndirectAccessCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnSetIndirectAccess,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnSetIndirectAccess,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4811,7 +4875,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetIndirectAccessCb_t, Kernel, pfnGetIndirectAccessCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnGetIndirectAccess,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnGetIndirectAccess,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4859,7 +4923,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetSourceAttributesCb_t, Kernel, pfnGetSourceAttributesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnGetSourceAttributes,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnGetSourceAttributes,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4896,7 +4960,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetCacheConfigCb_t, Kernel, pfnSetCacheConfigCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnSetCacheConfig,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnSetCacheConfig,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4931,7 +4995,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetPropertiesCb_t, Kernel, pfnGetPropertiesCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnGetProperties,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnGetProperties,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -4969,7 +5033,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetNameCb_t, Kernel, pfnGetNameCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Kernel.pfnGetName,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnGetName,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5015,7 +5079,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendLaunchKernelCb_t, CommandList, pfnAppendLaunchKernelCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendLaunchKernel,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendLaunchKernel,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5023,6 +5087,116 @@ namespace tracing_layer
                                                   *tracerParams.phCommandList,
                                                   *tracerParams.phKernel,
                                                   *tracerParams.ppLaunchFuncArgs,
+                                                  *tracerParams.phSignalEvent,
+                                                  *tracerParams.pnumWaitEvents,
+                                                  *tracerParams.pphWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnAppendLaunchKernelWithParameters = context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithParameters;
+
+        if( nullptr == pfnAppendLaunchKernelWithParameters)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithParameters, hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        // capture parameters
+        ze_command_list_append_launch_kernel_with_parameters_params_t tracerParams = {
+            &hCommandList,
+            &hKernel,
+            &pGroupCounts,
+            &pNext,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendLaunchKernelWithParametersCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendLaunchKernelWithParametersCb_t, CommandList, pfnAppendLaunchKernelWithParametersCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithParameters,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.ppGroupCounts,
+                                                  *tracerParams.ppNext,
+                                                  *tracerParams.phSignalEvent,
+                                                  *tracerParams.pnumWaitEvents,
+                                                  *tracerParams.pphWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithArguments
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithArguments(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnAppendLaunchKernelWithArguments = context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithArguments;
+
+        if( nullptr == pfnAppendLaunchKernelWithArguments)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithArguments, hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        // capture parameters
+        ze_command_list_append_launch_kernel_with_arguments_params_t tracerParams = {
+            &hCommandList,
+            &hKernel,
+            &groupCounts,
+            &groupSizes,
+            &pArguments,
+            &pNext,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendLaunchKernelWithArgumentsCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendLaunchKernelWithArgumentsCb_t, CommandList, pfnAppendLaunchKernelWithArgumentsCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithArguments,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.pgroupCounts,
+                                                  *tracerParams.pgroupSizes,
+                                                  *tracerParams.ppArguments,
+                                                  *tracerParams.ppNext,
                                                   *tracerParams.phSignalEvent,
                                                   *tracerParams.pnumWaitEvents,
                                                   *tracerParams.pphWaitEvents);
@@ -5064,7 +5238,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendLaunchCooperativeKernelCb_t, CommandList, pfnAppendLaunchCooperativeKernelCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5114,7 +5288,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendLaunchKernelIndirectCb_t, CommandList, pfnAppendLaunchKernelIndirectCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5170,7 +5344,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t, CommandList, pfnAppendLaunchMultipleKernelsIndirectCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5215,7 +5389,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextMakeMemoryResidentCb_t, Context, pfnMakeMemoryResidentCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnMakeMemoryResident,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnMakeMemoryResident,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5256,7 +5430,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextEvictMemoryCb_t, Context, pfnEvictMemoryCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnEvictMemory,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnEvictMemory,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5295,7 +5469,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextMakeImageResidentCb_t, Context, pfnMakeImageResidentCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnMakeImageResident,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnMakeImageResident,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5333,7 +5507,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextEvictImageCb_t, Context, pfnEvictImageCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnEvictImage,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Context.pfnEvictImage,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5373,7 +5547,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnSamplerCreateCb_t, Sampler, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Sampler.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Sampler.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5408,7 +5582,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnSamplerDestroyCb_t, Sampler, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Sampler.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Sampler.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5447,7 +5621,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnVirtualMemReserveCb_t, VirtualMem, pfnReserveCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.VirtualMem.pfnReserve,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.VirtualMem.pfnReserve,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5486,7 +5660,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnVirtualMemFreeCb_t, VirtualMem, pfnFreeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.VirtualMem.pfnFree,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.VirtualMem.pfnFree,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5527,7 +5701,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnVirtualMemQueryPageSizeCb_t, VirtualMem, pfnQueryPageSizeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.VirtualMem.pfnQueryPageSize,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.VirtualMem.pfnQueryPageSize,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5569,7 +5743,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnPhysicalMemCreateCb_t, PhysicalMem, pfnCreateCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.PhysicalMem.pfnCreate,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.PhysicalMem.pfnCreate,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5606,7 +5780,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnPhysicalMemDestroyCb_t, PhysicalMem, pfnDestroyCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.PhysicalMem.pfnDestroy,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.PhysicalMem.pfnDestroy,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5652,7 +5826,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnVirtualMemMapCb_t, VirtualMem, pfnMapCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.VirtualMem.pfnMap,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.VirtualMem.pfnMap,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5693,7 +5867,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnVirtualMemUnmapCb_t, VirtualMem, pfnUnmapCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.VirtualMem.pfnUnmap,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.VirtualMem.pfnUnmap,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5734,7 +5908,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnVirtualMemSetAccessAttributeCb_t, VirtualMem, pfnSetAccessAttributeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.VirtualMem.pfnSetAccessAttribute,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.VirtualMem.pfnSetAccessAttribute,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5778,7 +5952,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnVirtualMemGetAccessAttributeCb_t, VirtualMem, pfnGetAccessAttributeCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.VirtualMem.pfnGetAccessAttribute,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.VirtualMem.pfnGetAccessAttribute,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5820,7 +5994,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetGlobalOffsetExpCb_t, Kernel, pfnSetGlobalOffsetExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5859,7 +6033,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetBinaryExpCb_t, Kernel, pfnGetBinaryExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnGetBinaryExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.KernelExp.pfnGetBinaryExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5897,7 +6071,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceImportExternalSemaphoreExtCb_t, Device, pfnImportExternalSemaphoreExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnImportExternalSemaphoreExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnImportExternalSemaphoreExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5931,7 +6105,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceReleaseExternalSemaphoreExtCb_t, Device, pfnReleaseExternalSemaphoreExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -5978,7 +6152,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendSignalExternalSemaphoreExtCb_t, CommandList, pfnAppendSignalExternalSemaphoreExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6031,7 +6205,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t, CommandList, pfnAppendWaitExternalSemaphoreExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6073,7 +6247,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderCreateExtCb_t, RTASBuilder, pfnCreateExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilder.pfnCreateExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilder.pfnCreateExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6111,7 +6285,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderGetBuildPropertiesExtCb_t, RTASBuilder, pfnGetBuildPropertiesExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6149,7 +6323,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverRTASFormatCompatibilityCheckExtCb_t, Driver, pfnRTASFormatCompatibilityCheckExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6204,7 +6378,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderBuildExtCb_t, RTASBuilder, pfnBuildExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilder.pfnBuildExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilder.pfnBuildExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6261,7 +6435,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderCommandListAppendCopyExtCb_t, RTASBuilder, pfnCommandListAppendCopyExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6299,7 +6473,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderDestroyExtCb_t, RTASBuilder, pfnDestroyExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilder.pfnDestroyExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilder.pfnDestroyExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6333,7 +6507,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationCreateExtCb_t, RTASParallelOperation, pfnCreateExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperation.pfnCreateExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperation.pfnCreateExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6368,7 +6542,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationGetPropertiesExtCb_t, RTASParallelOperation, pfnGetPropertiesExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6401,7 +6575,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationJoinExtCb_t, RTASParallelOperation, pfnJoinExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperation.pfnJoinExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperation.pfnJoinExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6433,7 +6607,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationDestroyExtCb_t, RTASParallelOperation, pfnDestroyExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperation.pfnDestroyExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperation.pfnDestroyExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6476,7 +6650,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetVectorWidthPropertiesExtCb_t, Device, pfnGetVectorWidthPropertiesExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6484,6 +6658,52 @@ namespace tracing_layer
                                                   *tracerParams.phDevice,
                                                   *tracerParams.ppCount,
                                                   *tracerParams.ppVectorWidthProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        auto pfnGetAllocationPropertiesExp = context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp;
+
+        if( nullptr == pfnGetAllocationPropertiesExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp, hKernel, pCount, pAllocationProperties);
+
+        // capture parameters
+        ze_kernel_get_allocation_properties_exp_params_t tracerParams = {
+            &hKernel,
+            &pCount,
+            &pAllocationProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnKernelGetAllocationPropertiesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetAllocationPropertiesExpCb_t, Kernel, pfnGetAllocationPropertiesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.ppCount,
+                                                  *tracerParams.ppAllocationProperties);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6517,7 +6737,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceReserveCacheExtCb_t, Device, pfnReserveCacheExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnReserveCacheExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnReserveCacheExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6557,7 +6777,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceSetCacheAdviceExtCb_t, Device, pfnSetCacheAdviceExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnSetCacheAdviceExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnSetCacheAdviceExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6604,7 +6824,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventQueryTimestampsExpCb_t, Event, pfnQueryTimestampsExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventExp.pfnQueryTimestampsExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.EventExp.pfnQueryTimestampsExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6641,7 +6861,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageGetMemoryPropertiesExpCb_t, Image, pfnGetMemoryPropertiesExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6682,7 +6902,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageViewCreateExtCb_t, Image, pfnViewCreateExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Image.pfnViewCreateExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Image.pfnViewCreateExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6726,7 +6946,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageViewCreateExpCb_t, Image, pfnViewCreateExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.ImageExp.pfnViewCreateExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.ImageExp.pfnViewCreateExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6764,7 +6984,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSchedulingHintExpCb_t, Kernel, pfnSchedulingHintExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnSchedulingHintExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.KernelExp.pfnSchedulingHintExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6799,7 +7019,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDevicePciGetPropertiesExtCb_t, Device, pfnPciGetPropertiesExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnPciGetPropertiesExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnPciGetPropertiesExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6852,7 +7072,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyToMemoryExtCb_t, CommandList, pfnAppendImageCopyToMemoryExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6912,7 +7132,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t, CommandList, pfnAppendImageCopyFromMemoryExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6956,7 +7176,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageGetAllocPropertiesExtCb_t, Image, pfnGetAllocPropertiesExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Image.pfnGetAllocPropertiesExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Image.pfnGetAllocPropertiesExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -6998,7 +7218,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleInspectLinkageExtCb_t, Module, pfnInspectLinkageExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnInspectLinkageExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnInspectLinkageExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7037,7 +7257,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemFreeExtCb_t, Mem, pfnFreeExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnFreeExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnFreeExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7082,7 +7302,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetExpCb_t, FabricVertex, pfnGetExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.FabricVertexExp.pfnGetExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7127,7 +7347,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetSubVerticesExpCb_t, FabricVertex, pfnGetSubVerticesExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7163,7 +7383,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetPropertiesExpCb_t, FabricVertex, pfnGetPropertiesExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetPropertiesExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.FabricVertexExp.pfnGetPropertiesExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7198,7 +7418,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetDeviceExpCb_t, FabricVertex, pfnGetDeviceExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7233,7 +7453,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetFabricVertexExpCb_t, Device, pfnGetFabricVertexExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7279,7 +7499,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricEdgeGetExpCb_t, FabricEdge, pfnGetExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricEdgeExp.pfnGetExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.FabricEdgeExp.pfnGetExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7318,7 +7538,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricEdgeGetVerticesExpCb_t, FabricEdge, pfnGetVerticesExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricEdgeExp.pfnGetVerticesExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.FabricEdgeExp.pfnGetVerticesExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7354,7 +7574,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricEdgeGetPropertiesExpCb_t, FabricEdge, pfnGetPropertiesExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7406,7 +7626,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventQueryKernelTimestampsExtCb_t, Event, pfnQueryKernelTimestampsExtCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnQueryKernelTimestampsExt,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Event.pfnQueryKernelTimestampsExt,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7445,7 +7665,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderCreateExpCb_t, RTASBuilder, pfnCreateExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnCreateExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilderExp.pfnCreateExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7483,7 +7703,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderGetBuildPropertiesExpCb_t, RTASBuilder, pfnGetBuildPropertiesExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7521,7 +7741,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t, Driver, pfnRTASFormatCompatibilityCheckExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7576,7 +7796,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderBuildExpCb_t, RTASBuilder, pfnBuildExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnBuildExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilderExp.pfnBuildExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7617,7 +7837,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderDestroyExpCb_t, RTASBuilder, pfnDestroyExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnDestroyExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASBuilderExp.pfnDestroyExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7651,7 +7871,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationCreateExpCb_t, RTASParallelOperation, pfnCreateExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7686,7 +7906,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationGetPropertiesExpCb_t, RTASParallelOperation, pfnGetPropertiesExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7719,7 +7939,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationJoinExpCb_t, RTASParallelOperation, pfnJoinExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7751,7 +7971,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationDestroyExpCb_t, RTASParallelOperation, pfnDestroyExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7793,7 +8013,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetPitchFor2dImageCb_t, Mem, pfnGetPitchFor2dImageCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnGetPitchFor2dImage,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Mem.pfnGetPitchFor2dImage,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7832,7 +8052,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageGetDeviceOffsetExpCb_t, Image, pfnGetDeviceOffsetExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.ImageExp.pfnGetDeviceOffsetExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.ImageExp.pfnGetDeviceOffsetExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7867,7 +8087,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListCreateCloneExpCb_t, CommandList, pfnCreateCloneExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnCreateCloneExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnCreateCloneExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7916,7 +8136,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListImmediateAppendCommandListsExpCb_t, CommandList, pfnImmediateAppendCommandListsExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnImmediateAppendCommandListsExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnImmediateAppendCommandListsExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -7957,7 +8177,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetNextCommandIdExpCb_t, CommandList, pfnGetNextCommandIdExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -8001,7 +8221,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t, CommandList, pfnGetNextCommandIdWithKernelsExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdWithKernelsExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdWithKernelsExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -8040,7 +8260,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandsExpCb_t, CommandList, pfnUpdateMutableCommandsExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -8077,7 +8297,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t, CommandList, pfnUpdateMutableCommandSignalEventExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -8118,7 +8338,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t, CommandList, pfnUpdateMutableCommandWaitEventsExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -8160,7 +8380,7 @@ namespace tracing_layer
         ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t, CommandList, pfnUpdateMutableCommandKernelsExpCb);
 
 
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandKernelsExp,
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandKernelsExp,
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
@@ -8440,6 +8660,10 @@ zeGetDriverProcAddrTable(
         dditable.pfnRTASFormatCompatibilityCheckExt          = pDdiTable->pfnRTASFormatCompatibilityCheckExt;
         pDdiTable->pfnRTASFormatCompatibilityCheckExt        = tracing_layer::zeDriverRTASFormatCompatibilityCheckExt;
     }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnGetDefaultContext                        = pDdiTable->pfnGetDefaultContext;
+        pDdiTable->pfnGetDefaultContext                      = tracing_layer::zeDriverGetDefaultContext;
+    }
     if (version >= ZE_API_VERSION_1_6) {
         dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
         pDdiTable->pfnGetLastErrorDescription                = tracing_layer::zeDriverGetLastErrorDescription;
@@ -8573,6 +8797,10 @@ zeGetDeviceProcAddrTable(
     if (version >= ZE_API_VERSION_1_13) {
         dditable.pfnGetVectorWidthPropertiesExt              = pDdiTable->pfnGetVectorWidthPropertiesExt;
         pDdiTable->pfnGetVectorWidthPropertiesExt            = tracing_layer::zeDeviceGetVectorWidthPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
+        pDdiTable->pfnSynchronize                            = tracing_layer::zeDeviceSynchronize;
     }
     if (version >= ZE_API_VERSION_1_2) {
         dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
@@ -8873,6 +9101,14 @@ zeGetCommandListProcAddrTable(
     if (version >= ZE_API_VERSION_1_12) {
         dditable.pfnAppendWaitExternalSemaphoreExt           = pDdiTable->pfnAppendWaitExternalSemaphoreExt;
         pDdiTable->pfnAppendWaitExternalSemaphoreExt         = tracing_layer::zeCommandListAppendWaitExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnAppendLaunchKernelWithParameters         = pDdiTable->pfnAppendLaunchKernelWithParameters;
+        pDdiTable->pfnAppendLaunchKernelWithParameters       = tracing_layer::zeCommandListAppendLaunchKernelWithParameters;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnAppendLaunchKernelWithArguments          = pDdiTable->pfnAppendLaunchKernelWithArguments;
+        pDdiTable->pfnAppendLaunchKernelWithArguments        = tracing_layer::zeCommandListAppendLaunchKernelWithArguments;
     }
     if (version >= ZE_API_VERSION_1_3) {
         dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
@@ -9368,6 +9604,10 @@ zeGetKernelExpProcAddrTable(
     if (version >= ZE_API_VERSION_1_11) {
         dditable.pfnGetBinaryExp                             = pDdiTable->pfnGetBinaryExp;
         pDdiTable->pfnGetBinaryExp                           = tracing_layer::zeKernelGetBinaryExp;
+    }
+    if (version >= ZE_API_VERSION_1_14) {
+        dditable.pfnGetAllocationPropertiesExp               = pDdiTable->pfnGetAllocationPropertiesExp;
+        pDdiTable->pfnGetAllocationPropertiesExp             = tracing_layer::zeKernelGetAllocationPropertiesExp;
     }
     if (version >= ZE_API_VERSION_1_2) {
         dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;

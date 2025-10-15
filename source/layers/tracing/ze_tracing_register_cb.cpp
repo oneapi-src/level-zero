@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -17,7 +17,7 @@
 
 extern "C" { 
 
-/// APIs to register callbacks for each core API
+/// APIs to register callbacks for each ze API
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelTracerInitRegisterCallback(
@@ -27,7 +27,7 @@ zelTracerInitRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Global.pfnInitCb = pfnInitCb;
 
@@ -43,7 +43,7 @@ zelTracerDriverGetRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnGetCb = pfnGetCb;
 
@@ -59,7 +59,7 @@ zelTracerInitDriversRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Global.pfnInitDriversCb = pfnInitDriversCb;
 
@@ -75,7 +75,7 @@ zelTracerDriverGetApiVersionRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnGetApiVersionCb = pfnGetApiVersionCb;
 
@@ -91,7 +91,7 @@ zelTracerDriverGetPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnGetPropertiesCb = pfnGetPropertiesCb;
 
@@ -107,7 +107,7 @@ zelTracerDriverGetIpcPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnGetIpcPropertiesCb = pfnGetIpcPropertiesCb;
 
@@ -123,7 +123,7 @@ zelTracerDriverGetExtensionPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnGetExtensionPropertiesCb = pfnGetExtensionPropertiesCb;
 
@@ -139,7 +139,7 @@ zelTracerDriverGetExtensionFunctionAddressRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnGetExtensionFunctionAddressCb = pfnGetExtensionFunctionAddressCb;
 
@@ -155,9 +155,25 @@ zelTracerDriverGetLastErrorDescriptionRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnGetLastErrorDescriptionCb = pfnGetLastErrorDescriptionCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerDriverGetDefaultContextRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDriverGetDefaultContextCb_t pfnGetDefaultContextCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Driver.pfnGetDefaultContextCb = pfnGetDefaultContextCb;
 
     return result;
 }
@@ -171,7 +187,7 @@ zelTracerDeviceGetRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetCb = pfnGetCb;
 
@@ -187,7 +203,7 @@ zelTracerDeviceGetRootDeviceRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetRootDeviceCb = pfnGetRootDeviceCb;
 
@@ -203,7 +219,7 @@ zelTracerDeviceGetSubDevicesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetSubDevicesCb = pfnGetSubDevicesCb;
 
@@ -219,7 +235,7 @@ zelTracerDeviceGetPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetPropertiesCb = pfnGetPropertiesCb;
 
@@ -235,7 +251,7 @@ zelTracerDeviceGetComputePropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetComputePropertiesCb = pfnGetComputePropertiesCb;
 
@@ -251,7 +267,7 @@ zelTracerDeviceGetModulePropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetModulePropertiesCb = pfnGetModulePropertiesCb;
 
@@ -267,7 +283,7 @@ zelTracerDeviceGetCommandQueueGroupPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetCommandQueueGroupPropertiesCb = pfnGetCommandQueueGroupPropertiesCb;
 
@@ -283,7 +299,7 @@ zelTracerDeviceGetMemoryPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetMemoryPropertiesCb = pfnGetMemoryPropertiesCb;
 
@@ -299,7 +315,7 @@ zelTracerDeviceGetMemoryAccessPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetMemoryAccessPropertiesCb = pfnGetMemoryAccessPropertiesCb;
 
@@ -315,7 +331,7 @@ zelTracerDeviceGetCachePropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetCachePropertiesCb = pfnGetCachePropertiesCb;
 
@@ -331,7 +347,7 @@ zelTracerDeviceGetImagePropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetImagePropertiesCb = pfnGetImagePropertiesCb;
 
@@ -347,7 +363,7 @@ zelTracerDeviceGetExternalMemoryPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetExternalMemoryPropertiesCb = pfnGetExternalMemoryPropertiesCb;
 
@@ -363,7 +379,7 @@ zelTracerDeviceGetP2PPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetP2PPropertiesCb = pfnGetP2PPropertiesCb;
 
@@ -379,7 +395,7 @@ zelTracerDeviceCanAccessPeerRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnCanAccessPeerCb = pfnCanAccessPeerCb;
 
@@ -395,7 +411,7 @@ zelTracerDeviceGetStatusRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetStatusCb = pfnGetStatusCb;
 
@@ -411,9 +427,25 @@ zelTracerDeviceGetGlobalTimestampsRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetGlobalTimestampsCb = pfnGetGlobalTimestampsCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceSynchronizeRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceSynchronizeCb_t pfnSynchronizeCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Device.pfnSynchronizeCb = pfnSynchronizeCb;
 
     return result;
 }
@@ -427,7 +459,7 @@ zelTracerContextCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnCreateCb = pfnCreateCb;
 
@@ -443,7 +475,7 @@ zelTracerContextCreateExRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnCreateExCb = pfnCreateExCb;
 
@@ -459,7 +491,7 @@ zelTracerContextDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnDestroyCb = pfnDestroyCb;
 
@@ -475,7 +507,7 @@ zelTracerContextGetStatusRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnGetStatusCb = pfnGetStatusCb;
 
@@ -491,7 +523,7 @@ zelTracerCommandQueueCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandQueue.pfnCreateCb = pfnCreateCb;
 
@@ -507,7 +539,7 @@ zelTracerCommandQueueDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandQueue.pfnDestroyCb = pfnDestroyCb;
 
@@ -523,7 +555,7 @@ zelTracerCommandQueueExecuteCommandListsRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandQueue.pfnExecuteCommandListsCb = pfnExecuteCommandListsCb;
 
@@ -539,7 +571,7 @@ zelTracerCommandQueueSynchronizeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandQueue.pfnSynchronizeCb = pfnSynchronizeCb;
 
@@ -555,7 +587,7 @@ zelTracerCommandQueueGetOrdinalRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandQueue.pfnGetOrdinalCb = pfnGetOrdinalCb;
 
@@ -571,7 +603,7 @@ zelTracerCommandQueueGetIndexRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandQueue.pfnGetIndexCb = pfnGetIndexCb;
 
@@ -587,7 +619,7 @@ zelTracerCommandListCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnCreateCb = pfnCreateCb;
 
@@ -603,7 +635,7 @@ zelTracerCommandListCreateImmediateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnCreateImmediateCb = pfnCreateImmediateCb;
 
@@ -619,7 +651,7 @@ zelTracerCommandListDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnDestroyCb = pfnDestroyCb;
 
@@ -635,7 +667,7 @@ zelTracerCommandListCloseRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnCloseCb = pfnCloseCb;
 
@@ -651,7 +683,7 @@ zelTracerCommandListResetRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnResetCb = pfnResetCb;
 
@@ -667,7 +699,7 @@ zelTracerCommandListAppendWriteGlobalTimestampRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendWriteGlobalTimestampCb = pfnAppendWriteGlobalTimestampCb;
 
@@ -683,7 +715,7 @@ zelTracerCommandListHostSynchronizeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnHostSynchronizeCb = pfnHostSynchronizeCb;
 
@@ -699,7 +731,7 @@ zelTracerCommandListGetDeviceHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnGetDeviceHandleCb = pfnGetDeviceHandleCb;
 
@@ -715,7 +747,7 @@ zelTracerCommandListGetContextHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnGetContextHandleCb = pfnGetContextHandleCb;
 
@@ -731,7 +763,7 @@ zelTracerCommandListGetOrdinalRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnGetOrdinalCb = pfnGetOrdinalCb;
 
@@ -747,7 +779,7 @@ zelTracerCommandListImmediateGetIndexRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnImmediateGetIndexCb = pfnImmediateGetIndexCb;
 
@@ -763,7 +795,7 @@ zelTracerCommandListIsImmediateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnIsImmediateCb = pfnIsImmediateCb;
 
@@ -779,7 +811,7 @@ zelTracerCommandListAppendBarrierRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendBarrierCb = pfnAppendBarrierCb;
 
@@ -795,7 +827,7 @@ zelTracerCommandListAppendMemoryRangesBarrierRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendMemoryRangesBarrierCb = pfnAppendMemoryRangesBarrierCb;
 
@@ -811,7 +843,7 @@ zelTracerContextSystemBarrierRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnSystemBarrierCb = pfnSystemBarrierCb;
 
@@ -827,7 +859,7 @@ zelTracerCommandListAppendMemoryCopyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendMemoryCopyCb = pfnAppendMemoryCopyCb;
 
@@ -843,7 +875,7 @@ zelTracerCommandListAppendMemoryFillRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendMemoryFillCb = pfnAppendMemoryFillCb;
 
@@ -859,7 +891,7 @@ zelTracerCommandListAppendMemoryCopyRegionRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendMemoryCopyRegionCb = pfnAppendMemoryCopyRegionCb;
 
@@ -875,7 +907,7 @@ zelTracerCommandListAppendMemoryCopyFromContextRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendMemoryCopyFromContextCb = pfnAppendMemoryCopyFromContextCb;
 
@@ -891,7 +923,7 @@ zelTracerCommandListAppendImageCopyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendImageCopyCb = pfnAppendImageCopyCb;
 
@@ -907,7 +939,7 @@ zelTracerCommandListAppendImageCopyRegionRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendImageCopyRegionCb = pfnAppendImageCopyRegionCb;
 
@@ -923,7 +955,7 @@ zelTracerCommandListAppendImageCopyToMemoryRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendImageCopyToMemoryCb = pfnAppendImageCopyToMemoryCb;
 
@@ -939,7 +971,7 @@ zelTracerCommandListAppendImageCopyFromMemoryRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendImageCopyFromMemoryCb = pfnAppendImageCopyFromMemoryCb;
 
@@ -955,7 +987,7 @@ zelTracerCommandListAppendMemoryPrefetchRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendMemoryPrefetchCb = pfnAppendMemoryPrefetchCb;
 
@@ -971,7 +1003,7 @@ zelTracerCommandListAppendMemAdviseRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendMemAdviseCb = pfnAppendMemAdviseCb;
 
@@ -987,7 +1019,7 @@ zelTracerEventPoolCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnCreateCb = pfnCreateCb;
 
@@ -1003,7 +1035,7 @@ zelTracerEventPoolDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnDestroyCb = pfnDestroyCb;
 
@@ -1019,7 +1051,7 @@ zelTracerEventCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnCreateCb = pfnCreateCb;
 
@@ -1035,7 +1067,7 @@ zelTracerEventDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnDestroyCb = pfnDestroyCb;
 
@@ -1051,7 +1083,7 @@ zelTracerEventPoolGetIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnGetIpcHandleCb = pfnGetIpcHandleCb;
 
@@ -1067,7 +1099,7 @@ zelTracerEventPoolPutIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnPutIpcHandleCb = pfnPutIpcHandleCb;
 
@@ -1083,7 +1115,7 @@ zelTracerEventPoolOpenIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnOpenIpcHandleCb = pfnOpenIpcHandleCb;
 
@@ -1099,7 +1131,7 @@ zelTracerEventPoolCloseIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnCloseIpcHandleCb = pfnCloseIpcHandleCb;
 
@@ -1115,7 +1147,7 @@ zelTracerCommandListAppendSignalEventRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendSignalEventCb = pfnAppendSignalEventCb;
 
@@ -1131,7 +1163,7 @@ zelTracerCommandListAppendWaitOnEventsRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendWaitOnEventsCb = pfnAppendWaitOnEventsCb;
 
@@ -1147,7 +1179,7 @@ zelTracerEventHostSignalRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnHostSignalCb = pfnHostSignalCb;
 
@@ -1163,7 +1195,7 @@ zelTracerEventHostSynchronizeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnHostSynchronizeCb = pfnHostSynchronizeCb;
 
@@ -1179,7 +1211,7 @@ zelTracerEventQueryStatusRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnQueryStatusCb = pfnQueryStatusCb;
 
@@ -1195,7 +1227,7 @@ zelTracerCommandListAppendEventResetRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendEventResetCb = pfnAppendEventResetCb;
 
@@ -1211,7 +1243,7 @@ zelTracerEventHostResetRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnHostResetCb = pfnHostResetCb;
 
@@ -1227,7 +1259,7 @@ zelTracerEventQueryKernelTimestampRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnQueryKernelTimestampCb = pfnQueryKernelTimestampCb;
 
@@ -1243,7 +1275,7 @@ zelTracerCommandListAppendQueryKernelTimestampsRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendQueryKernelTimestampsCb = pfnAppendQueryKernelTimestampsCb;
 
@@ -1259,7 +1291,7 @@ zelTracerEventGetEventPoolRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnGetEventPoolCb = pfnGetEventPoolCb;
 
@@ -1275,7 +1307,7 @@ zelTracerEventGetSignalScopeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnGetSignalScopeCb = pfnGetSignalScopeCb;
 
@@ -1291,7 +1323,7 @@ zelTracerEventGetWaitScopeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnGetWaitScopeCb = pfnGetWaitScopeCb;
 
@@ -1307,7 +1339,7 @@ zelTracerEventPoolGetContextHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnGetContextHandleCb = pfnGetContextHandleCb;
 
@@ -1323,7 +1355,7 @@ zelTracerEventPoolGetFlagsRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.EventPool.pfnGetFlagsCb = pfnGetFlagsCb;
 
@@ -1339,7 +1371,7 @@ zelTracerFenceCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Fence.pfnCreateCb = pfnCreateCb;
 
@@ -1355,7 +1387,7 @@ zelTracerFenceDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Fence.pfnDestroyCb = pfnDestroyCb;
 
@@ -1371,7 +1403,7 @@ zelTracerFenceHostSynchronizeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Fence.pfnHostSynchronizeCb = pfnHostSynchronizeCb;
 
@@ -1387,7 +1419,7 @@ zelTracerFenceQueryStatusRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Fence.pfnQueryStatusCb = pfnQueryStatusCb;
 
@@ -1403,7 +1435,7 @@ zelTracerFenceResetRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Fence.pfnResetCb = pfnResetCb;
 
@@ -1419,7 +1451,7 @@ zelTracerImageGetPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnGetPropertiesCb = pfnGetPropertiesCb;
 
@@ -1435,7 +1467,7 @@ zelTracerImageCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnCreateCb = pfnCreateCb;
 
@@ -1451,7 +1483,7 @@ zelTracerImageDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnDestroyCb = pfnDestroyCb;
 
@@ -1467,7 +1499,7 @@ zelTracerMemAllocSharedRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnAllocSharedCb = pfnAllocSharedCb;
 
@@ -1483,7 +1515,7 @@ zelTracerMemAllocDeviceRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnAllocDeviceCb = pfnAllocDeviceCb;
 
@@ -1499,7 +1531,7 @@ zelTracerMemAllocHostRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnAllocHostCb = pfnAllocHostCb;
 
@@ -1515,7 +1547,7 @@ zelTracerMemFreeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnFreeCb = pfnFreeCb;
 
@@ -1531,7 +1563,7 @@ zelTracerMemGetAllocPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnGetAllocPropertiesCb = pfnGetAllocPropertiesCb;
 
@@ -1547,7 +1579,7 @@ zelTracerMemGetAddressRangeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnGetAddressRangeCb = pfnGetAddressRangeCb;
 
@@ -1563,7 +1595,7 @@ zelTracerMemGetIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnGetIpcHandleCb = pfnGetIpcHandleCb;
 
@@ -1579,7 +1611,7 @@ zelTracerMemGetIpcHandleFromFileDescriptorExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnGetIpcHandleFromFileDescriptorExpCb = pfnGetIpcHandleFromFileDescriptorExpCb;
 
@@ -1595,7 +1627,7 @@ zelTracerMemGetFileDescriptorFromIpcHandleExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnGetFileDescriptorFromIpcHandleExpCb = pfnGetFileDescriptorFromIpcHandleExpCb;
 
@@ -1611,7 +1643,7 @@ zelTracerMemPutIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnPutIpcHandleCb = pfnPutIpcHandleCb;
 
@@ -1627,7 +1659,7 @@ zelTracerMemOpenIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnOpenIpcHandleCb = pfnOpenIpcHandleCb;
 
@@ -1643,7 +1675,7 @@ zelTracerMemCloseIpcHandleRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnCloseIpcHandleCb = pfnCloseIpcHandleCb;
 
@@ -1659,7 +1691,7 @@ zelTracerMemSetAtomicAccessAttributeExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnSetAtomicAccessAttributeExpCb = pfnSetAtomicAccessAttributeExpCb;
 
@@ -1675,7 +1707,7 @@ zelTracerMemGetAtomicAccessAttributeExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnGetAtomicAccessAttributeExpCb = pfnGetAtomicAccessAttributeExpCb;
 
@@ -1691,7 +1723,7 @@ zelTracerModuleCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnCreateCb = pfnCreateCb;
 
@@ -1707,7 +1739,7 @@ zelTracerModuleDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnDestroyCb = pfnDestroyCb;
 
@@ -1723,7 +1755,7 @@ zelTracerModuleDynamicLinkRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnDynamicLinkCb = pfnDynamicLinkCb;
 
@@ -1739,7 +1771,7 @@ zelTracerModuleBuildLogDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.ModuleBuildLog.pfnDestroyCb = pfnDestroyCb;
 
@@ -1755,7 +1787,7 @@ zelTracerModuleBuildLogGetStringRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.ModuleBuildLog.pfnGetStringCb = pfnGetStringCb;
 
@@ -1771,7 +1803,7 @@ zelTracerModuleGetNativeBinaryRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnGetNativeBinaryCb = pfnGetNativeBinaryCb;
 
@@ -1787,7 +1819,7 @@ zelTracerModuleGetGlobalPointerRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnGetGlobalPointerCb = pfnGetGlobalPointerCb;
 
@@ -1803,7 +1835,7 @@ zelTracerModuleGetKernelNamesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnGetKernelNamesCb = pfnGetKernelNamesCb;
 
@@ -1819,7 +1851,7 @@ zelTracerModuleGetPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnGetPropertiesCb = pfnGetPropertiesCb;
 
@@ -1835,7 +1867,7 @@ zelTracerKernelCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnCreateCb = pfnCreateCb;
 
@@ -1851,7 +1883,7 @@ zelTracerKernelDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnDestroyCb = pfnDestroyCb;
 
@@ -1867,7 +1899,7 @@ zelTracerModuleGetFunctionPointerRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnGetFunctionPointerCb = pfnGetFunctionPointerCb;
 
@@ -1883,7 +1915,7 @@ zelTracerKernelSetGroupSizeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSetGroupSizeCb = pfnSetGroupSizeCb;
 
@@ -1899,7 +1931,7 @@ zelTracerKernelSuggestGroupSizeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSuggestGroupSizeCb = pfnSuggestGroupSizeCb;
 
@@ -1915,7 +1947,7 @@ zelTracerKernelSuggestMaxCooperativeGroupCountRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSuggestMaxCooperativeGroupCountCb = pfnSuggestMaxCooperativeGroupCountCb;
 
@@ -1931,7 +1963,7 @@ zelTracerKernelSetArgumentValueRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSetArgumentValueCb = pfnSetArgumentValueCb;
 
@@ -1947,7 +1979,7 @@ zelTracerKernelSetIndirectAccessRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSetIndirectAccessCb = pfnSetIndirectAccessCb;
 
@@ -1963,7 +1995,7 @@ zelTracerKernelGetIndirectAccessRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnGetIndirectAccessCb = pfnGetIndirectAccessCb;
 
@@ -1979,7 +2011,7 @@ zelTracerKernelGetSourceAttributesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnGetSourceAttributesCb = pfnGetSourceAttributesCb;
 
@@ -1995,7 +2027,7 @@ zelTracerKernelSetCacheConfigRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSetCacheConfigCb = pfnSetCacheConfigCb;
 
@@ -2011,7 +2043,7 @@ zelTracerKernelGetPropertiesRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnGetPropertiesCb = pfnGetPropertiesCb;
 
@@ -2027,7 +2059,7 @@ zelTracerKernelGetNameRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnGetNameCb = pfnGetNameCb;
 
@@ -2043,9 +2075,41 @@ zelTracerCommandListAppendLaunchKernelRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendLaunchKernelCb = pfnAppendLaunchKernelCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendLaunchKernelWithParametersRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendLaunchKernelWithParametersCb_t pfnAppendLaunchKernelWithParametersCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnAppendLaunchKernelWithParametersCb = pfnAppendLaunchKernelWithParametersCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendLaunchKernelWithArgumentsRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendLaunchKernelWithArgumentsCb_t pfnAppendLaunchKernelWithArgumentsCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnAppendLaunchKernelWithArgumentsCb = pfnAppendLaunchKernelWithArgumentsCb;
 
     return result;
 }
@@ -2059,7 +2123,7 @@ zelTracerCommandListAppendLaunchCooperativeKernelRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendLaunchCooperativeKernelCb = pfnAppendLaunchCooperativeKernelCb;
 
@@ -2075,7 +2139,7 @@ zelTracerCommandListAppendLaunchKernelIndirectRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendLaunchKernelIndirectCb = pfnAppendLaunchKernelIndirectCb;
 
@@ -2091,7 +2155,7 @@ zelTracerCommandListAppendLaunchMultipleKernelsIndirectRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendLaunchMultipleKernelsIndirectCb = pfnAppendLaunchMultipleKernelsIndirectCb;
 
@@ -2107,7 +2171,7 @@ zelTracerContextMakeMemoryResidentRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnMakeMemoryResidentCb = pfnMakeMemoryResidentCb;
 
@@ -2123,7 +2187,7 @@ zelTracerContextEvictMemoryRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnEvictMemoryCb = pfnEvictMemoryCb;
 
@@ -2139,7 +2203,7 @@ zelTracerContextMakeImageResidentRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnMakeImageResidentCb = pfnMakeImageResidentCb;
 
@@ -2155,7 +2219,7 @@ zelTracerContextEvictImageRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Context.pfnEvictImageCb = pfnEvictImageCb;
 
@@ -2171,7 +2235,7 @@ zelTracerSamplerCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Sampler.pfnCreateCb = pfnCreateCb;
 
@@ -2187,7 +2251,7 @@ zelTracerSamplerDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Sampler.pfnDestroyCb = pfnDestroyCb;
 
@@ -2203,7 +2267,7 @@ zelTracerVirtualMemReserveRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.VirtualMem.pfnReserveCb = pfnReserveCb;
 
@@ -2219,7 +2283,7 @@ zelTracerVirtualMemFreeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.VirtualMem.pfnFreeCb = pfnFreeCb;
 
@@ -2235,7 +2299,7 @@ zelTracerVirtualMemQueryPageSizeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.VirtualMem.pfnQueryPageSizeCb = pfnQueryPageSizeCb;
 
@@ -2251,7 +2315,7 @@ zelTracerPhysicalMemCreateRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.PhysicalMem.pfnCreateCb = pfnCreateCb;
 
@@ -2267,7 +2331,7 @@ zelTracerPhysicalMemDestroyRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.PhysicalMem.pfnDestroyCb = pfnDestroyCb;
 
@@ -2283,7 +2347,7 @@ zelTracerVirtualMemMapRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.VirtualMem.pfnMapCb = pfnMapCb;
 
@@ -2299,7 +2363,7 @@ zelTracerVirtualMemUnmapRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.VirtualMem.pfnUnmapCb = pfnUnmapCb;
 
@@ -2315,7 +2379,7 @@ zelTracerVirtualMemSetAccessAttributeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.VirtualMem.pfnSetAccessAttributeCb = pfnSetAccessAttributeCb;
 
@@ -2331,7 +2395,7 @@ zelTracerVirtualMemGetAccessAttributeRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.VirtualMem.pfnGetAccessAttributeCb = pfnGetAccessAttributeCb;
 
@@ -2347,7 +2411,7 @@ zelTracerKernelSetGlobalOffsetExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSetGlobalOffsetExpCb = pfnSetGlobalOffsetExpCb;
 
@@ -2363,7 +2427,7 @@ zelTracerKernelGetBinaryExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnGetBinaryExpCb = pfnGetBinaryExpCb;
 
@@ -2379,7 +2443,7 @@ zelTracerDeviceImportExternalSemaphoreExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnImportExternalSemaphoreExtCb = pfnImportExternalSemaphoreExtCb;
 
@@ -2395,7 +2459,7 @@ zelTracerDeviceReleaseExternalSemaphoreExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnReleaseExternalSemaphoreExtCb = pfnReleaseExternalSemaphoreExtCb;
 
@@ -2411,7 +2475,7 @@ zelTracerCommandListAppendSignalExternalSemaphoreExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendSignalExternalSemaphoreExtCb = pfnAppendSignalExternalSemaphoreExtCb;
 
@@ -2427,7 +2491,7 @@ zelTracerCommandListAppendWaitExternalSemaphoreExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendWaitExternalSemaphoreExtCb = pfnAppendWaitExternalSemaphoreExtCb;
 
@@ -2443,7 +2507,7 @@ zelTracerRTASBuilderCreateExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnCreateExtCb = pfnCreateExtCb;
 
@@ -2459,7 +2523,7 @@ zelTracerRTASBuilderGetBuildPropertiesExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnGetBuildPropertiesExtCb = pfnGetBuildPropertiesExtCb;
 
@@ -2475,7 +2539,7 @@ zelTracerDriverRTASFormatCompatibilityCheckExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnRTASFormatCompatibilityCheckExtCb = pfnRTASFormatCompatibilityCheckExtCb;
 
@@ -2491,7 +2555,7 @@ zelTracerRTASBuilderBuildExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnBuildExtCb = pfnBuildExtCb;
 
@@ -2507,7 +2571,7 @@ zelTracerRTASBuilderCommandListAppendCopyExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnCommandListAppendCopyExtCb = pfnCommandListAppendCopyExtCb;
 
@@ -2523,7 +2587,7 @@ zelTracerRTASBuilderDestroyExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnDestroyExtCb = pfnDestroyExtCb;
 
@@ -2539,7 +2603,7 @@ zelTracerRTASParallelOperationCreateExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnCreateExtCb = pfnCreateExtCb;
 
@@ -2555,7 +2619,7 @@ zelTracerRTASParallelOperationGetPropertiesExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnGetPropertiesExtCb = pfnGetPropertiesExtCb;
 
@@ -2571,7 +2635,7 @@ zelTracerRTASParallelOperationJoinExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnJoinExtCb = pfnJoinExtCb;
 
@@ -2587,7 +2651,7 @@ zelTracerRTASParallelOperationDestroyExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnDestroyExtCb = pfnDestroyExtCb;
 
@@ -2603,9 +2667,25 @@ zelTracerDeviceGetVectorWidthPropertiesExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetVectorWidthPropertiesExtCb = pfnGetVectorWidthPropertiesExtCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerKernelGetAllocationPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnKernelGetAllocationPropertiesExpCb_t pfnGetAllocationPropertiesExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Kernel.pfnGetAllocationPropertiesExpCb = pfnGetAllocationPropertiesExpCb;
 
     return result;
 }
@@ -2619,7 +2699,7 @@ zelTracerDeviceReserveCacheExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnReserveCacheExtCb = pfnReserveCacheExtCb;
 
@@ -2635,7 +2715,7 @@ zelTracerDeviceSetCacheAdviceExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnSetCacheAdviceExtCb = pfnSetCacheAdviceExtCb;
 
@@ -2651,7 +2731,7 @@ zelTracerEventQueryTimestampsExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnQueryTimestampsExpCb = pfnQueryTimestampsExpCb;
 
@@ -2667,7 +2747,7 @@ zelTracerImageGetMemoryPropertiesExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnGetMemoryPropertiesExpCb = pfnGetMemoryPropertiesExpCb;
 
@@ -2683,7 +2763,7 @@ zelTracerImageViewCreateExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnViewCreateExtCb = pfnViewCreateExtCb;
 
@@ -2699,7 +2779,7 @@ zelTracerImageViewCreateExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnViewCreateExpCb = pfnViewCreateExpCb;
 
@@ -2715,7 +2795,7 @@ zelTracerKernelSchedulingHintExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnSchedulingHintExpCb = pfnSchedulingHintExpCb;
 
@@ -2731,7 +2811,7 @@ zelTracerDevicePciGetPropertiesExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnPciGetPropertiesExtCb = pfnPciGetPropertiesExtCb;
 
@@ -2747,7 +2827,7 @@ zelTracerCommandListAppendImageCopyToMemoryExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendImageCopyToMemoryExtCb = pfnAppendImageCopyToMemoryExtCb;
 
@@ -2763,7 +2843,7 @@ zelTracerCommandListAppendImageCopyFromMemoryExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendImageCopyFromMemoryExtCb = pfnAppendImageCopyFromMemoryExtCb;
 
@@ -2779,7 +2859,7 @@ zelTracerImageGetAllocPropertiesExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnGetAllocPropertiesExtCb = pfnGetAllocPropertiesExtCb;
 
@@ -2795,7 +2875,7 @@ zelTracerModuleInspectLinkageExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Module.pfnInspectLinkageExtCb = pfnInspectLinkageExtCb;
 
@@ -2811,7 +2891,7 @@ zelTracerMemFreeExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnFreeExtCb = pfnFreeExtCb;
 
@@ -2827,7 +2907,7 @@ zelTracerFabricVertexGetExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.FabricVertex.pfnGetExpCb = pfnGetExpCb;
 
@@ -2843,7 +2923,7 @@ zelTracerFabricVertexGetSubVerticesExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.FabricVertex.pfnGetSubVerticesExpCb = pfnGetSubVerticesExpCb;
 
@@ -2859,7 +2939,7 @@ zelTracerFabricVertexGetPropertiesExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.FabricVertex.pfnGetPropertiesExpCb = pfnGetPropertiesExpCb;
 
@@ -2875,7 +2955,7 @@ zelTracerFabricVertexGetDeviceExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.FabricVertex.pfnGetDeviceExpCb = pfnGetDeviceExpCb;
 
@@ -2891,7 +2971,7 @@ zelTracerDeviceGetFabricVertexExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Device.pfnGetFabricVertexExpCb = pfnGetFabricVertexExpCb;
 
@@ -2907,7 +2987,7 @@ zelTracerFabricEdgeGetExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.FabricEdge.pfnGetExpCb = pfnGetExpCb;
 
@@ -2923,7 +3003,7 @@ zelTracerFabricEdgeGetVerticesExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.FabricEdge.pfnGetVerticesExpCb = pfnGetVerticesExpCb;
 
@@ -2939,7 +3019,7 @@ zelTracerFabricEdgeGetPropertiesExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.FabricEdge.pfnGetPropertiesExpCb = pfnGetPropertiesExpCb;
 
@@ -2955,7 +3035,7 @@ zelTracerEventQueryKernelTimestampsExtRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Event.pfnQueryKernelTimestampsExtCb = pfnQueryKernelTimestampsExtCb;
 
@@ -2971,7 +3051,7 @@ zelTracerRTASBuilderCreateExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnCreateExpCb = pfnCreateExpCb;
 
@@ -2987,7 +3067,7 @@ zelTracerRTASBuilderGetBuildPropertiesExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnGetBuildPropertiesExpCb = pfnGetBuildPropertiesExpCb;
 
@@ -3003,7 +3083,7 @@ zelTracerDriverRTASFormatCompatibilityCheckExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Driver.pfnRTASFormatCompatibilityCheckExpCb = pfnRTASFormatCompatibilityCheckExpCb;
 
@@ -3019,7 +3099,7 @@ zelTracerRTASBuilderBuildExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnBuildExpCb = pfnBuildExpCb;
 
@@ -3035,7 +3115,7 @@ zelTracerRTASBuilderDestroyExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASBuilder.pfnDestroyExpCb = pfnDestroyExpCb;
 
@@ -3051,7 +3131,7 @@ zelTracerRTASParallelOperationCreateExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnCreateExpCb = pfnCreateExpCb;
 
@@ -3067,7 +3147,7 @@ zelTracerRTASParallelOperationGetPropertiesExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnGetPropertiesExpCb = pfnGetPropertiesExpCb;
 
@@ -3083,7 +3163,7 @@ zelTracerRTASParallelOperationJoinExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnJoinExpCb = pfnJoinExpCb;
 
@@ -3099,7 +3179,7 @@ zelTracerRTASParallelOperationDestroyExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnDestroyExpCb = pfnDestroyExpCb;
 
@@ -3115,7 +3195,7 @@ zelTracerMemGetPitchFor2dImageRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Mem.pfnGetPitchFor2dImageCb = pfnGetPitchFor2dImageCb;
 
@@ -3131,7 +3211,7 @@ zelTracerImageGetDeviceOffsetExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Image.pfnGetDeviceOffsetExpCb = pfnGetDeviceOffsetExpCb;
 
@@ -3147,7 +3227,7 @@ zelTracerCommandListCreateCloneExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnCreateCloneExpCb = pfnCreateCloneExpCb;
 
@@ -3163,7 +3243,7 @@ zelTracerCommandListImmediateAppendCommandListsExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnImmediateAppendCommandListsExpCb = pfnImmediateAppendCommandListsExpCb;
 
@@ -3179,7 +3259,7 @@ zelTracerCommandListGetNextCommandIdExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnGetNextCommandIdExpCb = pfnGetNextCommandIdExpCb;
 
@@ -3195,7 +3275,7 @@ zelTracerCommandListGetNextCommandIdWithKernelsExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnGetNextCommandIdWithKernelsExpCb = pfnGetNextCommandIdWithKernelsExpCb;
 
@@ -3211,7 +3291,7 @@ zelTracerCommandListUpdateMutableCommandsExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnUpdateMutableCommandsExpCb = pfnUpdateMutableCommandsExpCb;
 
@@ -3227,7 +3307,7 @@ zelTracerCommandListUpdateMutableCommandSignalEventExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnUpdateMutableCommandSignalEventExpCb = pfnUpdateMutableCommandSignalEventExpCb;
 
@@ -3243,7 +3323,7 @@ zelTracerCommandListUpdateMutableCommandWaitEventsExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnUpdateMutableCommandWaitEventsExpCb = pfnUpdateMutableCommandWaitEventsExpCb;
 
@@ -3259,7 +3339,7 @@ zelTracerCommandListUpdateMutableCommandKernelsExpRegisterCallback(
     ) {
 
     ze_result_t result;
-    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnUpdateMutableCommandKernelsExpCb = pfnUpdateMutableCommandKernelsExpCb;
 

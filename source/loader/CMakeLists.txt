@@ -17,6 +17,9 @@ target_sources(${TARGET_LOADER_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/zes_ldrddi.h
         ${CMAKE_CURRENT_SOURCE_DIR}/zes_ldrddi_driver_ddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zes_ldrddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_ldrddi.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_ldrddi_driver_ddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_ldrddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zel_tracing_ldrddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/driver_discovery.h
 )

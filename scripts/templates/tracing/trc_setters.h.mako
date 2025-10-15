@@ -9,15 +9,15 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file ${name}.h
+ * @file zel_tracing_register_cb.h
  *
  */
-#ifndef ${name}_H
-#define ${name}_H
+#ifndef zel_tracing_register_cb_H
+#define zel_tracing_register_cb_H
 #if defined(__cplusplus)
 #pragma once
 #endif
@@ -36,9 +36,15 @@ typedef struct _zel_tracer_handle_t *zel_tracer_handle_t;
 /// Callback definitions for all API released in LevelZero spec 1.1 or newer
 /// Callbacks for APIs included in spec 1.0 are contained in ze_api.helper
 
+#if !defined(__GNUC__)
+#pragma region callbacks
+#endif
+
 %for tbl in th.get_new_pfncbtables(specs, meta, n, tags):
 %for obj in tbl['functions']:
-///////////////////////////////////////////////////////////////////////////////
+<%
+    ret_type = obj['return_type']
+%>///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for ${th.make_func_name(n, tags, obj)}
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -60,13 +66,16 @@ typedef struct _${th.make_pfncb_param_type(n, tags, obj)}
 
 typedef void (${X}_APICALL *${th.make_pfncb_type(n, tags, obj)})(
     ${th.make_pfncb_param_type(n, tags, obj)}* params,
-    ${x}_result_t result,
+    ${ret_type} result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
     );
 
 %endfor
 %endfor
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
 
 typedef enum _zel_tracer_reg_t
 {
@@ -75,6 +84,10 @@ typedef enum _zel_tracer_reg_t
 } zel_tracer_reg_t;
 
 /// APIs to register callbacks for each core API
+
+#if !defined(__GNUC__)
+#pragma region register_callbacks
+#endif
 %for s in specs:
 %for obj in th.filter_items(s['objects'], 'type', 'function'):
 
@@ -87,6 +100,9 @@ ${th.make_tracing_func_name(n, tags, obj)}(
 
 %endfor
 %endfor #s in specs:
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
 
 ${X}_APIEXPORT ${x}_result_t ${X}_APICALL
 zelTracerResetAllCallbacks(zel_tracer_handle_t hTracer);
@@ -96,4 +112,4 @@ zelTracerResetAllCallbacks(zel_tracer_handle_t hTracer);
 } // extern "C"
 #endif
 
-#endif // ${name}_H
+#endif // zel_tracing_register_cb_H

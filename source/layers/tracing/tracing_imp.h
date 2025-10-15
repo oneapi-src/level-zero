@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -33,8 +33,10 @@ extern thread_local ze_bool_t tracingInProgress;
 extern struct APITracerContextImp *pGlobalAPITracerContextImp;
 
 typedef struct tracer_array_entry {
-    zel_all_core_callbacks_t corePrologues;
-    zel_all_core_callbacks_t coreEpilogues;
+    zel_ze_all_callbacks_t corePrologues;
+    zel_ze_all_callbacks_t coreEpilogues;
+    zel_zer_all_callbacks_t runtimePrologues;
+    zel_zer_all_callbacks_t runtimeEpilogues;
     void *pUserData;
 } tracer_array_entry_t;
 
@@ -53,7 +55,8 @@ struct APITracerImp : APITracer {
     ze_result_t destroyTracer(zel_tracer_handle_t phTracer) override;
     ze_result_t setPrologues(zel_core_callbacks_t *pCoreCbs) override;
     ze_result_t setEpilogues(zel_core_callbacks_t *pCoreCbs) override;
-    zel_all_core_callbacks_t& getProEpilogues(zel_tracer_reg_t callback_type, ze_result_t& result) override;
+    zel_ze_all_callbacks_t& getZeProEpilogues(zel_tracer_reg_t callback_type, ze_result_t& result) override;
+    zel_zer_all_callbacks_t &getZerProEpilogues(zel_tracer_reg_t callback_type, ze_result_t &result) override;
     ze_result_t resetAllCallbacks() override;
     ze_result_t enableTracer(ze_bool_t enable) override;
 
@@ -62,7 +65,7 @@ struct APITracerImp : APITracer {
 
   private:
 
-    void copyCoreCbsToAllCbs(zel_all_core_callbacks_t& allCbs, zel_core_callbacks_t& Cbs);
+    void copyCoreCbsToAllCbs(zel_ze_all_callbacks_t& allCbs, zel_core_callbacks_t& Cbs);
 };
 
 class ThreadPrivateTracerData {
@@ -192,14 +195,46 @@ class APITracerCallbackDataImp {
         }                                                                           \
     }
 
-template <typename TFunction_pointer, typename TParams, typename TTracer,
+#define ZER_GEN_PER_API_CALLBACK_STATE(perApiCallbackData, tracerType,               \
+                                       callbackCategory, callbackFunctionType)       \
+    tracing_layer::tracer_array_t *currentTracerArray;                               \
+    currentTracerArray =                                                             \
+        (tracing_layer::tracer_array_t *)                                            \
+            tracing_layer::pGlobalAPITracerContextImp->getActiveTracersList();       \
+    if (currentTracerArray) {                                                        \
+        for (size_t i = 0; i < currentTracerArray->tracerArrayCount; i++){           \
+            tracerType prologueCallbackPtr;                                          \
+            tracerType epilogue_callback_ptr;                                        \
+            ZE_GEN_TRACER_ARRAY_ENTRY(prologueCallbackPtr, currentTracerArray, i,    \
+                                       runtimePrologues, callbackCategory,           \
+                                       callbackFunctionType);                        \
+            ZE_GEN_TRACER_ARRAY_ENTRY(epilogue_callback_ptr, currentTracerArray, i,  \
+                                       runtimeEpilogues, callbackCategory,           \
+                                       callbackFunctionType);                        \
+                                                                                     \
+            tracing_layer::APITracerCallbackStateImp<tracerType> prologCallback;     \
+            prologCallback.current_api_callback = prologueCallbackPtr;               \
+            prologCallback.pUserData =                                               \
+                currentTracerArray->tracerArrayEntries[i].pUserData;                 \
+            perApiCallbackData.prologCallbacks.push_back(prologCallback);            \
+                                                                                     \
+            tracing_layer::APITracerCallbackStateImp<tracerType> epilogCallback;     \
+            epilogCallback.current_api_callback = epilogue_callback_ptr;             \
+            epilogCallback.pUserData =                                               \
+                currentTracerArray->tracerArrayEntries[i].pUserData;                 \
+            perApiCallbackData.epilogCallbacks.push_back(epilogCallback);            \
+        }                                                                            \
+    }
+
+template <typename TRet, typename TFunction_pointer, typename TParams, typename TTracer,
           typename TTracerPrologCallbacks, typename TTracerEpilogCallbacks,
           typename... Args>
-ze_result_t
+TRet
 APITracerWrapperImp(TFunction_pointer zeApiPtr, TParams paramsStruct,
                     TTracer apiOrdinal, TTracerPrologCallbacks prologCallbacks,
-                    TTracerEpilogCallbacks epilogCallbacks, Args &&... args) {
-    ze_result_t ret = ZE_RESULT_SUCCESS;
+                    TTracerEpilogCallbacks epilogCallbacks, Args &&...args)
+{
+    TRet ret {};
     std::vector<APITracerCallbackStateImp<TTracer>> *callbacks_prologs =
         &prologCallbacks;
 

@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.13-r1.13.1
+ * @version v1.14-r1.14.33
  *
  */
 #ifndef _ZE_API_H
@@ -256,8 +256,9 @@ typedef enum _ze_result_t
                                                                             ///< deferred to parallel operation join
     ZE_RESULT_EXT_ERROR_OPERANDS_INCOMPATIBLE = 0x7800001f,                 ///< [Core, Extension] operands of comparison are not compatible
     ZE_RESULT_ERROR_SURVIVABILITY_MODE_DETECTED = 0x78000020,               ///< [Sysman] device is in survivability mode, firmware update needed
+    ZE_RESULT_ERROR_ADDRESS_NOT_FOUND = 0x78000021,                         ///< [Core] address not found within specified or current context
     ZE_RESULT_ERROR_UNKNOWN = 0x7ffffffe,                                   ///< [Core] unknown or internal error
-    ZE_RESULT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RESULT_* ENUMs
+    ZE_RESULT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RESULT_* ENUMs
 
 } ze_result_t;
 
@@ -366,7 +367,11 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_RTAS_PARALLEL_OPERATION_EXT_PROPERTIES = 0x00020033,  ///< ::ze_rtas_parallel_operation_ext_properties_t
     ZE_STRUCTURE_TYPE_RTAS_DEVICE_EXT_PROPERTIES = 0x00020034,              ///< ::ze_rtas_device_ext_properties_t
     ZE_STRUCTURE_TYPE_RTAS_GEOMETRY_AABBS_EXT_CB_PARAMS = 0x00020035,       ///< ::ze_rtas_geometry_aabbs_ext_cb_params_t
-    ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_STRUCTURE_TYPE_* ENUMs
+    ZE_STRUCTURE_TYPE_COMMAND_LIST_APPEND_PARAM_COOPERATIVE_DESC = 0x00020036,  ///< ::ze_command_list_append_launch_kernel_param_cooperative_desc_t
+    ZE_STRUCTURE_TYPE_EXTERNAL_MEMMAP_SYSMEM_EXT_DESC = 0x00020037,         ///< ::ze_external_memmap_sysmem_ext_desc_t
+    ZE_STRUCTURE_TYPE_PITCHED_ALLOC_2DIMAGE_LINEAR_PITCH_EXP_INFO = 0x00020038, ///< ::ze_pitched_alloc_2dimage_linear_pitch_exp_info_t
+    ZE_STRUCTURE_TYPE_KERNEL_ALLOCATION_PROPERTIES = 0x00020039,            ///< ::ze_kernel_allocation_exp_properties_t
+    ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_STRUCTURE_TYPE_* ENUMs
 
 } ze_structure_type_t;
 
@@ -384,7 +389,7 @@ typedef enum _ze_external_memory_type_flag_t
                                                                             ///< resource
     ZE_EXTERNAL_MEMORY_TYPE_FLAG_D3D12_HEAP = ZE_BIT(6),                    ///< an NT handle referring to a Direct3D 12 heap resource
     ZE_EXTERNAL_MEMORY_TYPE_FLAG_D3D12_RESOURCE = ZE_BIT(7),                ///< an NT handle referring to a Direct3D 12 committed resource
-    ZE_EXTERNAL_MEMORY_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EXTERNAL_MEMORY_TYPE_FLAG_* ENUMs
+    ZE_EXTERNAL_MEMORY_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EXTERNAL_MEMORY_TYPE_FLAG_* ENUMs
 
 } ze_external_memory_type_flag_t;
 
@@ -395,7 +400,7 @@ typedef enum _ze_bandwidth_unit_t
     ZE_BANDWIDTH_UNIT_UNKNOWN = 0,                                          ///< The unit used for bandwidth is unknown
     ZE_BANDWIDTH_UNIT_BYTES_PER_NANOSEC = 1,                                ///< Bandwidth is provided in bytes/nanosec
     ZE_BANDWIDTH_UNIT_BYTES_PER_CLOCK = 2,                                  ///< Bandwidth is provided in bytes/clock
-    ZE_BANDWIDTH_UNIT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_BANDWIDTH_UNIT_* ENUMs
+    ZE_BANDWIDTH_UNIT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_BANDWIDTH_UNIT_* ENUMs
 
 } ze_bandwidth_unit_t;
 
@@ -408,7 +413,7 @@ typedef enum _ze_latency_unit_t
     ZE_LATENCY_UNIT_CLOCK = 2,                                              ///< Latency is provided in clocks
     ZE_LATENCY_UNIT_HOP = 3,                                                ///< Latency is provided in hops (normalized so that the lowest latency
                                                                             ///< link has a latency of 1 hop)
-    ZE_LATENCY_UNIT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_LATENCY_UNIT_* ENUMs
+    ZE_LATENCY_UNIT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_LATENCY_UNIT_* ENUMs
 
 } ze_latency_unit_t;
 
@@ -469,6 +474,9 @@ typedef struct _ze_base_desc_t
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Defines the device hierarchy model exposed by Level Zero driver
 ///        implementation
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Defines/Refines ordering of drivers reported to user
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_ipc_mem_handle_t
@@ -659,6 +667,10 @@ typedef struct _ze_module_constants_t ze_module_constants_t;
 typedef struct _ze_module_desc_t ze_module_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_command_list_append_launch_kernel_param_cooperative_desc_t
+typedef struct _ze_command_list_append_launch_kernel_param_cooperative_desc_t ze_command_list_append_launch_kernel_param_cooperative_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_module_properties_t
 typedef struct _ze_module_properties_t ze_module_properties_t;
 
@@ -681,6 +693,10 @@ typedef struct _ze_kernel_preferred_group_size_properties_t ze_kernel_preferred_
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_group_count_t
 typedef struct _ze_group_count_t ze_group_count_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_group_size_t
+typedef struct _ze_group_size_t ze_group_size_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_module_program_exp_desc_t
@@ -813,6 +829,14 @@ typedef struct _ze_rtas_builder_build_op_ext_desc_t ze_rtas_builder_build_op_ext
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_device_vector_width_properties_ext_t
 typedef struct _ze_device_vector_width_properties_ext_t ze_device_vector_width_properties_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_external_memmap_sysmem_ext_desc_t
+typedef struct _ze_external_memmap_sysmem_ext_desc_t ze_external_memmap_sysmem_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_kernel_allocation_exp_properties_t
+typedef struct _ze_kernel_allocation_exp_properties_t ze_kernel_allocation_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_cache_reservation_ext_desc_t
@@ -1035,6 +1059,10 @@ typedef struct _ze_image_pitched_exp_desc_t ze_image_pitched_exp_desc_t;
 typedef struct _ze_device_pitched_alloc_exp_properties_t ze_device_pitched_alloc_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_pitched_alloc_2dimage_linear_pitch_exp_info_t
+typedef struct _ze_pitched_alloc_2dimage_linear_pitch_exp_info_t ze_pitched_alloc_2dimage_linear_pitch_exp_info_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_mutable_command_id_exp_desc_t
 typedef struct _ze_mutable_command_id_exp_desc_t ze_mutable_command_id_exp_desc_t;
 
@@ -1085,7 +1113,7 @@ typedef enum _ze_init_flag_t
 {
     ZE_INIT_FLAG_GPU_ONLY = ZE_BIT(0),                                      ///< only initialize GPU drivers
     ZE_INIT_FLAG_VPU_ONLY = ZE_BIT(1),                                      ///< only initialize VPU drivers
-    ZE_INIT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_INIT_FLAG_* ENUMs
+    ZE_INIT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_INIT_FLAG_* ENUMs
 
 } ze_init_flag_t;
 
@@ -1182,7 +1210,7 @@ typedef enum _ze_init_driver_type_flag_t
 {
     ZE_INIT_DRIVER_TYPE_FLAG_GPU = ZE_BIT(0),                               ///< initialize and retrieve GPU drivers
     ZE_INIT_DRIVER_TYPE_FLAG_NPU = ZE_BIT(1),                               ///< initialize and retrieve NPU drivers
-    ZE_INIT_DRIVER_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_INIT_DRIVER_TYPE_FLAG_* ENUMs
+    ZE_INIT_DRIVER_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_INIT_DRIVER_TYPE_FLAG_* ENUMs
 
 } ze_init_driver_type_flag_t;
 
@@ -1282,15 +1310,16 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_11 = ZE_MAKE_VERSION( 1, 11 ),                         ///< version 1.11
     ZE_API_VERSION_1_12 = ZE_MAKE_VERSION( 1, 12 ),                         ///< version 1.12
     ZE_API_VERSION_1_13 = ZE_MAKE_VERSION( 1, 13 ),                         ///< version 1.13
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 13 ),                      ///< latest known version
-    ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_API_VERSION_* ENUMs
+    ZE_API_VERSION_1_14 = ZE_MAKE_VERSION( 1, 14 ),                         ///< version 1.14
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 14 ),                      ///< latest known version
+    ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_API_VERSION_* ENUMs
 
 } ze_api_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 13 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 14 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1380,7 +1409,7 @@ typedef enum _ze_ipc_property_flag_t
                                                                             ///< ::zeMemGetIpcHandle.
     ZE_IPC_PROPERTY_FLAG_EVENT_POOL = ZE_BIT(1),                            ///< Supports passing event pools between processes. See
                                                                             ///< ::zeEventPoolGetIpcHandle.
-    ZE_IPC_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IPC_PROPERTY_FLAG_* ENUMs
+    ZE_IPC_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IPC_PROPERTY_FLAG_* ENUMs
 
 } ze_ipc_property_flag_t;
 
@@ -1525,6 +1554,27 @@ zeDriverGetLastErrorDescription(
                                                                             ///< cause of error.
     );
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves handle to default context from the driver.
+/// 
+/// @details
+///     - The implementation of this function should be lock-free.
+///     - This returned context contains all the devices available in the
+///       driver.
+///     - This function does not return error code, to get info about failure
+///       user may use ::zeDriverGetLastErrorDescription function.
+///     - In case of failure, this function returns null.
+///     - Details on the error can be retrieved using
+///       ::zeDriverGetLastErrorDescription function.
+/// 
+/// @returns
+///     - handle of the default context
+///     - nullptr
+ZE_APIEXPORT ze_context_handle_t ZE_APICALL
+zeDriverGetDefaultContext(
+    ze_driver_handle_t hDriver                                              ///< [in] handle of the driver instance
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
@@ -1647,7 +1697,7 @@ typedef enum _ze_device_type_t
     ZE_DEVICE_TYPE_FPGA = 3,                                                ///< Field Programmable Gate Array
     ZE_DEVICE_TYPE_MCA = 4,                                                 ///< Memory Copy Accelerator
     ZE_DEVICE_TYPE_VPU = 5,                                                 ///< Vision Processing Unit
-    ZE_DEVICE_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_TYPE_* ENUMs
+    ZE_DEVICE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_TYPE_* ENUMs
 
 } ze_device_type_t;
 
@@ -1680,7 +1730,7 @@ typedef enum _ze_device_property_flag_t
     ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE = ZE_BIT(1),                          ///< Device handle used for query represents a sub-device.
     ZE_DEVICE_PROPERTY_FLAG_ECC = ZE_BIT(2),                                ///< Device supports error correction memory access.
     ZE_DEVICE_PROPERTY_FLAG_ONDEMANDPAGING = ZE_BIT(3),                     ///< Device supports on-demand page-faulting.
-    ZE_DEVICE_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_PROPERTY_FLAG_* ENUMs
+    ZE_DEVICE_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_PROPERTY_FLAG_* ENUMs
 
 } ze_device_property_flag_t;
 
@@ -1844,7 +1894,7 @@ typedef enum _ze_device_module_flag_t
     ZE_DEVICE_MODULE_FLAG_FP64 = ZE_BIT(1),                                 ///< Device supports 64-bit floating-point operations
     ZE_DEVICE_MODULE_FLAG_INT64_ATOMICS = ZE_BIT(2),                        ///< Device supports 64-bit atomic operations
     ZE_DEVICE_MODULE_FLAG_DP4A = ZE_BIT(3),                                 ///< Device supports four component dot product and accumulate operations
-    ZE_DEVICE_MODULE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_MODULE_FLAG_* ENUMs
+    ZE_DEVICE_MODULE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_MODULE_FLAG_* ENUMs
 
 } ze_device_module_flag_t;
 
@@ -1862,7 +1912,7 @@ typedef enum _ze_device_fp_flag_t
     ZE_DEVICE_FP_FLAG_ROUNDED_DIVIDE_SQRT = ZE_BIT(6),                      ///< Supports rounding as defined by IEEE754 for divide and sqrt
                                                                             ///< operations.
     ZE_DEVICE_FP_FLAG_SOFT_FLOAT = ZE_BIT(7),                               ///< Uses software implementation for basic floating-point operations.
-    ZE_DEVICE_FP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_FP_FLAG_* ENUMs
+    ZE_DEVICE_FP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_FP_FLAG_* ENUMs
 
 } ze_device_fp_flag_t;
 
@@ -1930,7 +1980,7 @@ typedef enum _ze_command_queue_group_property_flag_t
     ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COOPERATIVE_KERNELS = ZE_BIT(2),   ///< Command queue group supports cooperative kernels.
                                                                             ///< See ::zeCommandListAppendLaunchCooperativeKernel for more details.
     ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_METRICS = ZE_BIT(3),               ///< Command queue groups supports metric queries.
-    ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_* ENUMs
+    ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_* ENUMs
 
 } ze_command_queue_group_property_flag_t;
 
@@ -1999,7 +2049,7 @@ typedef uint32_t ze_device_memory_property_flags_t;
 typedef enum _ze_device_memory_property_flag_t
 {
     ZE_DEVICE_MEMORY_PROPERTY_FLAG_TBD = ZE_BIT(0),                         ///< reserved for future use
-    ZE_DEVICE_MEMORY_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_MEMORY_PROPERTY_FLAG_* ENUMs
+    ZE_DEVICE_MEMORY_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_MEMORY_PROPERTY_FLAG_* ENUMs
 
 } ze_device_memory_property_flag_t;
 
@@ -2075,7 +2125,7 @@ typedef enum _ze_memory_access_cap_flag_t
     ZE_MEMORY_ACCESS_CAP_FLAG_ATOMIC = ZE_BIT(1),                           ///< Supports atomic access
     ZE_MEMORY_ACCESS_CAP_FLAG_CONCURRENT = ZE_BIT(2),                       ///< Supports concurrent access
     ZE_MEMORY_ACCESS_CAP_FLAG_CONCURRENT_ATOMIC = ZE_BIT(3),                ///< Supports concurrent atomic access
-    ZE_MEMORY_ACCESS_CAP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_ACCESS_CAP_FLAG_* ENUMs
+    ZE_MEMORY_ACCESS_CAP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_ACCESS_CAP_FLAG_* ENUMs
 
 } ze_memory_access_cap_flag_t;
 
@@ -2133,7 +2183,7 @@ typedef uint32_t ze_device_cache_property_flags_t;
 typedef enum _ze_device_cache_property_flag_t
 {
     ZE_DEVICE_CACHE_PROPERTY_FLAG_USER_CONTROL = ZE_BIT(0),                 ///< Device support User Cache Control (i.e. SLM section vs Generic Cache)
-    ZE_DEVICE_CACHE_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_CACHE_PROPERTY_FLAG_* ENUMs
+    ZE_DEVICE_CACHE_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_CACHE_PROPERTY_FLAG_* ENUMs
 
 } ze_device_cache_property_flag_t;
 
@@ -2281,7 +2331,7 @@ typedef enum _ze_device_p2p_property_flag_t
 {
     ZE_DEVICE_P2P_PROPERTY_FLAG_ACCESS = ZE_BIT(0),                         ///< Device supports access between peer devices.
     ZE_DEVICE_P2P_PROPERTY_FLAG_ATOMICS = ZE_BIT(1),                        ///< Device supports atomics between peer devices.
-    ZE_DEVICE_P2P_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_P2P_PROPERTY_FLAG_* ENUMs
+    ZE_DEVICE_P2P_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_P2P_PROPERTY_FLAG_* ENUMs
 
 } ze_device_p2p_property_flag_t;
 
@@ -2420,6 +2470,32 @@ zeDeviceGetGlobalTimestamps(
                                                                             ///< Host's global timestamp value.
     );
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Synchronizes all command queues related to the device.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads with
+///       the same device handle.
+///     - The implementation of this function should be thread-safe.
+///     - This function blocks until all preceding submissions to all queues on
+///       the device are completed.
+///     - This function returns an error if device execution fails.
+///     - This function hangs indefinitely if the device is blocked on a
+///       non-signaled event.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceSynchronize(
+    ze_device_handle_t hDevice                                              ///< [in] handle of the device
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
@@ -2433,7 +2509,7 @@ typedef uint32_t ze_context_flags_t;
 typedef enum _ze_context_flag_t
 {
     ZE_CONTEXT_FLAG_TBD = ZE_BIT(0),                                        ///< reserved for future use
-    ZE_CONTEXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_CONTEXT_FLAG_* ENUMs
+    ZE_CONTEXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_CONTEXT_FLAG_* ENUMs
 
 } ze_context_flag_t;
 
@@ -2599,7 +2675,11 @@ typedef enum _ze_command_queue_flag_t
                                                                             ///< the next to define an in-order list, and application is allowed to
                                                                             ///< pass signal and wait events
                                                                             ///< to each appended command to implement more complex dependency graphs.
-    ZE_COMMAND_QUEUE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_COMMAND_QUEUE_FLAG_* ENUMs
+    ZE_COMMAND_QUEUE_FLAG_COPY_OFFLOAD_HINT = ZE_BIT(2),                    ///< Try to offload copy operations to different engines. Applicable only
+                                                                            ///< for compute queues.
+                                                                            ///< This is only a hint. Driver may ignore it per append call, based on
+                                                                            ///< platform capabilities or internal heuristics.
+    ZE_COMMAND_QUEUE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_QUEUE_FLAG_* ENUMs
 
 } ze_command_queue_flag_t;
 
@@ -2612,7 +2692,7 @@ typedef enum _ze_command_queue_mode_t
                                                                             ///< Host thread is blocked using wait on implicit synchronization object
     ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS = 2,                                 ///< Device execution is scheduled and will complete in future;
                                                                             ///< explicit synchronization object must be used to determine completeness
-    ZE_COMMAND_QUEUE_MODE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_COMMAND_QUEUE_MODE_* ENUMs
+    ZE_COMMAND_QUEUE_MODE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_QUEUE_MODE_* ENUMs
 
 } ze_command_queue_mode_t;
 
@@ -2623,7 +2703,7 @@ typedef enum _ze_command_queue_priority_t
     ZE_COMMAND_QUEUE_PRIORITY_NORMAL = 0,                                   ///< [default] normal priority
     ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_LOW = 1,                             ///< lower priority than normal
     ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH = 2,                            ///< higher priority than normal
-    ZE_COMMAND_QUEUE_PRIORITY_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_COMMAND_QUEUE_PRIORITY_* ENUMs
+    ZE_COMMAND_QUEUE_PRIORITY_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_QUEUE_PRIORITY_* ENUMs
 
 } ze_command_queue_priority_t;
 
@@ -2674,7 +2754,7 @@ typedef struct _ze_command_queue_desc_t
 ///         + `nullptr == desc`
 ///         + `nullptr == phCommandQueue`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < desc->flags`
+///         + `0x7 < desc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode`
 ///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < desc->priority`
 ZE_APIEXPORT ze_result_t ZE_APICALL
@@ -2880,7 +2960,7 @@ typedef enum _ze_command_list_flag_t
                                                                             ///< more complex dependency graphs. Cannot be combined with ::ZE_COMMAND_LIST_FLAG_RELAXED_ORDERING.
     ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE = ZE_BIT(4),                         ///< this command list may be cloned using ::zeCommandListCreateCloneExp
                                                                             ///< after ::zeCommandListClose.
-    ZE_COMMAND_LIST_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_COMMAND_LIST_FLAG_* ENUMs
+    ZE_COMMAND_LIST_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_LIST_FLAG_* ENUMs
 
 } ze_command_list_flag_t;
 
@@ -2965,7 +3045,7 @@ zeCommandListCreate(
 ///         + `nullptr == altdesc`
 ///         + `nullptr == phCommandList`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < altdesc->flags`
+///         + `0x7 < altdesc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode`
 ///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority`
 ZE_APIEXPORT ze_result_t ZE_APICALL
@@ -3435,11 +3515,12 @@ zeCommandListAppendMemoryCopy(
 /// @brief Initializes host, device, or shared memory.
 /// 
 /// @details
-///     - The application must ensure the memory pointed to by dstptr is
-///       accessible by the device on which the command list was created.
-///     - The implementation must not access the memory pointed to by dstptr as
-///       it is free to be modified by either the Host or device up until
+///     - The application must ensure the memory pointed to by ptr is accessible
+///       by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by ptr as it
+///       is free to be modified by either the Host or device up until
 ///       execution.
+///     - The ptr must be aligned to pattern_size
 ///     - The value to initialize memory to is described by the pattern and the
 ///       pattern size.
 ///     - The pattern size must be a power-of-two and less than or equal to the
@@ -3870,7 +3951,7 @@ typedef enum _ze_memory_advice_t
     ZE_MEMORY_ADVICE_SET_SYSTEM_MEMORY_PREFERRED_LOCATION = 8,              ///< hint that the preferred memory location is host memory
     ZE_MEMORY_ADVICE_CLEAR_SYSTEM_MEMORY_PREFERRED_LOCATION = 9,            ///< removes the effect of
                                                                             ///< ::ZE_MEMORY_ADVICE_SET_SYSTEM_MEMORY_PREFERRED_LOCATION
-    ZE_MEMORY_ADVICE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_ADVICE_* ENUMs
+    ZE_MEMORY_ADVICE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_ADVICE_* ENUMs
 
 } ze_memory_advice_t;
 
@@ -3938,7 +4019,7 @@ typedef enum _ze_event_pool_flag_t
     ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP = ZE_BIT(3),                 ///< Indicates all events in pool will contain kernel timestamps
                                                                             ///< synchronized to host time domain; cannot be combined with
                                                                             ///< ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
-    ZE_EVENT_POOL_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EVENT_POOL_FLAG_* ENUMs
+    ZE_EVENT_POOL_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_POOL_FLAG_* ENUMs
 
 } ze_event_pool_flag_t;
 
@@ -4034,7 +4115,7 @@ typedef enum _ze_event_scope_flag_t
                                                                             ///< device access and peer device access
     ZE_EVENT_SCOPE_FLAG_HOST = ZE_BIT(2),                                   ///< cache hierarchies are flushed or invalidated sufficient for device and
                                                                             ///< host access
-    ZE_EVENT_SCOPE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EVENT_SCOPE_FLAG_* ENUMs
+    ZE_EVENT_SCOPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_SCOPE_FLAG_* ENUMs
 
 } ze_event_scope_flag_t;
 
@@ -4708,7 +4789,7 @@ typedef uint32_t ze_fence_flags_t;
 typedef enum _ze_fence_flag_t
 {
     ZE_FENCE_FLAG_SIGNALED = ZE_BIT(0),                                     ///< fence is created in the signaled state, otherwise not signaled.
-    ZE_FENCE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_FENCE_FLAG_* ENUMs
+    ZE_FENCE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_FENCE_FLAG_* ENUMs
 
 } ze_fence_flag_t;
 
@@ -4888,7 +4969,7 @@ typedef enum _ze_image_flag_t
 {
     ZE_IMAGE_FLAG_KERNEL_WRITE = ZE_BIT(0),                                 ///< kernels will write contents
     ZE_IMAGE_FLAG_BIAS_UNCACHED = ZE_BIT(1),                                ///< device should not cache contents
-    ZE_IMAGE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_FLAG_* ENUMs
+    ZE_IMAGE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_FLAG_* ENUMs
 
 } ze_image_flag_t;
 
@@ -4902,7 +4983,7 @@ typedef enum _ze_image_type_t
     ZE_IMAGE_TYPE_2DARRAY = 3,                                              ///< 2D array
     ZE_IMAGE_TYPE_3D = 4,                                                   ///< 3D
     ZE_IMAGE_TYPE_BUFFER = 5,                                               ///< Buffer
-    ZE_IMAGE_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_TYPE_* ENUMs
+    ZE_IMAGE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_TYPE_* ENUMs
 
 } ze_image_type_t;
 
@@ -4956,7 +5037,7 @@ typedef enum _ze_image_format_layout_t
     ZE_IMAGE_FORMAT_LAYOUT_8_8_8 = 43,                                      ///< 3-component 8-bit layout
     ZE_IMAGE_FORMAT_LAYOUT_16_16_16 = 44,                                   ///< 3-component 16-bit layout
     ZE_IMAGE_FORMAT_LAYOUT_32_32_32 = 45,                                   ///< 3-component 32-bit layout
-    ZE_IMAGE_FORMAT_LAYOUT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_FORMAT_LAYOUT_* ENUMs
+    ZE_IMAGE_FORMAT_LAYOUT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_FORMAT_LAYOUT_* ENUMs
 
 } ze_image_format_layout_t;
 
@@ -4969,7 +5050,7 @@ typedef enum _ze_image_format_type_t
     ZE_IMAGE_FORMAT_TYPE_UNORM = 2,                                         ///< Unsigned normalized integer
     ZE_IMAGE_FORMAT_TYPE_SNORM = 3,                                         ///< Signed normalized integer
     ZE_IMAGE_FORMAT_TYPE_FLOAT = 4,                                         ///< Float
-    ZE_IMAGE_FORMAT_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_FORMAT_TYPE_* ENUMs
+    ZE_IMAGE_FORMAT_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_FORMAT_TYPE_* ENUMs
 
 } ze_image_format_type_t;
 
@@ -4984,7 +5065,7 @@ typedef enum _ze_image_format_swizzle_t
     ZE_IMAGE_FORMAT_SWIZZLE_0 = 4,                                          ///< Zero
     ZE_IMAGE_FORMAT_SWIZZLE_1 = 5,                                          ///< One
     ZE_IMAGE_FORMAT_SWIZZLE_X = 6,                                          ///< Don't care
-    ZE_IMAGE_FORMAT_SWIZZLE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_FORMAT_SWIZZLE_* ENUMs
+    ZE_IMAGE_FORMAT_SWIZZLE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_FORMAT_SWIZZLE_* ENUMs
 
 } ze_image_format_swizzle_t;
 
@@ -5049,7 +5130,7 @@ typedef enum _ze_image_sampler_filter_flag_t
 {
     ZE_IMAGE_SAMPLER_FILTER_FLAG_POINT = ZE_BIT(0),                         ///< device supports point filtering
     ZE_IMAGE_SAMPLER_FILTER_FLAG_LINEAR = ZE_BIT(1),                        ///< device supports linear filtering
-    ZE_IMAGE_SAMPLER_FILTER_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_SAMPLER_FILTER_FLAG_* ENUMs
+    ZE_IMAGE_SAMPLER_FILTER_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_SAMPLER_FILTER_FLAG_* ENUMs
 
 } ze_image_sampler_filter_flag_t;
 
@@ -5171,7 +5252,7 @@ typedef enum _ze_device_mem_alloc_flag_t
     ZE_DEVICE_MEM_ALLOC_FLAG_BIAS_CACHED = ZE_BIT(0),                       ///< device should cache allocation
     ZE_DEVICE_MEM_ALLOC_FLAG_BIAS_UNCACHED = ZE_BIT(1),                     ///< device should not cache allocation (UC)
     ZE_DEVICE_MEM_ALLOC_FLAG_BIAS_INITIAL_PLACEMENT = ZE_BIT(2),            ///< optimize shared allocation for first access on the device
-    ZE_DEVICE_MEM_ALLOC_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_MEM_ALLOC_FLAG_* ENUMs
+    ZE_DEVICE_MEM_ALLOC_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_MEM_ALLOC_FLAG_* ENUMs
 
 } ze_device_mem_alloc_flag_t;
 
@@ -5199,7 +5280,7 @@ typedef enum _ze_host_mem_alloc_flag_t
     ZE_HOST_MEM_ALLOC_FLAG_BIAS_UNCACHED = ZE_BIT(1),                       ///< host should not cache allocation (UC)
     ZE_HOST_MEM_ALLOC_FLAG_BIAS_WRITE_COMBINED = ZE_BIT(2),                 ///< host memory should be allocated write-combined (WC)
     ZE_HOST_MEM_ALLOC_FLAG_BIAS_INITIAL_PLACEMENT = ZE_BIT(3),              ///< optimize shared allocation for first access on the host
-    ZE_HOST_MEM_ALLOC_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_HOST_MEM_ALLOC_FLAG_* ENUMs
+    ZE_HOST_MEM_ALLOC_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_HOST_MEM_ALLOC_FLAG_* ENUMs
 
 } ze_host_mem_alloc_flag_t;
 
@@ -5397,7 +5478,9 @@ typedef enum _ze_memory_type_t
     ZE_MEMORY_TYPE_HOST = 1,                                                ///< the memory pointed to is a host allocation
     ZE_MEMORY_TYPE_DEVICE = 2,                                              ///< the memory pointed to is a device allocation
     ZE_MEMORY_TYPE_SHARED = 3,                                              ///< the memory pointed to is a shared ownership allocation
-    ZE_MEMORY_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_TYPE_* ENUMs
+    ZE_MEMORY_TYPE_HOST_IMPORTED = 4,                                       ///< the memory pointed to is a host allocation created from external
+                                                                            ///< system memory
+    ZE_MEMORY_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_TYPE_* ENUMs
 
 } ze_memory_type_t;
 
@@ -5460,6 +5543,7 @@ zeMemGetAllocProperties(
 ///         + `nullptr == hContext`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == ptr`
+///     - ::ZE_RESULT_ERROR_ADDRESS_NOT_FOUND
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeMemGetAddressRange(
     ze_context_handle_t hContext,                                           ///< [in] handle of the context object
@@ -5589,7 +5673,7 @@ typedef enum _ze_ipc_memory_flag_t
 {
     ZE_IPC_MEMORY_FLAG_BIAS_CACHED = ZE_BIT(0),                             ///< device should cache allocation
     ZE_IPC_MEMORY_FLAG_BIAS_UNCACHED = ZE_BIT(1),                           ///< device should not cache allocation (UC)
-    ZE_IPC_MEMORY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IPC_MEMORY_FLAG_* ENUMs
+    ZE_IPC_MEMORY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IPC_MEMORY_FLAG_* ENUMs
 
 } ze_ipc_memory_flag_t;
 
@@ -5790,7 +5874,7 @@ typedef enum _ze_memory_atomic_attr_exp_flag_t
     ZE_MEMORY_ATOMIC_ATTR_EXP_FLAG_SYSTEM_ATOMICS = ZE_BIT(6),              ///< Concurrent atomics on the pointer from both host and device are
                                                                             ///< allowed. Requires ::ZE_MEMORY_ACCESS_CAP_FLAG_CONCURRENT_ATOMIC
                                                                             ///< returned by ::zeDeviceGetMemoryAccessProperties.
-    ZE_MEMORY_ATOMIC_ATTR_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_ATOMIC_ATTR_EXP_FLAG_* ENUMs
+    ZE_MEMORY_ATOMIC_ATTR_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_ATOMIC_ATTR_EXP_FLAG_* ENUMs
 
 } ze_memory_atomic_attr_exp_flag_t;
 
@@ -5883,7 +5967,7 @@ typedef enum _ze_module_format_t
 {
     ZE_MODULE_FORMAT_IL_SPIRV = 0,                                          ///< Format is SPIRV IL format
     ZE_MODULE_FORMAT_NATIVE = 1,                                            ///< Format is device native format
-    ZE_MODULE_FORMAT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MODULE_FORMAT_* ENUMs
+    ZE_MODULE_FORMAT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MODULE_FORMAT_* ENUMs
 
 } ze_module_format_t;
 
@@ -5934,6 +6018,17 @@ typedef struct _ze_module_desc_t
                                                                             ///< constants are provided.
 
 } ze_module_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Append launch kernel with parameters cooperative descriptor
+typedef struct _ze_command_list_append_launch_kernel_param_cooperative_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_bool_t isCooperative;                                                ///< [in] When true, kernel is treated as cooperative.
+
+} ze_command_list_append_launch_kernel_param_cooperative_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Creates a module on the context.
@@ -6208,7 +6303,7 @@ typedef enum _ze_module_property_flag_t
 {
     ZE_MODULE_PROPERTY_FLAG_IMPORTS = ZE_BIT(0),                            ///< Module has imports (i.e. imported global variables and/or kernels).
                                                                             ///< See ::zeModuleDynamicLink.
-    ZE_MODULE_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MODULE_PROPERTY_FLAG_* ENUMs
+    ZE_MODULE_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MODULE_PROPERTY_FLAG_* ENUMs
 
 } ze_module_property_flag_t;
 
@@ -6254,7 +6349,7 @@ typedef enum _ze_kernel_flag_t
     ZE_KERNEL_FLAG_FORCE_RESIDENCY = ZE_BIT(0),                             ///< force all device allocations to be resident during execution
     ZE_KERNEL_FLAG_EXPLICIT_RESIDENCY = ZE_BIT(1),                          ///< application is responsible for all residency of device allocations.
                                                                             ///< driver may disable implicit residency management.
-    ZE_KERNEL_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_KERNEL_FLAG_* ENUMs
+    ZE_KERNEL_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_KERNEL_FLAG_* ENUMs
 
 } ze_kernel_flag_t;
 
@@ -6454,6 +6549,8 @@ zeKernelSuggestMaxCooperativeGroupCount(
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same kernel handle.
 ///     - The implementation of this function should be lock-free.
+///     - If argument is SLM (size), then SLM size in bytes for this resource is
+///       provided as argument size and argument value is null
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -6465,6 +6562,7 @@ zeKernelSuggestMaxCooperativeGroupCount(
 ///         + `nullptr == hKernel`
 ///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_INDEX
 ///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_SIZE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeKernelSetArgumentValue(
     ze_kernel_handle_t hKernel,                                             ///< [in] handle of the kernel object
@@ -6482,7 +6580,7 @@ typedef enum _ze_kernel_indirect_access_flag_t
     ZE_KERNEL_INDIRECT_ACCESS_FLAG_HOST = ZE_BIT(0),                        ///< Indicates that the kernel accesses host allocations indirectly.
     ZE_KERNEL_INDIRECT_ACCESS_FLAG_DEVICE = ZE_BIT(1),                      ///< Indicates that the kernel accesses device allocations indirectly.
     ZE_KERNEL_INDIRECT_ACCESS_FLAG_SHARED = ZE_BIT(2),                      ///< Indicates that the kernel accesses shared allocations indirectly.
-    ZE_KERNEL_INDIRECT_ACCESS_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_KERNEL_INDIRECT_ACCESS_FLAG_* ENUMs
+    ZE_KERNEL_INDIRECT_ACCESS_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_KERNEL_INDIRECT_ACCESS_FLAG_* ENUMs
 
 } ze_kernel_indirect_access_flag_t;
 
@@ -6581,7 +6679,7 @@ typedef enum _ze_cache_config_flag_t
 {
     ZE_CACHE_CONFIG_FLAG_LARGE_SLM = ZE_BIT(0),                             ///< Large SLM size
     ZE_CACHE_CONFIG_FLAG_LARGE_DATA = ZE_BIT(1),                            ///< Large General Data size
-    ZE_CACHE_CONFIG_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_CACHE_CONFIG_FLAG_* ENUMs
+    ZE_CACHE_CONFIG_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_CACHE_CONFIG_FLAG_* ENUMs
 
 } ze_cache_config_flag_t;
 
@@ -6779,6 +6877,118 @@ zeCommandListAppendLaunchKernel(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Launch kernel over one or more work groups and allow to pass
+///        additional parameters.
+/// 
+/// @details
+///     - The application must ensure the kernel and events are accessible by
+///       the device on which the command list was created.
+///     - This may **only** be called for a command list created with command
+///       queue group ordinal that supports compute.
+///     - The application must ensure the command list, kernel and events were
+///       created on the same context.
+///     - This function may **not** be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+///     - This function allows to pass additional parameters in the form of
+///       `${x}_base_desc_t`
+///     - This function can replace ::zeCommandListAppendLaunchCooperativeKernel
+///       with additional parameter
+///       `${x}_command_list_append_launch_kernel_param_cooperative_desc_t`
+///     - This function supports both immediate and regular command lists.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pGroupCounts`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + when passed additional parameters are invalid or incompatible with the device or command list
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendLaunchKernelWithParameters(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_kernel_handle_t hKernel,                                             ///< [in] handle of the kernel object
+    const ze_group_count_t* pGroupCounts,                                   ///< [in] thread group launch arguments
+    const void * pNext,                                                     ///< [in][optional] additional parameters passed to the function
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Kernel dispatch group sizes.
+typedef struct _ze_group_size_t
+{
+    uint32_t groupSizeX;                                                    ///< [in] size of thread group in X dimension
+    uint32_t groupSizeY;                                                    ///< [in] size of thread group in Y dimension
+    uint32_t groupSizeZ;                                                    ///< [in] size of thread group in Z dimension
+
+} ze_group_size_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Launch kernel over one or more work groups with specifying work group
+///        size and all kernel arguments and allow to pass additional extensions.
+/// 
+/// @details
+///     - The application must ensure the kernel and events are accessible by
+///       the device on which the command list was created.
+///     - This may **only** be called for a command list created with command
+///       queue group ordinal that supports compute.
+///     - The application must ensure the command list, kernel and events were
+///       created on the same context.
+///     - This function may **not** be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+///     - This function supports both immediate and regular command lists.
+///     - This function changes kernel state as if separate
+///       ${x}KernelSetGroupSize and ${x}KernelSetArgumentValue functions were
+///       called.
+///     - This function allows to pass additional extensions in the form of
+///       `${x}_base_desc_t`
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + when passed additional extensions are invalid or incompatible with the device or command list
+///     - ::ZE_RESULT_ERROR_INVALID_GROUP_SIZE_DIMENSION - "as per ${x}KernelSetGroupSize"
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT - "as per ${x}KernelSetArgumentValue"
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendLaunchKernelWithArguments(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_kernel_handle_t hKernel,                                             ///< [in] handle of the kernel object
+    const ze_group_count_t groupCounts,                                     ///< [in] thread group counts
+    const ze_group_size_t groupSizes,                                       ///< [in] thread group sizes
+    void ** pArguments,                                                     ///< [in]pointer to an array of pointers
+    const void * pNext,                                                     ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Launch kernel cooperatively over one or more work groups.
 /// 
 /// @details
@@ -6940,7 +7150,7 @@ typedef enum _ze_module_program_exp_version_t
 {
     ZE_MODULE_PROGRAM_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
     ZE_MODULE_PROGRAM_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
-    ZE_MODULE_PROGRAM_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MODULE_PROGRAM_EXP_VERSION_* ENUMs
+    ZE_MODULE_PROGRAM_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MODULE_PROGRAM_EXP_VERSION_* ENUMs
 
 } ze_module_program_exp_version_t;
 
@@ -6993,7 +7203,7 @@ typedef enum _ze_raytracing_ext_version_t
 {
     ZE_RAYTRACING_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                ///< version 1.0
     ZE_RAYTRACING_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),            ///< latest known version
-    ZE_RAYTRACING_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RAYTRACING_EXT_VERSION_* ENUMs
+    ZE_RAYTRACING_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RAYTRACING_EXT_VERSION_* ENUMs
 
 } ze_raytracing_ext_version_t;
 
@@ -7003,7 +7213,7 @@ typedef uint32_t ze_device_raytracing_ext_flags_t;
 typedef enum _ze_device_raytracing_ext_flag_t
 {
     ZE_DEVICE_RAYTRACING_EXT_FLAG_RAYQUERY = ZE_BIT(0),                     ///< Supports rayquery
-    ZE_DEVICE_RAYTRACING_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_RAYTRACING_EXT_FLAG_* ENUMs
+    ZE_DEVICE_RAYTRACING_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_RAYTRACING_EXT_FLAG_* ENUMs
 
 } ze_device_raytracing_ext_flag_t;
 
@@ -7029,7 +7239,7 @@ typedef uint32_t ze_raytracing_mem_alloc_ext_flags_t;
 typedef enum _ze_raytracing_mem_alloc_ext_flag_t
 {
     ZE_RAYTRACING_MEM_ALLOC_EXT_FLAG_TBD = ZE_BIT(0),                       ///< reserved for future use
-    ZE_RAYTRACING_MEM_ALLOC_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RAYTRACING_MEM_ALLOC_EXT_FLAG_* ENUMs
+    ZE_RAYTRACING_MEM_ALLOC_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RAYTRACING_MEM_ALLOC_EXT_FLAG_* ENUMs
 
 } ze_raytracing_mem_alloc_ext_flag_t;
 
@@ -7191,7 +7401,7 @@ typedef enum _ze_sampler_address_mode_t
                                                                             ///< 0.0f, 0.0f, 0.0f) if image format swizzle contains alpha, otherwise
                                                                             ///< (0.0f, 0.0f, 0.0f, 1.0f).
     ZE_SAMPLER_ADDRESS_MODE_MIRROR = 4,                                     ///< Out-of-bounds coordinates are mirrored starting from edge.
-    ZE_SAMPLER_ADDRESS_MODE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_SAMPLER_ADDRESS_MODE_* ENUMs
+    ZE_SAMPLER_ADDRESS_MODE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_SAMPLER_ADDRESS_MODE_* ENUMs
 
 } ze_sampler_address_mode_t;
 
@@ -7201,7 +7411,7 @@ typedef enum _ze_sampler_filter_mode_t
 {
     ZE_SAMPLER_FILTER_MODE_NEAREST = 0,                                     ///< No coordinate modifications for out of bounds image access.
     ZE_SAMPLER_FILTER_MODE_LINEAR = 1,                                      ///< Out-of-bounds coordinates are wrapped back around.
-    ZE_SAMPLER_FILTER_MODE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_SAMPLER_FILTER_MODE_* ENUMs
+    ZE_SAMPLER_FILTER_MODE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_SAMPLER_FILTER_MODE_* ENUMs
 
 } ze_sampler_filter_mode_t;
 
@@ -7291,7 +7501,7 @@ typedef enum _ze_memory_access_attribute_t
     ZE_MEMORY_ACCESS_ATTRIBUTE_NONE = 0,                                    ///< Indicates the memory page is inaccessible.
     ZE_MEMORY_ACCESS_ATTRIBUTE_READWRITE = 1,                               ///< Indicates the memory page supports read write access.
     ZE_MEMORY_ACCESS_ATTRIBUTE_READONLY = 2,                                ///< Indicates the memory page supports read-only access.
-    ZE_MEMORY_ACCESS_ATTRIBUTE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_ACCESS_ATTRIBUTE_* ENUMs
+    ZE_MEMORY_ACCESS_ATTRIBUTE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_ACCESS_ATTRIBUTE_* ENUMs
 
 } ze_memory_access_attribute_t;
 
@@ -7399,7 +7609,7 @@ typedef enum _ze_physical_mem_flag_t
 {
     ZE_PHYSICAL_MEM_FLAG_ALLOCATE_ON_DEVICE = ZE_BIT(0),                    ///< [default] allocate physical device memory.
     ZE_PHYSICAL_MEM_FLAG_ALLOCATE_ON_HOST = ZE_BIT(1),                      ///< Allocate physical host memory instead.
-    ZE_PHYSICAL_MEM_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_PHYSICAL_MEM_FLAG_* ENUMs
+    ZE_PHYSICAL_MEM_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_PHYSICAL_MEM_FLAG_* ENUMs
 
 } ze_physical_mem_flag_t;
 
@@ -7648,7 +7858,7 @@ typedef enum _ze_float_atomics_ext_version_t
 {
     ZE_FLOAT_ATOMICS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),             ///< version 1.0
     ZE_FLOAT_ATOMICS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),         ///< latest known version
-    ZE_FLOAT_ATOMICS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_FLOAT_ATOMICS_EXT_VERSION_* ENUMs
+    ZE_FLOAT_ATOMICS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_FLOAT_ATOMICS_EXT_VERSION_* ENUMs
 
 } ze_float_atomics_ext_version_t;
 
@@ -7663,7 +7873,7 @@ typedef enum _ze_device_fp_atomic_ext_flag_t
     ZE_DEVICE_FP_ATOMIC_EXT_FLAG_LOCAL_LOAD_STORE = ZE_BIT(16),             ///< Supports atomic load, store, and exchange
     ZE_DEVICE_FP_ATOMIC_EXT_FLAG_LOCAL_ADD = ZE_BIT(17),                    ///< Supports atomic add and subtract
     ZE_DEVICE_FP_ATOMIC_EXT_FLAG_LOCAL_MIN_MAX = ZE_BIT(18),                ///< Supports atomic min and max
-    ZE_DEVICE_FP_ATOMIC_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_FP_ATOMIC_EXT_FLAG_* ENUMs
+    ZE_DEVICE_FP_ATOMIC_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_FP_ATOMIC_EXT_FLAG_* ENUMs
 
 } ze_device_fp_atomic_ext_flag_t;
 
@@ -7706,7 +7916,7 @@ typedef enum _ze_global_offset_exp_version_t
 {
     ZE_GLOBAL_OFFSET_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),             ///< version 1.0
     ZE_GLOBAL_OFFSET_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),         ///< latest known version
-    ZE_GLOBAL_OFFSET_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_GLOBAL_OFFSET_EXP_VERSION_* ENUMs
+    ZE_GLOBAL_OFFSET_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_GLOBAL_OFFSET_EXP_VERSION_* ENUMs
 
 } ze_global_offset_exp_version_t;
 
@@ -7755,7 +7965,7 @@ typedef enum _ze_relaxed_allocation_limits_exp_version_t
 {
     ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
     ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_* ENUMs
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_* ENUMs
 
 } ze_relaxed_allocation_limits_exp_version_t;
 
@@ -7766,7 +7976,7 @@ typedef enum _ze_relaxed_allocation_limits_exp_flag_t
 {
     ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_MAX_SIZE = ZE_BIT(0),             ///< Allocation size may exceed the `maxMemAllocSize` member of
                                                                             ///< ::ze_device_properties_t.
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_* ENUMs
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_* ENUMs
 
 } ze_relaxed_allocation_limits_exp_flag_t;
 
@@ -7808,7 +8018,7 @@ typedef enum _ze_kernel_get_binary_exp_version_t
 {
     ZE_KERNEL_GET_BINARY_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
     ZE_KERNEL_GET_BINARY_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
-    ZE_KERNEL_GET_BINARY_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_KERNEL_GET_BINARY_EXP_VERSION_* ENUMs
+    ZE_KERNEL_GET_BINARY_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_KERNEL_GET_BINARY_EXP_VERSION_* ENUMs
 
 } ze_kernel_get_binary_exp_version_t;
 
@@ -7858,8 +8068,9 @@ zeKernelGetBinaryExp(
 typedef enum _ze_driver_ddi_handles_ext_version_t
 {
     ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
-    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
-    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DRIVER_DDI_HANDLES_EXT_VERSION_* ENUMs
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),        ///< version 1.1
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 1 ),    ///< latest known version
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DRIVER_DDI_HANDLES_EXT_VERSION_* ENUMs
 
 } ze_driver_ddi_handles_ext_version_t;
 
@@ -7869,7 +8080,7 @@ typedef uint32_t ze_driver_ddi_handle_ext_flags_t;
 typedef enum _ze_driver_ddi_handle_ext_flag_t
 {
     ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED = ZE_BIT(0),     ///< Driver Supports DDI Handles Extension
-    ZE_DRIVER_DDI_HANDLE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DRIVER_DDI_HANDLE_EXT_FLAG_* ENUMs
+    ZE_DRIVER_DDI_HANDLE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DRIVER_DDI_HANDLE_EXT_FLAG_* ENUMs
 
 } ze_driver_ddi_handle_ext_flag_t;
 
@@ -7907,7 +8118,7 @@ typedef enum _ze_external_semaphore_ext_version_t
 {
     ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
     ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
-    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_* ENUMs
+    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_* ENUMs
 
 } ze_external_semaphore_ext_version_t;
 
@@ -7929,7 +8140,7 @@ typedef enum _ze_external_semaphore_ext_flag_t
     ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_KEYED_MUTEX_KMT = ZE_BIT(6),             ///< Semaphore is a keyed mutex for Win32 KMT
     ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_VK_TIMELINE_SEMAPHORE_FD = ZE_BIT(7),    ///< Semaphore is a Vulkan Timeline semaphore for Linux
     ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_VK_TIMELINE_SEMAPHORE_WIN32 = ZE_BIT(8), ///< Semaphore is a Vulkan Timeline semaphore for Win32
-    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_* ENUMs
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_* ENUMs
 
 } ze_external_semaphore_ext_flag_t;
 
@@ -8155,7 +8366,7 @@ typedef enum _ze_device_cache_line_size_ext_version_t
 {
     ZE_DEVICE_CACHE_LINE_SIZE_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),    ///< version 1.0
     ZE_DEVICE_CACHE_LINE_SIZE_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
-    ZE_DEVICE_CACHE_LINE_SIZE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_CACHE_LINE_SIZE_EXT_VERSION_* ENUMs
+    ZE_DEVICE_CACHE_LINE_SIZE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_CACHE_LINE_SIZE_EXT_VERSION_* ENUMs
 
 } ze_device_cache_line_size_ext_version_t;
 
@@ -8194,7 +8405,7 @@ typedef enum _ze_rtas_builder_ext_version_t
 {
     ZE_RTAS_BUILDER_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),              ///< version 1.0
     ZE_RTAS_BUILDER_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),          ///< latest known version
-    ZE_RTAS_BUILDER_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_EXT_VERSION_* ENUMs
+    ZE_RTAS_BUILDER_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_EXT_VERSION_* ENUMs
 
 } ze_rtas_builder_ext_version_t;
 
@@ -8204,7 +8415,7 @@ typedef uint32_t ze_rtas_device_ext_flags_t;
 typedef enum _ze_rtas_device_ext_flag_t
 {
     ZE_RTAS_DEVICE_EXT_FLAG_RESERVED = ZE_BIT(0),                           ///< reserved for future use
-    ZE_RTAS_DEVICE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_DEVICE_EXT_FLAG_* ENUMs
+    ZE_RTAS_DEVICE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_DEVICE_EXT_FLAG_* ENUMs
 
 } ze_rtas_device_ext_flag_t;
 
@@ -8218,7 +8429,7 @@ typedef enum _ze_rtas_format_ext_t
 {
     ZE_RTAS_FORMAT_EXT_INVALID = 0x0,                                       ///< Invalid acceleration structure format code
     ZE_RTAS_FORMAT_EXT_MAX = 0x7ffffffe,                                    ///< Maximum acceleration structure format code
-    ZE_RTAS_FORMAT_EXT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_FORMAT_EXT_* ENUMs
+    ZE_RTAS_FORMAT_EXT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_FORMAT_EXT_* ENUMs
 
 } ze_rtas_format_ext_t;
 
@@ -8228,7 +8439,7 @@ typedef uint32_t ze_rtas_builder_ext_flags_t;
 typedef enum _ze_rtas_builder_ext_flag_t
 {
     ZE_RTAS_BUILDER_EXT_FLAG_RESERVED = ZE_BIT(0),                          ///< Reserved for future use
-    ZE_RTAS_BUILDER_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_EXT_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_EXT_FLAG_* ENUMs
 
 } ze_rtas_builder_ext_flag_t;
 
@@ -8238,7 +8449,7 @@ typedef uint32_t ze_rtas_parallel_operation_ext_flags_t;
 typedef enum _ze_rtas_parallel_operation_ext_flag_t
 {
     ZE_RTAS_PARALLEL_OPERATION_EXT_FLAG_RESERVED = ZE_BIT(0),               ///< Reserved for future use
-    ZE_RTAS_PARALLEL_OPERATION_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_PARALLEL_OPERATION_EXT_FLAG_* ENUMs
+    ZE_RTAS_PARALLEL_OPERATION_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_PARALLEL_OPERATION_EXT_FLAG_* ENUMs
 
 } ze_rtas_parallel_operation_ext_flag_t;
 
@@ -8248,7 +8459,7 @@ typedef uint32_t ze_rtas_builder_geometry_ext_flags_t;
 typedef enum _ze_rtas_builder_geometry_ext_flag_t
 {
     ZE_RTAS_BUILDER_GEOMETRY_EXT_FLAG_NON_OPAQUE = ZE_BIT(0),               ///< non-opaque geometries invoke an any-hit shader
-    ZE_RTAS_BUILDER_GEOMETRY_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_EXT_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_GEOMETRY_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_EXT_FLAG_* ENUMs
 
 } ze_rtas_builder_geometry_ext_flag_t;
 
@@ -8268,7 +8479,7 @@ typedef enum _ze_rtas_builder_instance_ext_flag_t
                                                                             ///< be non-opaque
     ZE_RTAS_BUILDER_INSTANCE_EXT_FLAG_TRIANGLE_FORCE_NON_OPAQUE = ZE_BIT(3),///< forces instanced geometry to be non-opaque, unless ray flag forces it
                                                                             ///< to be opaque
-    ZE_RTAS_BUILDER_INSTANCE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_INSTANCE_EXT_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_INSTANCE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_INSTANCE_EXT_FLAG_* ENUMs
 
 } ze_rtas_builder_instance_ext_flag_t;
 
@@ -8294,7 +8505,7 @@ typedef enum _ze_rtas_builder_build_op_ext_flag_t
 {
     ZE_RTAS_BUILDER_BUILD_OP_EXT_FLAG_COMPACT = ZE_BIT(0),                  ///< build more compact acceleration structure
     ZE_RTAS_BUILDER_BUILD_OP_EXT_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION = ZE_BIT(1),   ///< guarantees single any-hit shader invocation per primitive
-    ZE_RTAS_BUILDER_BUILD_OP_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_BUILD_OP_EXT_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_BUILD_OP_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_BUILD_OP_EXT_FLAG_* ENUMs
 
 } ze_rtas_builder_build_op_ext_flag_t;
 
@@ -8317,7 +8528,7 @@ typedef enum _ze_rtas_builder_build_quality_hint_ext_t
     ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXT_LOW = 0,                         ///< build low-quality acceleration structure (fast)
     ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXT_MEDIUM = 1,                      ///< build medium-quality acceleration structure (slower)
     ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXT_HIGH = 2,                        ///< build high-quality acceleration structure (slow)
-    ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXT_* ENUMs
+    ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXT_* ENUMs
 
 } ze_rtas_builder_build_quality_hint_ext_t;
 
@@ -8329,7 +8540,7 @@ typedef enum _ze_rtas_builder_geometry_type_ext_t
     ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXT_QUADS = 1,                            ///< quad mesh geometry type
     ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXT_PROCEDURAL = 2,                       ///< procedural geometry type
     ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXT_INSTANCE = 3,                         ///< instance geometry type
-    ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXT_* ENUMs
+    ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXT_* ENUMs
 
 } ze_rtas_builder_geometry_type_ext_t;
 
@@ -8358,7 +8569,7 @@ typedef enum _ze_rtas_builder_input_data_format_ext_t
     ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_TRIANGLE_INDICES_UINT32 = 5,      ///< Unsigned 32-bit triangle indices (see
                                                                             ///< ::ze_rtas_triangle_indices_uint32_ext_t)
     ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_QUAD_INDICES_UINT32 = 6,          ///< Unsigned 32-bit quad indices (see ::ze_rtas_quad_indices_uint32_ext_t)
-    ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_* ENUMs
+    ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_* ENUMs
 
 } ze_rtas_builder_input_data_format_ext_t;
 
@@ -9127,7 +9338,7 @@ typedef enum _ze_device_vector_sizes_ext_version_t
 {
     ZE_DEVICE_VECTOR_SIZES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),       ///< version 1.0
     ZE_DEVICE_VECTOR_SIZES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
-    ZE_DEVICE_VECTOR_SIZES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_VECTOR_SIZES_EXT_VERSION_* ENUMs
+    ZE_DEVICE_VECTOR_SIZES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_VECTOR_SIZES_EXT_VERSION_* ENUMs
 
 } ze_device_vector_sizes_ext_version_t;
 
@@ -9199,6 +9410,120 @@ zeDeviceGetVectorWidthPropertiesExt(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Mapping External Memory as part of host llocation
+#if !defined(__GNUC__)
+#pragma region externalMemMap
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_EXTERNAL_MEMORY_MAPPING_EXT_NAME
+/// @brief External Memory Mapping Extension Name
+#define ZE_EXTERNAL_MEMORY_MAPPING_EXT_NAME  "ZE_extension_external_memmap_sysmem"
+#endif // ZE_EXTERNAL_MEMORY_MAPPING_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Memory Mapping Extension Version(s)
+typedef enum _ze_external_memmap_sysmem_ext_version_t
+{
+    ZE_EXTERNAL_MEMMAP_SYSMEM_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),    ///< version 1.0
+    ZE_EXTERNAL_MEMMAP_SYSMEM_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
+    ZE_EXTERNAL_MEMMAP_SYSMEM_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EXTERNAL_MEMMAP_SYSMEM_EXT_VERSION_* ENUMs
+
+} ze_external_memmap_sysmem_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Maps external system memory for an allocation
+/// 
+/// @details
+///     - This structure may be passed to ::zeMemAllocHost, via the `pNext`
+///       member of ::ze_host_mem_alloc_desc_t to map system memory for a host
+///       allocation.
+///     - The system memory pointer and size being mapped must be page aligned
+///       based on the supported page sizes on the device.
+typedef struct _ze_external_memmap_sysmem_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    const void* pSystemMemory;                                              ///< [in] system memory pointer to map; must be page-aligned.
+    uint64_t size;                                                          ///< [in] size of the system memory to map; must be page-aligned.
+
+} ze_external_memmap_sysmem_ext_desc_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for retrieving kernel memory allocation properties.
+#if !defined(__GNUC__)
+#pragma region kernelAllocationProperties
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_GET_KERNEL_ALLOCATION_PROPERTIES_EXP_NAME
+/// @brief Get Kernel Allocation Properties Extension Name
+#define ZE_GET_KERNEL_ALLOCATION_PROPERTIES_EXP_NAME  "ZE_experimental_kernel_allocation_properties"
+#endif // ZE_GET_KERNEL_ALLOCATION_PROPERTIES_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Kernel Allocation Properties Extension Version(s)
+typedef enum _ze_kernel_get_allocation_properties_exp_version_t
+{
+    ZE_KERNEL_GET_ALLOCATION_PROPERTIES_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZE_KERNEL_GET_ALLOCATION_PROPERTIES_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_KERNEL_GET_ALLOCATION_PROPERTIES_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_KERNEL_GET_ALLOCATION_PROPERTIES_EXP_VERSION_* ENUMs
+
+} ze_kernel_get_allocation_properties_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Kernel allocation properties
+typedef struct _ze_kernel_allocation_exp_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t base;                                                          ///< [out] base address of the allocation
+    size_t size;                                                            ///< [out] size of allocation
+    ze_memory_type_t type;                                                  ///< [out] type of allocation
+    uint32_t argIndex;                                                      ///< [out] kernel argument index for current allocation, -1 for driver
+                                                                            ///< internal (not kernel argument) allocations
+
+} ze_kernel_allocation_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves kernel allocation properties.
+/// 
+/// @details
+///     - A valid kernel handle must be created with ::zeKernelCreate.
+///     - Returns array of kernel allocation properties for kernel handle.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeKernelGetAllocationPropertiesExp(
+    ze_kernel_handle_t hKernel,                                             ///< [in] Kernel handle.
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of kernel allocation properties.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< total number of kernel allocation properties available.
+                                                                            ///< if count is greater than the number of kernel allocation properties
+                                                                            ///< available, then the driver shall update the value with the correct
+                                                                            ///< number of kernel allocation properties.
+    ze_kernel_allocation_exp_properties_t* pAllocationProperties            ///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                                            ///< if count is less than the number of kernel allocation properties
+                                                                            ///< available, then driver shall only retrieve that number of kernel
+                                                                            ///< allocation properties.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Extension APIs for Cache Reservation
 #if !defined(__GNUC__)
 #pragma region cacheReservation
@@ -9215,7 +9540,7 @@ typedef enum _ze_cache_reservation_ext_version_t
 {
     ZE_CACHE_RESERVATION_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
     ZE_CACHE_RESERVATION_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
-    ZE_CACHE_RESERVATION_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_CACHE_RESERVATION_EXT_VERSION_* ENUMs
+    ZE_CACHE_RESERVATION_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_CACHE_RESERVATION_EXT_VERSION_* ENUMs
 
 } ze_cache_reservation_ext_version_t;
 
@@ -9232,7 +9557,7 @@ typedef enum _ze_cache_ext_region_t
     ZE_CACHE_EXT_REGION_DEFAULT = 0,                                        ///< utilize driver default scheme
     ZE_CACHE_EXT_REGION_RESERVED = 1,                                       ///< utilize reserved region
     ZE_CACHE_EXT_REGION_NON_RESERVED = 2,                                   ///< utilize non-reserverd region
-    ZE_CACHE_EXT_REGION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_CACHE_EXT_REGION_* ENUMs
+    ZE_CACHE_EXT_REGION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_CACHE_EXT_REGION_* ENUMs
 
 } ze_cache_ext_region_t;
 
@@ -9328,7 +9653,7 @@ typedef enum _ze_event_query_timestamps_exp_version_t
 {
     ZE_EVENT_QUERY_TIMESTAMPS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),    ///< version 1.0
     ZE_EVENT_QUERY_TIMESTAMPS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
-    ZE_EVENT_QUERY_TIMESTAMPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EVENT_QUERY_TIMESTAMPS_EXP_VERSION_* ENUMs
+    ZE_EVENT_QUERY_TIMESTAMPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_QUERY_TIMESTAMPS_EXP_VERSION_* ENUMs
 
 } ze_event_query_timestamps_exp_version_t;
 
@@ -9395,7 +9720,7 @@ typedef enum _ze_image_memory_properties_exp_version_t
 {
     ZE_IMAGE_MEMORY_PROPERTIES_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),   ///< version 1.0
     ZE_IMAGE_MEMORY_PROPERTIES_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
-    ZE_IMAGE_MEMORY_PROPERTIES_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_MEMORY_PROPERTIES_EXP_VERSION_* ENUMs
+    ZE_IMAGE_MEMORY_PROPERTIES_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_MEMORY_PROPERTIES_EXP_VERSION_* ENUMs
 
 } ze_image_memory_properties_exp_version_t;
 
@@ -9460,7 +9785,7 @@ typedef enum _ze_image_view_ext_version_t
 {
     ZE_IMAGE_VIEW_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                ///< version 1.0
     ZE_IMAGE_VIEW_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),            ///< latest known version
-    ZE_IMAGE_VIEW_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_VIEW_EXT_VERSION_* ENUMs
+    ZE_IMAGE_VIEW_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_VIEW_EXT_VERSION_* ENUMs
 
 } ze_image_view_ext_version_t;
 
@@ -9522,7 +9847,7 @@ typedef enum _ze_image_view_exp_version_t
 {
     ZE_IMAGE_VIEW_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                ///< version 1.0
     ZE_IMAGE_VIEW_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),            ///< latest known version
-    ZE_IMAGE_VIEW_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_VIEW_EXP_VERSION_* ENUMs
+    ZE_IMAGE_VIEW_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_VIEW_EXP_VERSION_* ENUMs
 
 } ze_image_view_exp_version_t;
 
@@ -9594,7 +9919,7 @@ typedef enum _ze_image_view_planar_ext_version_t
 {
     ZE_IMAGE_VIEW_PLANAR_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
     ZE_IMAGE_VIEW_PLANAR_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
-    ZE_IMAGE_VIEW_PLANAR_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_VIEW_PLANAR_EXT_VERSION_* ENUMs
+    ZE_IMAGE_VIEW_PLANAR_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_VIEW_PLANAR_EXT_VERSION_* ENUMs
 
 } ze_image_view_planar_ext_version_t;
 
@@ -9621,7 +9946,7 @@ typedef enum _ze_image_view_planar_exp_version_t
 {
     ZE_IMAGE_VIEW_PLANAR_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
     ZE_IMAGE_VIEW_PLANAR_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
-    ZE_IMAGE_VIEW_PLANAR_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_VIEW_PLANAR_EXP_VERSION_* ENUMs
+    ZE_IMAGE_VIEW_PLANAR_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_VIEW_PLANAR_EXP_VERSION_* ENUMs
 
 } ze_image_view_planar_exp_version_t;
 
@@ -9656,7 +9981,7 @@ typedef enum _ze_scheduling_hints_exp_version_t
 {
     ZE_SCHEDULING_HINTS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),          ///< version 1.0
     ZE_SCHEDULING_HINTS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),      ///< latest known version
-    ZE_SCHEDULING_HINTS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_SCHEDULING_HINTS_EXP_VERSION_* ENUMs
+    ZE_SCHEDULING_HINTS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_SCHEDULING_HINTS_EXP_VERSION_* ENUMs
 
 } ze_scheduling_hints_exp_version_t;
 
@@ -9668,7 +9993,7 @@ typedef enum _ze_scheduling_hint_exp_flag_t
     ZE_SCHEDULING_HINT_EXP_FLAG_OLDEST_FIRST = ZE_BIT(0),                   ///< Hint that the kernel prefers oldest-first scheduling
     ZE_SCHEDULING_HINT_EXP_FLAG_ROUND_ROBIN = ZE_BIT(1),                    ///< Hint that the kernel prefers round-robin scheduling
     ZE_SCHEDULING_HINT_EXP_FLAG_STALL_BASED_ROUND_ROBIN = ZE_BIT(2),        ///< Hint that the kernel prefers stall-based round-robin scheduling
-    ZE_SCHEDULING_HINT_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_SCHEDULING_HINT_EXP_FLAG_* ENUMs
+    ZE_SCHEDULING_HINT_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_SCHEDULING_HINT_EXP_FLAG_* ENUMs
 
 } ze_scheduling_hint_exp_flag_t;
 
@@ -9755,7 +10080,7 @@ typedef enum _ze_linkonce_odr_ext_version_t
 {
     ZE_LINKONCE_ODR_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),              ///< version 1.0
     ZE_LINKONCE_ODR_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),          ///< latest known version
-    ZE_LINKONCE_ODR_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_LINKONCE_ODR_EXT_VERSION_* ENUMs
+    ZE_LINKONCE_ODR_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_LINKONCE_ODR_EXT_VERSION_* ENUMs
 
 } ze_linkonce_odr_ext_version_t;
 
@@ -9778,7 +10103,7 @@ typedef enum _ze_power_saving_hint_exp_version_t
 {
     ZE_POWER_SAVING_HINT_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
     ZE_POWER_SAVING_HINT_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
-    ZE_POWER_SAVING_HINT_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_POWER_SAVING_HINT_EXP_VERSION_* ENUMs
+    ZE_POWER_SAVING_HINT_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_POWER_SAVING_HINT_EXP_VERSION_* ENUMs
 
 } ze_power_saving_hint_exp_version_t;
 
@@ -9790,7 +10115,7 @@ typedef enum _ze_power_saving_hint_type_t
                                                                             ///< while executing work submitted to this context.
     ZE_POWER_SAVING_HINT_TYPE_MAX = 100,                                    ///< Maximum power savings. The device will do everything to bring power to
                                                                             ///< a minimum while executing work submitted to this context.
-    ZE_POWER_SAVING_HINT_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_POWER_SAVING_HINT_TYPE_* ENUMs
+    ZE_POWER_SAVING_HINT_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_POWER_SAVING_HINT_TYPE_* ENUMs
 
 } ze_power_saving_hint_type_t;
 
@@ -9825,7 +10150,7 @@ typedef enum _ze_subgroup_ext_version_t
 {
     ZE_SUBGROUP_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                  ///< version 1.0
     ZE_SUBGROUP_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),              ///< latest known version
-    ZE_SUBGROUP_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_SUBGROUP_EXT_VERSION_* ENUMs
+    ZE_SUBGROUP_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_SUBGROUP_EXT_VERSION_* ENUMs
 
 } ze_subgroup_ext_version_t;
 
@@ -9848,7 +10173,7 @@ typedef enum _ze_eu_count_ext_version_t
 {
     ZE_EU_COUNT_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                  ///< version 1.0
     ZE_EU_COUNT_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),              ///< latest known version
-    ZE_EU_COUNT_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EU_COUNT_EXT_VERSION_* ENUMs
+    ZE_EU_COUNT_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EU_COUNT_EXT_VERSION_* ENUMs
 
 } ze_eu_count_ext_version_t;
 
@@ -9887,7 +10212,7 @@ typedef enum _ze_pci_properties_ext_version_t
 {
     ZE_PCI_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
     ZE_PCI_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
-    ZE_PCI_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_PCI_PROPERTIES_EXT_VERSION_* ENUMs
+    ZE_PCI_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_PCI_PROPERTIES_EXT_VERSION_* ENUMs
 
 } ze_pci_properties_ext_version_t;
 
@@ -9980,7 +10305,7 @@ typedef enum _ze_srgb_ext_version_t
 {
     ZE_SRGB_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                      ///< version 1.0
     ZE_SRGB_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),                  ///< latest known version
-    ZE_SRGB_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_SRGB_EXT_VERSION_* ENUMs
+    ZE_SRGB_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_SRGB_EXT_VERSION_* ENUMs
 
 } ze_srgb_ext_version_t;
 
@@ -10019,7 +10344,7 @@ typedef enum _ze_image_copy_ext_version_t
 {
     ZE_IMAGE_COPY_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                ///< version 1.0
     ZE_IMAGE_COPY_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),            ///< latest known version
-    ZE_IMAGE_COPY_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_COPY_EXT_VERSION_* ENUMs
+    ZE_IMAGE_COPY_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_COPY_EXT_VERSION_* ENUMs
 
 } ze_image_copy_ext_version_t;
 
@@ -10170,7 +10495,7 @@ typedef enum _ze_image_query_alloc_properties_ext_version_t
 {
     ZE_IMAGE_QUERY_ALLOC_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
     ZE_IMAGE_QUERY_ALLOC_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_IMAGE_QUERY_ALLOC_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_QUERY_ALLOC_PROPERTIES_EXT_VERSION_* ENUMs
+    ZE_IMAGE_QUERY_ALLOC_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_QUERY_ALLOC_PROPERTIES_EXT_VERSION_* ENUMs
 
 } ze_image_query_alloc_properties_ext_version_t;
 
@@ -10229,7 +10554,7 @@ typedef enum _ze_linkage_inspection_ext_version_t
 {
     ZE_LINKAGE_INSPECTION_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
     ZE_LINKAGE_INSPECTION_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
-    ZE_LINKAGE_INSPECTION_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_LINKAGE_INSPECTION_EXT_VERSION_* ENUMs
+    ZE_LINKAGE_INSPECTION_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_LINKAGE_INSPECTION_EXT_VERSION_* ENUMs
 
 } ze_linkage_inspection_ext_version_t;
 
@@ -10241,7 +10566,7 @@ typedef enum _ze_linkage_inspection_ext_flag_t
     ZE_LINKAGE_INSPECTION_EXT_FLAG_IMPORTS = ZE_BIT(0),                     ///< List all imports of modules
     ZE_LINKAGE_INSPECTION_EXT_FLAG_UNRESOLVABLE_IMPORTS = ZE_BIT(1),        ///< List all imports of modules that do not have a corresponding export
     ZE_LINKAGE_INSPECTION_EXT_FLAG_EXPORTS = ZE_BIT(2),                     ///< List all exports of modules
-    ZE_LINKAGE_INSPECTION_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_LINKAGE_INSPECTION_EXT_FLAG_* ENUMs
+    ZE_LINKAGE_INSPECTION_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_LINKAGE_INSPECTION_EXT_FLAG_* ENUMs
 
 } ze_linkage_inspection_ext_flag_t;
 
@@ -10312,7 +10637,7 @@ typedef enum _ze_memory_compression_hints_ext_version_t
 {
     ZE_MEMORY_COMPRESSION_HINTS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
     ZE_MEMORY_COMPRESSION_HINTS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_MEMORY_COMPRESSION_HINTS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_COMPRESSION_HINTS_EXT_VERSION_* ENUMs
+    ZE_MEMORY_COMPRESSION_HINTS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_COMPRESSION_HINTS_EXT_VERSION_* ENUMs
 
 } ze_memory_compression_hints_ext_version_t;
 
@@ -10323,7 +10648,7 @@ typedef enum _ze_memory_compression_hints_ext_flag_t
 {
     ZE_MEMORY_COMPRESSION_HINTS_EXT_FLAG_COMPRESSED = ZE_BIT(0),            ///< Hint Driver implementation to make allocation compressible
     ZE_MEMORY_COMPRESSION_HINTS_EXT_FLAG_UNCOMPRESSED = ZE_BIT(1),          ///< Hint Driver implementation to make allocation not compressible
-    ZE_MEMORY_COMPRESSION_HINTS_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_COMPRESSION_HINTS_EXT_FLAG_* ENUMs
+    ZE_MEMORY_COMPRESSION_HINTS_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_COMPRESSION_HINTS_EXT_FLAG_* ENUMs
 
 } ze_memory_compression_hints_ext_flag_t;
 
@@ -10367,7 +10692,7 @@ typedef enum _ze_memory_free_policies_ext_version_t
 {
     ZE_MEMORY_FREE_POLICIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
     ZE_MEMORY_FREE_POLICIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_MEMORY_FREE_POLICIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MEMORY_FREE_POLICIES_EXT_VERSION_* ENUMs
+    ZE_MEMORY_FREE_POLICIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MEMORY_FREE_POLICIES_EXT_VERSION_* ENUMs
 
 } ze_memory_free_policies_ext_version_t;
 
@@ -10385,7 +10710,7 @@ typedef enum _ze_driver_memory_free_policy_ext_flag_t
                                                                             ///< blocking. Memory may be freed after all commands using the memory are
                                                                             ///< complete. Actual freeing of memory is specific to user mode driver and
                                                                             ///< kernel mode driver implementation and may be done asynchronously.
-    ZE_DRIVER_MEMORY_FREE_POLICY_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DRIVER_MEMORY_FREE_POLICY_EXT_FLAG_* ENUMs
+    ZE_DRIVER_MEMORY_FREE_POLICY_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DRIVER_MEMORY_FREE_POLICY_EXT_FLAG_* ENUMs
 
 } ze_driver_memory_free_policy_ext_flag_t;
 
@@ -10466,6 +10791,16 @@ zeMemFreeExt(
 #endif // ZE_BANDWIDTH_PROPERTIES_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Bandwidth Extension Version(s)
+typedef enum _ze_bandwidth_properties_exp_version_t
+{
+    ZE_BANDWIDTH_PROPERTIES_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
+    ZE_BANDWIDTH_PROPERTIES_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_BANDWIDTH_PROPERTIES_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_BANDWIDTH_PROPERTIES_EXP_VERSION_* ENUMs
+
+} ze_bandwidth_properties_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief P2P Bandwidth Properties
 /// 
 /// @details
@@ -10496,6 +10831,7 @@ typedef struct _ze_device_p2p_bandwidth_exp_properties_t
 ///     - This structure may be passed to
 ///       ::zeDeviceGetCommandQueueGroupProperties by having the pNext member of
 ///       ::ze_command_queue_group_properties_t point at this struct.
+///     - [DEPRECATED]
 typedef struct _ze_copy_bandwidth_exp_properties_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -10526,7 +10862,7 @@ typedef enum _ze_device_luid_ext_version_t
 {
     ZE_DEVICE_LUID_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),               ///< version 1.0
     ZE_DEVICE_LUID_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),           ///< latest known version
-    ZE_DEVICE_LUID_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_LUID_EXT_VERSION_* ENUMs
+    ZE_DEVICE_LUID_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_LUID_EXT_VERSION_* ENUMs
 
 } ze_device_luid_ext_version_t;
 
@@ -10585,6 +10921,16 @@ typedef struct _ze_device_luid_ext_properties_t
 #endif // ZE_FABRIC_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Fabric Topology Discovery Extension Version(s)
+typedef enum _ze_fabric_exp_version_t
+{
+    ZE_FABRIC_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                    ///< version 1.0
+    ZE_FABRIC_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),                ///< latest known version
+    ZE_FABRIC_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_FABRIC_EXP_VERSION_* ENUMs
+
+} ze_fabric_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE
 /// @brief Maximum fabric edge model string size
 #define ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE  256
@@ -10598,7 +10944,7 @@ typedef enum _ze_fabric_vertex_exp_type_t
     ZE_FABRIC_VERTEX_EXP_TYPE_DEVICE = 1,                                   ///< Fabric vertex represents a device
     ZE_FABRIC_VERTEX_EXP_TYPE_SUBDEVICE = 2,                                ///< Fabric vertex represents a subdevice
     ZE_FABRIC_VERTEX_EXP_TYPE_SWITCH = 3,                                   ///< Fabric vertex represents a switch
-    ZE_FABRIC_VERTEX_EXP_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_FABRIC_VERTEX_EXP_TYPE_* ENUMs
+    ZE_FABRIC_VERTEX_EXP_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_FABRIC_VERTEX_EXP_TYPE_* ENUMs
 
 } ze_fabric_vertex_exp_type_t;
 
@@ -10611,7 +10957,7 @@ typedef enum _ze_fabric_edge_exp_duplexity_t
                                                                             ///< one direction at time
     ZE_FABRIC_EDGE_EXP_DUPLEXITY_FULL_DUPLEX = 2,                           ///< Fabric edge is full duplex, i.e. stated bandwidth is supported in both
                                                                             ///< directions simultaneously
-    ZE_FABRIC_EDGE_EXP_DUPLEXITY_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_FABRIC_EDGE_EXP_DUPLEXITY_* ENUMs
+    ZE_FABRIC_EDGE_EXP_DUPLEXITY_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_FABRIC_EDGE_EXP_DUPLEXITY_* ENUMs
 
 } ze_fabric_edge_exp_duplexity_t;
 
@@ -10913,7 +11259,7 @@ typedef enum _ze_device_memory_properties_ext_version_t
 {
     ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
     ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_* ENUMs
+    ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_* ENUMs
 
 } ze_device_memory_properties_ext_version_t;
 
@@ -10943,7 +11289,11 @@ typedef enum _ze_device_memory_ext_type_t
     ZE_DEVICE_MEMORY_EXT_TYPE_GDDR6 = 19,                                   ///< GDDR6 memory
     ZE_DEVICE_MEMORY_EXT_TYPE_GDDR6X = 20,                                  ///< GDDR6X memory
     ZE_DEVICE_MEMORY_EXT_TYPE_GDDR7 = 21,                                   ///< GDDR7 memory
-    ZE_DEVICE_MEMORY_EXT_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_MEMORY_EXT_TYPE_* ENUMs
+    ZE_DEVICE_MEMORY_EXT_TYPE_HBM2E = 22,                                   ///< HBM2E memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_HBM3 = 23,                                    ///< HBM3 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_HBM3E = 24,                                   ///< HBM3E memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_HBM4 = 25,                                    ///< HBM4 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_MEMORY_EXT_TYPE_* ENUMs
 
 } ze_device_memory_ext_type_t;
 
@@ -10987,7 +11337,7 @@ typedef enum _ze_bfloat16_conversions_ext_version_t
 {
     ZE_BFLOAT16_CONVERSIONS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
     ZE_BFLOAT16_CONVERSIONS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_BFLOAT16_CONVERSIONS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_BFLOAT16_CONVERSIONS_EXT_VERSION_* ENUMs
+    ZE_BFLOAT16_CONVERSIONS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_BFLOAT16_CONVERSIONS_EXT_VERSION_* ENUMs
 
 } ze_bfloat16_conversions_ext_version_t;
 
@@ -11010,7 +11360,7 @@ typedef enum _ze_device_ip_version_version_t
 {
     ZE_DEVICE_IP_VERSION_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),             ///< version 1.0
     ZE_DEVICE_IP_VERSION_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),         ///< latest known version
-    ZE_DEVICE_IP_VERSION_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_DEVICE_IP_VERSION_VERSION_* ENUMs
+    ZE_DEVICE_IP_VERSION_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_IP_VERSION_VERSION_* ENUMs
 
 } ze_device_ip_version_version_t;
 
@@ -11050,7 +11400,7 @@ typedef enum _ze_kernel_max_group_size_properties_ext_version_t
 {
     ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
     ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_* ENUMs
+    ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_* ENUMs
 
 } ze_kernel_max_group_size_properties_ext_version_t;
 
@@ -11095,7 +11445,7 @@ typedef enum _ze_sub_allocations_exp_version_t
 {
     ZE_SUB_ALLOCATIONS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),           ///< version 1.0
     ZE_SUB_ALLOCATIONS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),       ///< latest known version
-    ZE_SUB_ALLOCATIONS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_SUB_ALLOCATIONS_EXP_VERSION_* ENUMs
+    ZE_SUB_ALLOCATIONS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_SUB_ALLOCATIONS_EXP_VERSION_* ENUMs
 
 } ze_sub_allocations_exp_version_t;
 
@@ -11149,7 +11499,7 @@ typedef enum _ze_event_query_kernel_timestamps_ext_version_t
 {
     ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
     ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_* ENUMs
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_* ENUMs
 
 } ze_event_query_kernel_timestamps_ext_version_t;
 
@@ -11160,7 +11510,7 @@ typedef enum _ze_event_query_kernel_timestamps_ext_flag_t
 {
     ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_KERNEL = ZE_BIT(0),           ///< Kernel timestamp results
     ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_SYNCHRONIZED = ZE_BIT(1),     ///< Device event timestamps synchronized to the host time domain
-    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_* ENUMs
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_* ENUMs
 
 } ze_event_query_kernel_timestamps_ext_flag_t;
 
@@ -11289,7 +11639,7 @@ typedef enum _ze_rtas_builder_exp_version_t
 {
     ZE_RTAS_BUILDER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),              ///< version 1.0
     ZE_RTAS_BUILDER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),          ///< latest known version
-    ZE_RTAS_BUILDER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_EXP_VERSION_* ENUMs
+    ZE_RTAS_BUILDER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_EXP_VERSION_* ENUMs
 
 } ze_rtas_builder_exp_version_t;
 
@@ -11299,7 +11649,7 @@ typedef uint32_t ze_rtas_device_exp_flags_t;
 typedef enum _ze_rtas_device_exp_flag_t
 {
     ZE_RTAS_DEVICE_EXP_FLAG_RESERVED = ZE_BIT(0),                           ///< reserved for future use
-    ZE_RTAS_DEVICE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_DEVICE_EXP_FLAG_* ENUMs
+    ZE_RTAS_DEVICE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_DEVICE_EXP_FLAG_* ENUMs
 
 } ze_rtas_device_exp_flag_t;
 
@@ -11313,7 +11663,7 @@ typedef enum _ze_rtas_format_exp_t
 {
     ZE_RTAS_FORMAT_EXP_INVALID = 0,                                         ///< Invalid acceleration structure format
     ZE_RTAS_FORMAT_EXP_MAX = 0x7ffffffe,                                    ///< Maximum acceleration structure format code
-    ZE_RTAS_FORMAT_EXP_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_FORMAT_EXP_* ENUMs
+    ZE_RTAS_FORMAT_EXP_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_FORMAT_EXP_* ENUMs
 
 } ze_rtas_format_exp_t;
 
@@ -11323,7 +11673,7 @@ typedef uint32_t ze_rtas_builder_exp_flags_t;
 typedef enum _ze_rtas_builder_exp_flag_t
 {
     ZE_RTAS_BUILDER_EXP_FLAG_RESERVED = ZE_BIT(0),                          ///< Reserved for future use
-    ZE_RTAS_BUILDER_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_EXP_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_EXP_FLAG_* ENUMs
 
 } ze_rtas_builder_exp_flag_t;
 
@@ -11333,7 +11683,7 @@ typedef uint32_t ze_rtas_parallel_operation_exp_flags_t;
 typedef enum _ze_rtas_parallel_operation_exp_flag_t
 {
     ZE_RTAS_PARALLEL_OPERATION_EXP_FLAG_RESERVED = ZE_BIT(0),               ///< Reserved for future use
-    ZE_RTAS_PARALLEL_OPERATION_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_PARALLEL_OPERATION_EXP_FLAG_* ENUMs
+    ZE_RTAS_PARALLEL_OPERATION_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_PARALLEL_OPERATION_EXP_FLAG_* ENUMs
 
 } ze_rtas_parallel_operation_exp_flag_t;
 
@@ -11343,7 +11693,7 @@ typedef uint32_t ze_rtas_builder_geometry_exp_flags_t;
 typedef enum _ze_rtas_builder_geometry_exp_flag_t
 {
     ZE_RTAS_BUILDER_GEOMETRY_EXP_FLAG_NON_OPAQUE = ZE_BIT(0),               ///< non-opaque geometries invoke an any-hit shader
-    ZE_RTAS_BUILDER_GEOMETRY_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_EXP_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_GEOMETRY_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_EXP_FLAG_* ENUMs
 
 } ze_rtas_builder_geometry_exp_flag_t;
 
@@ -11363,7 +11713,7 @@ typedef enum _ze_rtas_builder_instance_exp_flag_t
                                                                             ///< be non-opaque
     ZE_RTAS_BUILDER_INSTANCE_EXP_FLAG_TRIANGLE_FORCE_NON_OPAQUE = ZE_BIT(3),///< forces instanced geometry to be non-opaque, unless ray flag forces it
                                                                             ///< to be opaque
-    ZE_RTAS_BUILDER_INSTANCE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_INSTANCE_EXP_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_INSTANCE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_INSTANCE_EXP_FLAG_* ENUMs
 
 } ze_rtas_builder_instance_exp_flag_t;
 
@@ -11389,7 +11739,7 @@ typedef enum _ze_rtas_builder_build_op_exp_flag_t
 {
     ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_COMPACT = ZE_BIT(0),                  ///< build more compact acceleration structure
     ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION = ZE_BIT(1),   ///< guarantees single any-hit shader invocation per primitive
-    ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_* ENUMs
+    ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_* ENUMs
 
 } ze_rtas_builder_build_op_exp_flag_t;
 
@@ -11412,7 +11762,7 @@ typedef enum _ze_rtas_builder_build_quality_hint_exp_t
     ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_LOW = 0,                         ///< build low-quality acceleration structure (fast)
     ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_MEDIUM = 1,                      ///< build medium-quality acceleration structure (slower)
     ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_HIGH = 2,                        ///< build high-quality acceleration structure (slow)
-    ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_* ENUMs
+    ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_* ENUMs
 
 } ze_rtas_builder_build_quality_hint_exp_t;
 
@@ -11424,7 +11774,7 @@ typedef enum _ze_rtas_builder_geometry_type_exp_t
     ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_QUADS = 1,                            ///< quad mesh geometry type
     ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_PROCEDURAL = 2,                       ///< procedural geometry type
     ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_INSTANCE = 3,                         ///< instance geometry type
-    ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_* ENUMs
+    ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_* ENUMs
 
 } ze_rtas_builder_geometry_type_exp_t;
 
@@ -11453,7 +11803,7 @@ typedef enum _ze_rtas_builder_input_data_format_exp_t
     ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_TRIANGLE_INDICES_UINT32 = 5,      ///< Unsigned 32-bit triangle indices (see
                                                                             ///< ::ze_rtas_triangle_indices_uint32_exp_t)
     ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_QUAD_INDICES_UINT32 = 6,          ///< Unsigned 32-bit quad indices (see ::ze_rtas_quad_indices_uint32_exp_t)
-    ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_* ENUMs
+    ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_* ENUMs
 
 } ze_rtas_builder_input_data_format_exp_t;
 
@@ -12173,7 +12523,7 @@ typedef enum _ze_event_pool_counter_based_exp_version_t
 {
     ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
     ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_* ENUMs
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_* ENUMs
 
 } ze_event_pool_counter_based_exp_version_t;
 
@@ -12184,7 +12534,7 @@ typedef enum _ze_event_pool_counter_based_exp_flag_t
 {
     ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_IMMEDIATE = ZE_BIT(0),             ///< Counter-based event pool is used for immediate command lists (default)
     ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_NON_IMMEDIATE = ZE_BIT(1),         ///< Counter-based event pool is for non-immediate command lists
-    ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_* ENUMs
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_* ENUMs
 
 } ze_event_pool_counter_based_exp_flag_t;
 
@@ -12223,7 +12573,7 @@ typedef enum _ze_bindless_image_exp_version_t
 {
     ZE_BINDLESS_IMAGE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
     ZE_BINDLESS_IMAGE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
-    ZE_BINDLESS_IMAGE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_BINDLESS_IMAGE_EXP_VERSION_* ENUMs
+    ZE_BINDLESS_IMAGE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_BINDLESS_IMAGE_EXP_VERSION_* ENUMs
 
 } ze_bindless_image_exp_version_t;
 
@@ -12237,7 +12587,7 @@ typedef enum _ze_image_bindless_exp_flag_t
     ZE_IMAGE_BINDLESS_EXP_FLAG_SAMPLED_IMAGE = ZE_BIT(1),                   ///< Bindless sampled images are created with ::zeImageCreate by combining
                                                                             ///< BINDLESS and SAMPLED_IMAGE.
                                                                             ///< Create sampled image view from bindless unsampled image using SAMPLED_IMAGE.
-    ZE_IMAGE_BINDLESS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMAGE_BINDLESS_EXP_FLAG_* ENUMs
+    ZE_IMAGE_BINDLESS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_BINDLESS_EXP_FLAG_* ENUMs
 
 } ze_image_bindless_exp_flag_t;
 
@@ -12291,7 +12641,24 @@ typedef struct _ze_device_pitched_alloc_exp_properties_t
 } ze_device_pitched_alloc_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Allocate pitched USM memory for images
+/// @brief Pitch information for 2-dimensional linear pitched allocations
+/// 
+/// @details
+///     - This structure may be passed to ::zeDeviceGetImageProperties via the
+///       pNext member of x_device_pitched_alloc_exp_properties_t.
+typedef struct _ze_pitched_alloc_2dimage_linear_pitch_exp_info_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    size_t pitchAlign;                                                      ///< [out] Required pitch Aligment.
+    size_t maxSupportedPitch;                                               ///< [out] Maximum allowed pitch.
+
+} ze_pitched_alloc_2dimage_linear_pitch_exp_info_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves pitch information that can be used to allocate USM memory
+///        for a given image.
 /// 
 /// @details
 ///     - Retrieves pitch for 2D image given the width, height and size in bytes
@@ -12366,7 +12733,7 @@ typedef enum _ze_command_list_clone_exp_version_t
 {
     ZE_COMMAND_LIST_CLONE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
     ZE_COMMAND_LIST_CLONE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
-    ZE_COMMAND_LIST_CLONE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_COMMAND_LIST_CLONE_EXP_VERSION_* ENUMs
+    ZE_COMMAND_LIST_CLONE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_LIST_CLONE_EXP_VERSION_* ENUMs
 
 } ze_command_list_clone_exp_version_t;
 
@@ -12423,7 +12790,7 @@ typedef enum _ze_immediate_command_list_append_exp_version_t
 {
     ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
     ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_VERSION_* ENUMs
+    ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_VERSION_* ENUMs
 
 } ze_immediate_command_list_append_exp_version_t;
 
@@ -12485,7 +12852,7 @@ typedef enum _ze_mutable_command_list_exp_version_t
     ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
     ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),      ///< version 1.1
     ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 1 ),  ///< latest known version
-    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_* ENUMs
+    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_* ENUMs
 
 } ze_mutable_command_list_exp_version_t;
 
@@ -12502,7 +12869,7 @@ typedef enum _ze_mutable_command_exp_flag_t
     ZE_MUTABLE_COMMAND_EXP_FLAG_WAIT_EVENTS = ZE_BIT(5),                    ///< command wait events
     ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION = ZE_BIT(6),             ///< command kernel
     ZE_MUTABLE_COMMAND_EXP_FLAG_GRAPH_ARGUMENTS = ZE_BIT(7),                ///< graph arguments
-    ZE_MUTABLE_COMMAND_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MUTABLE_COMMAND_EXP_FLAG_* ENUMs
+    ZE_MUTABLE_COMMAND_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MUTABLE_COMMAND_EXP_FLAG_* ENUMs
 
 } ze_mutable_command_exp_flag_t;
 
@@ -12527,7 +12894,7 @@ typedef uint32_t ze_mutable_command_list_exp_flags_t;
 typedef enum _ze_mutable_command_list_exp_flag_t
 {
     ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_RESERVED = ZE_BIT(0),                  ///< reserved
-    ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_* ENUMs
+    ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_* ENUMs
 
 } ze_mutable_command_list_exp_flag_t;
 

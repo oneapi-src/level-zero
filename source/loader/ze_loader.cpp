@@ -22,6 +22,7 @@ namespace loader
     ze_dditable_t* loaderZeDdiTable = nullptr;
     zet_dditable_t* loaderZetDdiTable = nullptr;
     zes_dditable_t* loaderZesDdiTable = nullptr;
+    zer_dditable_t *defaultZerDdiTable = nullptr;
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
 
@@ -330,13 +331,41 @@ namespace loader
             }
 
             for (auto handle : driverHandles) {
+                uint32_t extensionCount = 0;
+                driver.zerDriverHandle = handle;
+                ze_result_t res = driver.dditable.ze.Driver.pfnGetExtensionProperties(handle, &extensionCount, nullptr);
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (loader::context->debugTraceEnabled) {
+                        std::string message = "driverSorting " + driver.name + " failed, zeDriverGetExtensionProperties returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
+                res = driver.dditable.ze.Driver.pfnGetExtensionProperties(handle, &extensionCount, extensionProperties.data());
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (loader::context->debugTraceEnabled) {
+                        std::string message = "driverSorting " + driver.name + " failed, zeDriverGetExtensionProperties returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                if (extensionCount > 0) {
+                    for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
+                        if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
+                            // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
+                            driver.zerDriverHandle = nullptr;
+                            break;
+                        }
+                    }
+                }
                 driver.properties = {};
                 driver.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
                 driver.properties.pNext = nullptr;
                 ze_driver_properties_t driverProperties = {};
                 driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
                 driverProperties.pNext = &driver.properties;
-                ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &driverProperties);
+                res = driver.dditable.ze.Driver.pfnGetProperties(handle, &driverProperties);
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
                         std::string message = "driverSorting " + driver.name + " failed, zeDriverGetProperties returned ";
@@ -521,6 +550,9 @@ namespace loader
         if(drivers->size() == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
+        // Set default driver handle and DDI table to the first driver in the list before sorting.
+        loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+        loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
         return ZE_RESULT_SUCCESS;
     }
 
@@ -632,9 +664,13 @@ namespace loader
         loader::loaderDispatch->pSysman = new zes_dditable_driver_t();
         loader::loaderDispatch->pSysman->version = ZE_API_VERSION_CURRENT;
         loader::loaderDispatch->pSysman->isValidFlag = 1;
+        loader::loaderDispatch->pRuntime = new zer_dditable_driver_t();
+        loader::loaderDispatch->pRuntime->version = ZE_API_VERSION_CURRENT;
+        loader::loaderDispatch->pRuntime->isValidFlag = 1;
         loader::loaderZeDdiTable = new ze_dditable_t();
         loader::loaderZetDdiTable = new zet_dditable_t();
         loader::loaderZesDdiTable = new zes_dditable_t();
+        loader::defaultZerDdiTable = new zer_dditable_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
         // DDI Driver Extension Path is enabled by default.
         // This can be overridden by the environment variable ZE_ENABLE_LOADER_DRIVER_DDI_PATH.
@@ -859,6 +895,7 @@ namespace loader
             loader_driver_ddi::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
             loader_driver_ddi::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
             loader_driver_ddi::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
+            loader_driver_ddi::zerDestroyDDiDriverTables(loader::loaderDispatch->pRuntime);
             delete loader::loaderDispatch;
             loader::loaderDispatch = nullptr;
         }

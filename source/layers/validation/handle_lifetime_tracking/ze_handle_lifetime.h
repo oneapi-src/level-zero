@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See handle_lifetime.h.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -25,6 +25,7 @@ namespace validation_layer
         ze_result_t zeDriverGetExtensionPropertiesPrologue( ze_driver_handle_t hDriver, uint32_t* pCount, ze_driver_extension_properties_t* pExtensionProperties ) override;
         ze_result_t zeDriverGetExtensionFunctionAddressPrologue( ze_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) override;
         ze_result_t zeDriverGetLastErrorDescriptionPrologue( ze_driver_handle_t hDriver, const char** ppString ) override;
+        ze_result_t zeDriverGetDefaultContextPrologue( ze_driver_handle_t hDriver ) override;
         ze_result_t zeDeviceGetPrologue( ze_driver_handle_t hDriver, uint32_t* pCount, ze_device_handle_t* phDevices ) override;
         ze_result_t zeDeviceGetRootDevicePrologue( ze_device_handle_t hDevice, ze_device_handle_t* phRootDevice ) override;
         ze_result_t zeDeviceGetSubDevicesPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_handle_t* phSubdevices ) override;
@@ -41,6 +42,7 @@ namespace validation_layer
         ze_result_t zeDeviceCanAccessPeerPrologue( ze_device_handle_t hDevice, ze_device_handle_t hPeerDevice, ze_bool_t* value ) override;
         ze_result_t zeDeviceGetStatusPrologue( ze_device_handle_t hDevice ) override;
         ze_result_t zeDeviceGetGlobalTimestampsPrologue( ze_device_handle_t hDevice, uint64_t* hostTimestamp, uint64_t* deviceTimestamp ) override;
+        ze_result_t zeDeviceSynchronizePrologue( ze_device_handle_t hDevice ) override;
         ze_result_t zeContextCreatePrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, ze_context_handle_t* phContext ) override;
         ze_result_t zeContextCreateExPrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, uint32_t numDevices, ze_device_handle_t* phDevices, ze_context_handle_t* phContext ) override;
         ze_result_t zeContextDestroyPrologue( ze_context_handle_t hContext ) override;
@@ -143,6 +145,8 @@ namespace validation_layer
         ze_result_t zeKernelGetPropertiesPrologue( ze_kernel_handle_t hKernel, ze_kernel_properties_t* pKernelProperties ) override;
         ze_result_t zeKernelGetNamePrologue( ze_kernel_handle_t hKernel, size_t* pSize, char* pName ) override;
         ze_result_t zeCommandListAppendLaunchKernelPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListAppendLaunchKernelWithParametersPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pGroupCounts, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListAppendLaunchKernelWithArgumentsPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t groupCounts, const ze_group_size_t groupSizes, void ** pArguments, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendLaunchCooperativeKernelPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendLaunchKernelIndirectPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchArgumentsBuffer, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendLaunchMultipleKernelsIndirectPrologue( ze_command_list_handle_t hCommandList, uint32_t numKernels, ze_kernel_handle_t* phKernels, const uint32_t* pCountBuffer, const ze_group_count_t* pLaunchArgumentsBuffer, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
@@ -178,6 +182,7 @@ namespace validation_layer
         ze_result_t zeRTASParallelOperationJoinExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override;
         ze_result_t zeRTASParallelOperationDestroyExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override;
         ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) override;
+        ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) override;
         ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) override;
         ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) override;
         ze_result_t zeEventQueryTimestampsExpPrologue( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_kernel_timestamp_result_t* pTimestamps ) override;

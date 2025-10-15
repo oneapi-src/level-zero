@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2020-2022 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -23,12 +23,19 @@ from templates import helper as th
 namespace tracing_layer
 {
     %for obj in th.extract_objs(specs, r"function"):
-    ///////////////////////////////////////////////////////////////////////////////
+    <%
+    ret_type = obj['return_type']
+    failure_return = None
+    if ret_type != 'ze_result_t':
+        failure_return = th.get_first_failure_return(obj)
+    params_list = th.make_param_lines(n, tags, obj, format=["name"])
+    is_void_params = len(params_list) == 0
+    %>///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for ${th.make_func_name(n, tags, obj)}
     %if 'condition' in obj:
     #if ${th.subt(n, tags, obj['condition'])}
     %endif
-    __${x}dlllocal ${x}_result_t ${X}_APICALL
+    __${x}dlllocal ${ret_type} ${X}_APICALL
     ${th.make_func_name(n, tags, obj)}(
         %for line in th.make_param_lines(n, tags, obj):
         ${line}
@@ -38,26 +45,40 @@ namespace tracing_layer
         auto ${th.make_pfn_name(n, tags, obj)} = context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
 
         if( nullptr == ${th.make_pfn_name(n, tags, obj)})
+            %if ret_type == "ze_result_t":
             return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            %else:
+            return ${failure_return};
+            %endif
 
-        ZE_HANDLE_TRACER_RECURSION(context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}, ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))});
+        ZE_HANDLE_TRACER_RECURSION(context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}\
+%if not is_void_params:
+, ${", ".join(params_list)}\
+%endif
+);
 
         // capture parameters
         ${th.make_pfncb_param_type(n, tags, obj)} tracerParams = {
-            &${",\n            &".join(th.make_param_lines(n, tags, obj, format=["name"]))}
+%if not is_void_params:
+            &${",\n            &".join(params_list)}
+%endif
         };
 
         tracing_layer::APITracerCallbackDataImp<${th.make_pfncb_type(n, tags, obj)}> apiCallbackData;
 
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ${th.make_pfncb_type(n, tags, obj)}, ${th.get_callback_table_name(n, tags, obj)}, ${th.make_pfncb_name(n, tags, obj)});
+        ${N}_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ${th.make_pfncb_type(n, tags, obj)}, ${th.get_callback_table_name(n, tags, obj)}, ${th.make_pfncb_name(n, tags, obj)});
 
 
-        return tracing_layer::APITracerWrapperImp(context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)},
+        return tracing_layer::APITracerWrapperImp<${ret_type}>(context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)},
                                                   &tracerParams,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.p${",\n                                                  *tracerParams.p".join(th.make_param_lines(n, tags, obj, format=["name"]))});
+                                                  apiCallbackData.epilogCallbacks\
+%if not is_void_params:
+,
+                                                  *tracerParams.p${",\n                                                  *tracerParams.p".join(params_list)}\
+%endif
+);
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}
