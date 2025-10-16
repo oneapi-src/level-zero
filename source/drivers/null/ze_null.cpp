@@ -487,17 +487,32 @@ namespace driver
         {
             if( nullptr != pExtensionProperties )
             {
-                ze_driver_extension_properties_t driverExtensionProperties = {};
+                ze_driver_extension_properties_t tracingExtension = {};
 #if defined(_WIN32)
-                strcpy_s( driverExtensionProperties.name, ZET_API_TRACING_EXP_NAME );
+                strcpy_s( tracingExtension.name, ZET_API_TRACING_EXP_NAME );
 #else
-                strcpy( driverExtensionProperties.name, ZET_API_TRACING_EXP_NAME );
+                strcpy( tracingExtension.name, ZET_API_TRACING_EXP_NAME );
 #endif
-                driverExtensionProperties.version = ZET_API_TRACING_EXP_VERSION_1_0;
+                tracingExtension.version = ZET_API_TRACING_EXP_VERSION_1_0;
+                pExtensionProperties[0] = tracingExtension;
+                
+                ze_driver_extension_properties_t ddiHandlesExtension = {};
+#if defined(_WIN32)
+                strcpy_s( ddiHandlesExtension.name, ZE_DRIVER_DDI_HANDLES_EXT_NAME );
+#else
+                strcpy( ddiHandlesExtension.name, ZE_DRIVER_DDI_HANDLES_EXT_NAME );
+#endif
 
-                *pExtensionProperties = driverExtensionProperties;
+                auto ddi_version_env = getenv("ZEL_TEST_DDI_HANDLES_EXT_VERSION");
+                if (ddi_version_env && strcmp(ddi_version_env, "1_0") == 0) {
+                    ddiHandlesExtension.version = ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_0;
+                } else {
+                    ddiHandlesExtension.version = ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1;
+                }
+                
+                pExtensionProperties[1] = ddiHandlesExtension;
             }
-            *pCount = 1;
+            *pCount = 2;
 
             return ZE_RESULT_SUCCESS;
         };
@@ -629,6 +644,16 @@ namespace driver
         pSysman.Driver = &zesDdiTable.Driver;
         pSysman.isValidFlag = 1;
         pSysman.version = ZE_API_VERSION_CURRENT;
+
+        static zer_global_dditable_t runtimeDdiTable;
+        runtimeDdiTable.pfnGetLastErrorDescription = driver::zerGetLastErrorDescription;
+        runtimeDdiTable.pfnTranslateDeviceHandleToIdentifier = driver::zerTranslateDeviceHandleToIdentifier;
+        runtimeDdiTable.pfnTranslateIdentifierToDeviceHandle = driver::zerTranslateIdentifierToDeviceHandle;
+        runtimeDdiTable.pfnGetDefaultContext = driver::zerGetDefaultContext;
+
+        pRuntime.Global = &runtimeDdiTable;
+        pRuntime.isValidFlag = 1;
+        pRuntime.version = ZE_API_VERSION_CURRENT;
     }
 
     char *context_t::setenv_var_with_driver_id(const std::string &key, uint32_t driverId)

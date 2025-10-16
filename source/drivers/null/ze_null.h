@@ -64,6 +64,11 @@ namespace driver
 	char *setenv_var_with_driver_id(const std::string &key, uint32_t driverId);
     };
 
+    ze_result_t ZE_APICALL zerGetLastErrorDescription(const char **ppString);
+    uint32_t ZE_APICALL zerTranslateDeviceHandleToIdentifier(ze_device_handle_t hDevice);
+    ze_device_handle_t ZE_APICALL zerTranslateIdentifierToDeviceHandle(uint32_t identifier);
+    ze_context_handle_t ZE_APICALL zerGetDefaultContext(void);
+    
     extern context_t context;
 } // namespace driver
 

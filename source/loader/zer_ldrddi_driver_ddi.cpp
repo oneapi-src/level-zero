@@ -31,7 +31,7 @@ namespace loader_driver_ddi
         if (loader::context->defaultZerDriverHandle == nullptr) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
-        auto dditable = reinterpret_cast<ze_handle_t*>( loader::context->defaultZerDriverHandle )->pRuntime;
+        auto dditable = reinterpret_cast<ze_handle_t*>( *loader::context->defaultZerDriverHandle )->pRuntime;
         if (dditable->isValidFlag == 0) {
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
@@ -66,7 +66,7 @@ namespace loader_driver_ddi
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return UINT32_MAX;
         }
-        auto dditable = reinterpret_cast<ze_handle_t*>( loader::context->defaultZerDriverHandle )->pRuntime;
+        auto dditable = reinterpret_cast<ze_handle_t*>( *loader::context->defaultZerDriverHandle )->pRuntime;
         if (dditable->isValidFlag == 0) {
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return UINT32_MAX;
@@ -105,7 +105,7 @@ namespace loader_driver_ddi
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return nullptr;
         }
-        auto dditable = reinterpret_cast<ze_handle_t*>( loader::context->defaultZerDriverHandle )->pRuntime;
+        auto dditable = reinterpret_cast<ze_handle_t*>( *loader::context->defaultZerDriverHandle )->pRuntime;
         if (dditable->isValidFlag == 0) {
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return nullptr;
@@ -144,7 +144,7 @@ namespace loader_driver_ddi
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return nullptr;
         }
-        auto dditable = reinterpret_cast<ze_handle_t*>( loader::context->defaultZerDriverHandle )->pRuntime;
+        auto dditable = reinterpret_cast<ze_handle_t*>( *loader::context->defaultZerDriverHandle )->pRuntime;
         if (dditable->isValidFlag == 0) {
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return nullptr;
