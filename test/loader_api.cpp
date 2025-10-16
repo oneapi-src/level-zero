@@ -220,7 +220,7 @@ TEST(
   desc.flags = UINT32_MAX;
   desc.pNext = nullptr;
   putenv_safe( const_cast<char *>( "ZEL_TEST_MISSING_API=zeInitDrivers" ) );
-  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
   EXPECT_EQ(pInitDriversCount, 0);
   EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
   EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&pDriverGetCount, nullptr));

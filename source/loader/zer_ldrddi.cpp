@@ -13,6 +13,15 @@ using namespace loader_driver_ddi;
 
 namespace loader
 {
+    __zedlllocal ze_result_t ZE_APICALL
+    zerloaderInitDriverDDITables(loader::driver_t *driver) {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        result = zerGetGlobalProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        return result;
+    }
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zerGetLastErrorDescription
     __zedlllocal ze_result_t ZE_APICALL
@@ -123,6 +132,28 @@ zerGetGlobalProcAddrTableLegacy()
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zerGetGlobalProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zer_pfnGetGlobalProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zerGetGlobalProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zer.Global);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Global table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zerGetGlobalProcAddrTable(
     ze_api_version_t version,                       ///< [in] API version requested
@@ -139,20 +170,15 @@ zerGetGlobalProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zer_pfnGetGlobalProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zerGetGlobalProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zer.Global);
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zerGetGlobalProcAddrTableFromDriver(firstDriver);
     }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {

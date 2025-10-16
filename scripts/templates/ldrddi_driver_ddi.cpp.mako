@@ -105,6 +105,10 @@ namespace loader_driver_ddi
             %if ret_type == 'ze_result_t':
             return ${X}_RESULT_ERROR_UNINITIALIZED;
             %else:
+            if (loader::context->zeDrivers.front().zerddiInitResult == ZE_RESULT_ERROR_UNSUPPORTED_FEATURE) {
+                error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
+                return ${failure_return};
+            }
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return ${failure_return};
             %endif

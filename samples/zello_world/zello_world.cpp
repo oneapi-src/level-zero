@@ -42,6 +42,7 @@ int main( int argc, char *argv[] )
     bool tracing_runtime_enabled = false;
     bool legacy_init = false;
     bool tracing_enabled = false;
+    bool npu_test = false;
     if( argparse( argc, argv, "-null", "--enable_null_driver" ) )
     {
         putenv_safe( const_cast<char *>( "ZE_ENABLE_NULL_DRIVER=1" ) );
@@ -69,13 +70,25 @@ int main( int argc, char *argv[] )
     {
         legacy_init = true;
     }
+    if( argparse( argc, argv, "-npu", "--enable_npu" ) )
+    {
+        npu_test = true;
+    }
 
     ze_result_t status;
-    const ze_device_type_t type = ZE_DEVICE_TYPE_GPU;
+    ze_device_type_t type = ZE_DEVICE_TYPE_GPU;
+    if (npu_test) {
+        std::cout << "NPU Test Enabled. Looking for NPU devices." << std::endl;
+        type = ZE_DEVICE_TYPE_VPU;
+    }
 
     ze_init_driver_type_desc_t driverTypeDesc = {};
     driverTypeDesc.stype = ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC;
-    driverTypeDesc.flags = ZE_INIT_DRIVER_TYPE_FLAG_GPU;
+    if (npu_test) {
+        driverTypeDesc.flags = ZE_INIT_DRIVER_TYPE_FLAG_NPU;
+    } else {
+        driverTypeDesc.flags = ZE_INIT_DRIVER_TYPE_FLAG_GPU;
+    }
     driverTypeDesc.pNext = nullptr;
 
     ze_driver_handle_t pDriver = nullptr;

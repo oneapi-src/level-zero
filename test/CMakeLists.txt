@@ -12,7 +12,7 @@ add_executable(
 # Only include driver_ordering_unit_tests for static builds or non-Windows platforms
 # as it requires internal loader symbols that are not exported in Windows DLLs
 if(BUILD_STATIC OR NOT WIN32)
-  target_sources(tests PRIVATE driver_ordering_unit_tests.cpp)
+  target_sources(tests PRIVATE driver_ordering_unit_tests.cpp init_driver_unit_tests.cpp)
 endif()
 
 # For static builds, we need to include the loader source files directly
@@ -67,6 +67,37 @@ if(BUILD_STATIC)
   target_link_libraries(tests PRIVATE ${CMAKE_DL_LIBS})
   if(UNIX AND NOT APPLE)
     target_link_libraries(tests PRIVATE pthread)
+  endif()
+endif()
+
+# Create fake driver copies for init_driver_unit_tests
+if(NOT BUILD_STATIC)
+  if(MSVC)
+    add_custom_command(TARGET tests POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ze_null>
+        $<TARGET_FILE_DIR:tests>/ze_fake_gpu.dll
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ze_null_test1>
+        $<TARGET_FILE_DIR:tests>/ze_fake_npu.dll
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ze_null_test2>
+        $<TARGET_FILE_DIR:tests>/ze_fake_vpu.dll
+      COMMENT "Copying null drivers to fake driver names for init_driver_unit_tests"
+    )
+  else()
+    add_custom_command(TARGET tests POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/lib/libze_null.so.1
+        ${CMAKE_BINARY_DIR}/lib/libze_fake_gpu.so.1
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/lib/libze_null_test1.so.1
+        ${CMAKE_BINARY_DIR}/lib/libze_fake_npu.so.1
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/lib/libze_null_test2.so.1
+        ${CMAKE_BINARY_DIR}/lib/libze_fake_vpu.so.1
+      COMMENT "Copying null drivers to fake driver names for init_driver_unit_tests"
+    )
   endif()
 endif()
 
@@ -597,6 +628,9 @@ set_property(TEST driver_ordering_trim_function PROPERTY ENVIRONMENT "ZE_ENABLE_
 add_test(NAME driver_ordering_parse_driver_order COMMAND tests --gtest_filter=DriverOrderingHelperFunctionsTest.ParseDriverOrder_*)
 set_property(TEST driver_ordering_parse_driver_order PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
+# Init Driver Unit Tests
+add_test(NAME init_driver_unit_tests COMMAND tests --gtest_filter=InitDriverUnitTest.*)
+set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)

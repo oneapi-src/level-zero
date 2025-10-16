@@ -70,6 +70,13 @@ namespace loader
         bool driverDDIHandleSupportQueried = false;
         ze_driver_handle_t zerDriverHandle = nullptr;
         bool zerDriverDDISupported = true;
+        ze_api_version_t versionRequested = ZE_API_VERSION_CURRENT;
+        bool ddiInitialized = false;
+        bool customDriver = false;
+        ze_result_t zeddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+        ze_result_t zetddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+        ze_result_t zesddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+        ze_result_t zerddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
     };
 
     using driver_vector_t = std::vector< driver_t >;
@@ -98,6 +105,7 @@ namespace loader
         std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
         ze_api_version_t configured_version = ZE_API_VERSION_CURRENT;
+        ze_api_version_t ddi_init_version = ZE_API_VERSION_CURRENT;
 
         driver_vector_t allDrivers;
         driver_vector_t zeDrivers;
@@ -113,10 +121,9 @@ namespace loader
         std::vector<zel_component_version_t> compVersions;
         const char *LOADER_COMP_NAME = "loader";
 
-        ze_result_t check_drivers(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
         void debug_trace_message(std::string errorMessage, std::string errorValue);
         ze_result_t init();
-        ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly);
+        ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc);
         void add_loader_version();
         bool driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly);
         void driverOrdering(driver_vector_t *drivers);
@@ -130,6 +137,7 @@ namespace loader
         std::atomic<bool> sortingInProgress = {false};
         std::mutex sortMutex;
         bool instrumentationEnabled = false;
+        bool pciOrderingRequested = false;
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
         ze_driver_handle_t defaultZerDriverHandle = nullptr;
