@@ -153,9 +153,12 @@ namespace loader
         {
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
-            if (!drv.handle) {
+            if (!drv.handle || !drv.ddiInitialized) {
                 bool sysmanInit = false;
-                loader::context->init_driver( drv, flags, nullptr, nullptr, nullptr, sysmanInit );
+                auto res = loader::context->init_driver( drv, flags, nullptr, nullptr, nullptr, sysmanInit );
+                if (res != ZE_RESULT_SUCCESS) {
+                    continue;
+                }
             }
             drv.initStatus = drv.dditable.ze.Global.pfnInit( flags );
             if(drv.initStatus == ZE_RESULT_SUCCESS)

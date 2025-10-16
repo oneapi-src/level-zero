@@ -76,13 +76,16 @@ namespace loader
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
             %endif
-            if (!drv.handle) {
+            if (!drv.handle || !drv.ddiInitialized) {
                 %if namespace != "zes":
                 bool sysmanInit = false;
                 %else:
                 bool sysmanInit = true;
                 %endif
-                loader::context->init_driver( drv, flags, nullptr, nullptr, nullptr, sysmanInit );
+                auto res = loader::context->init_driver( drv, flags, nullptr, nullptr, nullptr, sysmanInit );
+                if (res != ZE_RESULT_SUCCESS) {
+                    continue;
+                }
             }
         %if re.match(r"Init", obj['name']) and namespace == "zes":
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {

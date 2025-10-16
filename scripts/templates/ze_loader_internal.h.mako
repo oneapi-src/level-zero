@@ -70,6 +70,7 @@ namespace loader
         bool driverDDIHandleSupportQueried = false;
         ze_driver_handle_t zerDriverHandle = nullptr;
         ze_api_version_t versionRequested = ZE_API_VERSION_CURRENT;
+        bool ddiInitialized = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;

@@ -526,10 +526,6 @@ namespace loader
             if( NULL != handle )
             {
                 driver.handle = handle;
-                loader::zeloaderInitDriverDDITables(&driver);
-                loader::zesloaderInitDriverDDITables(&driver);
-                loader::zetloaderInitDriverDDITables(&driver);
-                loader::zerloaderInitDriverDDITables(&driver);
             } else {
                 std::string loadLibraryErrorValue;
                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
@@ -539,6 +535,42 @@ namespace loader
                 }
                 return ZE_RESULT_ERROR_UNINITIALIZED;
             }
+        }
+
+        if (driver.handle && !driver.ddiInitialized) {
+            auto res = loader::zeloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zeloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                return res;
+            }
+            res = loader::zesloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zesloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                return res;
+            }
+            res = loader::zetloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zetloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                return res;
+            }
+            res = loader::zerloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zerloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                return res;
+            }
+            driver.ddiInitialized = true;
         }
 
         return ZE_RESULT_SUCCESS;
