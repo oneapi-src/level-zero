@@ -503,8 +503,8 @@ namespace driver
                 strcpy( ddiHandlesExtension.name, ZE_DRIVER_DDI_HANDLES_EXT_NAME );
 #endif
 
-                auto ddi_version_env = getenv("ZEL_TEST_DDI_HANDLES_EXT_VERSION");
-                if (ddi_version_env && strcmp(ddi_version_env, "1_0") == 0) {
+                auto ddi_version_env = getenv_string("ZEL_TEST_DDI_HANDLES_EXT_VERSION");
+                if (!ddi_version_env.empty() && ddi_version_env == "1_0") {
                     ddiHandlesExtension.version = ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_0;
                 } else {
                     ddiHandlesExtension.version = ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1;
