@@ -374,6 +374,23 @@ namespace loader
                     continue;
                 }
                 driver.driverDDIHandleSupportQueried = true;
+                
+                if (!(driver.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                    if (debugTraceEnabled) {
+                        std::string message = "driverSorting: Driver DDI Handles Not Supported for " + driver.name;
+                        debug_trace_message(message, "");
+                    }
+                    if (driver.zerDriverHandle != nullptr) {
+                        driver.zerDriverHandle = reinterpret_cast<ze_driver_handle_t>(
+                            loader::context->ze_driver_factory.getInstance(driver.zerDriverHandle, &driver.dditable));
+                    }
+                } else {
+                    if (debugTraceEnabled) {
+                        std::string message = "driverSorting: Driver DDI Handles Supported for " + driver.name;
+                        debug_trace_message(message, "");
+                    }
+                }
+                
                 uint32_t deviceCount = 0;
                 res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, nullptr );
                 if( ZE_RESULT_SUCCESS != res ) {
@@ -551,7 +568,7 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // Set default driver handle and DDI table to the first driver in the list before sorting.
-        loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+        loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
         loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
         return ZE_RESULT_SUCCESS;
     }

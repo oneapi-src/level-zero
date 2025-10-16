@@ -167,7 +167,7 @@ namespace loader
         bool instrumentationEnabled = false;
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
-        ze_driver_handle_t* defaultZerDriverHandle = nullptr;
+        ze_driver_handle_t defaultZerDriverHandle = nullptr;
     };
 
     extern ze_handle_t* loaderDispatch;

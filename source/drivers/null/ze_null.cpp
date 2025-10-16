@@ -22,6 +22,13 @@ namespace driver
     //////////////////////////////////////////////////////////////////////////
     context_t::context_t()
     {
+        auto ddi_test_disable = getenv_string( "ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT" );
+        #ifndef ZEL_NULL_DRIVER_ID
+        #define ZEL_NULL_DRIVER_ID 1
+        #endif
+        std::string null_driver_id_str = std::to_string(ZEL_NULL_DRIVER_ID);
+        ddiExtensionSupported = (ddi_test_disable != null_driver_id_str && ddi_test_disable != "3");
+        
         zesDdiTable.Driver.pfnGet = [](
             uint32_t* pCount,
             ze_driver_handle_t* phDrivers )
@@ -69,15 +76,9 @@ namespace driver
         {
             auto pNext = reinterpret_cast<ze_base_properties_t *>(pDriverProperties->pNext);
             while (pNext) {
-                auto ddi_test_disable = getenv_string( "ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT" );
-                #ifndef ZEL_NULL_DRIVER_ID
-                #define ZEL_NULL_DRIVER_ID 1
-                #endif
-                std::string null_driver_id_str = std::to_string(ZEL_NULL_DRIVER_ID);
-                if (pNext->stype == ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES && (ddi_test_disable != null_driver_id_str && ddi_test_disable != "3")) {
+                if (pNext->stype == ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES && context.ddiExtensionSupported) {
                     ze_driver_ddi_handles_ext_properties_t *pDdiHandlesExtProperties = reinterpret_cast<ze_driver_ddi_handles_ext_properties_t *>(pNext);
                     pDdiHandlesExtProperties->flags = ze_driver_ddi_handle_ext_flag_t::ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
-                    context.ddiExtensionRequested = true;
                 }
                 pNext = reinterpret_cast<ze_base_properties_t *>(pNext->pNext);
             }

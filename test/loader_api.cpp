@@ -2323,7 +2323,42 @@ TEST_F(DriverOrderingTest,
     (void)defaultContext;
   }
 
-  /*
+  TEST(
+      RuntimeApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtNotSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    putenv_safe(const_cast<char *>("ZE_ENABLE_LOADER_INTERCEPT=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1"));
+    std::vector<ze_driver_handle_t> drivers;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    drivers.resize(pInitDriversCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, drivers.data(), &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    const char *errorString = nullptr;
+    uint32_t deviceId = 0;
+
+    ze_result_t result = zerGetLastErrorDescription(&errorString);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+    EXPECT_TRUE(compare_env("zerGetLastErrorDescription", "1"));
+
+    deviceId = zerTranslateDeviceHandleToIdentifier(nullptr);
+    EXPECT_TRUE(compare_env("zerTranslateDeviceHandleToIdentifier", "1"));
+
+    ze_device_handle_t translatedDevice = zerTranslateIdentifierToDeviceHandle(deviceId);
+    EXPECT_TRUE(compare_env("zerTranslateIdentifierToDeviceHandle", "1"));
+    (void)translatedDevice;
+
+    ze_context_handle_t defaultContext = zerGetDefaultContext();
+    EXPECT_TRUE(compare_env("zerGetDefaultContext", "1"));
+    (void)defaultContext;
+  }
+
+  
   TEST(
       RuntimeApiLoaderDriverInteraction,
       GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWithVersion1_0WhenCallingRuntimeApisThenExpectErrorUninitialized)
@@ -2370,6 +2405,6 @@ TEST_F(DriverOrderingTest,
     EXPECT_NE(errorDesc, nullptr);
     EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNINITIALIZED"));
   }
-  */
+  
 
 } // namespace

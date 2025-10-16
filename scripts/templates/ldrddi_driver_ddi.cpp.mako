@@ -109,7 +109,7 @@ namespace loader_driver_ddi
             return ${failure_return};
             %endif
         }
-        auto dditable = reinterpret_cast<ze_handle_t*>( *loader::context->defaultZerDriverHandle )->pRuntime;
+        auto dditable = reinterpret_cast<ze_handle_t*>( loader::context->defaultZerDriverHandle )->pRuntime;
         if (dditable->isValidFlag == 0) {
             %if ret_type == 'ze_result_t':
             return ${X}_RESULT_ERROR_UNINITIALIZED;

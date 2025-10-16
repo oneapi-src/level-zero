@@ -98,13 +98,13 @@ namespace loader
                 %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
                 std::call_once(loader::context->coreDriverSortOnce, []() {
                     loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
-                    loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+                    loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
                     loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 %else:
                 std::call_once(loader::context->coreDriverSortOnce, [desc]() {
                     loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
-                    loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+                    loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
                     loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 %endif
@@ -234,6 +234,10 @@ namespace loader
                             }
                             ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
                                 context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
+                            if (drv.zerDriverHandle != nullptr) {
+                                drv.zerDriverHandle = reinterpret_cast<${n}_driver_handle_t>(
+                                    context->${n}_driver_factory.getInstance( drv.zerDriverHandle, &drv.dditable ) );
+                            }
                         } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
                             if (loader::context->debugTraceEnabled) {
                                 std::string message = "Driver DDI Handles Supported for " + drv.name;
