@@ -60,6 +60,7 @@ namespace loader
         bool legacyInitAttempted = false;
         bool driverDDIHandleSupportQueried = false;
         ze_driver_handle_t zerDriverHandle = nullptr;
+        ze_api_version_t versionRequested = ZE_API_VERSION_CURRENT;
     };
 
     using driver_vector_t = std::vector< driver_t >;
@@ -133,6 +134,7 @@ namespace loader
         std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
         ze_api_version_t configured_version = ZE_API_VERSION_CURRENT;
+        ze_api_version_t ddi_init_version = ZE_API_VERSION_CURRENT;
 
         driver_vector_t allDrivers;
         driver_vector_t zeDrivers;
@@ -165,6 +167,7 @@ namespace loader
         std::atomic<bool> sortingInProgress = {false};
         std::mutex sortMutex;
         bool instrumentationEnabled = false;
+        bool pciOrderingRequested = false;
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
         ze_driver_handle_t defaultZerDriverHandle = nullptr;

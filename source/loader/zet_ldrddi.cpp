@@ -13,6 +13,87 @@ using namespace loader_driver_ddi;
 
 namespace loader
 {
+    __zedlllocal ze_result_t ZE_APICALL
+    zetloaderInitDriverDDITables(loader::driver_t *driver) {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        result = zetGetMetricDecoderExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricProgrammableExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricTracerExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetDeviceProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetDeviceExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetContextProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetCommandListProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetCommandListExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetKernelProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetModuleProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetDebugProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricGroupProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricGroupExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricQueryProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricQueryPoolProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetMetricStreamerProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        result = zetGetTracerExpProcAddrTableFromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        return result;
+    }
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetModuleGetDebugInfo
     __zedlllocal ze_result_t ZE_APICALL
@@ -2610,6 +2691,472 @@ zetGetTracerExpProcAddrTableLegacy()
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricDecoderExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricDecoderExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricDecoderExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricDecoderExp);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricProgrammableExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricProgrammableExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricProgrammableExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricProgrammableExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricProgrammableExp);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricTracerExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricTracerExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricTracerExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricTracerExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricTracerExp);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Device table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetDeviceProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetDeviceProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetDeviceProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.Device);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetDeviceExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetDeviceExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetDeviceExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zet.DeviceExp);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Context table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetContextProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetContextProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetContextProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.Context);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandList table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetCommandListProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetCommandListProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetCommandListProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.CommandList);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetCommandListExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetCommandListExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetCommandListExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zet.CommandListExp);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Kernel table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetKernelProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetKernelProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetKernelProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.Kernel);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Module table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetModuleProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetModuleProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetModuleProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.Module);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Debug table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetDebugProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetDebugProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetDebugProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.Debug);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Metric table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.Metric);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricExp);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricGroup table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricGroupProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricGroupProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricGroupProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricGroup);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricGroupExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricGroupExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricGroupExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricGroupExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricGroupExp);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricQuery table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricQueryProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricQueryProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricQueryProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricQuery);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricQueryPool table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricQueryPoolProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricQueryPoolProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricQueryPoolProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricQueryPool);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricStreamer table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetMetricStreamerProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetMetricStreamerProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetMetricStreamerProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.MetricStreamer);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's TracerExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zetGetTracerExpProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zet_pfnGetTracerExpProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zetGetTracerExpProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zet.TracerExp);
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricDecoderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zetGetMetricDecoderExpProcAddrTable(
     ze_api_version_t version,                       ///< [in] API version requested
@@ -2626,20 +3173,9 @@ zetGetMetricDecoderExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricDecoderExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricDecoderExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.MetricDecoderExp);
-    }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -2715,20 +3251,9 @@ zetGetMetricProgrammableExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricProgrammableExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricProgrammableExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.MetricProgrammableExp);
-    }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -2811,20 +3336,9 @@ zetGetMetricTracerExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricTracerExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricTracerExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.MetricTracerExp);
-    }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -2921,30 +3435,9 @@ zetGetDeviceProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetDeviceProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetDeviceProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.Device);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3006,20 +3499,9 @@ zetGetDeviceExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetDeviceExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetDeviceExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.DeviceExp);
-    }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3102,30 +3584,9 @@ zetGetContextProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetContextProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetContextProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.Context);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3187,30 +3648,9 @@ zetGetCommandListProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetCommandListProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetCommandListProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.CommandList);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3293,20 +3733,9 @@ zetGetCommandListExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetCommandListExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetCommandListExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.CommandListExp);
-    }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3368,30 +3797,9 @@ zetGetKernelProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetKernelProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetKernelProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.Kernel);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3453,30 +3861,9 @@ zetGetModuleProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetModuleProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetModuleProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.Module);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3538,30 +3925,9 @@ zetGetDebugProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetDebugProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetDebugProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.Debug);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3700,30 +4066,9 @@ zetGetMetricProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.Metric);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3792,20 +4137,9 @@ zetGetMetricExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.MetricExp);
-    }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3881,30 +4215,9 @@ zetGetMetricGroupProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricGroupProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricGroupProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.MetricGroup);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3980,20 +4293,9 @@ zetGetMetricGroupExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricGroupExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricGroupExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.MetricGroupExp);
-    }
-
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4111,30 +4413,9 @@ zetGetMetricQueryProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricQueryProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricQueryProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.MetricQuery);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4217,30 +4498,9 @@ zetGetMetricQueryPoolProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricQueryPoolProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricQueryPoolProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.MetricQueryPool);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4309,30 +4569,9 @@ zetGetMetricStreamerProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetMetricStreamerProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetMetricStreamerProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.MetricStreamer);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4408,30 +4647,9 @@ zetGetTracerExpProcAddrTable(
     if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetTracerExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetTracerExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.TracerExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
