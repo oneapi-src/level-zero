@@ -142,14 +142,7 @@ zerGetGlobalProcAddrTableFromDriver(loader::driver_t *driver)
         GET_FUNCTION_PTR( driver->handle, "zerGetGlobalProcAddrTable") );
     if(!getTable) 
         return driver->initStatus;
-    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zer.Global);
-    if(getTableResult == ZE_RESULT_SUCCESS) {
-        loader::context->configured_version = loader::context->ddi_init_version;
-    } else
-        driver->initStatus = getTableResult;
-    if (driver->dditable.ze.Global.pfnInitDrivers) {
-        loader::context->initDriversSupport = true;
-    }
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zer.Global);
     return result;
 }
 ///////////////////////////////////////////////////////////////////////////////

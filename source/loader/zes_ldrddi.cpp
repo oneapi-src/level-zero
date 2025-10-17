@@ -213,7 +213,8 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        drv.zerDriverHandle = phDrivers[ driver_index ];
+                        if (drv.zerddiInitResult == ZE_RESULT_SUCCESS)
+                            drv.zerDriverHandle = phDrivers[ driver_index ];
                         phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>(
                             context->zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
                     }

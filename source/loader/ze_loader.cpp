@@ -324,8 +324,9 @@ namespace loader
                     continue;
                 }
             } else {
+                res = ZE_RESULT_ERROR_UNINITIALIZED;
                 if (debugTraceEnabled) {
-                    std::string message = "driverSorting " + driver.name + " zeDriverGet and zeInitDrivers not supported, skipping driver";
+                    std::string message = "driverSorting " + driver.name + " zeDriverGet and zeInitDrivers not supported, skipping driver with error ";
                     debug_trace_message(message, loader::to_string(res));
                 }
                 continue;
@@ -333,7 +334,8 @@ namespace loader
 
             for (auto handle : driverHandles) {
                 uint32_t extensionCount = 0;
-                driver.zerDriverHandle = handle;
+                if (driver.zerddiInitResult == ZE_RESULT_SUCCESS)
+                    driver.zerDriverHandle = handle;
                 ze_result_t res = driver.dditable.ze.Driver.pfnGetExtensionProperties(handle, &extensionCount, nullptr);
                 if (res != ZE_RESULT_SUCCESS) {
                     if (loader::context->debugTraceEnabled) {
@@ -544,7 +546,9 @@ namespace loader
                     std::string message = "init driver " + driver.name + " failed, zeloaderInitDriverDDITables returned ";
                     debug_trace_message(message, loader::to_string(res));
                 }
-                return res;
+                driver.zeddiInitResult = res;
+            } else {
+                driver.zeddiInitResult = ZE_RESULT_SUCCESS;
             }
             res = loader::zesloaderInitDriverDDITables(&driver);
             if (res != ZE_RESULT_SUCCESS) {
@@ -552,7 +556,9 @@ namespace loader
                     std::string message = "init driver " + driver.name + " failed, zesloaderInitDriverDDITables returned ";
                     debug_trace_message(message, loader::to_string(res));
                 }
-                return res;
+                driver.zesddiInitResult = res;
+            } else {
+                driver.zesddiInitResult = ZE_RESULT_SUCCESS;
             }
             res = loader::zetloaderInitDriverDDITables(&driver);
             if (res != ZE_RESULT_SUCCESS) {
@@ -560,7 +566,9 @@ namespace loader
                     std::string message = "init driver " + driver.name + " failed, zetloaderInitDriverDDITables returned ";
                     debug_trace_message(message, loader::to_string(res));
                 }
-                return res;
+                driver.zetddiInitResult = res;
+            } else {
+                driver.zetddiInitResult = ZE_RESULT_SUCCESS;
             }
             res = loader::zerloaderInitDriverDDITables(&driver);
             if (res != ZE_RESULT_SUCCESS) {
@@ -568,7 +576,10 @@ namespace loader
                     std::string message = "init driver " + driver.name + " failed, zerloaderInitDriverDDITables returned ";
                     debug_trace_message(message, loader::to_string(res));
                 }
-                return res;
+                driver.zerddiInitResult = res;
+                driver.zerDriverHandle = nullptr;
+            } else {
+                driver.zerddiInitResult = ZE_RESULT_SUCCESS;
             }
             driver.ddiInitialized = true;
         }
@@ -676,29 +687,6 @@ namespace loader
             allDrivers.emplace_back();
             allDrivers.rbegin()->handle = nullptr;
             allDrivers.rbegin()->name = name;
-//             auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
-//             if( NULL != handle )
-//             {
-//                 if (debugTraceEnabled) {
-//                     std::string message = "Loading Driver " + name + " succeeded";
-// #if !defined(_WIN32) && !defined(ANDROID)
-//                     // TODO: implement same message for windows, move dlinfo to ze_util.h as a macro
-//                     struct link_map *dlinfo_map;
-//                     if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
-//                         message += " from: " + std::string(dlinfo_map->l_name);
-//                     }
-// #endif
-//                     debug_trace_message(message, "");
-//                 }
-//                 allDrivers.emplace_back();
-//                 allDrivers.rbegin()->handle = handle;
-//                 allDrivers.rbegin()->name = name;
-//             } else if (debugTraceEnabled) {
-//                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
-//                 std::string errorMessage = "Load Library of " + name + " failed with ";
-//                 debug_trace_message(errorMessage, loadLibraryErrorValue);
-//                 loadLibraryErrorValue.clear();
-//             }
         }
         if(allDrivers.size()==0){
             if (debugTraceEnabled) {
@@ -777,7 +765,7 @@ namespace loader
         driverEnvironmentQueried = true;
 
         // Set default driver handle and DDI table to the first driver in the list before sorting.
-        loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+        loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
         loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
 
         zel_logger->log_info("zeInit succeeded");

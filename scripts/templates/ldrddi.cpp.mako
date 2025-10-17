@@ -210,7 +210,8 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        drv.zerDriverHandle = phDrivers[ driver_index ];
+                        if (drv.zerddiInitResult == ZE_RESULT_SUCCESS)
+                            drv.zerDriverHandle = phDrivers[ driver_index ];
                         %if namespace != "zes":
                         if (drv.driverDDIHandleSupportQueried == false) {
                             uint32_t extensionCount = 0;

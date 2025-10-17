@@ -71,6 +71,10 @@ namespace loader
         ze_driver_handle_t zerDriverHandle = nullptr;
         ze_api_version_t versionRequested = ZE_API_VERSION_CURRENT;
         bool ddiInitialized = false;
+        ze_result_t zeddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+        ze_result_t zetddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+        ze_result_t zesddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+        ze_result_t zerddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
     };
 
     using driver_vector_t = std::vector< driver_t >;
