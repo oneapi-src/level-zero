@@ -182,7 +182,7 @@ namespace loader
 
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
-            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
 
             if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))

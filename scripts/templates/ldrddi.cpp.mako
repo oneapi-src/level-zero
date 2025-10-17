@@ -114,7 +114,7 @@ namespace loader
         uint32_t total_driver_handle_count = 0;
         %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         for( auto& drv : loader::context->zeDrivers ) {
-            if (!drv.handle) {
+            if (!drv.handle || !drv.ddiInitialized) {
                 loader::context->init_driver( drv, 0, desc, nullptr, nullptr, false );
             }
         }
@@ -153,15 +153,16 @@ namespace loader
         %endif
         {
             %if not (re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj))) and namespace != "zes":
-            if(drv.initStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
             %elif namespace == "zes":
-            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
             %else:
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
                 %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
                 drv.initDriversStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
+                result = ${X}_RESULT_ERROR_UNINITIALIZED;
                 %else:
                 drv.initStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
                 %endif

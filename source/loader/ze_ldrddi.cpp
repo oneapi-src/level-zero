@@ -204,7 +204,7 @@ namespace loader
 
         for( auto& drv : loader::context->zeDrivers )
         {
-            if(drv.initStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
 
             if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
@@ -339,7 +339,7 @@ namespace loader
         
         uint32_t total_driver_handle_count = 0;
         for( auto& drv : loader::context->zeDrivers ) {
-            if (!drv.handle) {
+            if (!drv.handle || !drv.ddiInitialized) {
                 loader::context->init_driver( drv, 0, desc, nullptr, nullptr, false );
             }
         }
@@ -360,6 +360,7 @@ namespace loader
         {
             if (!drv.dditable.ze.Global.pfnInitDrivers) {
                 drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                result = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;
             }
 
