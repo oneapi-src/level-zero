@@ -98,16 +98,6 @@ int main( int argc, char *argv[] )
             }
         }
 
-        if (tracing_enabled) {
-            zel_tracer_desc_t tracer_desc = {ZEL_STRUCTURE_TYPE_TRACER_EXP_DESC, nullptr,
-                nullptr};
-            status = zelTracerCreate(&tracer_desc, &tracer);
-            if(status != ZE_RESULT_SUCCESS) {
-                std::cout << "zelTracerCreate Failed with return code: " << to_string(status) << std::endl;
-                exit(1);
-            }
-        }
-
         if (legacy_init) {
             status = zeDriverGet(&driverCount, nullptr);
             if(status != ZE_RESULT_SUCCESS) {
@@ -153,6 +143,15 @@ int main( int argc, char *argv[] )
         if (driver_idx >= devices_per_driver.size() || devices_per_driver[driver_idx] == nullptr) {
             std::cout << "No valid device found for Driver #" << driver_idx << std::endl;
             continue;
+        }
+        if (tracing_enabled) {
+            zel_tracer_desc_t tracer_desc = {ZEL_STRUCTURE_TYPE_TRACER_EXP_DESC, nullptr,
+                nullptr};
+            status = zelTracerCreate(&tracer_desc, &tracer);
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zelTracerCreate Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
         }
         pDriver = drivers[driver_idx];
         pDevice = devices_per_driver[driver_idx];
