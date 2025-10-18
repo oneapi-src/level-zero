@@ -596,7 +596,35 @@ set_property(TEST driver_ordering_trim_function PROPERTY ENVIRONMENT "ZE_ENABLE_
 add_test(NAME driver_ordering_parse_driver_order COMMAND tests --gtest_filter=DriverOrderingHelperFunctionsTest.ParseDriverOrder_*)
 set_property(TEST driver_ordering_parse_driver_order PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
+add_test(NAME tests_sigle_driver_runtime_api_ddi_ext_v1_1 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_sigle_driver_runtime_api_ddi_ext_v1_1 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
+add_test(NAME tests_multi_driver_runtime_api_ddi_ext_v1_1 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
+if (MSVC)
+  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_1 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_1 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
+add_test(NAME tests_single_driver_runtime_api_ddi_ext_unsupported COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtNotSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_runtime_api_ddi_ext_unsupported PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME tests_multi_driver_runtime_api_ddi_ext_unsupported COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtNotSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
+if (MSVC)
+  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_unsupported APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_unsupported APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
+add_test(NAME tests_sigle_driver_runtime_api_ddi_ext_v1_0 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWithVersion1_0WhenCallingRuntimeApisThenExpectErrorUninitialized)
+set_property(TEST tests_sigle_driver_runtime_api_ddi_ext_v1_0 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME tests_multi_driver_runtime_api_ddi_ext_v1_0 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWithVersion1_0WhenCallingRuntimeApisThenExpectErrorUninitialized)
+if (MSVC)
+  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_0 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+ else()
+  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_0 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)
