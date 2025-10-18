@@ -2509,6 +2509,97 @@ TEST_F(DriverOrderingTest,
     EXPECT_NE(errorDesc, nullptr);
     EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNINITIALIZED"));
   }
+
+  TEST(
+      RuntimeApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndRuntimeApiUnsupportedWhenCallingRuntimeApisAfterZeInitDriversThenExpectErrorUnsupportedFeature)
+  {
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    putenv_safe(const_cast<char *>("ZE_ENABLE_LOADER_INTERCEPT=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_ZER_API=1"));
+
+    std::vector<ze_driver_handle_t> drivers;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    drivers.resize(pInitDriversCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, drivers.data(), &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t deviceId = 0;
+
+    const char *errorDesc = nullptr;
+    ze_result_t errorDescResult{};
+
+    deviceId = zerTranslateDeviceHandleToIdentifier(nullptr);
+    EXPECT_EQ(UINT32_MAX, deviceId);
+
+    errorDescResult = zerGetLastErrorDescription(&errorDesc);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, errorDescResult);
+    EXPECT_NE(errorDesc, nullptr);
+    EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
+
+    ze_device_handle_t translatedDevice = zerTranslateIdentifierToDeviceHandle(deviceId);
+    EXPECT_EQ(nullptr, translatedDevice);
+
+    errorDescResult = zerGetLastErrorDescription(&errorDesc);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, errorDescResult);
+    EXPECT_NE(errorDesc, nullptr);
+    EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
+
+    ze_context_handle_t defaultContext = zerGetDefaultContext();
+    EXPECT_EQ(nullptr, defaultContext);
+
+    errorDescResult = zerGetLastErrorDescription(&errorDesc);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, errorDescResult);
+    EXPECT_NE(errorDesc, nullptr);
+    EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
+  }
+
+  /*
+  TEST(
+      RuntimeApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndRuntimeApiUnsupportedWhenCallingRuntimeApisAfterZeInitThenExpectErrorUnsupportedFeature)
+  {
+    putenv_safe(const_cast<char *>("ZE_ENABLE_LOADER_INTERCEPT=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_ZER_API=1"));
+
+    uint32_t driverGetCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverGetCount, nullptr));
+    EXPECT_GT(driverGetCount, 0);
+
+    uint32_t deviceId = 0;
+
+    const char *errorDesc = nullptr;
+    ze_result_t errorDescResult{};
+
+    deviceId = zerTranslateDeviceHandleToIdentifier(nullptr);
+    EXPECT_EQ(UINT32_MAX, deviceId);
+
+    errorDescResult = zerGetLastErrorDescription(&errorDesc);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, errorDescResult);
+    EXPECT_NE(errorDesc, nullptr);
+    EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
+
+    ze_device_handle_t translatedDevice = zerTranslateIdentifierToDeviceHandle(deviceId);
+    EXPECT_EQ(nullptr, translatedDevice);
+
+    errorDescResult = zerGetLastErrorDescription(&errorDesc);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, errorDescResult);
+    EXPECT_NE(errorDesc, nullptr);
+    EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
+
+    ze_context_handle_t defaultContext = zerGetDefaultContext();
+    EXPECT_EQ(nullptr, defaultContext);
+
+    errorDescResult = zerGetLastErrorDescription(&errorDesc);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, errorDescResult);
+    EXPECT_NE(errorDesc, nullptr);
+    EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
+  }
+    */
   
 
 } // namespace

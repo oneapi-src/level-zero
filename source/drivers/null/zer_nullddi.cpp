@@ -137,6 +137,15 @@ zerGetGlobalProcAddrTable(
     zer_global_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
+    auto zer_api_disable = getenv_string( "ZEL_TEST_NULL_DRIVER_DISABLE_ZER_API" );
+    #ifndef ZEL_NULL_DRIVER_ID
+    #define ZEL_NULL_DRIVER_ID 1
+    #endif
+    std::string null_driver_id_str = std::to_string(ZEL_NULL_DRIVER_ID);
+    auto zer_api_unsupported = (zer_api_disable == null_driver_id_str);
+    if(zer_api_unsupported)
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
