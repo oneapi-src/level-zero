@@ -596,35 +596,6 @@ set_property(TEST driver_ordering_trim_function PROPERTY ENVIRONMENT "ZE_ENABLE_
 add_test(NAME driver_ordering_parse_driver_order COMMAND tests --gtest_filter=DriverOrderingHelperFunctionsTest.ParseDriverOrder_*)
 set_property(TEST driver_ordering_parse_driver_order PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
-add_test(NAME tests_sigle_driver_runtime_api_ddi_ext_v1_1 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
-set_property(TEST tests_sigle_driver_runtime_api_ddi_ext_v1_1 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
-
-add_test(NAME tests_multi_driver_runtime_api_ddi_ext_v1_1 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
-if (MSVC)
-  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_1 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
-else()
-  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_1 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
-endif()
-
-add_test(NAME tests_single_driver_runtime_api_ddi_ext_unsupported COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtNotSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
-set_property(TEST tests_single_driver_runtime_api_ddi_ext_unsupported PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
-
-add_test(NAME tests_multi_driver_runtime_api_ddi_ext_unsupported COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtNotSupportedWhenCallingRuntimeApisThenExpectNullDriverIsReachedSuccessfully)
-if (MSVC)
-  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_unsupported APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
-else()
-  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_unsupported APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
-endif()
-
-add_test(NAME tests_sigle_driver_runtime_api_ddi_ext_v1_0 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWithVersion1_0WhenCallingRuntimeApisThenExpectErrorUninitialized)
-set_property(TEST tests_sigle_driver_runtime_api_ddi_ext_v1_0 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
-
-add_test(NAME tests_multi_driver_runtime_api_ddi_ext_v1_0 COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWithVersion1_0WhenCallingRuntimeApisThenExpectErrorUninitialized)
-if (MSVC)
-  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_0 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
- else()
-  set_property(TEST tests_multi_driver_runtime_api_ddi_ext_v1_0 APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
-endif()
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)
@@ -635,3 +606,52 @@ if(NOT MSVC)
     add_test(NAME tests_event_reset_reuse COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeEventHostResetWithAlreadySignaledEventThenUsingEventAgainThenValidationLayerDoesNotPrintsWarningOfIllegalUsage*)
     set_property(TEST tests_event_reset_reuse PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_VALIDATION_LAYER=1;ZEL_ENABLE_EVENTS_CHECKER=1")
 endif()
+
+# ZER Runtime API Tests
+
+# Helper function to add runtime API tests
+function(add_runtime_api_test test_scenario init_method driver_config)
+    set(test_name "tests_${driver_config}_runtime_api_${test_scenario}_${init_method}")
+    
+    # Define test scenarios and their corresponding gtest filters
+    if(test_scenario STREQUAL "ddi_ext_v1_1")
+        set(gtest_filter "*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWhenCallingRuntimeApisAfter${init_method}ThenExpectNullDriverIsReachedSuccessfully")
+    elseif(test_scenario STREQUAL "ddi_ext_unsupported")
+        set(gtest_filter "*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtNotSupportedWhenCallingRuntimeApisAfter${init_method}ThenExpectNullDriverIsReachedSuccessfully")
+    elseif(test_scenario STREQUAL "ddi_ext_v1_0")
+        set(gtest_filter "*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWithVersion1_0WhenCallingRuntimeApisAfter${init_method}ThenExpectErrorUninitialized")
+    endif()
+    
+    # Add the test
+    add_test(NAME ${test_name} COMMAND tests --gtest_filter=${gtest_filter})
+    
+    # Set base environment variables
+    set(base_env "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+    
+    if(driver_config STREQUAL "single_driver")
+        # Single driver configuration
+        set_property(TEST ${test_name} PROPERTY ENVIRONMENT "${base_env};ZE_ENABLE_NULL_DRIVER=1")
+    elseif(driver_config STREQUAL "multi_driver")
+        # Multi-driver configuration
+        if(MSVC)
+            set(alt_drivers "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+        else()
+            set(alt_drivers "${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+        endif()
+        set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "${base_env};ZE_ENABLE_ALT_DRIVERS=${alt_drivers}")
+    endif()
+endfunction()
+
+# Generate all ZER Runtime API tests using loops
+set(test_scenarios "ddi_ext_v1_1;ddi_ext_unsupported;ddi_ext_v1_0")
+set(init_methods "ZeInitDrivers;ZeInit")
+
+foreach(init_method IN LISTS init_methods)
+    foreach(test_scenario IN LISTS test_scenarios)
+        # Add single driver tests
+        add_runtime_api_test(${test_scenario} ${init_method} "single_driver")
+        
+        # Add multi-driver tests
+        add_runtime_api_test(${test_scenario} ${init_method} "multi_driver")
+    endforeach()
+endforeach()
