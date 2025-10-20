@@ -206,6 +206,10 @@ namespace ze_lib
 
         if ( ZE_RESULT_SUCCESS == result )
         {
+            memset(&initialzeDdiTable, 0, sizeof(ze_dditable_t));
+            memset(&initialzetDdiTable, 0, sizeof(zet_dditable_t));
+            memset(&initialzesDdiTable, 0, sizeof(zes_dditable_t));
+            memset(&initialzerDdiTable, 0, sizeof(zer_dditable_t));
             ze_lib::context->zeDdiTable.exchange(&ze_lib::context->initialzeDdiTable);
             ze_lib::context->zetDdiTable.exchange(&ze_lib::context->initialzetDdiTable);
             ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);

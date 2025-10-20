@@ -141,7 +141,6 @@ zerGetGlobalProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->zeDrivers )
     {
@@ -151,21 +150,9 @@ zerGetGlobalProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zerGetGlobalProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zer.Global);
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-        if (drv.dditable.ze.Global.pfnInitDrivers) {
-            loader::context->initDriversSupport = true;
-        }
+        result = getTable( version, &drv.dditable.zer.Global);
     }
 
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
