@@ -532,7 +532,7 @@ ${tbl['export']['name']}(
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
-    %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
+    %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
     bool atLeastOneDriverValid = false;
     %endif
     // Load the device-driver DDI tables
@@ -547,7 +547,7 @@ ${tbl['export']['name']}(
         auto getTable = reinterpret_cast<${tbl['pfn']}>(
             GET_FUNCTION_PTR( drv.handle, "${tbl['export']['name']}") );
         if(!getTable) 
-        %if th.isNewProcTable(tbl['export']['name']) is True:
+        %if th.isNewProcTable(tbl['export']['name']) is True and namespace != "zer":
         {
             atLeastOneDriverValid = true;
             //It is valid to not have this proc addr table
@@ -556,7 +556,7 @@ ${tbl['export']['name']}(
         %else:
             continue; 
         %endif
-        %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
+        %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
         auto getTableResult = getTable( version, &drv.dditable.${n}.${tbl['name']});
         if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
@@ -564,7 +564,7 @@ ${tbl['export']['name']}(
         } else
             drv.initStatus = getTableResult;
         %if namespace != "zes":
-        %if tbl['name'] == "Global":
+        %if tbl['name'] == "Global" and namespace != "zer":
         if (drv.dditable.ze.Global.pfnInitDrivers) {
             loader::context->initDriversSupport = true;
         }
@@ -575,7 +575,7 @@ ${tbl['export']['name']}(
         %endif
     }
 
-    %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
+    %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
     if(!atLeastOneDriverValid)
         result = ${X}_RESULT_ERROR_UNINITIALIZED;
     else

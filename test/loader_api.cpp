@@ -2557,7 +2557,6 @@ TEST_F(DriverOrderingTest,
     EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
   }
 
-  /*
   TEST(
       RuntimeApiLoaderDriverInteraction,
       GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndRuntimeApiUnsupportedWhenCallingRuntimeApisAfterZeInitThenExpectErrorUnsupportedFeature)
@@ -2599,7 +2598,6 @@ TEST_F(DriverOrderingTest,
     EXPECT_NE(errorDesc, nullptr);
     EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
   }
-    */
   
 
 } // namespace

@@ -620,7 +620,7 @@ function(add_runtime_api_test test_scenario init_method driver_config)
         set(gtest_filter "*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtNotSupportedWhenCallingRuntimeApisAfter${init_method}ThenExpectNullDriverIsReachedSuccessfully")
     elseif(test_scenario STREQUAL "ddi_ext_v1_0")
         set(gtest_filter "*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndDdiExtSupportedWithVersion1_0WhenCallingRuntimeApisAfter${init_method}ThenExpectErrorUninitialized")
-    elseif(test_scenario STREQUAL "runtime_api_unsupported")
+    elseif(test_scenario STREQUAL "unsupported")
         set(gtest_filter "*GivenLevelZeroLoaderPresentWithLoaderInterceptEnabledAndRuntimeApiUnsupportedWhenCallingRuntimeApisAfter${init_method}ThenExpectErrorUnsupportedFeature")
     endif()
     
@@ -656,9 +656,8 @@ foreach(init_method IN LISTS init_methods)
         # Add multi-driver tests
         add_runtime_api_test(${test_scenario} ${init_method} "multi_driver")
     endforeach()
-    
     # Add runtime_api_unsupported tests for single driver
-    if(init_method STREQUAL "ZeInitDrivers")
-        add_runtime_api_test("runtime_api_unsupported" ${init_method} "single_driver")
+    if(init_method STREQUAL "ZeInitDrivers" OR init_method STREQUAL "ZeInit")
+        add_runtime_api_test("unsupported" ${init_method} "single_driver")
     endif()
 endforeach()
