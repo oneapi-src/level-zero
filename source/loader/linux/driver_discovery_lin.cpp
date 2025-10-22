@@ -113,17 +113,19 @@ std::vector<DriverLibraryPath> discoverEnabledDrivers() {
   // ZE_ENABLE_ALT_DRIVERS is for development/debug only
   altDrivers = getenv("ZE_ENABLE_ALT_DRIVERS");
   if (altDrivers == nullptr) {
+    // Standard drivers - not custom
     for (auto path : knownDriverNames) {
       if (libraryExistsInSearchPaths(path)) {
-        enabledDrivers.emplace_back(path);
+        enabledDrivers.emplace_back(path, false);
       }
     }
   } else {
+    // Alternative drivers from environment variable - these are custom
     std::stringstream ss(altDrivers);
     while (ss.good()) {
       std::string substr;
       getline(ss, substr, ',');
-      enabledDrivers.emplace_back(substr);
+      enabledDrivers.emplace_back(substr, true);
     }
   }
   return enabledDrivers;

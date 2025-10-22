@@ -62,6 +62,7 @@ namespace loader
         ze_driver_handle_t zerDriverHandle = nullptr;
         ze_api_version_t versionRequested = ZE_API_VERSION_CURRENT;
         bool ddiInitialized = false;
+        bool customDriver = false;
         ze_result_t zeddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
         ze_result_t zetddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
         ze_result_t zesddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;

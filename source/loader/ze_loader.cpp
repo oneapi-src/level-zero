@@ -510,8 +510,8 @@ namespace loader
                     std::string message = "init driver " + driver.name + " found GPU Supported Driver.";
                     debug_trace_message(message, "");
                 }
+                loadDriver = true;
             }
-            loadDriver = true;
         }
         if ((!desc && (flags == 0 || flags & ZE_INIT_FLAG_VPU_ONLY)) || (desc && desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU)) {
             if (driver.name.find("vpu") != std::string::npos || driver.name.find("npu") != std::string::npos) {
@@ -519,9 +519,11 @@ namespace loader
                     std::string message = "init driver " + driver.name + " found VPU/NPU Supported Driver.";
                     debug_trace_message(message, "");
                 }
+                loadDriver = true;
             }
-            loadDriver = true;
         }
+
+        loadDriver = !driver.handle && driver.customDriver ? true : loadDriver;
 
         if (loadDriver && !driver.handle) {
             auto handle = LOAD_DRIVER_LIBRARY( driver.name.c_str() );
@@ -582,6 +584,14 @@ namespace loader
                 driver.zerddiInitResult = ZE_RESULT_SUCCESS;
             }
             driver.ddiInitialized = true;
+        }
+
+        if (!driver.handle && !driver.ddiInitialized) {
+            if (debugTraceEnabled) {
+                std::string message = "init driver " + driver.name + " does not match the requested flags or desc, skipping driver.";
+                debug_trace_message(message, "");
+            }
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
 
         return ZE_RESULT_SUCCESS;
@@ -682,14 +692,14 @@ namespace loader
             }
         }
 
-        for( auto name : discoveredDrivers )
+        for( auto driverInfo : discoveredDrivers )
         {
             if (discoveredDrivers.size() == 1) {
-                auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
+                auto handle = LOAD_DRIVER_LIBRARY( driverInfo.path.c_str() );
                 if( NULL != handle )
                 {
                     if (debugTraceEnabled) {
-                        std::string message = "Loading Driver " + name + " succeeded";
+                        std::string message = "Loading Driver " + driverInfo.path + " succeeded";
 #if !defined(_WIN32) && !defined(ANDROID)
                         // TODO: implement same message for windows, move dlinfo to ze_util.h as a macro
                         struct link_map *dlinfo_map;
@@ -701,17 +711,19 @@ namespace loader
                     }
                     allDrivers.emplace_back();
                     allDrivers.rbegin()->handle = handle;
-                    allDrivers.rbegin()->name = name;
+                    allDrivers.rbegin()->name = driverInfo.path;
+                    allDrivers.rbegin()->customDriver = driverInfo.customDriver;
                 } else if (debugTraceEnabled) {
                     GET_LIBRARY_ERROR(loadLibraryErrorValue);
-                    std::string errorMessage = "Load Library of " + name + " failed with ";
+                    std::string errorMessage = "Load Library of " + driverInfo.path + " failed with ";
                     debug_trace_message(errorMessage, loadLibraryErrorValue);
                     loadLibraryErrorValue.clear();
                 }
             } else {
                 allDrivers.emplace_back();
                 allDrivers.rbegin()->handle = nullptr;
-                allDrivers.rbegin()->name = name;
+                allDrivers.rbegin()->name = driverInfo.path;
+                allDrivers.rbegin()->customDriver = driverInfo.customDriver;
             }
         }
         if(allDrivers.size()==0){
