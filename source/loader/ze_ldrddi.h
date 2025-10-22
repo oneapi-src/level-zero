@@ -12,6 +12,10 @@
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
+    // Forward declaration for driver_t so this header can reference loader::driver_t*
+    // without requiring inclusion of ze_loader_internal.h (which includes this file).
+    struct driver_t;
+    ///////////////////////////////////////////////////////////////////////////////
     using ze_driver_object_t                  = object_t < ze_driver_handle_t >;
     using ze_driver_factory_t                 = singleton_factory_t < ze_driver_object_t, ze_driver_handle_t >;
 
@@ -75,6 +79,8 @@ namespace loader
     using ze_rtas_parallel_operation_exp_object_t = object_t < ze_rtas_parallel_operation_exp_handle_t >;
     using ze_rtas_parallel_operation_exp_factory_t    = singleton_factory_t < ze_rtas_parallel_operation_exp_object_t, ze_rtas_parallel_operation_exp_handle_t >;
 
+    __zedlllocal ze_result_t ZE_APICALL
+    zeloaderInitDriverDDITables(loader::driver_t *driver);
 }
 
 namespace loader_driver_ddi
@@ -1658,64 +1664,124 @@ extern "C" {
 
 __zedlllocal void ZE_APICALL
 zeGetGlobalProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetGlobalProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetRTASBuilderProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetRTASBuilderProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetRTASBuilderExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetRTASBuilderExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetRTASParallelOperationProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetRTASParallelOperationProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetRTASParallelOperationExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetRTASParallelOperationExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetDriverProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetDriverProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetDriverExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetDriverExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetDeviceProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetDeviceProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetDeviceExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetDeviceExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetContextProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetContextProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetCommandQueueProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetCommandQueueProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetCommandListProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetCommandListProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetCommandListExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetCommandListExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetEventProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetEventProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetEventExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetEventExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetEventPoolProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetEventPoolProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetFenceProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetFenceProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetImageProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetImageProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetImageExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetImageExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetKernelProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetKernelProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetKernelExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetKernelExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetMemProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetMemProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetMemExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetMemExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetModuleProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetModuleProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetModuleBuildLogProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetModuleBuildLogProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetPhysicalMemProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetPhysicalMemProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetSamplerProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetSamplerProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetVirtualMemProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetVirtualMemProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetFabricEdgeExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetFabricEdgeExpProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zeGetFabricVertexExpProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zeGetFabricVertexExpProcAddrTableFromDriver(loader::driver_t *driver);
 
 #if defined(__cplusplus)
 };

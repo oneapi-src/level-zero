@@ -257,6 +257,7 @@ namespace loader
         for (auto &driver : *drivers) {
             uint32_t pCount = 0;
             std::vector<ze_driver_handle_t> driverHandles;
+            driver.pciOrderingRequested = loader::context->pciOrderingRequested;
             ze_result_t res = ZE_RESULT_SUCCESS;
             if (desc && driver.dditable.ze.Global.pfnInitDrivers) {
                 if (driver.initDriversStatus != ZE_RESULT_SUCCESS) {
@@ -323,8 +324,9 @@ namespace loader
                     continue;
                 }
             } else {
+                res = ZE_RESULT_ERROR_UNINITIALIZED;
                 if (debugTraceEnabled) {
-                    std::string message = "driverSorting " + driver.name + " zeDriverGet and zeInitDrivers not supported, skipping driver";
+                    std::string message = "driverSorting " + driver.name + " zeDriverGet and zeInitDrivers not supported, skipping driver with error ";
                     debug_trace_message(message, loader::to_string(res));
                 }
                 continue;
@@ -332,7 +334,8 @@ namespace loader
 
             for (auto handle : driverHandles) {
                 uint32_t extensionCount = 0;
-                driver.zerDriverHandle = handle;
+                if (driver.zerddiInitResult == ZE_RESULT_SUCCESS)
+                    driver.zerDriverHandle = handle;
                 ze_result_t res = driver.dditable.ze.Driver.pfnGetExtensionProperties(handle, &extensionCount, nullptr);
                 if (res != ZE_RESULT_SUCCESS) {
                     if (loader::context->debugTraceEnabled) {
@@ -496,173 +499,102 @@ namespace loader
      * @return `ZE_RESULT_SUCCESS` if at least one driver is successfully initialized, otherwise an appropriate error code.
      */
     ze_result_t context_t::check_drivers(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly) {
-        if (debugTraceEnabled) {
-            if (desc) {
-                std::string message = "check_drivers(" + std::string("desc->flags=") + loader::to_string(desc) + ")";
-                debug_trace_message(message, "");
-            } else {
-                std::string message = "check_drivers(" + std::string("flags=") + loader::to_string(flags) + ")";
-                debug_trace_message(message, "");
-            }
-        }
-        // If zeInitDrivers is not supported by this driver, but zeInitDrivers is called first, then return uninitialized.
-        if (desc && !loader::context->initDriversSupport) {
-            if (debugTraceEnabled) {
-                std::string message = "zeInitDrivers called first, but not supported by driver, returning uninitialized.";
-                debug_trace_message(message, "");
-            }
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        }
-
-
-        bool return_first_driver_result=false;
-        std::string initName = "zeInit";
-        driver_vector_t *drivers = &zeDrivers;
-        // If desc is set, then this is zeInitDrivers.
-        if (desc) {
-            initName = "zeInitDrivers";
-        }
-        // If this is sysmanOnly check_drivers, then zesInit is being called and we need to use zesDrivers.
-        if (sysmanOnly) {
-            drivers = &zesDrivers;
-            initName = "zesInit";
-        }
-        if(drivers->size()==1) {
-            return_first_driver_result=true;
-        }
-        bool pciOrderingRequested = getenv_tobool( "ZE_ENABLE_PCI_ID_DEVICE_ORDER" );
-        loader::context->instrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
-
-        for(auto it = drivers->begin(); it != drivers->end(); )
-        {
-            it->pciOrderingRequested = pciOrderingRequested;
-            std::string freeLibraryErrorValue;
-            ze_result_t result = init_driver(*it, flags, desc, globalInitStored, sysmanGlobalInitStored, sysmanOnly);
-            if(result != ZE_RESULT_SUCCESS) {
-                // If the driver has already been init and handles are to be read, then this driver cannot be removed from the list.
-                // Also, if any driver supports zeInitDrivers, then no driver can be removed to allow for different sets of drivers.
-                if (!it->driverInuse && !loader::context->initDriversSupport) {
-                    if (debugTraceEnabled) {
-                        std::string errorMessage = "Check Drivers Failed on " + it->name + " , driver will be removed. " + initName + " failed with ";
-                        debug_trace_message(errorMessage, loader::to_string(result));
-                    }
-                    it = drivers->erase(it);
-                    // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
-                    // If ZE_ENABLE_LOADER_INTERCEPT is set to 1, then even if drivers were removed, don't reinit the ddi tables.
-                    if (drivers->size() == 1 && !loader::context->forceIntercept) {
-                        *requireDdiReinit = true;
-                    }
-                } else {
-                    it++;
-                }
-                if(return_first_driver_result)
-                    return result;
-            } else {
-                // If this is a single driver system, then the first success for this driver needs to be set.
-                it->driverInuse = true;
-                it++;
-            }
-        }
-
-        if(drivers->size() == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // Set default driver handle and DDI table to the first driver in the list before sorting.
-        loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
-        loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
         return ZE_RESULT_SUCCESS;
     }
 
     ze_result_t context_t::init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly) {
-        if (sysmanOnly) {
-            auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
-                GET_FUNCTION_PTR(driver.handle, "zesGetGlobalProcAddrTable"));
-            if(!getTable) {
+        bool loadDriver = false;
+        if ((!desc && (flags == 0 || flags & ZE_INIT_FLAG_GPU_ONLY)) || (desc && desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU)) {
+            if (driver.name.find("gpu") != std::string::npos) {
                 if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zesGetGlobalProcAddrTable function pointer null. Returning ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+                    std::string message = "init driver " + driver.name + " found GPU Supported Driver.";
+                    debug_trace_message(message, "");
                 }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
+                loadDriver = true;
             }
-
-            zes_global_dditable_t global;
-            auto getTableResult = getTable(this->configured_version, &global);
-            if(getTableResult != ZE_RESULT_SUCCESS) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zesGetGlobalProcAddrTable() failed with ";
-                    debug_trace_message(errorMessage, loader::to_string(getTableResult));
-                }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
-
-            if(nullptr == global.pfnInit) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zesInit function pointer null. Returning ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
-
-            // Use the previously init ddi table pointer to zesInit to allow for intercept of the zesInit calls
-            ze_result_t res = sysmanGlobalInitStored->pfnInit(flags);
-            // Verify that this driver successfully init in the call above.
-            if (driver.initSysManStatus != ZE_RESULT_SUCCESS) {
-                res = driver.initSysManStatus;
-            }
-            if (debugTraceEnabled) {
-                std::string message = "init driver " + driver.name + " zesInit(" + loader::to_string(flags) + ") returning ";
-                debug_trace_message(message, loader::to_string(res));
-            }
-            return res;
-        } else {
-            if (!desc) {
-                auto pfnInit = driver.dditable.ze.Global.pfnInit;
-                if(nullptr == pfnInit || globalInitStored->pfnInit == nullptr) {
-                    if (debugTraceEnabled) {
-                        std::string errorMessage = "init driver " + driver.name + " failed, zeInit function pointer null. Returning ";
-                        debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                    }
-                    return ZE_RESULT_ERROR_UNINITIALIZED;
-                }
-
-                // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
-                ze_result_t res = globalInitStored->pfnInit(flags);
-                // Verify that this driver successfully init in the call above.
-                if (res != ZE_RESULT_SUCCESS || driver.initStatus != ZE_RESULT_SUCCESS) {
-                    if (driver.initStatus != ZE_RESULT_SUCCESS)
-                        res = driver.initStatus;
-                    if (debugTraceEnabled) {
-                        std::string message = "init driver (global ddi) " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    return res;
-                }
-            } else {
-                auto pfnInitDrivers = driver.dditable.ze.Global.pfnInitDrivers;
-                if(nullptr == pfnInitDrivers || globalInitStored->pfnInitDrivers == nullptr) {
-                    if (debugTraceEnabled) {
-                        std::string errorMessage = "init driver " + driver.name + " failed, pfnInitDrivers function pointer null. Returning ";
-                        debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                    }
-                    return ZE_RESULT_ERROR_UNINITIALIZED;
-                }
-
-                uint32_t pCount = 0;
-                // Use the previously init ddi table pointer to zeInitDrivers to allow for intercept of the zeInitDrivers calls
-                ze_result_t res = globalInitStored->pfnInitDrivers(&pCount, nullptr, desc);
-                // Verify that this driver successfully init in the call above.
-                if (res != ZE_RESULT_SUCCESS || driver.initDriversStatus != ZE_RESULT_SUCCESS) {
-                    if (driver.initDriversStatus != ZE_RESULT_SUCCESS)
-                        res = driver.initDriversStatus;
-                    if (debugTraceEnabled) {
-                        std::string message = "init driver (global ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    return res;
-                }
-            }
-            return ZE_RESULT_SUCCESS;
         }
+        if ((!desc && (flags == 0 || flags & ZE_INIT_FLAG_VPU_ONLY)) || (desc && desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU)) {
+            if (driver.name.find("vpu") != std::string::npos || driver.name.find("npu") != std::string::npos) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " found VPU/NPU Supported Driver.";
+                    debug_trace_message(message, "");
+                }
+                loadDriver = true;
+            }
+        }
+
+        loadDriver = !driver.handle && driver.customDriver ? true : loadDriver;
+
+        if (loadDriver && !driver.handle) {
+            auto handle = LOAD_DRIVER_LIBRARY( driver.name.c_str() );
+            if( NULL != handle )
+            {
+                driver.handle = handle;
+            } else {
+                std::string loadLibraryErrorValue;
+                GET_LIBRARY_ERROR(loadLibraryErrorValue);
+                if (debugTraceEnabled) {
+                    std::string errorMessage = "init driver " + driver.name + " failed, Load Library of " + driver.name + " failed with ";
+                    debug_trace_message(errorMessage, loadLibraryErrorValue);
+                }
+                return ZE_RESULT_ERROR_UNINITIALIZED;
+            }
+        }
+
+        if (driver.handle && !driver.ddiInitialized) {
+            auto res = loader::zeloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zeloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                driver.zeddiInitResult = res;
+            } else {
+                driver.zeddiInitResult = ZE_RESULT_SUCCESS;
+            }
+            res = loader::zesloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zesloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                driver.zesddiInitResult = res;
+            } else {
+                driver.zesddiInitResult = ZE_RESULT_SUCCESS;
+            }
+            res = loader::zetloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zetloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                driver.zetddiInitResult = res;
+            } else {
+                driver.zetddiInitResult = ZE_RESULT_SUCCESS;
+            }
+            res = loader::zerloaderInitDriverDDITables(&driver);
+            if (res != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed, zerloaderInitDriverDDITables returned ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                driver.zerddiInitResult = res;
+                driver.zerDriverHandle = nullptr;
+            } else {
+                driver.zerddiInitResult = ZE_RESULT_SUCCESS;
+            }
+            driver.ddiInitialized = true;
+        }
+
+        if (!driver.handle && !driver.ddiInitialized) {
+            if (debugTraceEnabled) {
+                std::string message = "init driver " + driver.name + " does not match the requested flags or desc, skipping driver.";
+                debug_trace_message(message, "");
+            }
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+
+        return ZE_RESULT_SUCCESS;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -671,6 +603,8 @@ namespace loader
         if (driverEnvironmentQueried) {
             return ZE_RESULT_SUCCESS;
         }
+        loader::context->instrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
+        loader::context->pciOrderingRequested = getenv_tobool( "ZE_ENABLE_PCI_ID_DEVICE_ORDER" );
         loader::loaderDispatch = new ze_handle_t();
         loader::loaderDispatch->pCore = new ze_dditable_driver_t();
         loader::loaderDispatch->pCore->version = ZE_API_VERSION_CURRENT;
@@ -758,30 +692,38 @@ namespace loader
             }
         }
 
-        for( auto name : discoveredDrivers )
+        for( auto driverInfo : discoveredDrivers )
         {
-            auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
-            if( NULL != handle )
-            {
-                if (debugTraceEnabled) {
-                    std::string message = "Loading Driver " + name + " succeeded";
+            if (discoveredDrivers.size() == 1) {
+                auto handle = LOAD_DRIVER_LIBRARY( driverInfo.path.c_str() );
+                if( NULL != handle )
+                {
+                    if (debugTraceEnabled) {
+                        std::string message = "Loading Driver " + driverInfo.path + " succeeded";
 #if !defined(_WIN32) && !defined(ANDROID)
-                    // TODO: implement same message for windows, move dlinfo to ze_util.h as a macro
-                    struct link_map *dlinfo_map;
-                    if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
-                        message += " from: " + std::string(dlinfo_map->l_name);
-                    }
+                        // TODO: implement same message for windows, move dlinfo to ze_util.h as a macro
+                        struct link_map *dlinfo_map;
+                        if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
+                            message += " from: " + std::string(dlinfo_map->l_name);
+                        }
 #endif
-                    debug_trace_message(message, "");
+                        debug_trace_message(message, "");
+                    }
+                    allDrivers.emplace_back();
+                    allDrivers.rbegin()->handle = handle;
+                    allDrivers.rbegin()->name = driverInfo.path;
+                    allDrivers.rbegin()->customDriver = driverInfo.customDriver;
+                } else if (debugTraceEnabled) {
+                    GET_LIBRARY_ERROR(loadLibraryErrorValue);
+                    std::string errorMessage = "Load Library of " + driverInfo.path + " failed with ";
+                    debug_trace_message(errorMessage, loadLibraryErrorValue);
+                    loadLibraryErrorValue.clear();
                 }
+            } else {
                 allDrivers.emplace_back();
-                allDrivers.rbegin()->handle = handle;
-                allDrivers.rbegin()->name = name;
-            } else if (debugTraceEnabled) {
-                GET_LIBRARY_ERROR(loadLibraryErrorValue);
-                std::string errorMessage = "Load Library of " + name + " failed with ";
-                debug_trace_message(errorMessage, loadLibraryErrorValue);
-                loadLibraryErrorValue.clear();
+                allDrivers.rbegin()->handle = nullptr;
+                allDrivers.rbegin()->name = driverInfo.path;
+                allDrivers.rbegin()->customDriver = driverInfo.customDriver;
             }
         }
         if(allDrivers.size()==0){
@@ -859,6 +801,10 @@ namespace loader
         }
 
         driverEnvironmentQueried = true;
+
+        // Set default driver handle and DDI table to the first driver in the list before sorting.
+        loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
+        loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
 
         zel_logger->log_info("zeInit succeeded");
         return ZE_RESULT_SUCCESS;

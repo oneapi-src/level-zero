@@ -12,6 +12,12 @@
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
+    // Forward declaration for driver_t so this header can reference loader::driver_t*
+    // without requiring inclusion of ze_loader_internal.h (which includes this file).
+    struct driver_t;
+    ///////////////////////////////////////////////////////////////////////////////
+    __zedlllocal ze_result_t ZE_APICALL
+    zerloaderInitDriverDDITables(loader::driver_t *driver);
 }
 
 namespace loader_driver_ddi
@@ -43,6 +49,8 @@ extern "C" {
 
 __zedlllocal void ZE_APICALL
 zerGetGlobalProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zerGetGlobalProcAddrTableFromDriver(loader::driver_t *driver);
 
 #if defined(__cplusplus)
 };

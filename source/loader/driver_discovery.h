@@ -13,7 +13,13 @@
 
 namespace loader {
 
-using DriverLibraryPath = std::string;
+struct DriverLibraryPath {
+    std::string path;
+    bool customDriver;
+    
+    DriverLibraryPath(const std::string& p, bool isCustom = false) 
+        : path(p), customDriver(isCustom) {}
+};
 
 std::vector<DriverLibraryPath> discoverEnabledDrivers();
 
