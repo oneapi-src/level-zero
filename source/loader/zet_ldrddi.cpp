@@ -3177,6 +3177,12 @@ zetGetMetricDecoderExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricDecoderExpProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -3254,6 +3260,12 @@ zetGetMetricProgrammableExpProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricProgrammableExpProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3339,6 +3351,12 @@ zetGetMetricTracerExpProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricTracerExpProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3439,6 +3457,12 @@ zetGetDeviceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetDeviceProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -3502,6 +3526,12 @@ zetGetDeviceExpProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetDeviceExpProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3588,6 +3618,12 @@ zetGetContextProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetContextProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -3651,6 +3687,12 @@ zetGetCommandListProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetCommandListProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3737,6 +3779,12 @@ zetGetCommandListExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetCommandListExpProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -3800,6 +3848,12 @@ zetGetKernelProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetKernelProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -3865,6 +3919,12 @@ zetGetModuleProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetModuleProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -3928,6 +3988,12 @@ zetGetDebugProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetDebugProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4070,6 +4136,12 @@ zetGetMetricProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -4140,6 +4212,12 @@ zetGetMetricExpProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricExpProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4219,6 +4297,12 @@ zetGetMetricGroupProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricGroupProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -4296,6 +4380,12 @@ zetGetMetricGroupExpProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricGroupExpProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4417,6 +4507,12 @@ zetGetMetricQueryProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricQueryProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -4502,6 +4598,12 @@ zetGetMetricQueryPoolProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricQueryPoolProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
@@ -4572,6 +4674,12 @@ zetGetMetricStreamerProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetMetricStreamerProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4650,6 +4758,12 @@ zetGetTracerExpProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zetGetTracerExpProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {

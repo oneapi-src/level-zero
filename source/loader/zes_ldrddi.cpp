@@ -5677,9 +5677,15 @@ zesGetGlobalProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetGlobalProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( true )
+        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             loader::loaderDispatch->pSysman->Global = new zes_global_dditable_t;
@@ -5736,6 +5742,12 @@ zesGetDeviceProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetDeviceProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -6053,6 +6065,12 @@ zesGetDeviceExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetDeviceExpProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -6130,6 +6148,12 @@ zesGetDriverProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetDriverProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -6219,6 +6243,12 @@ zesGetDriverExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetDriverExpProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -6282,6 +6312,12 @@ zesGetDiagnosticsProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetDiagnosticsProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -6361,6 +6397,12 @@ zesGetEngineProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetEngineProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -6438,6 +6480,12 @@ zesGetFabricPortProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetFabricPortProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -6552,6 +6600,12 @@ zesGetFanProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetFanProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -6651,6 +6705,12 @@ zesGetFirmwareProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetFirmwareProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -6736,6 +6796,12 @@ zesGetFirmwareExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetFirmwareExpProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -6806,6 +6872,12 @@ zesGetFrequencyProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetFrequencyProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -6983,6 +7055,12 @@ zesGetLedProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetLedProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -7068,6 +7146,12 @@ zesGetMemoryProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetMemoryProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -7145,6 +7229,12 @@ zesGetOverclockProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetOverclockProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -7266,6 +7356,12 @@ zesGetPerformanceFactorProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetPerformanceFactorProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -7343,6 +7439,12 @@ zesGetPowerProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetPowerProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -7457,6 +7559,12 @@ zesGetPsuProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetPsuProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -7527,6 +7635,12 @@ zesGetRasProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetRasProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -7613,6 +7727,12 @@ zesGetRasExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetRasExpProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -7683,6 +7803,12 @@ zesGetSchedulerProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetSchedulerProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -7797,6 +7923,12 @@ zesGetStandbyProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetStandbyProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
@@ -7874,6 +8006,12 @@ zesGetTemperatureProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetTemperatureProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -7959,6 +8097,12 @@ zesGetVFManagementExpProcAddrTable(
     loader::context->ddi_init_version = version;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetVFManagementExpProcAddrTableFromDriver(firstDriver);
+    }
 
     if( ZE_RESULT_SUCCESS == result )
     {

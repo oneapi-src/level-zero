@@ -174,9 +174,15 @@ zerGetGlobalProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zerGetGlobalProcAddrTableFromDriver(firstDriver);
+    }
+
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( true )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             loader::loaderDispatch->pRuntime->Global = new zer_global_dditable_t;

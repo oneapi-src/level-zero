@@ -611,11 +611,20 @@ ${tbl['export']['name']}(
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
+    %if namespace != "zes":
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
+    %else:
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    %endif
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = ${tbl['export']['name']}FromDriver(firstDriver);
+    }
+
     if( ${X}_RESULT_SUCCESS == result )
     {
-        %if tbl['name'] == "Global":
-        if( true )
-        %elif namespace != "zes":
+        %if namespace != "zes":
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         %elif namespace == "zes":
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )

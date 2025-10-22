@@ -684,9 +684,35 @@ namespace loader
 
         for( auto name : discoveredDrivers )
         {
-            allDrivers.emplace_back();
-            allDrivers.rbegin()->handle = nullptr;
-            allDrivers.rbegin()->name = name;
+            if (discoveredDrivers.size() == 1) {
+                auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
+                if( NULL != handle )
+                {
+                    if (debugTraceEnabled) {
+                        std::string message = "Loading Driver " + name + " succeeded";
+#if !defined(_WIN32) && !defined(ANDROID)
+                        // TODO: implement same message for windows, move dlinfo to ze_util.h as a macro
+                        struct link_map *dlinfo_map;
+                        if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
+                            message += " from: " + std::string(dlinfo_map->l_name);
+                        }
+#endif
+                        debug_trace_message(message, "");
+                    }
+                    allDrivers.emplace_back();
+                    allDrivers.rbegin()->handle = handle;
+                    allDrivers.rbegin()->name = name;
+                } else if (debugTraceEnabled) {
+                    GET_LIBRARY_ERROR(loadLibraryErrorValue);
+                    std::string errorMessage = "Load Library of " + name + " failed with ";
+                    debug_trace_message(errorMessage, loadLibraryErrorValue);
+                    loadLibraryErrorValue.clear();
+                }
+            } else {
+                allDrivers.emplace_back();
+                allDrivers.rbegin()->handle = nullptr;
+                allDrivers.rbegin()->name = name;
+            }
         }
         if(allDrivers.size()==0){
             if (debugTraceEnabled) {
