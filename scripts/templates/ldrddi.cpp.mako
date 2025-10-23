@@ -98,13 +98,11 @@ namespace loader
                 %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
                 std::call_once(loader::context->coreDriverSortOnce, []() {
                     loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
-                    loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
                     loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 %else:
                 std::call_once(loader::context->coreDriverSortOnce, [desc]() {
                     loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
-                    loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
                     loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 %endif
@@ -180,8 +178,8 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        drv.zerDriverHandle = phDrivers[ driver_index ];
                         %if namespace != "zes":
+                        drv.zerDriverHandle = phDrivers[ driver_index ];
                         if (drv.driverDDIHandleSupportQueried == false) {
                             uint32_t extensionCount = 0;
                             ze_result_t res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
@@ -206,6 +204,7 @@ namespace loader
                                     if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
                                         // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
                                         drv.zerDriverHandle = nullptr;
+                                        drv.zerDriverDDISupported = false;
                                         break;
                                     }
                                 }
@@ -235,8 +234,7 @@ namespace loader
                             ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
                                 context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
                             if (drv.zerDriverHandle != nullptr) {
-                                drv.zerDriverHandle = reinterpret_cast<${n}_driver_handle_t>(
-                                    context->${n}_driver_factory.getInstance( drv.zerDriverHandle, &drv.dditable ) );
+                                drv.zerDriverHandle = ${obj['params'][1]['name']}[ driver_index ];
                             }
                         } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
                             if (loader::context->debugTraceEnabled) {
@@ -265,7 +263,13 @@ namespace loader
         if (total_driver_handle_count > 0) {
             result = ${X}_RESULT_SUCCESS;
         }
+        %if namespace != "zes":
+        if (loader::context->zeDrivers.front().zerDriverDDISupported)
+            loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
+        else
+            loader::context->defaultZerDriverHandle = nullptr;
 
+        %endif
         %else:
         %for i, item in enumerate(th.get_loader_prologue(n, tags, obj, meta)):
         %if 0 == i:

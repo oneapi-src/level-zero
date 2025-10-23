@@ -355,9 +355,11 @@ namespace loader
                         if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
                             // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
                             driver.zerDriverHandle = nullptr;
+                            driver.zerDriverDDISupported = false;
                             break;
                         }
                     }
+
                 }
                 driver.properties = {};
                 driver.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
@@ -379,10 +381,6 @@ namespace loader
                     if (debugTraceEnabled) {
                         std::string message = "driverSorting: Driver DDI Handles Not Supported for " + driver.name;
                         debug_trace_message(message, "");
-                    }
-                    if (driver.zerDriverHandle != nullptr) {
-                        driver.zerDriverHandle = reinterpret_cast<ze_driver_handle_t>(
-                            loader::context->ze_driver_factory.getInstance(driver.zerDriverHandle, &driver.dditable));
                     }
                 } else {
                     if (debugTraceEnabled) {
@@ -568,7 +566,10 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // Set default driver handle and DDI table to the first driver in the list before sorting.
-        loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
+        if (loader::context->zeDrivers.front().zerDriverDDISupported)
+            loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
+        else
+            loader::context->defaultZerDriverHandle = nullptr;
         loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
         return ZE_RESULT_SUCCESS;
     }

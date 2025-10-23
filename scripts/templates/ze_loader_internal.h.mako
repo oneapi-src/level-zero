@@ -69,6 +69,7 @@ namespace loader
         bool legacyInitAttempted = false;
         bool driverDDIHandleSupportQueried = false;
         ze_driver_handle_t zerDriverHandle = nullptr;
+        bool zerDriverDDISupported = true;
     };
 
     using driver_vector_t = std::vector< driver_t >;

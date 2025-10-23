@@ -2400,6 +2400,10 @@ TEST_F(DriverOrderingTest,
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverGetCount, nullptr));
     EXPECT_GT(driverGetCount, 0);
+    std::vector<ze_driver_handle_t> drivers;
+    drivers.resize(driverGetCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverGetCount, drivers.data()));
+    EXPECT_GT(driverGetCount, 0);
 
     const char *errorString = nullptr;
     uint32_t deviceId = 0;
