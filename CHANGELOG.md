@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.25.1
+* Fix to zer Handle init to address replacement of ze driver handles
 ## v1.25.0
 * Support for v1.14.33 of the L0 Spec
 ## v1.24.3
