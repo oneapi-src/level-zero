@@ -63,7 +63,6 @@ namespace loader
             if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
                 std::call_once(loader::context->coreDriverSortOnce, []() {
                     loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
-                    loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
                     loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 loader::context->sortingInProgress.store(false);
@@ -128,6 +127,7 @@ namespace loader
                                     if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
                                         // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
                                         drv.zerDriverHandle = nullptr;
+                                        drv.zerDriverDDISupported = false;
                                         break;
                                     }
                                 }
@@ -157,8 +157,7 @@ namespace loader
                             phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
                                 context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
                             if (drv.zerDriverHandle != nullptr) {
-                                drv.zerDriverHandle = reinterpret_cast<ze_driver_handle_t>(
-                                    context->ze_driver_factory.getInstance( drv.zerDriverHandle, &drv.dditable ) );
+                                drv.zerDriverHandle = phDrivers[ driver_index ];
                             }
                         } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
                             if (loader::context->debugTraceEnabled) {
@@ -183,6 +182,10 @@ namespace loader
         if (total_driver_handle_count > 0) {
             result = ZE_RESULT_SUCCESS;
         }
+        if (loader::context->zeDrivers.front().zerDriverDDISupported)
+            loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
+        else
+            loader::context->defaultZerDriverHandle = nullptr;
 
         return result;
     }
@@ -212,7 +215,6 @@ namespace loader
             if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
                 std::call_once(loader::context->coreDriverSortOnce, [desc]() {
                     loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
-                    loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
                     loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 loader::context->sortingInProgress.store(false);
@@ -279,6 +281,7 @@ namespace loader
                                     if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
                                         // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
                                         drv.zerDriverHandle = nullptr;
+                                        drv.zerDriverDDISupported = false;
                                         break;
                                     }
                                 }
@@ -308,8 +311,7 @@ namespace loader
                             phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
                                 context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
                             if (drv.zerDriverHandle != nullptr) {
-                                drv.zerDriverHandle = reinterpret_cast<ze_driver_handle_t>(
-                                    context->ze_driver_factory.getInstance( drv.zerDriverHandle, &drv.dditable ) );
+                                drv.zerDriverHandle = phDrivers[ driver_index ];
                             }
                         } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
                             if (loader::context->debugTraceEnabled) {
@@ -334,6 +336,10 @@ namespace loader
         if (total_driver_handle_count > 0) {
             result = ZE_RESULT_SUCCESS;
         }
+        if (loader::context->zeDrivers.front().zerDriverDDISupported)
+            loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
+        else
+            loader::context->defaultZerDriverHandle = nullptr;
 
         return result;
     }
