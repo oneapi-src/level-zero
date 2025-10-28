@@ -60,7 +60,7 @@ namespace
         return env_value == expected_value;
     }
 
-    class ZerTracingTest : public ::testing::Test
+    class TracingTest : public ::testing::Test
     {
     public:
         enum class InitMethod
@@ -83,43 +83,73 @@ namespace
         };
 
     protected:
-        struct ZerTracingData
+        struct TracingData
         {
-            std::map<std::string, uint32_t> prologueCallCounts;
-            std::map<std::string, uint32_t> epilogueCallCounts;
+            std::map<std::string, uint32_t> zerPrologueCallCounts;
+            std::map<std::string, uint32_t> zerEpilogueCallCounts;
+
+            std::map<std::string, uint32_t> zePrologueCallCounts;
+            std::map<std::string, uint32_t> zeEpilogueCallCounts;
+
             bool dynamicTracingEnabled = false;
 
             void reset()
             {
-                prologueCallCounts.clear();
-                epilogueCallCounts.clear();
+                zerPrologueCallCounts.clear();
+                zerEpilogueCallCounts.clear();
+                zePrologueCallCounts.clear();
+                zeEpilogueCallCounts.clear();
                 dynamicTracingEnabled = false;
             }
 
-            void incrementPrologueCallCount(const std::string &apiName)
+            // ZER API methods
+            void incrementZerPrologueCallCount(const std::string &apiName)
             {
-                prologueCallCounts[apiName]++;
+                zerPrologueCallCounts[apiName]++;
             }
 
-            void incrementEpilogueCallCount(const std::string &apiName)
+            void incrementZerEpilogueCallCount(const std::string &apiName)
             {
-                epilogueCallCounts[apiName]++;
+                zerEpilogueCallCounts[apiName]++;
             }
 
-            uint32_t getPrologueCallCount(const std::string &apiName) const
+            uint32_t getZerPrologueCallCount(const std::string &apiName) const
             {
-                auto it = prologueCallCounts.find(apiName);
-                return (it != prologueCallCounts.end()) ? it->second : 0;
+                auto it = zerPrologueCallCounts.find(apiName);
+                return (it != zerPrologueCallCounts.end()) ? it->second : 0;
             }
 
-            uint32_t getEpilogueCallCount(const std::string &apiName) const
+            uint32_t getZerEpilogueCallCount(const std::string &apiName) const
             {
-                auto it = epilogueCallCounts.find(apiName);
-                return (it != epilogueCallCounts.end()) ? it->second : 0;
+                auto it = zerEpilogueCallCounts.find(apiName);
+                return (it != zerEpilogueCallCounts.end()) ? it->second : 0;
+            }
+
+            // ZE API methods
+            void incrementZePrologueCallCount(const std::string &apiName)
+            {
+                zePrologueCallCounts[apiName]++;
+            }
+
+            void incrementZeEpilogueCallCount(const std::string &apiName)
+            {
+                zeEpilogueCallCounts[apiName]++;
+            }
+
+            uint32_t getZePrologueCallCount(const std::string &apiName) const
+            {
+                auto it = zePrologueCallCounts.find(apiName);
+                return (it != zePrologueCallCounts.end()) ? it->second : 0;
+            }
+
+            uint32_t getZeEpilogueCallCount(const std::string &apiName) const
+            {
+                auto it = zeEpilogueCallCounts.find(apiName);
+                return (it != zeEpilogueCallCounts.end()) ? it->second : 0;
             }
         };
 
-        ZerTracingData tracingData;
+        TracingData tracingData;
 
         void SetUp() override
         {
@@ -213,28 +243,48 @@ namespace
             }
         }
 
-        void registerPrologueCallbacks(zel_tracer_handle_t hTracer)
+        void registerZerPrologueCallbacks(zel_tracer_handle_t hTracer)
         {
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerGetLastErrorDescriptionRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
-                                                                                          +ZerTracingTest::zerGetLastErrorDescriptionPrologueCallback));
+                                                                                          +TracingTest::zerGetLastErrorDescriptionPrologueCallback));
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerTranslateDeviceHandleToIdentifierRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
-                                                                                                    +ZerTracingTest::zerTranslateDeviceHandleToIdentifierPrologueCallback));
+                                                                                                    +TracingTest::zerTranslateDeviceHandleToIdentifierPrologueCallback));
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerTranslateIdentifierToDeviceHandleRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
-                                                                                                    +ZerTracingTest::zerTranslateIdentifierToDeviceHandlePrologueCallback));
+                                                                                                    +TracingTest::zerTranslateIdentifierToDeviceHandlePrologueCallback));
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerGetDefaultContextRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
-                                                                                    +ZerTracingTest::zerGetDefaultContextPrologueCallback));
+                                                                                    +TracingTest::zerGetDefaultContextPrologueCallback));
         }
 
-        void registerEpilogueCallbacks(zel_tracer_handle_t hTracer)
+        void registerZerEpilogueCallbacks(zel_tracer_handle_t hTracer)
         {
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerGetLastErrorDescriptionRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
-                                                                                          +ZerTracingTest::zerGetLastErrorDescriptionEpilogueCallback));
+                                                                                          +TracingTest::zerGetLastErrorDescriptionEpilogueCallback));
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerTranslateDeviceHandleToIdentifierRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
-                                                                                                    +ZerTracingTest::zerTranslateDeviceHandleToIdentifierEpilogueCallback));
+                                                                                                    +TracingTest::zerTranslateDeviceHandleToIdentifierEpilogueCallback));
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerTranslateIdentifierToDeviceHandleRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
-                                                                                                    +ZerTracingTest::zerTranslateIdentifierToDeviceHandleEpilogueCallback));
+                                                                                                    +TracingTest::zerTranslateIdentifierToDeviceHandleEpilogueCallback));
             EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerGetDefaultContextRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
-                                                                                    +ZerTracingTest::zerGetDefaultContextEpilogueCallback));
+                                                                                    +TracingTest::zerGetDefaultContextEpilogueCallback));
+        }
+
+        void registerZePrologueCallbacks(zel_tracer_handle_t hTracer)
+        {
+            EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerDeviceGetCommandQueueGroupPropertiesRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
+                                                                                                       +TracingTest::zeDeviceGetCommandQueueGroupPropertiesPrologueCallback));
+            EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerDeviceGetMemoryPropertiesRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
+                                                                                            +TracingTest::zeDeviceGetMemoryPropertiesPrologueCallback));
+            EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerDeviceGetMemoryAccessPropertiesRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
+                                                                                                  +TracingTest::zeDeviceGetMemoryAccessPropertiesPrologueCallback));
+        }
+
+        void registerZeEpilogueCallbacks(zel_tracer_handle_t hTracer)
+        {
+            EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerDeviceGetCommandQueueGroupPropertiesRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
+                                                                                                       +TracingTest::zeDeviceGetCommandQueueGroupPropertiesEpilogueCallback));
+            EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerDeviceGetMemoryPropertiesRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
+                                                                                            +TracingTest::zeDeviceGetMemoryPropertiesEpilogueCallback));
+            EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerDeviceGetMemoryAccessPropertiesRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
+                                                                                                  +TracingTest::zeDeviceGetMemoryAccessPropertiesEpilogueCallback));
         }
 
         void callAllZerApis()
@@ -261,19 +311,46 @@ namespace
             EXPECT_TRUE(compare_env("zerGetDefaultContext", "1"));
         }
 
-        void verifyCallbackCounts(const std::map<std::string, uint32_t> &expectedCounts, CallbackType stage)
+        void callBasicZeApis(std::vector<ze_driver_handle_t> &drivers)
+        {
+            uint32_t deviceCount = 1;
+            ze_result_t result{};
+
+            std::vector<ze_device_handle_t> devices(deviceCount);
+            result = zeDeviceGet(drivers[0], &deviceCount, devices.data());
+            EXPECT_GT(deviceCount, 0);
+            EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+
+            uint32_t queueGroupCount = 0;
+            result = zeDeviceGetCommandQueueGroupProperties(devices[0], &queueGroupCount, nullptr);
+            EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+            EXPECT_TRUE(compare_env("zeDeviceGetCommandQueueGroupProperties", "1"));
+
+            uint32_t memoryCount = 0;
+            result = zeDeviceGetMemoryProperties(devices[0], &memoryCount, nullptr);
+            EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+            EXPECT_TRUE(compare_env("zeDeviceGetMemoryProperties", "1"));
+
+            ze_device_memory_access_properties_t memoryAccessProperties = {};
+            memoryAccessProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_MEMORY_ACCESS_PROPERTIES;
+            result = zeDeviceGetMemoryAccessProperties(devices[0], &memoryAccessProperties);
+            EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+            EXPECT_TRUE(compare_env("zeDeviceGetMemoryAccessProperties", "1"));
+        }
+
+        void verifyZerCallbackCounts(const std::map<std::string, uint32_t> &expectedCounts, CallbackType stage)
         {
             for (const auto &expected : expectedCounts)
             {
                 if (stage == CallbackType::PROLOGUE_ONLY || stage == CallbackType::PROLOGUE_AND_EPILOGUE)
                 {
-                    uint32_t actualCount = tracingData.getPrologueCallCount(expected.first);
+                    uint32_t actualCount = tracingData.getZerPrologueCallCount(expected.first);
                     EXPECT_EQ(expected.second, actualCount);
                 }
 
                 if (stage == CallbackType::EPILOGUE_ONLY || stage == CallbackType::PROLOGUE_AND_EPILOGUE)
                 {
-                    uint32_t actualCount = tracingData.getEpilogueCallCount(expected.first);
+                    uint32_t actualCount = tracingData.getZerEpilogueCallCount(expected.first);
                     EXPECT_EQ(expected.second, actualCount);
                 }
             }
@@ -286,7 +363,7 @@ namespace
                 {"zerTranslateDeviceHandleToIdentifier", expectedCount},
                 {"zerTranslateIdentifierToDeviceHandle", expectedCount},
                 {"zerGetDefaultContext", expectedCount}};
-            verifyCallbackCounts(expectedCounts, stage);
+            verifyZerCallbackCounts(expectedCounts, stage);
         }
 
         void verifyAllZerApisCalledBothCallbackTypes(uint32_t expectedCount)
@@ -294,61 +371,131 @@ namespace
             verifyAllZerApisCalled(expectedCount, CallbackType::PROLOGUE_AND_EPILOGUE);
         }
 
+        void verifyZeCallbackCounts(const std::map<std::string, uint32_t> &expectedCounts, CallbackType stage)
+        {
+            for (const auto &expected : expectedCounts)
+            {
+                if (stage == CallbackType::PROLOGUE_ONLY || stage == CallbackType::PROLOGUE_AND_EPILOGUE)
+                {
+                    uint32_t actualCount = tracingData.getZePrologueCallCount(expected.first);
+                    EXPECT_EQ(expected.second, actualCount);
+                }
+
+                if (stage == CallbackType::EPILOGUE_ONLY || stage == CallbackType::PROLOGUE_AND_EPILOGUE)
+                {
+                    uint32_t actualCount = tracingData.getZeEpilogueCallCount(expected.first);
+                    EXPECT_EQ(expected.second, actualCount);
+                }
+            }
+        }
+
+        void verifyBasicZeApisCalled(uint32_t expectedCount, CallbackType stage)
+        {
+            std::map<std::string, uint32_t> expectedCounts = {
+                {"zeDeviceGetCommandQueueGroupProperties", expectedCount},
+                {"zeDeviceGetMemoryProperties", expectedCount},
+                {"zeDeviceGetMemoryAccessProperties", expectedCount}};
+            verifyZeCallbackCounts(expectedCounts, stage);
+        }
+
+        void verifyBasicZeApisCalledBothCallbackTypes(uint32_t expectedCount)
+        {
+            verifyBasicZeApisCalled(expectedCount, CallbackType::PROLOGUE_AND_EPILOGUE);
+        }
+
+        // ZER API Callback Functions
         static void zerGetLastErrorDescriptionPrologueCallback(zer_get_last_error_description_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementPrologueCallCount("zerGetLastErrorDescription");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerPrologueCallCount("zerGetLastErrorDescription");
         }
 
         static void zerTranslateDeviceHandleToIdentifierPrologueCallback(zer_translate_device_handle_to_identifier_params_t *params, uint32_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementPrologueCallCount("zerTranslateDeviceHandleToIdentifier");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerPrologueCallCount("zerTranslateDeviceHandleToIdentifier");
         }
 
         static void zerTranslateIdentifierToDeviceHandlePrologueCallback(zer_translate_identifier_to_device_handle_params_t *params, ze_device_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementPrologueCallCount("zerTranslateIdentifierToDeviceHandle");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerPrologueCallCount("zerTranslateIdentifierToDeviceHandle");
         }
 
         static void zerGetDefaultContextPrologueCallback(zer_get_default_context_params_t *params, ze_context_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementPrologueCallCount("zerGetDefaultContext");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerPrologueCallCount("zerGetDefaultContext");
         }
 
         static void zerGetLastErrorDescriptionEpilogueCallback(zer_get_last_error_description_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementEpilogueCallCount("zerGetLastErrorDescription");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerEpilogueCallCount("zerGetLastErrorDescription");
         }
 
         static void zerTranslateDeviceHandleToIdentifierEpilogueCallback(zer_translate_device_handle_to_identifier_params_t *params, uint32_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementEpilogueCallCount("zerTranslateDeviceHandleToIdentifier");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerEpilogueCallCount("zerTranslateDeviceHandleToIdentifier");
         }
 
         static void zerTranslateIdentifierToDeviceHandleEpilogueCallback(zer_translate_identifier_to_device_handle_params_t *params, ze_device_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementEpilogueCallCount("zerTranslateIdentifierToDeviceHandle");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerEpilogueCallCount("zerTranslateIdentifierToDeviceHandle");
         }
 
         static void zerGetDefaultContextEpilogueCallback(zer_get_default_context_params_t *params, ze_context_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
-            ZerTracingData *data = static_cast<ZerTracingData *>(pTracerUserData);
-            data->incrementEpilogueCallCount("zerGetDefaultContext");
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZerEpilogueCallCount("zerGetDefaultContext");
+        }
+
+        // ZE API Callback Functions
+        static void zeDeviceGetCommandQueueGroupPropertiesPrologueCallback(ze_device_get_command_queue_group_properties_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        {
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZePrologueCallCount("zeDeviceGetCommandQueueGroupProperties");
+        }
+
+        static void zeDeviceGetCommandQueueGroupPropertiesEpilogueCallback(ze_device_get_command_queue_group_properties_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        {
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZeEpilogueCallCount("zeDeviceGetCommandQueueGroupProperties");
+        }
+
+        static void zeDeviceGetMemoryPropertiesPrologueCallback(ze_device_get_memory_properties_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        {
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZePrologueCallCount("zeDeviceGetMemoryProperties");
+        }
+
+        static void zeDeviceGetMemoryPropertiesEpilogueCallback(ze_device_get_memory_properties_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        {
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZeEpilogueCallCount("zeDeviceGetMemoryProperties");
+        }
+
+        static void zeDeviceGetMemoryAccessPropertiesPrologueCallback(ze_device_get_memory_access_properties_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        {
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZePrologueCallCount("zeDeviceGetMemoryAccessProperties");
+        }
+
+        static void zeDeviceGetMemoryAccessPropertiesEpilogueCallback(ze_device_get_memory_access_properties_params_t *params, ze_result_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        {
+            TracingData *data = static_cast<TracingData *>(pTracerUserData);
+            data->incrementZeEpilogueCallCount("zeDeviceGetMemoryAccessProperties");
         }
     };
 
-    class ZerTracingParameterizedTest : public ZerTracingTest,
-                                        public ::testing::WithParamInterface<ZerTracingTest::InitMethod>
+    class TracingParameterizedTest : public TracingTest,
+                                     public ::testing::WithParamInterface<TracingTest::InitMethod>
     {
     };
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWhenCallingZerApisWithStaticTracingEnabledAndPrologueCallbacksRegisteredThenExpectTracingToWork)
     {
         InitMethod initMethod = GetParam();
@@ -359,9 +506,10 @@ namespace
         initializeLevelZero(initMethod, drivers);
 
         zel_tracer_handle_t hTracer = createTracer();
-        registerPrologueCallbacks(hTracer);
+        registerZerPrologueCallbacks(hTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
 
+        // Call all ZER APIs
         callAllZerApis();
 
         verifyAllZerApisCalled(1, CallbackType::PROLOGUE_ONLY);
@@ -372,7 +520,7 @@ namespace
         destroyTracer(hTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWhenCallingZerApisWithStaticTracingEnabledAndEpilogueCallbacksRegisteredThenExpectTracingToWork)
     {
         InitMethod initMethod = GetParam();
@@ -383,7 +531,7 @@ namespace
         initializeLevelZero(initMethod, drivers);
 
         zel_tracer_handle_t hTracer = createTracer();
-        registerEpilogueCallbacks(hTracer);
+        registerZerEpilogueCallbacks(hTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
 
         callAllZerApis();
@@ -396,7 +544,7 @@ namespace
         destroyTracer(hTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWhenCallingZerApisWithStaticTracingEnabledAndBothCallbacksRegisteredThenExpectBothToWork)
     {
         InitMethod initMethod = GetParam();
@@ -407,8 +555,8 @@ namespace
         initializeLevelZero(initMethod, drivers);
 
         zel_tracer_handle_t hTracer = createTracer();
-        registerPrologueCallbacks(hTracer);
-        registerEpilogueCallbacks(hTracer);
+        registerZerPrologueCallbacks(hTracer);
+        registerZerEpilogueCallbacks(hTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
 
         callAllZerApis();
@@ -421,7 +569,7 @@ namespace
         destroyTracer(hTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWhenCallingZerApisWithDynamicTracingEnabledAndPrologueCallbacksRegisteredThenExpectCallbacksToWorkCorrectly)
     {
         InitMethod initMethod = GetParam();
@@ -430,7 +578,7 @@ namespace
         initializeLevelZero(initMethod, drivers);
 
         zel_tracer_handle_t hTracer = createTracer();
-        registerPrologueCallbacks(hTracer);
+        registerZerPrologueCallbacks(hTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
 
         callAllZerApis();
@@ -449,12 +597,12 @@ namespace
         ze_result_t result = zerGetLastErrorDescription(&errorString);
         EXPECT_EQ(ZE_RESULT_SUCCESS, result);
         EXPECT_TRUE(compare_env("zerGetLastErrorDescription", "1"));
-        EXPECT_EQ(2, tracingData.getPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(2, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
 
         destroyTracer(hTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWhenCallingZerApisWithDynamicTracingEnabledAndEpilogueCallbacksRegisteredThenExpectTracingToWork)
     {
         InitMethod initMethod = GetParam();
@@ -463,7 +611,7 @@ namespace
         initializeLevelZero(initMethod, drivers);
 
         zel_tracer_handle_t hTracer = createTracer();
-        registerEpilogueCallbacks(hTracer);
+        registerZerEpilogueCallbacks(hTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
 
         callAllZerApis();
@@ -482,12 +630,12 @@ namespace
         ze_result_t result = zerGetLastErrorDescription(&errorString);
         EXPECT_EQ(ZE_RESULT_SUCCESS, result);
         EXPECT_TRUE(compare_env("zerGetLastErrorDescription", "1"));
-        EXPECT_EQ(2, tracingData.getEpilogueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(2, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
 
         destroyTracer(hTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWhenCallingZerApisWithDynamicTracingEnabledAndBothCallbacksRegisteredThenExpectFullTracingFunctionality)
     {
         InitMethod initMethod = GetParam();
@@ -496,8 +644,8 @@ namespace
         initializeLevelZero(initMethod, drivers);
 
         zel_tracer_handle_t hTracer = createTracer();
-        registerPrologueCallbacks(hTracer);
-        registerEpilogueCallbacks(hTracer);
+        registerZerPrologueCallbacks(hTracer);
+        registerZerEpilogueCallbacks(hTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
 
         callAllZerApis();
@@ -518,7 +666,7 @@ namespace
         destroyTracer(hTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWithStaticTracingEnabledAndMultipleTracersWithBothCallbacksRegisteredWhenCallingZerApisThenAllTracersReceiveCallbacks)
     {
         InitMethod initMethod = GetParam();
@@ -532,16 +680,16 @@ namespace
         zel_tracer_handle_t hTracer2 = createTracer();
         zel_tracer_handle_t hTracer3 = createTracer();
 
-        registerPrologueCallbacks(hTracer1);
-        registerEpilogueCallbacks(hTracer1);
+        registerZerPrologueCallbacks(hTracer1);
+        registerZerEpilogueCallbacks(hTracer1);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer1, true));
 
-        registerPrologueCallbacks(hTracer2);
-        registerEpilogueCallbacks(hTracer2);
+        registerZerPrologueCallbacks(hTracer2);
+        registerZerEpilogueCallbacks(hTracer2);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer2, true));
 
-        registerPrologueCallbacks(hTracer3);
-        registerEpilogueCallbacks(hTracer3);
+        registerZerPrologueCallbacks(hTracer3);
+        registerZerEpilogueCallbacks(hTracer3);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer3, true));
 
         callAllZerApis();
@@ -553,7 +701,7 @@ namespace
         destroyTracer(hTracer3);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWithStaticTracingEnabledAndMultipleEnabledAndDisabledTracersWithPrologueCallbacksRegisteredWhenCallingZerApisThenOnlyEnabledTracersReceiveCallbacks)
     {
         InitMethod initMethod = GetParam();
@@ -567,31 +715,31 @@ namespace
         zel_tracer_handle_t hEnabledTracer2 = createTracer();
         zel_tracer_handle_t hDisabledTracer = createTracer();
 
-        registerPrologueCallbacks(hEnabledTracer1);
+        registerZerPrologueCallbacks(hEnabledTracer1);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hEnabledTracer1, true));
 
-        registerPrologueCallbacks(hEnabledTracer2);
+        registerZerPrologueCallbacks(hEnabledTracer2);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hEnabledTracer2, true));
 
-        registerPrologueCallbacks(hDisabledTracer);
+        registerZerPrologueCallbacks(hDisabledTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hDisabledTracer, false));
 
-        uint32_t initialCount = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
+        uint32_t initialCount = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
 
         const char *errorString = nullptr;
         ze_result_t result = zerGetLastErrorDescription(&errorString);
         EXPECT_EQ(ZE_RESULT_SUCCESS, result);
 
-        uint32_t finalCount = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
+        uint32_t finalCount = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
 
         EXPECT_EQ(2, finalCount - initialCount);
 
-        uint32_t beforeEnableCount = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
+        uint32_t beforeEnableCount = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hDisabledTracer, true));
 
         result = zerGetLastErrorDescription(&errorString);
         EXPECT_EQ(ZE_RESULT_SUCCESS, result);
-        uint32_t afterEnableCount = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
+        uint32_t afterEnableCount = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
 
         EXPECT_EQ(3, afterEnableCount - beforeEnableCount);
 
@@ -600,7 +748,7 @@ namespace
         destroyTracer(hDisabledTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWithStaticTracingEnabledAndMultipleTracersWithDifferentCallbacksRegisteredWhenCallingZerApisThenEachTracerWorksIndependently)
     {
         InitMethod initMethod = GetParam();
@@ -614,14 +762,14 @@ namespace
         zel_tracer_handle_t hEpilogueTracer = createTracer();
         zel_tracer_handle_t hBothTracer = createTracer();
 
-        registerPrologueCallbacks(hPrologueTracer);
+        registerZerPrologueCallbacks(hPrologueTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hPrologueTracer, true));
 
-        registerEpilogueCallbacks(hEpilogueTracer);
+        registerZerEpilogueCallbacks(hEpilogueTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hEpilogueTracer, true));
 
-        registerPrologueCallbacks(hBothTracer);
-        registerEpilogueCallbacks(hBothTracer);
+        registerZerPrologueCallbacks(hBothTracer);
+        registerZerEpilogueCallbacks(hBothTracer);
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hBothTracer, true));
 
         callAllZerApis();
@@ -630,26 +778,26 @@ namespace
 
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hPrologueTracer, false));
 
-        uint32_t prologueCountBefore = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
-        uint32_t epilogueCountBefore = tracingData.getEpilogueCallCount("zerGetLastErrorDescription");
+        uint32_t prologueCountBefore = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
+        uint32_t epilogueCountBefore = tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription");
 
         callAllZerApis();
 
-        uint32_t prologueCountAfter = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
-        uint32_t epilogueCountAfter = tracingData.getEpilogueCallCount("zerGetLastErrorDescription");
+        uint32_t prologueCountAfter = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
+        uint32_t epilogueCountAfter = tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription");
 
         EXPECT_EQ(1, prologueCountAfter - prologueCountBefore);
         EXPECT_EQ(2, epilogueCountAfter - epilogueCountBefore);
 
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hEpilogueTracer, false));
 
-        prologueCountBefore = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
-        epilogueCountBefore = tracingData.getEpilogueCallCount("zerGetLastErrorDescription");
+        prologueCountBefore = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
+        epilogueCountBefore = tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription");
 
         callAllZerApis();
 
-        prologueCountAfter = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
-        epilogueCountAfter = tracingData.getEpilogueCallCount("zerGetLastErrorDescription");
+        prologueCountAfter = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
+        epilogueCountAfter = tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription");
 
         EXPECT_EQ(1, prologueCountAfter - prologueCountBefore);
         EXPECT_EQ(1, epilogueCountAfter - epilogueCountBefore);
@@ -657,13 +805,13 @@ namespace
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hPrologueTracer, true));
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hEpilogueTracer, true));
 
-        prologueCountBefore = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
-        epilogueCountBefore = tracingData.getEpilogueCallCount("zerGetLastErrorDescription");
+        prologueCountBefore = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
+        epilogueCountBefore = tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription");
 
         callAllZerApis();
 
-        prologueCountAfter = tracingData.getPrologueCallCount("zerGetLastErrorDescription");
-        epilogueCountAfter = tracingData.getEpilogueCallCount("zerGetLastErrorDescription");
+        prologueCountAfter = tracingData.getZerPrologueCallCount("zerGetLastErrorDescription");
+        epilogueCountAfter = tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription");
 
         EXPECT_EQ(2, prologueCountAfter - prologueCountBefore);
         EXPECT_EQ(2, epilogueCountAfter - epilogueCountBefore);
@@ -673,7 +821,7 @@ namespace
         destroyTracer(hBothTracer);
     }
 
-    TEST_P(ZerTracingParameterizedTest,
+    TEST_P(TracingParameterizedTest,
            GivenLoaderWithStaticTracingEnabledAndSelectiveCallbackRegistrationWhenCallingZerApisThenOnlyRegisteredCallbacksAreTriggered)
     {
         InitMethod initMethod = GetParam();
@@ -686,46 +834,131 @@ namespace
         zel_tracer_handle_t hTracer = createTracer();
 
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerGetLastErrorDescriptionRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
-                                                                                      +ZerTracingTest::zerGetLastErrorDescriptionPrologueCallback));
+                                                                                      +TracingTest::zerGetLastErrorDescriptionPrologueCallback));
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerTranslateIdentifierToDeviceHandleRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE,
-                                                                                                +ZerTracingTest::zerTranslateIdentifierToDeviceHandlePrologueCallback));
+                                                                                                +TracingTest::zerTranslateIdentifierToDeviceHandlePrologueCallback));
 
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerGetLastErrorDescriptionRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE,
-                                                                                      +ZerTracingTest::zerGetLastErrorDescriptionEpilogueCallback));
+                                                                                      +TracingTest::zerGetLastErrorDescriptionEpilogueCallback));
 
         EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
 
         callAllZerApis();
 
-        EXPECT_EQ(1, tracingData.getPrologueCallCount("zerGetLastErrorDescription"));
-        EXPECT_EQ(1, tracingData.getPrologueCallCount("zerTranslateIdentifierToDeviceHandle"));
+        EXPECT_EQ(1, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(1, tracingData.getZerPrologueCallCount("zerTranslateIdentifierToDeviceHandle"));
+        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerTranslateDeviceHandleToIdentifier"));
+        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerGetDefaultContext"));
 
-        EXPECT_EQ(0, tracingData.getPrologueCallCount("zerTranslateDeviceHandleToIdentifier"));
-        EXPECT_EQ(0, tracingData.getPrologueCallCount("zerGetDefaultContext"));
-
-        EXPECT_EQ(1, tracingData.getEpilogueCallCount("zerGetLastErrorDescription"));
-        EXPECT_EQ(0, tracingData.getEpilogueCallCount("zerTranslateDeviceHandleToIdentifier"));
-        EXPECT_EQ(0, tracingData.getEpilogueCallCount("zerTranslateIdentifierToDeviceHandle"));
-        EXPECT_EQ(0, tracingData.getEpilogueCallCount("zerGetDefaultContext"));
+        EXPECT_EQ(1, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerTranslateDeviceHandleToIdentifier"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerTranslateIdentifierToDeviceHandle"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerGetDefaultContext"));
 
         callAllZerApis();
 
-        EXPECT_EQ(2, tracingData.getPrologueCallCount("zerGetLastErrorDescription"));
-        EXPECT_EQ(2, tracingData.getPrologueCallCount("zerTranslateIdentifierToDeviceHandle"));
-        EXPECT_EQ(0, tracingData.getPrologueCallCount("zerTranslateDeviceHandleToIdentifier"));
-        EXPECT_EQ(0, tracingData.getPrologueCallCount("zerGetDefaultContext"));
-        EXPECT_EQ(2, tracingData.getEpilogueCallCount("zerGetLastErrorDescription"));
-        EXPECT_EQ(0, tracingData.getEpilogueCallCount("zerTranslateDeviceHandleToIdentifier"));
-        EXPECT_EQ(0, tracingData.getEpilogueCallCount("zerTranslateIdentifierToDeviceHandle"));
-        EXPECT_EQ(0, tracingData.getEpilogueCallCount("zerGetDefaultContext"));
+        EXPECT_EQ(2, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(2, tracingData.getZerPrologueCallCount("zerTranslateIdentifierToDeviceHandle"));
+        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerTranslateDeviceHandleToIdentifier"));
+        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerGetDefaultContext"));
+        EXPECT_EQ(2, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerTranslateDeviceHandleToIdentifier"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerTranslateIdentifierToDeviceHandle"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerGetDefaultContext"));
+        destroyTracer(hTracer);
+    }
+
+    TEST_P(TracingParameterizedTest,
+           GivenLoaderWithStaticTracingEnabledAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenBothAreTraced)
+    {
+        InitMethod initMethod = GetParam();
+
+        setupTracing(TracingMode::STATIC_TRACING);
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        zel_tracer_handle_t hTracer = createTracer();
+
+        registerZerPrologueCallbacks(hTracer);
+        registerZerEpilogueCallbacks(hTracer);
+        registerZePrologueCallbacks(hTracer);
+        registerZeEpilogueCallbacks(hTracer);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
+
+        callAllZerApis();
+        callBasicZeApis(drivers);
+
+        verifyAllZerApisCalled(1, CallbackType::PROLOGUE_AND_EPILOGUE);
+        verifyBasicZeApisCalled(1, CallbackType::PROLOGUE_AND_EPILOGUE);
+
+        callAllZerApis();
+        callBasicZeApis(drivers);
+
+        verifyAllZerApisCalled(2, CallbackType::PROLOGUE_AND_EPILOGUE);
+        verifyBasicZeApisCalled(2, CallbackType::PROLOGUE_AND_EPILOGUE);
+
+        destroyTracer(hTracer);
+    }
+
+    TEST_P(TracingParameterizedTest,
+           GivenLoaderWithDynamicTracingEnabledAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenBothAreTraced)
+    {
+        InitMethod initMethod = GetParam();
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        zel_tracer_handle_t hTracer = createTracer();
+        registerZerPrologueCallbacks(hTracer);
+        registerZerEpilogueCallbacks(hTracer);
+        registerZePrologueCallbacks(hTracer);
+        registerZeEpilogueCallbacks(hTracer);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
+
+        callAllZerApis();
+        callBasicZeApis(drivers);
+        verifyAllZerApisCalledBothCallbackTypes(0);
+        verifyBasicZeApisCalledBothCallbackTypes(0);
+
+        EXPECT_EQ(ZE_RESULT_SUCCESS, enableDynamicTracing());
+        callAllZerApis();
+        callBasicZeApis(drivers);
+        verifyAllZerApisCalledBothCallbackTypes(1);
+        verifyBasicZeApisCalledBothCallbackTypes(1);
+
+        EXPECT_EQ(ZE_RESULT_SUCCESS, disableDynamicTracing());
+        callAllZerApis();
+        callBasicZeApis(drivers);
+        verifyAllZerApisCalledBothCallbackTypes(1);
+        verifyBasicZeApisCalledBothCallbackTypes(1);
+
+        EXPECT_EQ(ZE_RESULT_SUCCESS, enableDynamicTracing());
+        const char *errorString = nullptr;
+        ze_result_t result = zerGetLastErrorDescription(&errorString);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+        EXPECT_EQ(2, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(2, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
+
+        uint32_t deviceCount = 1;
+        std::vector<ze_device_handle_t> devices(deviceCount);
+        result = zeDeviceGet(drivers[0], &deviceCount, devices.data());
+        EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+
+        uint32_t queueGroupCount = 0;
+        result = zeDeviceGetCommandQueueGroupProperties(devices[0], &queueGroupCount, nullptr);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+        EXPECT_EQ(2, tracingData.getZePrologueCallCount("zeDeviceGetCommandQueueGroupProperties"));
+        EXPECT_EQ(2, tracingData.getZeEpilogueCallCount("zeDeviceGetCommandQueueGroupProperties"));
+
         destroyTracer(hTracer);
     }
 
     INSTANTIATE_TEST_SUITE_P(
         InitMethods,
-        ZerTracingParameterizedTest,
+        TracingParameterizedTest,
         ::testing::Values(
-            ZerTracingTest::InitMethod::ZEINIT,
-            ZerTracingTest::InitMethod::ZEINIT_DRIVERS));
+            TracingTest::InitMethod::ZEINIT,
+            TracingTest::InitMethod::ZEINIT_DRIVERS));
 
 } // namespace

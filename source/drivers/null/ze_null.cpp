@@ -420,6 +420,9 @@ namespace driver
             }
             *pCount = 1;
 
+            char *env_str = context.setenv_var_with_driver_id("zeDeviceGetCommandQueueGroupProperties", ZEL_NULL_DRIVER_ID);
+            context.env_vars.push_back(env_str);
+
             return ZE_RESULT_SUCCESS;
         };
 
@@ -435,6 +438,9 @@ namespace driver
             *pCount = 1;
             if( nullptr != pMemProperties ) *pMemProperties = memoryProperties;
 
+            char *env_str = context.setenv_var_with_driver_id("zeDeviceGetMemoryProperties", ZEL_NULL_DRIVER_ID);
+            context.env_vars.push_back(env_str);
+
             return ZE_RESULT_SUCCESS;
         };
 
@@ -447,6 +453,10 @@ namespace driver
             memoryAccessProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_MEMORY_ACCESS_PROPERTIES;
 
             *pMemAccessProperties = memoryAccessProperties;
+            
+            char *env_str = context.setenv_var_with_driver_id("zeDeviceGetMemoryAccessProperties", ZEL_NULL_DRIVER_ID);
+            context.env_vars.push_back(env_str);
+
             return ZE_RESULT_SUCCESS;
         };
 
