@@ -664,8 +664,8 @@ foreach(init_method IN LISTS init_methods)
 endforeach()
 
 # ZER API Tracing Tests
-add_test(NAME test_zer_tracing_static COMMAND tests --gtest_filter=*ZerTracingParameterizedTest*GivenLoaderWhenCallingZerApisWithStaticTracingEnabledAndPrologueCallbacksRegisteredThenExpectTracingToWork*)
-set_property(TEST test_zer_tracing_static PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+add_test(NAME test_zer_tracing_static_prologue COMMAND tests --gtest_filter=*ZerTracingParameterizedTest*GivenLoaderWhenCallingZerApisWithStaticTracingEnabledAndPrologueCallbacksRegisteredThenExpectTracingToWork*)
+set_property(TEST test_zer_tracing_static_prologue PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
 add_test(NAME test_zer_tracing_static_epilogue COMMAND tests --gtest_filter=*ZerTracingParameterizedTest*GivenLoaderWhenCallingZerApisWithStaticTracingEnabledAndEpilogueCallbacksRegisteredThenExpectTracingToWork*)
 set_property(TEST test_zer_tracing_static_epilogue PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
