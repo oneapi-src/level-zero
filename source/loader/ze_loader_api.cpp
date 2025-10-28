@@ -63,7 +63,7 @@ zelLoaderGetContext() {
 /// @brief Internal function for Setting the ZE ddi table for the Tracing Layer.
 ///
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zelLoaderZeTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable) {
+zelLoaderTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable) {
     zeDdiTable.store(&loader::context->tracing_dditable.ze);
     return ZE_RESULT_SUCCESS;
 }
