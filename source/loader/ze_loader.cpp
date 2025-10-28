@@ -419,6 +419,7 @@ namespace loader
                 }
                 bool integratedGPU = false;
                 bool discreteGPU = false;
+                bool npu = false;
                 bool other = false;
                 for( auto device : deviceHandles ) {
                     ze_device_properties_t deviceProperties = {};
@@ -438,11 +439,17 @@ namespace loader
                         } else {
                             discreteGPU = true;
                         }
+                    } else  if (deviceProperties.type == ZE_DEVICE_TYPE_VPU) {
+                        npu = true;
                     } else {
                         other = true;
                     }
                 }
-                if (integratedGPU && discreteGPU && other) {
+                if (driver.driverType == ZEL_DRIVER_TYPE_NPU && npu == false) {
+                    // Driver was forced to NPU but no NPU devices found, skip updating type.
+                    continue;
+                }
+                if (integratedGPU && discreteGPU && (other || npu)) {
                     driver.driverType = ZEL_DRIVER_TYPE_MIXED;
                 } else if (integratedGPU && discreteGPU) {
                     driver.driverType = ZEL_DRIVER_TYPE_GPU;
@@ -450,6 +457,8 @@ namespace loader
                     driver.driverType = ZEL_DRIVER_TYPE_INTEGRATED_GPU;
                 } else if (discreteGPU) {
                     driver.driverType = ZEL_DRIVER_TYPE_DISCRETE_GPU;
+                } else if (npu) {
+                    driver.driverType = ZEL_DRIVER_TYPE_NPU;
                 } else if (other) {
                     driver.driverType = ZEL_DRIVER_TYPE_OTHER;
                 }
@@ -475,6 +484,10 @@ namespace loader
 
     ze_result_t context_t::init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc) {
         bool loadDriver = false;
+        if (debugTraceEnabled) {
+            std::string message = "Initializing driver " + driver.name + " with type " + std::to_string(driver.driverType);\
+            debug_trace_message(message, "");
+        }
         if ((!desc && (flags == 0 || flags & ZE_INIT_FLAG_GPU_ONLY)) || (desc && desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU)) {
             if (driver.driverType == ZEL_DRIVER_TYPE_GPU || driver.driverType == ZEL_DRIVER_TYPE_DISCRETE_GPU || driver.driverType == ZEL_DRIVER_TYPE_INTEGRATED_GPU) {
                 if (debugTraceEnabled) {
@@ -695,6 +708,7 @@ namespace loader
                 allDrivers.rbegin()->handle = nullptr;
                 allDrivers.rbegin()->name = driverInfo.path;
                 allDrivers.rbegin()->customDriver = driverInfo.customDriver;
+                allDrivers.rbegin()->driverType = driverInfo.driverType;
             }
         }
         if(allDrivers.size()==0){

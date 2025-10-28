@@ -12,7 +12,19 @@ add_executable(
 # Only include driver_ordering_unit_tests for static builds or non-Windows platforms
 # as it requires internal loader symbols that are not exported in Windows DLLs
 if(BUILD_STATIC OR NOT WIN32)
-  target_sources(tests PRIVATE driver_ordering_unit_tests.cpp init_driver_unit_tests.cpp)
+  target_sources(tests PRIVATE driver_ordering_unit_tests.cpp)
+endif()
+
+# For builds on non-Windows platforms, include init_driver_unit_tests
+# The tests rely on ablity to locate fake drivers by specific names which is not possible on Windows.
+if(NOT WIN32)
+  target_sources(tests PRIVATE init_driver_unit_tests.cpp)
+endif()
+
+# Only build init_driver_dynamic_unit_tests for dynamic builds on non-Windows platforms
+# as it requires internal loader symbols that are not exported in Windows DLLs
+if(NOT BUILD_STATIC AND NOT WIN32)
+  target_sources(tests PRIVATE init_driver_dynamic_unit_tests.cpp)
 endif()
 
 # For static builds, we need to include the loader source files directly
@@ -413,8 +425,8 @@ foreach(test_name IN ITEMS
   set_property(TEST ${test_name}_alt_drivers APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;${ALT_DRIVERS_ENV}")
 endforeach()
 
-add_test(NAME tests_sigle_driver_sysman_vf_management_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
-set_property(TEST tests_sigle_driver_sysman_vf_management_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+add_test(NAME tests_single_driver_sysman_vf_management_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_sysman_vf_management_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 
 add_test(NAME tests_multi_driver_sysman_vf_management_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
 if (MSVC)
@@ -630,7 +642,13 @@ set_property(TEST driver_ordering_parse_driver_order PROPERTY ENVIRONMENT "ZE_EN
 
 # Init Driver Unit Tests
 add_test(NAME init_driver_unit_tests COMMAND tests --gtest_filter=InitDriverUnitTest.*)
-set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+if (MSVC)
+  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;")
+elseif(NOT BUILD_STATIC)
+  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib_fake:${CMAKE_BINARY_DIR}/lib/")
+else()
+  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;")
+endif()
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)

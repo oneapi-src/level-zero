@@ -44,7 +44,7 @@ std::vector<DriverLibraryPath> discoverEnabledDrivers() {
         while (ss.good()) {
             std::string substr;
             getline(ss, substr, ',');
-            enabledDrivers.emplace_back(substr, true, false, false);
+            enabledDrivers.emplace_back(substr, true, ZEL_DRIVER_TYPE_FORCE_UINT32);
         }
     }
 

@@ -4,23 +4,8 @@
  */
 
 
-#include "gtest/gtest.h"
-#include "source/loader/ze_loader_internal.h"
-#include "ze_api.h"
-#include <vector>
-#include <string>
-#include <cstdlib>
-#include <cstring>
+#include "test/init_driver_unit_tests_common.h"
 
-class InitDriverUnitTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        if (!loader::context) {
-            loader::context = new loader::context_t();
-            loader::context->debugTraceEnabled = false;
-        }
-    }
-};
 // Helper to create a mock null driver with a given name and type
 loader::driver_t createNullDriver(const std::string& name, loader::zel_driver_type_t type) {
     loader::driver_t driver;

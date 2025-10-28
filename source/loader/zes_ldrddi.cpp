@@ -130,7 +130,7 @@ namespace loader
             if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
                 continue;
             if (!drv.handle || !drv.ddiInitialized) {
-                auto res = loader::context->init_driver( drv, flags, nullptr);
+                auto res = loader::context->init_driver( drv, flags, nullptr );
                 if (res != ZE_RESULT_SUCCESS) {
                     continue;
                 }
