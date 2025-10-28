@@ -954,6 +954,62 @@ namespace
         destroyTracer(hTracer);
     }
 
+    TEST_P(TracingParameterizedTest,
+           GivenLoaderWithDynamicTracingEnabledAndZerApisUnsupportedAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenTracingWorksForZeOnly)
+    {
+        putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_ZER_API=1"));
+        InitMethod initMethod = GetParam();
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        zel_tracer_handle_t hTracer = createTracer();
+        registerZerPrologueCallbacks(hTracer);
+        registerZerEpilogueCallbacks(hTracer);
+        registerZePrologueCallbacks(hTracer);
+        registerZeEpilogueCallbacks(hTracer);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
+
+        callBasicZeApis(drivers);
+        verifyBasicZeApisCalledBothCallbackTypes(0);
+
+        EXPECT_EQ(ZE_RESULT_SUCCESS, enableDynamicTracing());
+
+        const char *errorString = nullptr;
+        ze_result_t result = zerGetLastErrorDescription(&errorString);
+        EXPECT_EQ(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, result);
+        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
+
+        callBasicZeApis(drivers);
+        verifyBasicZeApisCalledBothCallbackTypes(1);
+
+        EXPECT_EQ(ZE_RESULT_SUCCESS, disableDynamicTracing());
+        callBasicZeApis(drivers);
+        verifyBasicZeApisCalledBothCallbackTypes(1);
+
+        EXPECT_EQ(ZE_RESULT_SUCCESS, enableDynamicTracing());
+
+        errorString = nullptr;
+        result = zerGetLastErrorDescription(&errorString);
+        EXPECT_EQ(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, result);
+        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
+
+        uint32_t deviceCount = 1;
+        std::vector<ze_device_handle_t> devices(deviceCount);
+        result = zeDeviceGet(drivers[0], &deviceCount, devices.data());
+        EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+
+        uint32_t queueGroupCount = 0;
+        result = zeDeviceGetCommandQueueGroupProperties(devices[0], &queueGroupCount, nullptr);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, result);
+        EXPECT_EQ(2, tracingData.getZePrologueCallCount("zeDeviceGetCommandQueueGroupProperties"));
+        EXPECT_EQ(2, tracingData.getZeEpilogueCallCount("zeDeviceGetCommandQueueGroupProperties"));
+
+        destroyTracer(hTracer);
+    }
+
     INSTANTIATE_TEST_SUITE_P(
         InitMethods,
         TracingParameterizedTest,
