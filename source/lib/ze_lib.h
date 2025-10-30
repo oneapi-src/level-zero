@@ -169,6 +169,7 @@ namespace ze_lib
         ze_result_t zelTracingDdiTableInit(ze_api_version_t version);
         zel_tracing_dditable_t  zelTracingDdiTable = {};
         std::atomic<ze_dditable_t *> pTracingZeDdiTable = {nullptr};
+        std::atomic<zer_dditable_t *> pTracingZerDdiTable = {nullptr};
         ze_dditable_t initialzeDdiTable;
         zet_dditable_t initialzetDdiTable;
         zes_dditable_t initialzesDdiTable;

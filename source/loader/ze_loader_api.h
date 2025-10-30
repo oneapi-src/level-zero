@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020-2021 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -37,10 +37,16 @@ zelLoaderDriverCheck(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze
 
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Internal function for Setting the ddi table for the Tracing Layer.
+/// @brief Internal function for Setting the ZE ddi table for the Tracing Layer.
 ///
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelLoaderTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable);
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Internal function for Setting the ZER ddi table for the Tracing Layer.
+///
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderZerTracingLayerInit(std::atomic<zer_dditable_t *> &zerDdiTable);
 
 
 ///////////////////////////////////////////////////////////////////////////////
