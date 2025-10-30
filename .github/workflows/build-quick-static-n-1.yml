@@ -8,7 +8,7 @@ on:
 permissions: read-all
 
 jobs:
-  # Linux job: Build static loader from main, dynamic loader from PR, test static loader with PR dynamic loader
+  # Linux job: Build static loader from master, dynamic loader from PR, test static loader with PR dynamic loader
   build-linux:
     if: github.repository_owner == 'oneapi-src'
     runs-on: ubuntu-latest
@@ -19,18 +19,18 @@ jobs:
           fetch-depth: 0
           path: pr
 
-      # Checkout main branch for static loader source
-      - name: Checkout main branch for static loader
+      # Checkout master branch for static loader source
+      - name: Checkout master branch for static loader
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: master
           fetch-depth: 0
-          path: main
+          path: master
 
-      # Build static loader from main branch
-      - name: Build Static Loader from main
+      # Build static loader from master branch
+      - name: Build Static Loader from master
         run: |
-          cd main
+          cd master
           mkdir build
           cd build
           cmake \
@@ -57,15 +57,15 @@ jobs:
           make -j$(nproc)
 
       # Run CTest in static loader's build directory, using PR dynamic loader via ZEL_LIBRARY_PATH
-      - name: Run CTest with PR dynamic loader and main static loader
+      - name: Run CTest with PR dynamic loader and master static loader
         env:
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/pr/dynamic_build/lib'
-        working-directory: main/build
+        working-directory: master/build
         run: |
           ls $ZEL_LIBRARY_PATH
           ctest -V
 
-  # Windows job: Build static loader from main, dynamic loader from PR, test static loader with PR dynamic loader
+  # Windows job: Build static loader from master, dynamic loader from PR, test static loader with PR dynamic loader
   build-windows:
     if: github.repository_owner == 'oneapi-src'
     runs-on: windows-latest
@@ -76,18 +76,18 @@ jobs:
           fetch-depth: 0
           path: pr
 
-      # Checkout main branch for static loader source
-      - name: Checkout main branch for static loader
+      # Checkout master branch for static loader source
+      - name: Checkout master branch for static loader
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: master
           fetch-depth: 0
-          path: main
+          path: master
 
-      # Build static loader from main branch
-      - name: Build Static Loader from main
+      # Build static loader from master branch
+      - name: Build Static Loader from master
         run: |
-          cd main
+          cd master
           mkdir build
           cd build
           cmake -D BUILD_L0_LOADER_TESTS=1 -D BUILD_STATIC=1 ..
@@ -103,8 +103,8 @@ jobs:
           cmake --build . --config Release
 
       # Run CTest in static loader's build directory, using PR dynamic loader via ZEL_LIBRARY_PATH
-      - name: Run CTest with PR dynamic loader and main static loader
+      - name: Run CTest with PR dynamic loader and master static loader
         env:
           ZEL_LIBRARY_PATH: '${{ github.workspace }}\\pr\\dynamic_build\\bin\\Release'
-        working-directory: main/build
+        working-directory: master/build
         run: ctest -C Release -V
