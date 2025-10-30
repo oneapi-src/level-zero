@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Intel Corporation
+ * Copyright (C) 2024-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -21,9 +21,11 @@ eventsChecker::eventsChecker() {
         eventsChecker::ZEeventsChecker *zeChecker = new eventsChecker::ZEeventsChecker;
         eventsChecker::ZESeventsChecker *zesChecker = new eventsChecker::ZESeventsChecker;
         eventsChecker::ZETeventsChecker *zetChecker = new eventsChecker::ZETeventsChecker;
+        eventsChecker::ZEReventsChecker *zerChecker = new eventsChecker::ZEReventsChecker;
         events_checker.zeValidation = zeChecker;
         events_checker.zesValidation = zesChecker;
         events_checker.zetValidation = zetChecker;
+        events_checker.zerValidation = zerChecker;
 
         validation_layer::context.getInstance().validationHandlers.push_back(&events_checker);
     }
@@ -34,6 +36,7 @@ eventsChecker::~eventsChecker() {
         delete events_checker.zeValidation;
         delete events_checker.zesValidation;
         delete events_checker.zetValidation;
+        delete events_checker.zerValidation;
     }
 }
 

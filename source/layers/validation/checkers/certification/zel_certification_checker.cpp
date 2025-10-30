@@ -22,6 +22,8 @@ certificationChecker::certificationChecker() {
         new certificationChecker::ZEScertificationChecker;
     certificationChecker::ZETcertificationChecker *zetChecker =
         new certificationChecker::ZETcertificationChecker;
+    certificationChecker::ZERcertificationChecker *zerChecker =
+        new certificationChecker::ZERcertificationChecker;
     ze_api_version_t certification_version = ZE_API_VERSION_CURRENT;
     const auto certification_version_string =
         getenv_string("ZEL_CERTIFICATION_CHECKER_VERSION");
@@ -38,6 +40,7 @@ certificationChecker::certificationChecker() {
     certification_checker.zeValidation = zeChecker;
     certification_checker.zetValidation = zetChecker;
     certification_checker.zesValidation = zesChecker;
+    certification_checker.zerValidation = zerChecker;
     validation_layer::context.getInstance().validationHandlers.push_back(
         &certification_checker);
   }
@@ -48,6 +51,7 @@ certificationChecker::~certificationChecker() {
     delete certification_checker.zeValidation;
     delete certification_checker.zetValidation;
     delete certification_checker.zesValidation;
+    delete certification_checker.zerValidation;
   }
 }
 

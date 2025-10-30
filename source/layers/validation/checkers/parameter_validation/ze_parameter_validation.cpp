@@ -22,9 +22,11 @@ namespace validation_layer
             ZEParameterValidation *zeChecker = new ZEParameterValidation;
             ZESParameterValidation *zesChecker = new ZESParameterValidation;
             ZETParameterValidation *zetChecker = new ZETParameterValidation;
+            ZERParameterValidation *zerChecker = new ZERParameterValidation;
             parameterChecker.zeValidation = zeChecker;
             parameterChecker.zetValidation = zetChecker;
             parameterChecker.zesValidation = zesChecker;
+            parameterChecker.zerValidation = zerChecker;
             validation_layer::context.getInstance().validationHandlers.push_back(&parameterChecker);
         }
     }
@@ -34,6 +36,7 @@ namespace validation_layer
             delete parameterChecker.zeValidation;
             delete parameterChecker.zetValidation;
             delete parameterChecker.zesValidation;
+            delete parameterChecker.zerValidation;
         }
     }
 

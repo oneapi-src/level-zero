@@ -2311,7 +2311,11 @@ TEST_F(DriverOrderingTest,
     EXPECT_EQ(ZE_RESULT_SUCCESS, result);
     EXPECT_TRUE(compare_env("zerGetLastErrorDescription", "1"));
 
-    deviceId = zerTranslateDeviceHandleToIdentifier(nullptr);
+    uint32_t device_count = 1;
+    std::vector<ze_device_handle_t> devices(device_count);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &device_count, devices.data()));
+
+    deviceId = zerTranslateDeviceHandleToIdentifier(devices[0]);
     EXPECT_TRUE(compare_env("zerTranslateDeviceHandleToIdentifier", "1"));
 
     ze_device_handle_t translatedDevice = zerTranslateIdentifierToDeviceHandle(deviceId);

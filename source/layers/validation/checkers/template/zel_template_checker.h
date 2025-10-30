@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2024 Intel Corporation
+ * Copyright (C) 2024-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -32,6 +32,9 @@ namespace validation_layer
             class ZETvalidationCheckerTemplate : public ZETValidationEntryPoints {
             public:
                 ze_result_t zetModuleGetDebugInfoPrologue( zet_module_handle_t hModule, zet_module_debug_info_format_t format, size_t* pSize, uint8_t* pDebugInfo ) override;
+            };
+            class ZERvalidationCheckerTemplate : public ZERValidationEntryPoints {
+            public:
             };
         bool enableValidationCheckerTemplate = false;
     };
