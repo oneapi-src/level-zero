@@ -28,6 +28,8 @@ namespace error_state
         {
             errorDescs[threadId] = std::string();
         }
-        *ppString = errorDescs[threadId].c_str();
+        if(ppString != nullptr) {
+            *ppString = errorDescs[threadId].c_str();
+        }
     }
 }

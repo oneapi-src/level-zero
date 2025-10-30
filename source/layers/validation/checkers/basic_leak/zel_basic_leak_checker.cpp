@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Intel Corporation
+ * Copyright (C) 2024-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -23,9 +23,11 @@ namespace validation_layer
             basic_leakChecker::ZEbasic_leakChecker *zeChecker = new basic_leakChecker::ZEbasic_leakChecker;
             basic_leakChecker::ZESbasic_leakChecker *zesChecker = new basic_leakChecker::ZESbasic_leakChecker;
             basic_leakChecker::ZETbasic_leakChecker *zetChecker = new basic_leakChecker::ZETbasic_leakChecker;
+            basic_leakChecker::ZERbasic_leakChecker *zerChecker = new basic_leakChecker::ZERbasic_leakChecker;
             basic_leak_checker.zeValidation = zeChecker;
             basic_leak_checker.zetValidation = zetChecker;
             basic_leak_checker.zesValidation = zesChecker;
+            basic_leak_checker.zerValidation = zerChecker;
             validation_layer::context.getInstance().validationHandlers.push_back(&basic_leak_checker);
         }
     }
@@ -35,6 +37,7 @@ namespace validation_layer
             delete basic_leak_checker.zeValidation;
             delete basic_leak_checker.zetValidation;
             delete basic_leak_checker.zesValidation;
+            delete basic_leak_checker.zerValidation;
         }
     }
 

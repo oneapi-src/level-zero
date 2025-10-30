@@ -9,6 +9,7 @@
 #include "gtest/gtest.h"
 #include "loader/ze_loader.h"
 #include "ze_api.h"
+#include "zer_api.h"
 
 #if defined(_WIN32)
 #define putenv_safe _putenv
@@ -581,3 +582,23 @@ TEST(
     status = zeContextDestroy(context);
     EXPECT_EQ(ZE_RESULT_SUCCESS, status);
 }
+
+  TEST(
+      RuntimeApiParameterValidation,
+      GivenLevelZeroLoaderPresentWhenCallingZerApiWithParameterValidationEnabledThenExpectValidationsAreTriggered)
+  {
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    putenv_safe(const_cast<char *>("ZE_ENABLE_LOADER_INTERCEPT=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=0"));
+    std::vector<ze_driver_handle_t> drivers;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    drivers.resize(pInitDriversCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, drivers.data(), &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    ze_result_t result = zerGetLastErrorDescription(nullptr);
+    EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_POINTER, result);
+  }
