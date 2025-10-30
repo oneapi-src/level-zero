@@ -29,6 +29,9 @@ namespace loader_driver_ddi
 
         // Check if the default driver supports DDI Handles
         if (loader::context->defaultZerDriverHandle == nullptr) {
+            if (loader::context->zeDrivers.front().zerddiInitResult == ZE_RESULT_ERROR_UNSUPPORTED_FEATURE) {
+                return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            }
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto dditable = reinterpret_cast<ze_handle_t*>( loader::context->defaultZerDriverHandle )->pRuntime;
