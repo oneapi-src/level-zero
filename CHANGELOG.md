@@ -1,4 +1,7 @@
 # Level zero loader changelog
+## v1.25.2
+* Enable support for Dynamic Tracing of zer* APIs
+* Fix issues with zer* apis during validation layer intercepts
 ## v1.25.1
 * Fix to zer Handle init to address replacement of ze driver handles
 ## v1.25.0
