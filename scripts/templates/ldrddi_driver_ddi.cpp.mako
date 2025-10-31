@@ -103,8 +103,15 @@ namespace loader_driver_ddi
         // Check if the default driver supports DDI Handles
         if (loader::context->defaultZerDriverHandle == nullptr) {
             %if ret_type == 'ze_result_t':
+            if (loader::context->zeDrivers.front().zerddiInitResult == ZE_RESULT_ERROR_UNSUPPORTED_FEATURE) {
+                return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            }
             return ${X}_RESULT_ERROR_UNINITIALIZED;
             %else:
+            if (loader::context->zeDrivers.front().zerddiInitResult == ZE_RESULT_ERROR_UNSUPPORTED_FEATURE) {
+                error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
+                return ${failure_return};
+            }
             error_state::setErrorDesc("ERROR UNINITIALIZED");
             return ${failure_return};
             %endif

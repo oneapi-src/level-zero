@@ -22,6 +22,17 @@ using namespace loader_driver_ddi;
 
 namespace loader
 {
+    __${x}dlllocal ze_result_t ${X}_APICALL
+    ${n}loaderInitDriverDDITables(loader::driver_t *driver) {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        %for tbl in th.get_pfntables(specs, meta, n, tags):
+        result = ${tbl['export']['name']}FromDriver(driver);
+        if (result != ZE_RESULT_SUCCESS) {
+            return result;
+        }
+        %endfor
+        return result;
+    }
     %for obj in th.extract_objs(specs, r"function"):
     <%
     ret_type = obj['return_type']
@@ -65,6 +76,12 @@ namespace loader
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
             %endif
+            if (!drv.handle || !drv.ddiInitialized) {
+                auto res = loader::context->init_driver( drv, flags, nullptr );
+                if (res != ZE_RESULT_SUCCESS) {
+                    continue;
+                }
+            }
         %if re.match(r"Init", obj['name']) and namespace == "zes":
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
                 drv.initSysManStatus = ZE_RESULT_ERROR_UNINITIALIZED;
@@ -90,6 +107,13 @@ namespace loader
 
         %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         uint32_t total_driver_handle_count = 0;
+        %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+        for( auto& drv : loader::context->zeDrivers ) {
+            if (!drv.handle || !drv.ddiInitialized) {
+                loader::context->init_driver( drv, 0, desc);
+            }
+        }
+        %endif
 
         {
             std::lock_guard<std::mutex> lock(loader::context->sortMutex);
@@ -122,15 +146,16 @@ namespace loader
         %endif
         {
             %if not (re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj))) and namespace != "zes":
-            if(drv.initStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
             %elif namespace == "zes":
-            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
             %else:
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
                 %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
                 drv.initDriversStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
+                result = ${X}_RESULT_ERROR_UNINITIALIZED;
                 %else:
                 drv.initStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
                 %endif
@@ -179,7 +204,8 @@ namespace loader
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
                         %if namespace != "zes":
-                        drv.zerDriverHandle = phDrivers[ driver_index ];
+                        if (drv.zerddiInitResult == ZE_RESULT_SUCCESS)
+                            drv.zerDriverHandle = phDrivers[ driver_index ];
                         if (drv.driverDDIHandleSupportQueried == false) {
                             uint32_t extensionCount = 0;
                             ze_result_t res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
@@ -513,6 +539,52 @@ ${tbl['export']['name']}Legacy()
 ///     - ::${X}_RESULT_ERROR_UNINITIALIZED
 ///     - ::${X}_RESULT_ERROR_INVALID_NULL_POINTER
 ///     - ::${X}_RESULT_ERROR_UNSUPPORTED_VERSION
+__${x}dlllocal ${x}_result_t ${X}_APICALL
+${tbl['export']['name']}FromDriver(loader::driver_t *driver)
+{
+    ${x}_result_t result = ${X}_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<${tbl['pfn']}>(
+        GET_FUNCTION_PTR( driver->handle, "${tbl['export']['name']}") );
+    if(!getTable) 
+    %if th.isNewProcTable(tbl['export']['name']) is True and namespace != "zer":
+    {
+        //It is valid to not have this proc addr table
+        return ${X}_RESULT_SUCCESS;
+    }
+    %else:
+        return driver->initStatus;
+    %endif
+    %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
+    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.${n}.${tbl['name']});
+    if(getTableResult == ZE_RESULT_SUCCESS) {
+        loader::context->configured_version = loader::context->ddi_init_version;
+    } else
+        driver->initStatus = getTableResult;
+    %if namespace != "zes":
+    %if tbl['name'] == "Global" and namespace != "zer":
+    if (driver->dditable.ze.Global.pfnInitDrivers) {
+        loader::context->initDriversSupport = true;
+    }
+    %endif
+    %endif
+    %else:
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.${n}.${tbl['name']});
+    %endif
+    return result;
+}
+%endfor
+%for tbl in th.get_pfntables(specs, meta, n, tags):
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ${tbl['name']} table
+///        with current process' addresses
+///
+/// @returns
+///     - ::${X}_RESULT_SUCCESS
+///     - ::${X}_RESULT_ERROR_UNINITIALIZED
+///     - ::${X}_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::${X}_RESULT_ERROR_UNSUPPORTED_VERSION
 ${X}_DLLEXPORT ${x}_result_t ${X}_APICALL
 ${tbl['export']['name']}(
     %for line in th.make_param_lines(n, tags, tbl['export']):
@@ -534,63 +606,26 @@ ${tbl['export']['name']}(
     if( loader::context->version < version )
         return ${X}_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    loader::context->ddi_init_version = version;
+
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
-    %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
-    bool atLeastOneDriverValid = false;
-    %endif
-    // Load the device-driver DDI tables
     %if namespace != "zes":
-    for( auto& drv : loader::context->zeDrivers )
+    auto driverCount = loader::context->zeDrivers.size();
+    auto firstDriver = &loader::context->zeDrivers[0];
     %else:
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
     %endif
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<${tbl['pfn']}>(
-            GET_FUNCTION_PTR( drv.handle, "${tbl['export']['name']}") );
-        if(!getTable) 
-        %if th.isNewProcTable(tbl['export']['name']) is True and namespace != "zer":
-        {
-            atLeastOneDriverValid = true;
-            //It is valid to not have this proc addr table
-            continue; 
-        }
-        %else:
-            continue; 
-        %endif
-        %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
-        auto getTableResult = getTable( version, &drv.dditable.${n}.${tbl['name']});
-        if(getTableResult == ZE_RESULT_SUCCESS) {
-            atLeastOneDriverValid = true;
-            loader::context->configured_version = version;
-        } else
-            drv.initStatus = getTableResult;
-        %if namespace != "zes":
-        %if tbl['name'] == "Global" and namespace != "zer":
-        if (drv.dditable.ze.Global.pfnInitDrivers) {
-            loader::context->initDriversSupport = true;
-        }
-        %endif
-        %endif
-        %else:
-        result = getTable( version, &drv.dditable.${n}.${tbl['name']});
-        %endif
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = ${tbl['export']['name']}FromDriver(firstDriver);
     }
-
-    %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
-    if(!atLeastOneDriverValid)
-        result = ${X}_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ${X}_RESULT_SUCCESS;
-    %endif
 
     if( ${X}_RESULT_SUCCESS == result )
     {
         %if namespace != "zes":
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
-        %else:
+        %elif namespace == "zes":
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         %endif
         {

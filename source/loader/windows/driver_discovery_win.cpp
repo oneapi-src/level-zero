@@ -33,16 +33,18 @@ std::vector<DriverLibraryPath> discoverEnabledDrivers() {
     // ZE_ENABLE_ALT_DRIVERS is for development/debug only
     envBufferSize = GetEnvironmentVariable("ZE_ENABLE_ALT_DRIVERS", &altDrivers[0], envBufferSize);
     if (!envBufferSize) {
+        // Standard drivers discovered from registry - not custom
         auto displayDrivers = discoverDriversBasedOnDisplayAdapters(GUID_DEVCLASS_DISPLAY);
         auto computeDrivers = discoverDriversBasedOnDisplayAdapters(GUID_DEVCLASS_COMPUTEACCELERATOR);
         enabledDrivers.insert(enabledDrivers.end(), displayDrivers.begin(), displayDrivers.end());
         enabledDrivers.insert(enabledDrivers.end(), computeDrivers.begin(), computeDrivers.end());
     } else {
+        // Alternative drivers from environment variable - these are custom
         std::stringstream ss(altDrivers.c_str());
         while (ss.good()) {
             std::string substr;
             getline(ss, substr, ',');
-            enabledDrivers.emplace_back(substr);
+            enabledDrivers.emplace_back(substr, true, ZEL_DRIVER_TYPE_FORCE_UINT32);
         }
     }
 
@@ -110,7 +112,7 @@ DriverLibraryPath readDriverPathForDisplayAdapter(DEVINST dnDevNode) {
 
     if (CR_SUCCESS != configErr) {
         assert(false && "CM_Open_DevNode_Key failed");
-        return "";
+        return DriverLibraryPath("", false);
     }
 
     DWORD regValueType = {};
@@ -133,7 +135,7 @@ DriverLibraryPath readDriverPathForDisplayAdapter(DEVINST dnDevNode) {
     regOpStatus = RegCloseKey(hkey);
     assert((ERROR_SUCCESS == regOpStatus) && "RegCloseKey failed");
 
-    return driverPath;
+    return DriverLibraryPath(driverPath, false);
 }
 
 std::wstring readDisplayAdaptersDeviceIdsList(const GUID rguid) {
@@ -193,13 +195,22 @@ std::vector<DriverLibraryPath> discoverDriversBasedOnDisplayAdapters(const GUID 
 
         auto driverPath = readDriverPathForDisplayAdapter(devinst);
 
-        if (driverPath.empty()) {
+        if (driverPath.path.empty()) {
             continue;
         }
 
-        bool alreadyOnTheList = (enabledDrivers.end() != std::find(enabledDrivers.begin(), enabledDrivers.end(), driverPath));
+        bool alreadyOnTheList = (enabledDrivers.end() != std::find_if(enabledDrivers.begin(), enabledDrivers.end(), 
+            [&driverPath](const DriverLibraryPath& d) { return d.path == driverPath.path; }));
         if (alreadyOnTheList) {
             continue;
+        }
+        driverPath.customDriver = false;
+        if (rguid == GUID_DEVCLASS_DISPLAY) {
+            driverPath.driverType = ZEL_DRIVER_TYPE_GPU;
+        } else if (rguid == GUID_DEVCLASS_COMPUTEACCELERATOR) {
+            driverPath.driverType = ZEL_DRIVER_TYPE_NPU;
+        } else {
+            driverPath.driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
         }
 
         enabledDrivers.push_back(std::move(driverPath));

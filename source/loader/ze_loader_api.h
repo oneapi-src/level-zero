@@ -28,7 +28,7 @@ zeLoaderInit();
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for verifying usable L0 Drivers for Loader to report
-///
+/// @deprecated This function is deprecated and will be removed in a future release.
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED

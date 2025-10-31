@@ -376,9 +376,22 @@ namespace driver
             ze_device_properties_t deviceProperties = {};
             deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
             deviceProperties.type = ZE_DEVICE_TYPE_GPU;
+
+            // Check compile-time definitions first
+            #ifdef ZEL_NULL_DRIVER_TYPE_NPU
+            deviceProperties.type = ZE_DEVICE_TYPE_VPU;
+            #endif
+
+            #ifdef ZEL_NULL_DRIVER_TYPE_GPU
+            deviceProperties.type = ZE_DEVICE_TYPE_GPU;
+            #endif
+
+            // Environment variable can override
             auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
             if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
                 deviceProperties.type = ZE_DEVICE_TYPE_VPU;
+            } else if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                deviceProperties.type = ZE_DEVICE_TYPE_GPU;
             }
 #if defined(_WIN32)
             strcpy_s( deviceProperties.name, "Null Device" );

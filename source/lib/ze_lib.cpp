@@ -140,7 +140,6 @@ namespace ze_lib
             return result;
         }
 
-        bool zeInitDriversSupport = true;
         ze_api_version_t current_api_version = version;
         const std::string loader_name = "loader";
         for (auto &component : versions) {
@@ -152,7 +151,6 @@ namespace ze_lib
                     if (component.component_lib_version.minor < 18) {
                         std::string message = "ze_lib Context Init() Version Does not support zeInitDrivers";
                         debug_trace_message(message, "");
-                        zeInitDriversSupport = false;
                     }
                 } else {
                     std::string message = "ze_lib Context Init() Loader version is too new, returning ";
@@ -301,76 +299,6 @@ namespace ze_lib
             #endif
         }
         // End DDI Table Inits
-
-        // Check which drivers and layers can be init on this system.
-        if( ZE_RESULT_SUCCESS == result)
-        {
-            // Check which drivers support the ze_driver_flag_t specified
-            // No need to check if only initializing sysman
-            bool requireDdiReinit = false;
-            #ifdef L0_STATIC_LOADER_BUILD
-            if (zeInitDriversSupport) {
-                typedef ze_result_t (ZE_APICALL *zelLoaderDriverCheck_t)(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
-                auto loaderDriverCheck = reinterpret_cast<zelLoaderDriverCheck_t>(
-                        GET_FUNCTION_PTR(loader, "zelLoaderDriverCheck") );
-                if (loaderDriverCheck == nullptr) {
-                    std::string message = "ze_lib Context Init() zelLoaderDriverCheck missing, returning ";
-                    debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                    return ZE_RESULT_ERROR_UNINITIALIZED;
-                }
-                result = loaderDriverCheck(flags, desc, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
-            } else {
-                typedef ze_result_t (ZE_APICALL *zelLoaderDriverCheck_t)(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
-                auto loaderDriverCheck = reinterpret_cast<zelLoaderDriverCheck_t>(
-                        GET_FUNCTION_PTR(loader, "zelLoaderDriverCheck") );
-                if (loaderDriverCheck == nullptr) {
-                    std::string message = "ze_lib Context Init() zelLoaderDriverCheck missing, returning ";
-                    debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                    return ZE_RESULT_ERROR_UNINITIALIZED;
-                }
-                result = loaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
-            }
-            #else
-            result = zelLoaderDriverCheck(flags, desc, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
-            #endif
-            if (result != ZE_RESULT_SUCCESS) {
-                std::string message = "ze_lib Context Init() zelLoaderDriverCheck failed with ";
-                debug_trace_message(message, to_string(result));
-            }
-            // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
-            if (requireDdiReinit && loaderContextAccessAllowed) {
-                // If a user has already called the core apis, then ddi table reinit is not possible due to handles already being read by the user.
-                if (!sysmanOnly && !ze_lib::context->zeInuse) {
-                    // reInit the ZE DDI Tables
-                    if( ZE_RESULT_SUCCESS == result )
-                    {
-                        result = zeDdiTableInit(version);
-                    }
-                    // reInit the ZET DDI Tables
-                    if( ZE_RESULT_SUCCESS == result )
-                    {
-                        result = zetDdiTableInit(version);
-                    }
-                    // reInit the ZER DDI Tables
-                    if (ZE_RESULT_SUCCESS == result)
-                    {
-                        result = zerDdiTableInit(version);
-                    }
-                    // If ze/zet/zer ddi tables have been reinit and no longer use the intercept layer, then handles passed to zelLoaderTranslateHandleInternal do not require translation.
-                    // Setting intercept_enabled==false changes the behavior of zelLoaderTranslateHandleInternal to avoid translation.
-                    // Translation is only required if the intercept layer is enabled for the ZE handle types.
-                    loaderContext->intercept_enabled = false;
-                }
-                // If a user has already called the zes/ze apis, then ddi table reinit is not possible due to handles already being read by the user.
-                if (!(ze_lib::context->zesInuse || ze_lib::context->zeInuse)) {
-                    // reInit the ZES DDI Tables
-                    if( ZE_RESULT_SUCCESS == result )
-                    {
-                        result = zesDdiTableInit(version);
-                    }
-                }
-            }
-        }
 
         if( ZE_RESULT_SUCCESS == result )
         {
