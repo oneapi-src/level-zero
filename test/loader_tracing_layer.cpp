@@ -955,7 +955,7 @@ namespace
     }
 
     TEST_P(TracingParameterizedTest,
-           GivenLoaderWithDynamicTracingEnabledAndZerApisUnsupportedAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenTracingWorksForZeOnly)
+           GivenLoaderWithDynamicTracingEnabledAndZerApisUnsupportedAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenTracingWorksForZeAndZerCallbacksAreStillInvoked)
     {
         putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_ZER_API=1"));
         InitMethod initMethod = GetParam();

@@ -212,7 +212,7 @@ TEST(
 
 TEST(
     LoaderInit,
-    GivenZeInitDriversUnsupportedOnTheDriverWhenCallingZeInitDriversThenUninitializedReturned) {
+    GivenZeInitDriversUnsupportedOnTheDriverWhenCallingZeInitDriversThenUnSupportedReturned) {
 
   uint32_t pInitDriversCount = 0;
   uint32_t pDriverGetCount = 0;
