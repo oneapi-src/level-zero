@@ -54,6 +54,7 @@ jobs:
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -D CMAKE_BUILD_TYPE=Release \
             -D BUILD_STATIC=0 \
+            -D BUILD_L0_LOADER_TESTS=1 \
             ..
           make -j$(nproc)
 

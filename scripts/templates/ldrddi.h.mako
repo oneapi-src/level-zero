@@ -21,6 +21,10 @@ from templates import helper as th
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
+    // Forward declaration for driver_t so this header can reference loader::driver_t*
+    // without requiring inclusion of ze_loader_internal.h (which includes this file).
+    struct driver_t;
+    ///////////////////////////////////////////////////////////////////////////////
     %for obj in th.extract_objs(specs, r"handle"):
     %if 'class' in obj:
     <%
@@ -32,6 +36,8 @@ namespace loader
 
     %endif
     %endfor
+    __${x}dlllocal ze_result_t ${X}_APICALL
+    ${n}loaderInitDriverDDITables(loader::driver_t *driver);
 }
 
 namespace loader_driver_ddi
@@ -57,6 +63,8 @@ extern "C" {
 %for tbl in th.get_pfntables(specs, meta, n, tags):
 __${x}dlllocal void ${X}_APICALL
 ${tbl['export']['name']}Legacy();
+__${x}dlllocal ze_result_t ${X}_APICALL
+${tbl['export']['name']}FromDriver(loader::driver_t *driver);
 %endfor
 
 #if defined(__cplusplus)

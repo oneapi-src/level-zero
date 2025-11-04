@@ -107,13 +107,23 @@ namespace driver
         else
         {
             // generic implementation
+            // Check compile-time definitions first
+            bool is_npu = false;
+            bool is_gpu = false;
+            #ifdef ZEL_NULL_DRIVER_TYPE_NPU
+            is_npu = true;
+            #endif
+
+            #ifdef ZEL_NULL_DRIVER_TYPE_GPU
+            is_gpu = true;
+            #endif
             auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
-            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0 || is_gpu) {
                 if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU)) {
                     return ZE_RESULT_ERROR_UNINITIALIZED;
                 }
             }
-            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0 || is_npu) {
                 if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU)) {
                     return ZE_RESULT_ERROR_UNINITIALIZED;
                 }

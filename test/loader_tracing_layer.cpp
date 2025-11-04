@@ -955,7 +955,7 @@ namespace
     }
 
     TEST_P(TracingParameterizedTest,
-           GivenLoaderWithDynamicTracingEnabledAndZerApisUnsupportedAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenTracingWorksForZeOnly)
+           GivenLoaderWithDynamicTracingEnabledAndZerApisUnsupportedAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenTracingWorksForZeAndZerCallbacksAreStillInvoked)
     {
         putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_ZER_API=1"));
         InitMethod initMethod = GetParam();
@@ -978,8 +978,9 @@ namespace
         const char *errorString = nullptr;
         ze_result_t result = zerGetLastErrorDescription(&errorString);
         EXPECT_EQ(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, result);
-        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
-        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
+        // ZER callbacks should still be called in the tracing layer even if the driver ends up not supporting ZER APIs
+        EXPECT_EQ(1, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(1, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
 
         callBasicZeApis(drivers);
         verifyBasicZeApisCalledBothCallbackTypes(1);
@@ -993,8 +994,9 @@ namespace
         errorString = nullptr;
         result = zerGetLastErrorDescription(&errorString);
         EXPECT_EQ(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, result);
-        EXPECT_EQ(0, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
-        EXPECT_EQ(0, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
+        // ZER callbacks should still be called in the tracing layer even if the driver ends up not supporting ZER APIs
+        EXPECT_EQ(2, tracingData.getZerPrologueCallCount("zerGetLastErrorDescription"));
+        EXPECT_EQ(2, tracingData.getZerEpilogueCallCount("zerGetLastErrorDescription"));
 
         uint32_t deviceCount = 1;
         std::vector<ze_device_handle_t> devices(deviceCount);

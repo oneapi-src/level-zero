@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.26.0
+* Refactor L0 Init to delay loading of driver libraries until flags match the drivers requested.
 ## v1.25.2
 * Enable support for Dynamic Tracing of zer* APIs
 * Fix issues with zer* apis during validation layer intercepts

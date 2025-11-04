@@ -15,6 +15,18 @@ if(BUILD_STATIC OR NOT WIN32)
   target_sources(tests PRIVATE driver_ordering_unit_tests.cpp)
 endif()
 
+# For builds on non-Windows platforms, include init_driver_unit_tests
+# The tests rely on ablity to locate fake drivers by specific names which is not possible on Windows.
+if(NOT WIN32)
+  target_sources(tests PRIVATE init_driver_unit_tests.cpp)
+endif()
+
+# Only build init_driver_dynamic_unit_tests for dynamic builds on non-Windows platforms
+# as it requires internal loader symbols that are not exported in Windows DLLs
+if(NOT BUILD_STATIC AND NOT WIN32)
+  target_sources(tests PRIVATE init_driver_dynamic_unit_tests.cpp)
+endif()
+
 # For static builds, we need to include the loader source files directly
 # since they are not built into the library when BUILD_STATIC=1
 if(BUILD_STATIC)
@@ -70,6 +82,37 @@ if(BUILD_STATIC)
   endif()
 endif()
 
+# Create fake driver copies for init_driver_unit_tests
+if(NOT BUILD_STATIC)
+  if(MSVC)
+    add_custom_command(TARGET tests POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ze_null>
+        $<TARGET_FILE_DIR:tests>/ze_fake_gpu.dll
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ze_null_test1>
+        $<TARGET_FILE_DIR:tests>/ze_fake_npu.dll
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ze_null_test2>
+        $<TARGET_FILE_DIR:tests>/ze_fake_vpu.dll
+      COMMENT "Copying null drivers to fake driver names for init_driver_unit_tests"
+    )
+  else()
+    add_custom_command(TARGET tests POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/lib/libze_null.so.1
+        ${CMAKE_BINARY_DIR}/lib/libze_fake_gpu.so.1
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/lib/libze_null_test1.so.1
+        ${CMAKE_BINARY_DIR}/lib/libze_fake_npu.so.1
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/lib/libze_null_test2.so.1
+        ${CMAKE_BINARY_DIR}/lib/libze_fake_vpu.so.1
+      COMMENT "Copying null drivers to fake driver names for init_driver_unit_tests"
+    )
+  endif()
+endif()
+
 add_test(NAME tests_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeGetLoaderVersionsAPIThenValidVersionIsReturned*)
 set_property(TEST tests_api PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 add_test(NAME tests_init_gpu_all COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithGPUTypeThenExpectPassWithGPUorAllOnly*)
@@ -90,7 +133,7 @@ add_test(NAME tests_both_gpu COMMAND tests --gtest_filter=*GivenLevelZeroLoaderP
 set_property(TEST tests_both_gpu PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 add_test(NAME tests_both_npu COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenBothCallsSucceedWithNPUTypes*)
 set_property(TEST tests_both_npu PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
-add_test(NAME tests_missing_api COMMAND tests --gtest_filter=*GivenZeInitDriversUnsupportedOnTheDriverWhenCallingZeInitDriversThenUninitializedReturned*)
+add_test(NAME tests_missing_api COMMAND tests --gtest_filter=*GivenZeInitDriversUnsupportedOnTheDriverWhenCallingZeInitDriversThenUnSupportedReturned*)
 set_property(TEST tests_missing_api PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 add_test(NAME tests_multi_call_failure COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithTypesUnsupportedWithFailureThenSupportedTypesThenSuccessReturned*)
 set_property(TEST tests_multi_call_failure PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
@@ -382,8 +425,8 @@ foreach(test_name IN ITEMS
   set_property(TEST ${test_name}_alt_drivers APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;${ALT_DRIVERS_ENV}")
 endforeach()
 
-add_test(NAME tests_sigle_driver_sysman_vf_management_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
-set_property(TEST tests_sigle_driver_sysman_vf_management_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+add_test(NAME tests_single_driver_sysman_vf_management_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_sysman_vf_management_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 
 add_test(NAME tests_multi_driver_sysman_vf_management_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
 if (MSVC)
@@ -597,6 +640,15 @@ set_property(TEST driver_ordering_trim_function PROPERTY ENVIRONMENT "ZE_ENABLE_
 add_test(NAME driver_ordering_parse_driver_order COMMAND tests --gtest_filter=DriverOrderingHelperFunctionsTest.ParseDriverOrder_*)
 set_property(TEST driver_ordering_parse_driver_order PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
+# Init Driver Unit Tests
+add_test(NAME init_driver_unit_tests COMMAND tests --gtest_filter=InitDriverUnitTest.*)
+if (MSVC)
+  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;")
+elseif(NOT BUILD_STATIC)
+  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib_fake:${CMAKE_BINARY_DIR}/lib/")
+else()
+  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;")
+endif()
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)
@@ -700,7 +752,7 @@ set_property(TEST test_ze_and_zer_tracing_static PROPERTY ENVIRONMENT "ZE_ENABLE
 add_test(NAME test_ze_and_zer_tracing_dynamic COMMAND tests --gtest_filter=*TracingParameterizedTest*GivenLoaderWithDynamicTracingEnabledAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenBothAreTraced*)
 set_property(TEST test_ze_and_zer_tracing_dynamic PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 
-add_test(NAME test_zer_unsupported_and_ze_tracing_dynamic COMMAND tests --gtest_filter=*TracingParameterizedTest*GivenLoaderWithDynamicTracingEnabledAndZerApisUnsupportedAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenTracingWorksForZeOnly*)
+add_test(NAME test_zer_unsupported_and_ze_tracing_dynamic COMMAND tests --gtest_filter=*TracingParameterizedTest*GivenLoaderWithDynamicTracingEnabledAndZerApisUnsupportedAndBothZeAndZerCallbacksRegisteredWhenCallingBothApisThenTracingWorksForZeAndZerCallbacksAreStillInvoked*)
 set_property(TEST test_zer_unsupported_and_ze_tracing_dynamic PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 
 # ZER API Validation Layer Tests
