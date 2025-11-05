@@ -235,7 +235,7 @@ namespace loader
         }
 
         // Replace the original driver vector with the ordered one
-        *drivers = orderedDrivers;
+        *drivers = std::move(orderedDrivers);
 
         if (debugTraceEnabled) {
             std::string message = "driverOrdering: Drivers after ZEL_DRIVERS_ORDER:";
@@ -676,7 +676,7 @@ namespace loader
             }
         }
 
-        for( auto driverInfo : discoveredDrivers )
+        for( const auto& driverInfo : discoveredDrivers )
         {
             if (discoveredDrivers.size() == 1) {
                 auto handle = LOAD_DRIVER_LIBRARY( driverInfo.path.c_str() );
