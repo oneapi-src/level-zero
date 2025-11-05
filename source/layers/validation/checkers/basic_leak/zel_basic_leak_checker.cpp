@@ -309,7 +309,7 @@ namespace validation_layer
             std::cerr << " \\--->";
 
             for (size_t i = 0; i < dtors.size(); i++) {
-                auto name = dtors[i];
+                const auto& name = dtors[i];
                 auto zeCount = counts[name].load();
                 diff -= zeCount;
 
