@@ -92,6 +92,19 @@ zelLoaderGetVersionsInternal(
     return ZE_RESULT_SUCCESS;
 }
 
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderGetVersion(zel_component_version_t *version)
+{
+    if(version == nullptr)
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+    string_copy_s(version->component_name, "loader", ZEL_COMPONENT_STRING_SIZE);
+    version->spec_version = ZE_API_VERSION_CURRENT;
+    version->component_lib_version.major = LOADER_VERSION_MAJOR;
+    version->component_lib_version.minor = LOADER_VERSION_MINOR;
+    version->component_lib_version.patch = LOADER_VERSION_PATCH;
+
+    return ZE_RESULT_SUCCESS;
+}
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelLoaderTranslateHandleInternal(

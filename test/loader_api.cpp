@@ -93,6 +93,163 @@ TEST(
 }
 
 TEST(
+    LoaderVersionAPI,
+    GivenLoaderWhenCallingzelGetLoaderVersionAfterInitThenValidVersionIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+
+  zel_component_version_t version = {};
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version));
+
+  // Verify component name is "loader"
+  EXPECT_STREQ(version.component_name, "loader");
+
+  // Verify spec version is valid (current API version)
+  EXPECT_GT(version.spec_version, 0);
+
+  // Verify library version components are valid
+  EXPECT_GE(version.component_lib_version.major, 0);
+  EXPECT_GE(version.component_lib_version.minor, 0);
+  EXPECT_GE(version.component_lib_version.patch, 0);
+}
+
+TEST(
+    LoaderVersionAPI,
+    GivenLoaderWhenCallingzelGetLoaderVersionWithNullPointerThenErrorIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+
+  EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_POINTER, zelGetLoaderVersion(nullptr));
+}
+
+TEST(
+    LoaderVersionAPI,
+    GivenLoaderWhenCallingzelGetLoaderVersionWithoutInitThenCorrectResultIsReturned) {
+
+  zel_component_version_t version = {};
+
+#ifdef L0_STATIC_LOADER_BUILD
+  // Static build: requires initialization
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zelGetLoaderVersion(&version));
+#else
+  // Dynamic build: works without initialization
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version));
+
+  EXPECT_STREQ(version.component_name, "loader");
+  EXPECT_GT(version.spec_version, 0);
+  EXPECT_GE(version.component_lib_version.major, 0);
+  EXPECT_GE(version.component_lib_version.minor, 0);
+  EXPECT_GE(version.component_lib_version.patch, 0);
+#endif
+}
+
+TEST(
+    LoaderVersionAPI,
+    GivenLoaderWhenCallingzelGetLoaderVersionBeforeAndAfterInitThenCorrectResultIsReturned) {
+
+  // Get version before initialization
+  zel_component_version_t version_before = {};
+
+#ifdef L0_STATIC_LOADER_BUILD
+  // Static build: should fail before init
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zelGetLoaderVersion(&version_before));
+#else
+  // Dynamic build: should work before init
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version_before));
+#endif
+
+  // Initialize drivers
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+
+  // Get version after initialization
+  zel_component_version_t version_after = {};
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version_after));
+
+#ifndef L0_STATIC_LOADER_BUILD
+  // Dynamic build: verify both versions match
+  EXPECT_STREQ(version_before.component_name, version_after.component_name);
+  EXPECT_EQ(version_before.spec_version, version_after.spec_version);
+  EXPECT_EQ(version_before.component_lib_version.major, version_after.component_lib_version.major);
+  EXPECT_EQ(version_before.component_lib_version.minor, version_after.component_lib_version.minor);
+  EXPECT_EQ(version_before.component_lib_version.patch, version_after.component_lib_version.patch);
+#endif
+}
+
+TEST(
+    LoaderVersionAPI,
+    GivenLoaderWhenCallingzelGetLoaderVersionMultipleTimesThenConsistentVersionIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+
+  zel_component_version_t version1 = {};
+  zel_component_version_t version2 = {};
+
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version1));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version2));
+
+  // Verify both calls return the same version
+  EXPECT_STREQ(version1.component_name, version2.component_name);
+  EXPECT_EQ(version1.spec_version, version2.spec_version);
+  EXPECT_EQ(version1.component_lib_version.major, version2.component_lib_version.major);
+  EXPECT_EQ(version1.component_lib_version.minor, version2.component_lib_version.minor);
+  EXPECT_EQ(version1.component_lib_version.patch, version2.component_lib_version.patch);
+}
+
+TEST(
+    LoaderVersionAPI,
+    GivenLoaderWhenComparingzelGetLoaderVersionWithzelLoaderGetVersionsThenVersionsMatch) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+
+  // Get version via zelGetLoaderVersion
+  zel_component_version_t single_version = {};
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&single_version));
+
+  // Get versions via zelLoaderGetVersions
+  size_t size = 0;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelLoaderGetVersions(&size, nullptr));
+  EXPECT_GT(size, 0);
+
+  std::vector<zel_component_version_t> versions(size);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelLoaderGetVersions(&size, versions.data()));
+
+  // Find the loader component in the versions array
+  bool found_loader = false;
+  for (const auto &component : versions) {
+    if (strcmp(component.component_name, "loader") == 0) {
+      found_loader = true;
+      // Verify both APIs return the same version info
+      EXPECT_EQ(single_version.spec_version, component.spec_version);
+      EXPECT_EQ(single_version.component_lib_version.major, component.component_lib_version.major);
+      EXPECT_EQ(single_version.component_lib_version.minor, component.component_lib_version.minor);
+      EXPECT_EQ(single_version.component_lib_version.patch, component.component_lib_version.patch);
+      break;
+    }
+  }
+  EXPECT_TRUE(found_loader) << "Loader component not found in zelLoaderGetVersions output";
+}
+
+TEST(
     LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithTypesUnsupportedWithFailureThenSupportedTypesThenSuccessReturned) {
 
