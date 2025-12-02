@@ -135,6 +135,28 @@ zelRegisterTeardownCallback(
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelDisableTracingLayer();
 
+/**
+ * @brief Retrieves the current enabled state of the Level Zero tracing layer.
+ *
+ * This function queries whether the tracing layer is active and writes the result
+ * to the provided boolean pointer.
+ *
+ * @param enabled
+ *        Pointer to a boolean that will be set to true if the tracing layer is
+ *        currently enabled, or false if it is disabled. Must be a valid, non-null
+ *        pointer.
+ *
+ * @return
+ *        ZE_RESULT_SUCCESS on success.
+ *        ZE_RESULT_ERROR_INVALID_NULL_POINTER if `enabled` is null.
+ *        Other ze_result_t error codes may be returned for implementation-specific failures.
+ *
+ * @note The tracing layer state is global to the process. The function is read-only
+ *       and thread-safe; multiple callers can query the state concurrently.
+ */
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelGetTracingLayerState(bool* enabled); // Pointer to bool to receive tracing layer state
+
 #if defined(__cplusplus)
 } // extern "C"
 #endif
