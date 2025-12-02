@@ -50,3 +50,17 @@ Disables the tracing layer intercepts at runtime by restoring the previous call 
 This does not unload the tracing layer library such that one can call `zelEnableTracingLayer` and `zelDisableTracingLayer` as many times one needs to during the application.
 
 NOTE: The each call to `zelEnableTracingLayer` tracks a reference count of how many calls to enable have been seen. The Tracing Layer intercepts will not be removed until the reference count has reached 0 indicating that all users of the tracing layer have called `zelDisableTracingLayer`.
+
+### zelGetTracingLayerState
+
+Queries the current enabled state of the tracing layer at runtime.
+
+This function allows applications to check whether the tracing layer is currently active, returning the state through a boolean pointer.
+
+- __*enabled__  Pointer to a boolean that will be set to `true` if the tracing layer is currently enabled, or `false` if it is disabled.
+
+The function returns:
+- `ZE_RESULT_SUCCESS` on successful query
+- `ZE_RESULT_ERROR_INVALID_NULL_POINTER` if the `enabled` pointer is null
+
+This is a read-only, thread-safe operation that can be called multiple times concurrently. The tracing layer state is global to the process and reflects the current reference count maintained by `zelEnableTracingLayer` and `zelDisableTracingLayer` - the layer is considered enabled when the reference count is greater than zero.
