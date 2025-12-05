@@ -389,6 +389,22 @@ zelLoaderGetVersions(
 #endif
 }
 
+ze_result_t ZE_APICALL
+zelGetLoaderVersion(
+   zel_component_version_t *version)     //Pointer to version structure to be filled with loader version information
+{
+#ifdef L0_STATIC_LOADER_BUILD
+    if(!ze_lib::context || nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelLoaderGetVersion_t)(zel_component_version_t *version);
+    auto getVersion = reinterpret_cast<zelLoaderGetVersion_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelLoaderGetVersion") );
+    return getVersion(version);
+#else
+    return zelLoaderGetVersion(version);
+#endif
+}
+
 
 ze_result_t ZE_APICALL
 zelLoaderTranslateHandle(
