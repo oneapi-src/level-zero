@@ -22,6 +22,7 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZEL_ENABLE_BASIC_LEAK_CHECKER`
 - `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
 - `ZEL_ENABLE_CERTIFICATION_CHECKER`
+- `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER`
 
 ## Validation Modes
 
@@ -89,6 +90,40 @@ Validates:
 When this mode is enabled, the certification checker validates API usage against the version supported by the driver or an explicitly specified version.
 If an API is used that was introduced in a version higher than the supported version, the checker will return `ZE_RESULT_ERROR_UNSUPPORTED_VERSION`.
 
+### `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER` (Linux Only)
+
+The System Resource Tracker monitors both Level Zero API resources and system resources in real-time. It tracks:
+
+- **L0 Resources**: Contexts, command queues, modules, kernels, event pools, command lists, events, fences, images, samplers, and memory allocations
+- **System Metrics**: Virtual memory (VmSize, VmRSS, VmData, VmPeak), thread count, file descriptors
+- **Deltas**: Resource changes for each API call
+- **Cumulative Totals**: Running summaries of all resource types
+
+The tracker can log to the Level Zero debug log and optionally export data to CSV for graphing and analysis:
+
+```bash
+export ZE_ENABLE_VALIDATION_LAYER=1
+export ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER=1
+export ZEL_SYSTEM_RESOURCE_TRACKER_CSV=tracker_output.csv  # Optional: enable CSV export
+export ZEL_ENABLE_LOADER_LOGGING=1
+export ZEL_LOADER_LOGGING_LEVEL=debug
+```
+
+**CSV Output Features:**
+- Per-process unique filenames (PID appended automatically)
+- 22 columns of metrics including timestamps, system resources, L0 resource counts, and deltas
+- Atomic line writes for thread safety
+- Companion Python plotting script (`scripts/plot_resource_tracker.py`) for visualization
+
+**Use Cases:**
+- Performance analysis and memory leak detection
+- Resource lifecycle tracking and optimization
+- Debugging and benchmarking
+- CI/CD integration for automated resource monitoring
+
+**Platform Support:** This checker is Linux-only and uses `/proc/self/status` for system metrics. It is automatically excluded from Windows and macOS builds.
+
+See [System Resource Tracker documentation](checkers/system_resource_tracker/system_resource_tracker.md) for detailed usage and CSV format.
 
 ## Testing
 
