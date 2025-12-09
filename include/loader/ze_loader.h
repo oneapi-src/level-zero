@@ -78,10 +78,10 @@ zelLoaderGetVersions(
  * version details (e.g., major, minor, patch), allowing applications to
  * query and validate the loader's compatibility at runtime.
  *
- * Does not require zeInitDrivers to be called prior to invocation unless the
- * application is using a static build of the loader.
+ * Does not require zeInit() or zeInitDrivers() to be called prior to invocation.
+ * Works with both static and dynamic loader builds without initialization.
  *
- * Thread-safety: This function is typically safe to call from multiple threads.
+ * Thread-safety: This function is safe to call from multiple threads.
  * The implementation does not modify global state other than filling the
  * supplied version structure.
  *
@@ -92,8 +92,8 @@ zelLoaderGetVersions(
  * @return
  *   - ZE_RESULT_SUCCESS on successful retrieval of the loader version.
  *   - ZE_RESULT_ERROR_INVALID_NULL_POINTER if version is nullptr.
- *   - ZE_RESULT_ERROR_UNINITIALIZED if the loader is not properly initialized.
- *     NOTE: this error only occurs with a static loader build.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if the loader library cannot be found or loaded
+ *     (only possible in static builds with misconfigured library paths).
  *   - Other ze_result_t error codes on failure conditions as defined by the API.
  *
  * @note The caller owns the memory for the version structure and must ensure

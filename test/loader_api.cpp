@@ -136,11 +136,7 @@ TEST(
 
   zel_component_version_t version = {};
 
-#ifdef L0_STATIC_LOADER_BUILD
-  // Static build: requires initialization
-  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zelGetLoaderVersion(&version));
-#else
-  // Dynamic build: works without initialization
+  // Both static and dynamic builds: works without initialization
   EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version));
 
   EXPECT_STREQ(version.component_name, "loader");
@@ -148,7 +144,6 @@ TEST(
   EXPECT_GE(version.component_lib_version.major, 0);
   EXPECT_GE(version.component_lib_version.minor, 0);
   EXPECT_GE(version.component_lib_version.patch, 0);
-#endif
 }
 
 TEST(
@@ -158,13 +153,8 @@ TEST(
   // Get version before initialization
   zel_component_version_t version_before = {};
 
-#ifdef L0_STATIC_LOADER_BUILD
-  // Static build: should fail before init
-  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zelGetLoaderVersion(&version_before));
-#else
-  // Dynamic build: should work before init
+  // Both static and dynamic builds: should work before init
   EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version_before));
-#endif
 
   // Initialize drivers
   uint32_t pCount = 0;
@@ -177,14 +167,12 @@ TEST(
   zel_component_version_t version_after = {};
   EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetLoaderVersion(&version_after));
 
-#ifndef L0_STATIC_LOADER_BUILD
-  // Dynamic build: verify both versions match
+  // Verify both versions match
   EXPECT_STREQ(version_before.component_name, version_after.component_name);
   EXPECT_EQ(version_before.spec_version, version_after.spec_version);
   EXPECT_EQ(version_before.component_lib_version.major, version_after.component_lib_version.major);
   EXPECT_EQ(version_before.component_lib_version.minor, version_after.component_lib_version.minor);
   EXPECT_EQ(version_before.component_lib_version.patch, version_after.component_lib_version.patch);
-#endif
 }
 
 TEST(
