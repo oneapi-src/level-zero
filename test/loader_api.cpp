@@ -556,6 +556,221 @@ TEST(
   EXPECT_FALSE(zelCheckIsLoaderInTearDown());
 }
 
+TEST(
+  TracingLayerState,
+  GivenNullPointerWhenCallingzelGetTracingLayerStateThenErrorInvalidNullPointerIsReturned) {
+
+  EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_POINTER, zelGetTracingLayerState(nullptr));
+}
+
+TEST(
+  TracingLayerState,
+  GivenValidPointerWhenCallingzelGetTracingLayerStateThenSuccessIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+}
+
+TEST(
+  TracingLayerState,
+  GivenTracingLayerNotEnabledWhenCallingzelGetTracingLayerStateThenFalseIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  bool enabled = true;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_FALSE(enabled);
+}
+
+TEST(
+  TracingLayerState,
+  GivenTracingLayerEnabledWhenCallingzelGetTracingLayerStateThenTrueIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+}
+
+TEST(
+  TracingLayerState,
+  GivenTracingLayerEnabledThenDisabledWhenCallingzelGetTracingLayerStateThenFalseIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  enabled = true;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_FALSE(enabled);
+}
+
+TEST(
+  TracingLayerState,
+  GivenMultipleEnableCallsWhenCallingzelGetTracingLayerStateThenTrueIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+}
+
+TEST(
+  TracingLayerState,
+  GivenMultipleEnableAndPartialDisableWhenCallingzelGetTracingLayerStateThenTrueIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  enabled = true;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_FALSE(enabled);
+}
+
+TEST(
+  TracingLayerState,
+  GivenMultipleCallsTozelGetTracingLayerStateWhenTracingEnabledThenAllReturnTrue) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  bool enabled1 = false, enabled2 = false, enabled3 = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled1));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled2));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled3));
+  EXPECT_TRUE(enabled1);
+  EXPECT_TRUE(enabled2);
+  EXPECT_TRUE(enabled3);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+}
+
+TEST(
+  TracingLayerState,
+  GivenMultipleCallsTozelGetTracingLayerStateWhenTracingDisabledThenAllReturnFalse) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  bool enabled1 = true, enabled2 = true, enabled3 = true;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled1));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled2));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled3));
+  EXPECT_FALSE(enabled1);
+  EXPECT_FALSE(enabled2);
+  EXPECT_FALSE(enabled3);
+}
+
+TEST(
+  TracingLayerState,
+  GivenTracingLayerEnabledViaEnvironmentWhenCallingzelGetTracingLayerStateThenTrueIsReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  putenv_safe( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+}
+
+TEST(
+  TracingLayerState,
+  GivenTracingLayerEnabledViaEnvironmentWhenCallingzelEnableTracingLayerThenStateRemainsTrue) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  putenv_safe( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+}
+
+TEST(
+  TracingLayerState,
+  GivenTracingLayerEnabledViaEnvironmentAndDynamicallyWhenDisablingDynamicTracingThenStateRemainsTrue) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  putenv_safe( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelEnableTracingLayer());
+  bool enabled = false;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelDisableTracingLayer());
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelGetTracingLayerState(&enabled));
+  EXPECT_TRUE(enabled);
+}
+
+
+
 class CaptureOutput {
 private:
     int original_fd;

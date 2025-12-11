@@ -636,6 +636,36 @@ zelEnableTracingLayer()
 }
 
 ze_result_t ZE_APICALL
+zelGetTracingLayerState
+(
+    bool* enabled // Pointer to bool to receive tracing layer state
+)
+{
+    if (enabled == nullptr) {
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+    }
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelGetTracingLayerStateInternal_t)(bool* enabled);
+    auto getDynamicTracingState = reinterpret_cast<zelGetTracingLayerStateInternal_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelGetTracingLayerState") );
+    return getDynamicTracingState(enabled);
+    #else
+    if (ze_lib::context->dynamicTracingSupported == false) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    if (loader::context) {
+        *enabled = loader::context->tracingLayerEnabled;
+    }
+    if (!*enabled) {
+        *enabled = (ze_lib::context->tracingLayerEnableCounter.load() > 0);
+    }
+    #endif
+    return ZE_RESULT_SUCCESS;
+}
+
+ze_result_t ZE_APICALL
 zelDisableTracingLayer()
 {
     #ifdef L0_STATIC_LOADER_BUILD
