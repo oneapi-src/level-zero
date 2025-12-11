@@ -3,3 +3,8 @@ add_subdirectory(certification)
 add_subdirectory(events_checker)
 add_subdirectory(parameter_validation)
 add_subdirectory(template)
+
+# System resource tracker is Linux-only (uses /proc/self/status)
+if(UNIX AND NOT APPLE)
+    add_subdirectory(system_resource_tracker)
+endif()
