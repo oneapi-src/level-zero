@@ -293,7 +293,7 @@ namespace validation_layer
             auto &dtors = s.dtors;
             int64_t diff = 0;
             for (size_t i = 0; i < ctors.size(); i++) {
-                auto name = ctors[i];
+                const auto& name = ctors[i];
                 auto zeCount = counts[name].load();
                 diff += zeCount;
 
