@@ -9,6 +9,25 @@ This document does not cover APIs specific to individual layers (ie. tracing) or
 
 Exposed Loader APIs will be defined in header files located in this repository at `include/loader`, and installed to `<prefix>/include/level_zero/loader`
 
+### zelGetLoaderVersion
+
+This API is used to retrieve the version information of the loader itself. Unlike `zelLoaderGetVersions`, this API provides a simplified interface to get only the loader's version without needing to query all components.
+
+- __*version__ Pointer to a `zel_component_version_t` structure that will be filled with the loader's version information. Must be a valid, non-null pointer.
+
+This function:
+- Returns `ZE_RESULT_SUCCESS` on successful retrieval of the loader version
+- Returns `ZE_RESULT_ERROR_INVALID_NULL_POINTER` if `version` is `nullptr`
+- Returns `ZE_RESULT_ERROR_UNINITIALIZED` if the loader library cannot be found or loaded (only possible in static builds with misconfigured library paths)
+- Does not require `zeInit()` or `zeInitDrivers()` to be called prior to invocation
+- Works with both static and dynamic loader builds without initialization
+- Is thread-safe and can be called from multiple threads
+
+The returned `zel_component_version_t` structure contains:
+- `component_name`: Set to `"loader"`
+- `spec_version`: The Level Zero API specification version (`ZE_API_VERSION_CURRENT`)
+- `component_lib_version`: The loader library version with `major`, `minor`, and `patch` fields
+
 ###  zelLoaderGetVersions
 
 This API is used to retreive the version information of the loader itself and of any layers that are enabled.
@@ -64,3 +83,4 @@ The function returns:
 - `ZE_RESULT_ERROR_INVALID_NULL_POINTER` if the `enabled` pointer is null
 
 This is a read-only, thread-safe operation that can be called multiple times concurrently. The tracing layer state is global to the process and reflects the current reference count maintained by `zelEnableTracingLayer` and `zelDisableTracingLayer` - the layer is considered enabled when the reference count is greater than zero.
+
