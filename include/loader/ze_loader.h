@@ -34,10 +34,74 @@ extern "C" {
 } zel_component_version_t; 
 
 
+/**
+ * @brief Retrieves version information for all components of the Level Zero loader.
+ *
+ * This function returns the versions of all loader components. It requires that
+ * the driver initialization routine has been called prior to use.
+ *
+ * Preconditions:
+ * - `zeInitDrivers()` must be successfully invoked before calling this function.
+ *
+ * Usage:
+ * - If `versions` is `NULL`, the function writes the number of available component
+ *   versions to `*num_elems` and returns.
+ * - If `versions` is non-NULL, provide an array large enough to hold `*num_elems`
+ *   entries; the function fills the array with the versions of all loader components.
+ *
+ * @param[out] num_elems
+ *   Pointer to a size_t that receives the number of available component version entries.
+ *   When `versions` is non-NULL, on success it may be updated to reflect the number
+ *   of entries written.
+ *
+ * @param[out] versions
+ *   Pointer to an array of `zel_component_version_t` to be filled with version data.
+ *   If set to `NULL`, no version data is returned and only `*num_elems` is populated.
+ *
+ * @return ze_result_t
+ *   - `ZE_RESULT_SUCCESS` on successful retrieval.
+ *   - `ZE_RESULT_ERROR_UNINITIALIZED` if `zeInitDrivers()` was not called.
+ *   - `ZE_RESULT_ERROR_INVALID_NULL_POINTER` if required pointers are `NULL`.
+ *   - `ZE_RESULT_ERROR_INVALID_SIZE` if the provided array is too small.
+ *   - Other `ze_result_t` error codes as appropriate.
+ */
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zelLoaderGetVersions(
    size_t *num_elems,                     //Pointer to num versions to get.  
    zel_component_version_t *versions);    //Pointer to array of versions. If set to NULL, num_elems is returned
+
+
+/**
+ * @brief Retrieves the Level Zero loader's version information.
+ *
+ * Populates the provided zel_component_version_t structure with the loader's
+ * version details (e.g., major, minor, patch), allowing applications to
+ * query and validate the loader's compatibility at runtime.
+ *
+ * Does not require zeInit() or zeInitDrivers() to be called prior to invocation.
+ * Works with both static and dynamic loader builds without initialization.
+ *
+ * Thread-safety: This function is safe to call from multiple threads.
+ * The implementation does not modify global state other than filling the
+ * supplied version structure.
+ *
+ * @param[out] version
+ *   Pointer to a zel_component_version_t structure that will be filled with
+ *   the loader's version information. Must be a valid, non-null pointer.
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS on successful retrieval of the loader version.
+ *   - ZE_RESULT_ERROR_INVALID_NULL_POINTER if version is nullptr.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if the loader library cannot be found or loaded
+ *     (only possible in static builds with misconfigured library paths).
+ *   - Other ze_result_t error codes on failure conditions as defined by the API.
+ *
+ * @note The caller owns the memory for the version structure and must ensure
+ *       it remains valid for the duration of the call.
+ */
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelGetLoaderVersion(zel_component_version_t *version
+);
 
 typedef enum _zel_handle_type_t {
    ZEL_HANDLE_DRIVER,

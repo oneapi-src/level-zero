@@ -389,6 +389,54 @@ zelLoaderGetVersions(
 #endif
 }
 
+ze_result_t ZE_APICALL
+zelGetLoaderVersion(
+   zel_component_version_t *version)     //Pointer to version structure to be filled with loader version information
+{
+#ifdef L0_STATIC_LOADER_BUILD
+    // zelLoaderGetVersion doesn't require initialization, so we can load the library temporarily if needed
+    HMODULE loaderHandle = nullptr;
+    bool temporaryLoad = false;
+
+    if(ze_lib::context && ze_lib::context->loader) {
+        // Use existing loader
+        loaderHandle = ze_lib::context->loader;
+    } else {
+        // Temporarily load the loader library to get version info
+        std::string loaderLibraryPath;
+        auto loaderLibraryPathEnv = getenv_string("ZEL_LIBRARY_PATH");
+        if (!loaderLibraryPathEnv.empty()) {
+            loaderLibraryPath = loaderLibraryPathEnv;
+        }
+#ifdef _WIN32
+        else {
+            loaderLibraryPath = readLevelZeroLoaderLibraryPath();
+        }
+#endif
+        std::string loaderFullLibraryPath = create_library_path(MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION), loaderLibraryPath.c_str());
+        loaderHandle = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
+        if (nullptr == loaderHandle) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        temporaryLoad = true;
+    }
+
+    typedef ze_result_t (ZE_APICALL *zelLoaderGetVersion_t)(zel_component_version_t *version);
+    auto getVersion = reinterpret_cast<zelLoaderGetVersion_t>(
+            GET_FUNCTION_PTR(loaderHandle, "zelLoaderGetVersion") );
+    ze_result_t result = getVersion(version);
+
+    // Clean up temporary load
+    if (temporaryLoad && loaderHandle) {
+        FREE_DRIVER_LIBRARY(loaderHandle);
+    }
+
+    return result;
+#else
+    return zelLoaderGetVersion(version);
+#endif
+}
+
 
 ze_result_t ZE_APICALL
 zelLoaderTranslateHandle(
