@@ -46,7 +46,7 @@ export ZEL_LOADER_LOGGING_LEVEL=debug
 
 ### CSV Output for Graphing
 
-Set the `ZEL_SYSTEM_RESOURCE_TRACKER_CSV` environment variable to specify the output CSV file path:
+Set the `ZEL_SYSTEM_RESOURCE_TRACKER_CSV` environment variable to specify the output CSV file path, this path will be relative to the current working directory of the application:
 
 ```bash
 export ZE_ENABLE_VALIDATION_LAYER=1
