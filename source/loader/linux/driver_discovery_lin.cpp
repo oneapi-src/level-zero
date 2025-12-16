@@ -46,10 +46,29 @@ static std::vector<std::string> getLibrarySearchPaths() {
     auto split = splitPaths(ldLibPath);
     paths.insert(paths.end(), split.begin(), split.end());
   }
-  // Standard locations
+  // Standard locations - Common across all Linux distributions
   paths.push_back("/lib");
   paths.push_back("/usr/lib");
   paths.push_back("/usr/local/lib");
+
+  // Multi-arch paths for Ubuntu/Debian
+  paths.push_back("/lib/x86_64-linux-gnu");
+  paths.push_back("/usr/lib/x86_64-linux-gnu");
+  paths.push_back("/lib/i386-linux-gnu");
+  paths.push_back("/usr/lib/i386-linux-gnu");
+  paths.push_back("/lib/aarch64-linux-gnu");
+  paths.push_back("/usr/lib/aarch64-linux-gnu");
+
+  // 64-bit library paths for RHEL/CentOS/Fedora
+  paths.push_back("/lib64");
+  paths.push_back("/usr/lib64");
+  paths.push_back("/usr/local/lib64");
+
+  // Flatpak/Snap paths for containerized applications
+  paths.push_back("/var/lib/flatpak/runtime");
+  paths.push_back("/snap/core/current/lib");
+  paths.push_back("/snap/core/current/usr/lib");
+
   // /etc/ld.so.conf and included files
   std::ifstream ldSoConf("/etc/ld.so.conf");
   if (ldSoConf) {

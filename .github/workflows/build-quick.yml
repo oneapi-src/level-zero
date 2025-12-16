@@ -10,27 +10,62 @@ permissions: read-all
 jobs:
   build-linux:
     if: github.repository_owner == 'oneapi-src'
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          - ubuntu:22.04
+          - ubuntu:24.04
+          - redhat/ubi9:latest
+    container:
+      image: ${{ matrix.container }}
     steps:
+      - name: Install dependencies
+        run: |
+          if [ -f /etc/redhat-release ]; then
+            # RHEL/UBI-based system
+            yum install -y gcc gcc-c++ cmake make git
+          else
+            # Ubuntu-based system
+            apt-get update
+            apt-get install -y build-essential cmake git
+          fi
       - uses: actions/checkout@v3
-      - uses: hendrikmuhs/ccache-action@v1
-      - name: Build Loader on Latest Ubuntu
+      - name: Build Loader on ${{ matrix.container }}
         run: |
           mkdir build
           cd build
           cmake \
-            -D CMAKE_C_COMPILER_LAUNCHER=ccache \
-            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -D CMAKE_BUILD_TYPE=Release \
             -D BUILD_L0_LOADER_TESTS=1 \
+            -D INSTALL_NULL_DRIVER=1 \
             ..
           make -j$(nproc)
       - env:
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/lib'
         working-directory: build
         run: ctest -V
-      - working-directory: build
-        run: sudo make install
+      - name: Install loader and NULL driver
+        working-directory: build
+        run: make install
+      - name: Update library cache
+        run: ldconfig
+      - name: Test installed loader with zello_world and NULL driver
+        working-directory: build
+        run: |
+          
+          # Set up environment for NULL driver
+          export ZE_ENABLE_NULL_DRIVER=1
+          export ZE_ENABLE_LOADER_DEBUG_TRACE=1
+          
+          # Run zello_world with NULL driver
+          ./bin/zello_world
+          
+          echo "✓ zello_world ran successfully with installed loader and NULL driver"
+      - name: Uninstall loader
+        working-directory: build
+        run: make uninstall || xargs rm -v < install_manifest.txt
 
   build-windows:
     if: github.repository_owner == 'oneapi-src'

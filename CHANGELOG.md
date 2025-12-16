@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.26.2
+* fix: fix Driver Search Paths for all Linux Distros
 ## v1.26.1
 * fix: Init DDI Tables during constructor
 ## v1.26.0
