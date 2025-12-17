@@ -19,6 +19,18 @@ from templates import helper as th
  *
  */
 #include "${x}_validation_layer.h"
+#include <sstream>
+
+// Define a macro for marking potentially unused functions
+#if defined(_MSC_VER)
+    // MSVC doesn't support __attribute__((unused)), just omit the marking
+    #define VALIDATION_MAYBE_UNUSED
+#elif defined(__GNUC__) || defined(__clang__)
+    // GCC and Clang support __attribute__((unused))
+    #define VALIDATION_MAYBE_UNUSED __attribute__((unused))
+#else
+    #define VALIDATION_MAYBE_UNUSED
+#endif
 
 namespace validation_layer
 {
@@ -33,12 +45,68 @@ namespace validation_layer
     );
 
 %endif
-    static ze_result_t logAndPropagateResult(const char* fname, ze_result_t result) {
-        if (result != ${X}_RESULT_SUCCESS) {
-            context.logger->log_trace("Error (" + loader::to_string(result) + ") in " + std::string(fname));
-        }
+    // Generate specific logAndPropagateResult functions for each API function
+    %for obj in th.extract_objs(specs, r"function"):
+    <%
+    func_name = th.make_func_name(n, tags, obj)
+    param_lines = [line for line in th.make_param_lines(n, tags, obj, format=['name','delim'])]
+    param_names = [line for line in th.make_param_lines(n, tags, obj, format=['name'])]
+    is_void_params = len(param_lines) == 0
+    %>\
+    %if 'condition' in obj:
+#if ${th.subt(n, tags, obj['condition'])}
+    %endif
+    VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_${func_name}(
+        ze_result_t result\
+%if not is_void_params:
+,
+        %for line in th.make_param_lines(n, tags, obj):
+        ${line}
+        %endfor
+%endif
+) {
+        std::string status = (result == ${X}_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        %if is_void_params:
+        context.logger->log_trace(status + " (" + loader::to_string(result) + ") in ${func_name}()");
+        %else:
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in ${func_name}(";
+        %for i, param in enumerate([p for p in th.make_param_lines(n, tags, obj, format=['name'])]):
+        %if i > 0:
+        oss << ", ";
+        %endif
+        oss << "${param}=" << loader::to_string(${param});
+        %endfor
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        %endif
         return result;
     }
+    %if 'condition' in obj:
+#endif // ${th.subt(n, tags, obj['condition'])}
+    %endif
+    %endfor
+\
+%if n == 'ze':
+    // Special function for zexCounterBasedEventCreate2
+    VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zexCounterBasedEventCreate2(
+        ze_result_t result,
+        ze_context_handle_t hContext,
+        ze_device_handle_t hDevice,
+        const void* desc,
+        ze_event_handle_t* phEvent
+    ) {
+        std::string status = (result == ${X}_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zexCounterBasedEventCreate2("
+            << "hContext=" << static_cast<const void*>(hContext) << ", "
+            << "hDevice=" << static_cast<const void*>(hDevice) << ", "
+            << "desc=" << desc << ", "
+            << "phEvent=" << static_cast<const void*>(phEvent) << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+%endif
 
     %for obj in th.extract_objs(specs, r"function"):
     <%
@@ -66,7 +134,7 @@ namespace validation_layer
 
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
         %if ret_type == "ze_result_t":
-            return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE);
+            return logAndPropagateResult_${th.make_func_name(n, tags, obj)}(${X}_RESULT_ERROR_UNSUPPORTED_FEATURE${', ' if not is_void_params else ''}${', '.join(th.make_param_lines(n, tags, obj, format=["name"]))});
         %else:
             return ${failure_return};
         %endif
@@ -80,7 +148,7 @@ ${line} \
 );
             if(result!=${X}_RESULT_SUCCESS) \
 %if ret_type == "ze_result_t":
-return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+return logAndPropagateResult_${th.make_func_name(n, tags, obj)}(result${', ' if not is_void_params else ''}${', '.join(th.make_param_lines(n, tags, obj, format=["name"]))});
 %else:
 return ${failure_return};
 %endif
@@ -103,7 +171,7 @@ ${line} \
 );
             if(result!=${X}_RESULT_SUCCESS) \
 %if ret_type == "ze_result_t":
-return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+return logAndPropagateResult_${th.make_func_name(n, tags, obj)}(result${', ' if not is_void_params else ''}${', '.join(th.make_param_lines(n, tags, obj, format=["name"]))});
 %else:
 return ${failure_return};
 %endif
@@ -134,7 +202,7 @@ driver_result );
 %endif
             if(result!=${X}_RESULT_SUCCESS) \
 %if ret_type == "ze_result_t":
-return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
+return logAndPropagateResult_${th.make_func_name(n, tags, obj)}(result${', ' if not is_void_params else ''}${', '.join(th.make_param_lines(n, tags, obj, format=["name"]))});
 %else:
 return ${failure_return};
 %endif
@@ -173,7 +241,7 @@ return ${failure_return};
         }
         %endif
         %if ret_type == "ze_result_t":
-        return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", driver_result);
+        return logAndPropagateResult_${th.make_func_name(n, tags, obj)}(driver_result${', ' if not is_void_params else ''}${', '.join(th.make_param_lines(n, tags, obj, format=["name"]))});
         %else:
         return driver_result;
         %endif
@@ -203,7 +271,7 @@ return ${failure_return};
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zexCounterBasedEventCreate2Prologue( hContext, hDevice, desc, phEvent );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zexCounterBasedEventCreate2", result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zexCounterBasedEventCreate2(result, hContext, hDevice, desc, phEvent);
         }
 
         if(context.enableThreadingValidation){
@@ -212,7 +280,7 @@ return ${failure_return};
 
         if(context.enableHandleLifetime){
             auto result = context.handleLifetime->zeHandleLifetime.zexCounterBasedEventCreate2Prologue( hContext, hDevice, desc, phEvent );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zexCounterBasedEventCreate2", result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zexCounterBasedEventCreate2(result, hContext, hDevice, desc, phEvent);
         }
 
         // This is an experimental function that must be accessed through the extension mechanism
@@ -254,7 +322,7 @@ return ${failure_return};
 
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zexCounterBasedEventCreate2Epilogue( hContext, hDevice, desc, phEvent, driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zexCounterBasedEventCreate2", result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zexCounterBasedEventCreate2(result, hContext, hDevice, desc, phEvent);
         }
 
         if(driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime){
@@ -263,7 +331,7 @@ return ${failure_return};
                 // Note: counter-based events may not have a traditional event pool dependency
             }
         }
-        return logAndPropagateResult("zexCounterBasedEventCreate2", driver_result);
+        return logAndPropagateResult_zexCounterBasedEventCreate2(driver_result, hContext, hDevice, desc, phEvent);
     }
 %endif
 } // namespace validation_layer
