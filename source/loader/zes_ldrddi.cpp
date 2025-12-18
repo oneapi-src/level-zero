@@ -13,29 +13,48 @@ using namespace loader_driver_ddi;
 
 namespace loader
 {
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Initialize all DDI tables for a driver by calling *FromDriver functions
+    ///
+    /// @details This function can fail in the following scenarios:
+    ///     - driver->initStatus is already set to a failure code (from a previous
+    ///       required DDI initialization failure). Each *FromDriver call first checks
+    ///       driver->initStatus and returns it immediately if it's already a failure.
+    ///     - A required DDI table's getTable call into the driver returns a failure,
+    ///       which updates driver->initStatus and is propagated back
+    ///
+    ///     Note: If GET_FUNCTION_PTR returns null (function not found in driver),
+    ///     it only fails if driver->initStatus was already a failure. Otherwise,
+    ///     driver->initStatus is returned (which would be SUCCESS).
+    ///
+    ///     Note: Optional DDI tables (when namespace != "zer") are ignored if they
+    ///     fail, and this function continues to attempt loading remaining tables.
+    ///     Only required DDI table failures cause this function to fail and return
+    ///     immediately.
+    ///
+    /// @returns
+    ///     - ::ZE_RESULT_SUCCESS if all required DDI tables loaded successfully
+    ///     - ::ZE_RESULT_ERROR_* if any required DDI table failed to load
     __zedlllocal ze_result_t ZE_APICALL
     zesloaderInitDriverDDITables(loader::driver_t *driver) {
         ze_result_t result = ZE_RESULT_SUCCESS;
-        result = zesGetGlobalProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetGlobalProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zesGetDeviceProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zesGetDeviceExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetDeviceExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zesGetDriverProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zesGetDriverExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetDriverExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zesGetDiagnosticsProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -56,10 +75,9 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zesGetFirmwareExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetFirmwareExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zesGetFrequencyProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -72,10 +90,9 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zesGetOverclockProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetOverclockProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zesGetPerformanceFactorProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -92,10 +109,9 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zesGetRasExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetRasExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zesGetSchedulerProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -108,10 +124,9 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zesGetVFManagementExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetVFManagementExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         return result;
     }
     ///////////////////////////////////////////////////////////////////////////////
@@ -5056,11 +5071,7 @@ zesGetGlobalProcAddrTableFromDriver(loader::driver_t *driver)
         //It is valid to not have this proc addr table
         return ZE_RESULT_SUCCESS;
     }
-    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zes.Global);
-    if(getTableResult == ZE_RESULT_SUCCESS) {
-        loader::context->configured_version = loader::context->ddi_init_version;
-    } else
-        driver->initStatus = getTableResult;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zes.Global);
     return result;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -5411,11 +5422,7 @@ zesGetOverclockProcAddrTableFromDriver(loader::driver_t *driver)
         //It is valid to not have this proc addr table
         return ZE_RESULT_SUCCESS;
     }
-    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.zes.Overclock);
-    if(getTableResult == ZE_RESULT_SUCCESS) {
-        loader::context->configured_version = loader::context->ddi_init_version;
-    } else
-        driver->initStatus = getTableResult;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zes.Overclock);
     return result;
 }
 ///////////////////////////////////////////////////////////////////////////////

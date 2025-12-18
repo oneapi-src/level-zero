@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.26.2)
+project(level-zero VERSION 1.26.3)
 include(GNUInstallDirs)
 
 find_package(Git)

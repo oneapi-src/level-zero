@@ -22,14 +22,42 @@ using namespace loader_driver_ddi;
 
 namespace loader
 {
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Initialize all DDI tables for a driver by calling *FromDriver functions
+    ///
+    /// @details This function can fail in the following scenarios:
+    ///     - driver->initStatus is already set to a failure code (from a previous
+    ///       required DDI initialization failure). Each *FromDriver call first checks
+    ///       driver->initStatus and returns it immediately if it's already a failure.
+    ///     - A required DDI table's getTable call into the driver returns a failure,
+    ///       which updates driver->initStatus and is propagated back
+    ///
+    ///     Note: If GET_FUNCTION_PTR returns null (function not found in driver),
+    ///     it only fails if driver->initStatus was already a failure. Otherwise,
+    ///     driver->initStatus is returned (which would be SUCCESS).
+    ///
+    ///     Note: Optional DDI tables (when namespace != "zer") are ignored if they
+    ///     fail, and this function continues to attempt loading remaining tables.
+    ///     Only required DDI table failures cause this function to fail and return
+    ///     immediately.
+    ///
+    /// @returns
+    ///     - ::ZE_RESULT_SUCCESS if all required DDI tables loaded successfully
+    ///     - ::ZE_RESULT_ERROR_* if any required DDI table failed to load
     __${x}dlllocal ze_result_t ${X}_APICALL
     ${n}loaderInitDriverDDITables(loader::driver_t *driver) {
         ze_result_t result = ZE_RESULT_SUCCESS;
         %for tbl in th.get_pfntables(specs, meta, n, tags):
+        %if tbl['optional'] == True and namespace != "zer":
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        ${tbl['export']['name']}FromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        %else:
         result = ${tbl['export']['name']}FromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
+        %endif
         %endfor
         return result;
     }
@@ -556,7 +584,7 @@ ${tbl['export']['name']}FromDriver(loader::driver_t *driver)
     %else:
         return driver->initStatus;
     %endif
-    %if tbl['experimental'] is False and namespace != "zer": #//Experimental Tables may not be implemented in driver
+    %if tbl['experimental'] is False and namespace != "zer" and tbl['optional'] != True: #//Experimental Tables may not be implemented in driver
     auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.${n}.${tbl['name']});
     if(getTableResult == ZE_RESULT_SUCCESS) {
         loader::context->configured_version = loader::context->ddi_init_version;
