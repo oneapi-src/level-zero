@@ -1,4 +1,11 @@
 # Level zero loader changelog
+## v1.27.0
+* feature: Update to support L0 Spec v1.15.26
+* fix: fix Driver Search Paths for all Linux Distros
+* Fix minor performance issues with variable copy
+* feature: Add zelGetTracingLayerState to query if tracing is enabled
+* Checker: System Resource Monitor
+* Fix minor performance issue with leak checker destroy
 ## v1.26.3
 * fix handling of optional DDI tables missing or incorrect
 ## v1.26.2

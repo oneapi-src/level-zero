@@ -177,6 +177,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeDeviceGetAggregatedCopyOffloadIncrementValuePrologue( ze_device_handle_t hDevice, uint32_t* incrementValue ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeContextCreatePrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, ze_context_handle_t* phContext ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -405,6 +411,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeEventCounterBasedCreatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_event_counter_based_desc_t* desc, ze_event_handle_t* phEvent ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeEventDestroyPrologue( ze_event_handle_t hEvent ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -431,6 +443,30 @@ public:
     }
     virtual ze_result_t zeEventPoolCloseIpcHandlePrologue( ze_event_pool_handle_t hEventPool ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeEventCounterBasedGetIpcHandlePrologue( ze_event_handle_t hEvent, ze_ipc_event_counter_based_handle_t* phIpc ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeEventCounterBasedOpenIpcHandlePrologue( ze_context_handle_t hContext, ze_ipc_event_counter_based_handle_t hIpc, ze_event_handle_t* phEvent ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeEventCounterBasedCloseIpcHandlePrologue( ze_event_handle_t hEvent ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeEventCounterBasedGetDeviceAddressPrologue( ze_event_handle_t hEvent, uint64_t* completionValue, uint64_t* deviceAddress ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;
@@ -873,6 +909,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zePhysicalMemGetPropertiesPrologue( ze_context_handle_t hContext, ze_physical_mem_handle_t hPhysicalMem, ze_physical_mem_properties_t* pMemProperties ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zePhysicalMemCreatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, ze_physical_mem_desc_t* desc, ze_physical_mem_handle_t* phPhysicalMemory ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -1013,6 +1055,12 @@ public:
     }
     virtual ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeMemGetIpcHandleWithPropertiesPrologue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_15) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

@@ -2458,6 +2458,24 @@ namespace validation_layer
 
 
     ze_result_t
+    ZESParameterValidation::zesDevicePciLinkSpeedUpdateExtPrologue(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                        ///< or set to default speed(false)
+        zes_device_action_t* pendingAction              ///< [out] Pending action
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pendingAction )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZESParameterValidation::zesPowerGetLimitsExtPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
         uint32_t* pCount,                               ///< [in,out] Pointer to the number of power limit descriptors. If count is

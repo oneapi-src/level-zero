@@ -47,6 +47,7 @@ namespace validation_layer
         ze_result_t zeDeviceGetStatusPrologue( ze_device_handle_t hDevice ) override;
         ze_result_t zeDeviceGetGlobalTimestampsPrologue( ze_device_handle_t hDevice, uint64_t* hostTimestamp, uint64_t* deviceTimestamp ) override;
         ze_result_t zeDeviceSynchronizePrologue( ze_device_handle_t hDevice ) override;
+        ze_result_t zeDeviceGetAggregatedCopyOffloadIncrementValuePrologue( ze_device_handle_t hDevice, uint32_t* incrementValue ) override;
         ze_result_t zeContextCreatePrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, ze_context_handle_t* phContext ) override;
         ze_result_t zeContextCreateExPrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, uint32_t numDevices, ze_device_handle_t* phDevices, ze_context_handle_t* phContext ) override;
         ze_result_t zeContextDestroyPrologue( ze_context_handle_t hContext ) override;
@@ -85,11 +86,16 @@ namespace validation_layer
         ze_result_t zeEventPoolCreatePrologue( ze_context_handle_t hContext, const ze_event_pool_desc_t* desc, uint32_t numDevices, ze_device_handle_t* phDevices, ze_event_pool_handle_t* phEventPool ) override;
         ze_result_t zeEventPoolDestroyPrologue( ze_event_pool_handle_t hEventPool ) override;
         ze_result_t zeEventCreatePrologue( ze_event_pool_handle_t hEventPool, const ze_event_desc_t* desc, ze_event_handle_t* phEvent ) override;
+        ze_result_t zeEventCounterBasedCreatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_event_counter_based_desc_t* desc, ze_event_handle_t* phEvent ) override;
         ze_result_t zeEventDestroyPrologue( ze_event_handle_t hEvent ) override;
         ze_result_t zeEventPoolGetIpcHandlePrologue( ze_event_pool_handle_t hEventPool, ze_ipc_event_pool_handle_t* phIpc ) override;
         ze_result_t zeEventPoolPutIpcHandlePrologue( ze_context_handle_t hContext, ze_ipc_event_pool_handle_t hIpc ) override;
         ze_result_t zeEventPoolOpenIpcHandlePrologue( ze_context_handle_t hContext, ze_ipc_event_pool_handle_t hIpc, ze_event_pool_handle_t* phEventPool ) override;
         ze_result_t zeEventPoolCloseIpcHandlePrologue( ze_event_pool_handle_t hEventPool ) override;
+        ze_result_t zeEventCounterBasedGetIpcHandlePrologue( ze_event_handle_t hEvent, ze_ipc_event_counter_based_handle_t* phIpc ) override;
+        ze_result_t zeEventCounterBasedOpenIpcHandlePrologue( ze_context_handle_t hContext, ze_ipc_event_counter_based_handle_t hIpc, ze_event_handle_t* phEvent ) override;
+        ze_result_t zeEventCounterBasedCloseIpcHandlePrologue( ze_event_handle_t hEvent ) override;
+        ze_result_t zeEventCounterBasedGetDeviceAddressPrologue( ze_event_handle_t hEvent, uint64_t* completionValue, uint64_t* deviceAddress ) override;
         ze_result_t zeCommandListAppendSignalEventPrologue( ze_command_list_handle_t hCommandList, ze_event_handle_t hEvent ) override;
         ze_result_t zeCommandListAppendWaitOnEventsPrologue( ze_command_list_handle_t hCommandList, uint32_t numEvents, ze_event_handle_t* phEvents ) override;
         ze_result_t zeEventHostSignalPrologue( ze_event_handle_t hEvent ) override;
@@ -163,6 +169,7 @@ namespace validation_layer
         ze_result_t zeVirtualMemReservePrologue( ze_context_handle_t hContext, const void* pStart, size_t size, void** pptr ) override;
         ze_result_t zeVirtualMemFreePrologue( ze_context_handle_t hContext, const void* ptr, size_t size ) override;
         ze_result_t zeVirtualMemQueryPageSizePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, size_t size, size_t* pagesize ) override;
+        ze_result_t zePhysicalMemGetPropertiesPrologue( ze_context_handle_t hContext, ze_physical_mem_handle_t hPhysicalMem, ze_physical_mem_properties_t* pMemProperties ) override;
         ze_result_t zePhysicalMemCreatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, ze_physical_mem_desc_t* desc, ze_physical_mem_handle_t* phPhysicalMemory ) override;
         ze_result_t zePhysicalMemDestroyPrologue( ze_context_handle_t hContext, ze_physical_mem_handle_t hPhysicalMemory ) override;
         ze_result_t zeVirtualMemMapPrologue( ze_context_handle_t hContext, const void* ptr, size_t size, ze_physical_mem_handle_t hPhysicalMemory, size_t offset, ze_memory_access_attribute_t access ) override;
@@ -187,6 +194,7 @@ namespace validation_layer
         ze_result_t zeRTASParallelOperationDestroyExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override;
         ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) override;
         ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) override;
+        ze_result_t zeMemGetIpcHandleWithPropertiesPrologue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle ) override;
         ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) override;
         ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) override;
         ze_result_t zeEventQueryTimestampsExpPrologue( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_kernel_timestamp_result_t* pTimestamps ) override;

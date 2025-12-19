@@ -94,6 +94,7 @@ typedef struct _zel_ze_device_callbacks_t
     ze_pfnDeviceReleaseExternalSemaphoreExtCb_t                     pfnReleaseExternalSemaphoreExtCb;
     ze_pfnDeviceGetVectorWidthPropertiesExtCb_t                     pfnGetVectorWidthPropertiesExtCb;
     ze_pfnDeviceSynchronizeCb_t                                     pfnSynchronizeCb;
+    ze_pfnDeviceGetAggregatedCopyOffloadIncrementValueCb_t          pfnGetAggregatedCopyOffloadIncrementValueCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
@@ -191,6 +192,11 @@ typedef struct _zel_ze_event_callbacks_t
     ze_pfnEventQueryStatusCb_t                                      pfnQueryStatusCb;
     ze_pfnEventHostResetCb_t                                        pfnHostResetCb;
     ze_pfnEventQueryKernelTimestampCb_t                             pfnQueryKernelTimestampCb;
+    ze_pfnEventCounterBasedCreateCb_t                               pfnCounterBasedCreateCb;
+    ze_pfnEventCounterBasedGetIpcHandleCb_t                         pfnCounterBasedGetIpcHandleCb;
+    ze_pfnEventCounterBasedOpenIpcHandleCb_t                        pfnCounterBasedOpenIpcHandleCb;
+    ze_pfnEventCounterBasedCloseIpcHandleCb_t                       pfnCounterBasedCloseIpcHandleCb;
+    ze_pfnEventCounterBasedGetDeviceAddressCb_t                     pfnCounterBasedGetDeviceAddressCb;
     ze_pfnEventQueryTimestampsExpCb_t                               pfnQueryTimestampsExpCb;
     ze_pfnEventQueryKernelTimestampsExtCb_t                         pfnQueryKernelTimestampsExtCb;
     ze_pfnEventGetEventPoolCb_t                                     pfnGetEventPoolCb;
@@ -272,6 +278,7 @@ typedef struct _zel_ze_mem_callbacks_t
     ze_pfnMemGetIpcHandleCb_t                                       pfnGetIpcHandleCb;
     ze_pfnMemOpenIpcHandleCb_t                                      pfnOpenIpcHandleCb;
     ze_pfnMemCloseIpcHandleCb_t                                     pfnCloseIpcHandleCb;
+    ze_pfnMemGetIpcHandleWithPropertiesCb_t                         pfnGetIpcHandleWithPropertiesCb;
     ze_pfnMemFreeExtCb_t                                            pfnFreeExtCb;
     ze_pfnMemGetIpcHandleFromFileDescriptorExpCb_t                  pfnGetIpcHandleFromFileDescriptorExpCb;
     ze_pfnMemGetFileDescriptorFromIpcHandleExpCb_t                  pfnGetFileDescriptorFromIpcHandleExpCb;
@@ -310,6 +317,7 @@ typedef struct _zel_ze_physical_mem_callbacks_t
 {
     ze_pfnPhysicalMemCreateCb_t                                     pfnCreateCb;
     ze_pfnPhysicalMemDestroyCb_t                                    pfnDestroyCb;
+    ze_pfnPhysicalMemGetPropertiesCb_t                              pfnGetPropertiesCb;
 } zel_ze_physical_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

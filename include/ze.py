@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.14-r1.14.33
+ @version v1.15-r1.15.26
 
  """
 import platform
@@ -291,6 +291,7 @@ class ze_structure_type_v(IntEnum):
     EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES = 0x10011                  ## ::ze_event_query_kernel_timestamps_ext_properties_t
     EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012          ## ::ze_event_query_kernel_timestamps_results_ext_properties_t
     KERNEL_MAX_GROUP_SIZE_EXT_PROPERTIES = 0x10013                          ## ::ze_kernel_max_group_size_ext_properties_t
+    IMAGE_FORMAT_SUPPORT_EXT_PROPERTIES = 0x10014                           ## ::ze_image_format_support_ext_properties_t
     RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001                         ## ::ze_relaxed_allocation_limits_exp_desc_t
     MODULE_PROGRAM_EXP_DESC = 0x00020002                                    ## ::ze_module_program_exp_desc_t
     SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003                             ## ::ze_scheduling_hint_exp_properties_t
@@ -342,6 +343,15 @@ class ze_structure_type_v(IntEnum):
     EXTERNAL_MEMMAP_SYSMEM_EXT_DESC = 0x00020037                            ## ::ze_external_memmap_sysmem_ext_desc_t
     PITCHED_ALLOC_2DIMAGE_LINEAR_PITCH_EXP_INFO = 0x00020038                ## ::ze_pitched_alloc_2dimage_linear_pitch_exp_info_t
     KERNEL_ALLOCATION_PROPERTIES = 0x00020039                               ## ::ze_kernel_allocation_exp_properties_t
+    EVENT_COUNTER_BASED_DESC = 0x0002003A                                   ## ::ze_event_counter_based_desc_t
+    EVENT_COUNTER_BASED_EXTERNAL_SYNC_ALLOCATION_DESC = 0x0002003B          ## ::ze_event_counter_based_external_sync_allocation_desc_t
+    EVENT_SYNC_MODE_DESC = 0x0002003C                                       ## ::ze_event_sync_mode_desc_t
+    IPC_MEM_HANDLE_TYPE_EXT_DESC = 0x0002003D                               ## ::ze_ipc_mem_handle_type_ext_desc_t
+    DEVICE_EVENT_PROPERTIES = 0x0002003E                                    ## ::ze_device_event_properties_t
+    EVENT_COUNTER_BASED_EXTERNAL_AGGREGATE_STORAGE_DESC = 0x0002003F        ## ::ze_event_counter_based_external_aggregate_storage_desc_t
+    PHYSICAL_MEM_PROPERTIES = 0x00020040                                    ## ::ze_physical_mem_properties_t
+    DEVICE_USABLEMEM_SIZE_EXT_PROPERTIES = 0x00020041                       ## ::ze_device_usablemem_size_ext_properties_t
+    CUSTOM_PITCH_EXP_DESC = 0x00020042                                      ## ::ze_custom_pitch_exp_desc_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -431,6 +441,13 @@ class ze_base_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief IPC handle to counter based event
+class ze_ipc_event_counter_based_handle_t(Structure):
+    _fields_ = [
+        ("data", c_char * ZE_MAX_IPC_HANDLE_SIZE)                       ## [out] Opaque data representing an IPC handle
+    ]
+
+###############################################################################
 ## @brief Forces driver to only report devices (and sub-devices) as specified by
 ##        values
 
@@ -517,7 +534,8 @@ class ze_api_version_v(IntEnum):
     _1_12 = ZE_MAKE_VERSION( 1, 12 )                                        ## version 1.12
     _1_13 = ZE_MAKE_VERSION( 1, 13 )                                        ## version 1.13
     _1_14 = ZE_MAKE_VERSION( 1, 14 )                                        ## version 1.14
-    CURRENT = ZE_MAKE_VERSION( 1, 14 )                                      ## latest known version
+    _1_15 = ZE_MAKE_VERSION( 1, 15 )                                        ## version 1.15
+    CURRENT = ZE_MAKE_VERSION( 1, 15 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -526,7 +544,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 14 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 15 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -957,6 +975,31 @@ class ze_device_p2p_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Supported Event properties flags
+class ze_device_event_properties_flags_v(IntEnum):
+    COUNTER_BASED_EXTERNAL_AGGREGATE_STORAGE = ZE_BIT(0)                    ## Counter-based Event with external aggregate storage supported
+    COUNTER_BASED_IPC = ZE_BIT(1)                                           ## Counter-based Event IPC sharing supported
+    COUNTER_BASED_EXTERNAL_SYNC_ALLOCATION = ZE_BIT(2)                      ## Counter-based Event with external sync allocation supported
+    COUNTER_BASED_EXTERNAL_INTERRUPT_WAIT = ZE_BIT(3)                       ## Counter-based Event waiting for external interrupt id supported
+
+class ze_device_event_properties_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Device Event properties struct. Can be passed as pNext to
+##        ::ze_device_properties_t to obtain properties
+class ze_device_event_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_device_event_properties_flags_t)                   ## [out] Supported Event properties. Valid combination of
+                                                                        ## ::ze_device_event_properties_flag_t.
+    ]
+
+###############################################################################
 ## @brief Supported context creation flags
 class ze_context_flags_v(IntEnum):
     TBD = ZE_BIT(0)                                                         ## reserved for future use
@@ -1193,6 +1236,55 @@ class ze_event_scope_flags_t(c_int):
 
 
 ###############################################################################
+## @brief Supported flags for defining counter based event
+class ze_event_counter_based_flags_v(IntEnum):
+    IMMEDIATE = ZE_BIT(0)                                                   ## Counter-based event is used for immediate command lists (default)
+    NON_IMMEDIATE = ZE_BIT(1)                                               ## Counter-based event is used for non-immediate command lists
+    HOST_VISIBLE = ZE_BIT(2)                                                ## Signals and waits are also visible to host
+    IPC = ZE_BIT(3)                                                         ## Event can be shared across processes for waiting
+    DEVICE_TIMESTAMP = ZE_BIT(4)                                            ## Event contains timestamps populated in the device time domain.
+                                                                            ## Implementation of this can be vendor specific, but typically pulled
+                                                                            ## from timers on the offload device and not the host.
+                                                                            ## Cannot be combined with ::ZE_EVENT_COUNTER_BASED_FLAG_HOST_TIMESTAMP
+    HOST_TIMESTAMP = ZE_BIT(5)                                              ## Indicates that event will contain timestamps converted to the host
+                                                                            ## time domain
+                                                                            ## Cannot be combined with ::ZE_EVENT_COUNTER_BASED_FLAG_DEVICE_TIMESTAMP
+                                                                            ## It is recommended to use this flag for most users that want to
+                                                                            ## correlate timestamps from the host and device into a single timeline.
+                                                                            ## For host timestamps see ::zeDeviceGetGlobalTimestamps.
+
+class ze_event_counter_based_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Supported event sync mode flags
+class ze_event_sync_mode_flags_v(IntEnum):
+    LOW_POWER_WAIT = ZE_BIT(0)                                              ## Low power host synchronization mode, for better CPU utilization
+    SIGNAL_INTERRUPT = ZE_BIT(1)                                            ## Generate interrupt when Event is signalled on Device. It may be used
+                                                                            ## to optimize low power CPU synchronization
+    EXTERNAL_INTERRUPT_WAIT = ZE_BIT(2)                                     ## Host synchronization APIs wait for external interrupt id. Can be used
+                                                                            ## only for Counter Based Events
+
+class ze_event_sync_mode_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Event sync mode descriptor
+class ze_event_sync_mode_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("syncModeFlags", ze_event_sync_mode_flags_t),                  ## [in] valid combination of ::ze_event_sync_mode_flag_t
+        ("externalInterruptId", c_ulong)                                ## [in] External interrupt id. Used only when
+                                                                        ## ::ZE_EVENT_SYNC_MODE_FLAG_EXTERNAL_INTERRUPT_WAIT flag is set
+    ]
+
+###############################################################################
 ## @brief Event descriptor
 class ze_event_desc_t(Structure):
     _fields_ = [
@@ -1211,6 +1303,55 @@ class ze_event_desc_t(Structure):
                                                                         ## must be 0 (default) or a valid combination of ::ze_event_scope_flag_t;
                                                                         ## default behavior is synchronization within the command list only, no
                                                                         ## additional cache hierarchies are invalidated.
+    ]
+
+###############################################################################
+## @brief Counter Based Event descriptor
+class ze_event_counter_based_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_event_counter_based_flags_t),                      ## [in] counter based event flags.
+                                                                        ## Must be 0 (default) or a valid combination of ::ze_event_counter_based_flag_t
+        ("signal", ze_event_scope_flags_t),                             ## [in] defines the scope of relevant cache hierarchies to flush on a
+                                                                        ## signal action before the event is triggered.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_event_scope_flag_t;
+                                                                        ## default behavior is synchronization within the command list only, no
+                                                                        ## additional cache hierarchies are flushed.
+        ("wait", ze_event_scope_flags_t)                                ## [in] defines the scope of relevant cache hierarchies to invalidate on
+                                                                        ## a wait action after the event is complete.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_event_scope_flag_t;
+                                                                        ## default behavior is synchronization within the command list only, no
+                                                                        ## additional cache hierarchies are invalidated.
+    ]
+
+###############################################################################
+## @brief Counter Based Event external sync allocation descriptor. Passed as
+##        pNext to ::ze_event_counter_based_desc_t
+class ze_event_counter_based_external_sync_allocation_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("deviceAddress", POINTER(c_ulonglong)),                        ## [in] device address for external synchronization allocation
+        ("hostAddress", POINTER(c_ulonglong)),                          ## [in] host address for external synchronization allocation
+        ("completionValue", c_ulonglong)                                ## [in] completion value for external synchronization allocation
+    ]
+
+###############################################################################
+## @brief Counter Based Event external aggregate storage. Passed as pNext to
+##        ::ze_event_counter_based_desc_t
+class ze_event_counter_based_external_aggregate_storage_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("deviceAddress", POINTER(c_ulonglong)),                        ## [in] device address that would be updated with atomic_add upon
+                                                                        ## signaling of this event, must be device USM memory
+        ("incrementValue", c_ulonglong),                                ## [in] value which would by atomically added upon each completion
+        ("completionValue", c_ulonglong)                                ## [in] final completion value, when value under deviceAddress is equal
+                                                                        ## or greater then this value then event is considered as completed
     ]
 
 ###############################################################################
@@ -1362,6 +1503,7 @@ class ze_image_format_swizzle_v(IntEnum):
     _0 = 4                                                                  ## Zero
     _1 = 5                                                                  ## One
     X = 6                                                                   ## Don't care
+    D = 7                                                                   ## Depth Component
 
 class ze_image_format_swizzle_t(c_int):
     def __str__(self):
@@ -1535,10 +1677,11 @@ class ze_ipc_memory_flags_t(c_int):
 ## @brief Additional allocation descriptor for exporting external memory
 ## 
 ## @details
-##     - This structure may be passed to ::zeMemAllocDevice and
-##       ::zeMemAllocHost, via the `pNext` member of
-##       ::ze_device_mem_alloc_desc_t or ::ze_host_mem_alloc_desc_t,
-##       respectively, to indicate an exportable memory allocation.
+##     - This structure may be passed to ::zeMemAllocDevice, ::zeMemAllocHost,
+##       or ::zePhysicalMemCreate, via the `pNext` member of
+##       ::ze_device_mem_alloc_desc_t or ::ze_host_mem_alloc_desc_t, or
+##       ::ze_physical_mem_desc_t, respectively, to indicate an exportable
+##       memory allocation.
 ##     - This structure may be passed to ::zeImageCreate, via the `pNext`
 ##       member of ::ze_image_desc_t, to indicate an exportable image.
 class ze_external_memory_export_desc_t(Structure):
@@ -1555,10 +1698,11 @@ class ze_external_memory_export_desc_t(Structure):
 ##        file descriptor
 ## 
 ## @details
-##     - This structure may be passed to ::zeMemAllocDevice or
-##       ::zeMemAllocHost, via the `pNext` member of
-##       ::ze_device_mem_alloc_desc_t or of ::ze_host_mem_alloc_desc_t,
-##       respectively, to import memory from a file descriptor.
+##     - This structure may be passed to ::zeMemAllocDevice, ::zeMemAllocHost,
+##       or ::zePhysicalMemCreate, via the `pNext` member of
+##       ::ze_device_mem_alloc_desc_t or ::ze_host_mem_alloc_desc_t, or
+##       ::ze_physical_mem_desc_t, respectively, to import memory from a file
+##       descriptor.
 ##     - This structure may be passed to ::zeImageCreate, via the `pNext`
 ##       member of ::ze_image_desc_t, to import memory from a file descriptor.
 class ze_external_memory_import_fd_t(Structure):
@@ -1581,6 +1725,9 @@ class ze_external_memory_import_fd_t(Structure):
 ##     - This structure may be passed to ::zeImageGetAllocPropertiesExt, via
 ##       the `pNext` member of ::ze_image_allocation_ext_properties_t, to
 ##       export an image as a file descriptor.
+##     - This structure may be passed to ::zePhysicalMemGetProperties, via the
+##       `pNext` member of ::ze_physical_mem_properties_t, to export physical
+##       memory as a file descriptor.
 ##     - The requested memory export type must have been specified when the
 ##       allocation was made.
 class ze_external_memory_export_fd_t(Structure):
@@ -1602,10 +1749,11 @@ class ze_external_memory_export_fd_t(Structure):
 ##     - When `name` is `nullptr`, `handle` must not be `nullptr`.
 ##     - When `flags` is ::ZE_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32_KMT,
 ##       `name` must be `nullptr`.
-##     - This structure may be passed to ::zeMemAllocDevice or
-##       ::zeMemAllocHost, via the `pNext` member of
-##       ::ze_device_mem_alloc_desc_t or of ::ze_host_mem_alloc_desc_t,
-##       respectively, to import memory from a Win32 handle.
+##     - This structure may be passed to ::zeMemAllocDevice, ::zeMemAllocHost,
+##       or ::zePhysicalMemCreate, via the `pNext` member of
+##       ::ze_device_mem_alloc_desc_t or ::ze_host_mem_alloc_desc_t, or
+##       ::ze_physical_mem_desc_t, respectively, to import memory from a Win32
+##       handle.
 ##     - This structure may be passed to ::zeImageCreate, via the `pNext`
 ##       member of ::ze_image_desc_t, to import memory from a Win32 handle.
 class ze_external_memory_import_win32_handle_t(Structure):
@@ -1629,6 +1777,9 @@ class ze_external_memory_import_win32_handle_t(Structure):
 ##     - This structure may be passed to ::zeImageGetAllocPropertiesExt, via
 ##       the `pNext` member of ::ze_image_allocation_ext_properties_t, to
 ##       export an image as a Win32 handle.
+##     - This structure may be passed to ::zePhysicalMemGetProperties, via the
+##       `pNext` member of ::ze_physical_mem_properties_t, to export physical
+##       memory as a Win32 handle.
 ##     - The requested memory export type must have been specified when the
 ##       allocation was made.
 class ze_external_memory_export_win32_handle_t(Structure):
@@ -1894,7 +2045,7 @@ class ze_module_program_exp_version_t(c_int):
 ## @brief Module extended descriptor to support multiple input modules.
 ## 
 ## @details
-##     - Implementation must support ::ZE_experimental_module_program extension
+##     - Implementation must support ::ZE_MODULE_PROGRAM_EXP_NAME extension
 ##     - Modules support import and export linkage for functions and global
 ##       variables.
 ##     - SPIR-V import and export linkage types are used. See SPIR-V
@@ -2061,6 +2212,17 @@ class ze_physical_mem_desc_t(Structure):
                                                                         ## must be 0 (default) or a valid combination of
                                                                         ## ::ze_physical_mem_flag_t; default is to create physical device memory.
         ("size", c_size_t)                                              ## [in] size in bytes to reserve; must be page aligned.
+    ]
+
+###############################################################################
+## @brief Physical memory properties queried using ::zePhysicalMemGetProperties
+class ze_physical_mem_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("id", c_ulonglong),                                            ## [out] unique identifier for the physical memory object
+        ("size", c_ulonglong)                                           ## [out] size of the physical memory object in bytes
     ]
 
 ###############################################################################
@@ -3020,6 +3182,116 @@ class ze_kernel_allocation_exp_properties_t(Structure):
         ("type", ze_memory_type_t),                                     ## [out] type of allocation
         ("argIndex", c_ulong)                                           ## [out] kernel argument index for current allocation, -1 for driver
                                                                         ## internal (not kernel argument) allocations
+    ]
+
+###############################################################################
+## @brief Device Usable Memory Size Properties Extension Name
+ZE_DEVICE_USABLEMEM_SIZE_PROPERTIES_EXT_NAME = "ZE_extension_device_usablemem_size_properties"
+
+###############################################################################
+## @brief Device Usable Mem Size  Extension Version(s)
+class ze_device_usablemem_size_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_device_usablemem_size_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_device_usablemem_size_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Memory access property to discover current status of usable memory
+## 
+## @details
+##     - This structure may be returned from ::zeDeviceGetProperties via the
+##       `pNext` member of ::ze_device_properties_t
+class ze_device_usablemem_size_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("currUsableMemSize", c_ulonglong)                              ## [out] Returns the available usable memory at the device level. This is
+                                                                        ## typically less than or equal to the available physical memory on the
+                                                                        ## device. It important to note that usable memory size reported is
+                                                                        ## transient in nature and cannot be used to reliably guarentee success
+                                                                        ## of future allocations. The usable memory includes all the memory that
+                                                                        ## the clients can allocate for their use and by L0 Core for its internal
+                                                                        ## allocations.
+    ]
+
+###############################################################################
+## @brief Image Format Support Extension Name
+ZE_IMAGE_FORMAT_SUPPORT_EXT_NAME = "ZE_extension_image_format_support"
+
+###############################################################################
+## @brief Image Format Support Extension Version(s)
+class ze_image_format_support_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_image_format_support_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_image_format_support_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Image format support query properties
+## 
+## @details
+##     - This structure may be passed to ::zeImageGetProperties via the pNext
+##       member of ::ze_image_properties_t.
+##     - The implementation shall populate the supported field based on the
+##       ::ze_image_desc_t and ::ze_device_handle_t passed to
+##       ::zeImageGetProperties.
+##     - This provides a mechanism to query format support without requiring
+##       image creation.
+class ze_image_format_support_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("supported", ze_bool_t)                                        ## [out] boolean flag indicating whether the image format is supported on
+                                                                        ## the queried device
+    ]
+
+###############################################################################
+## @brief IPC Memory Handle Type Extension Name
+ZE_IPC_MEM_HANDLE_TYPE_EXT_NAME = "ZE_extension_ipc_mem_handle_type"
+
+###############################################################################
+## @brief IPC Memory Handle Type Extension Version(s)
+class ze_ipc_mem_handle_type_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_ipc_mem_handle_type_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_ipc_mem_handle_type_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Supported IPC memory handle type flags
+class ze_ipc_mem_handle_type_flags_v(IntEnum):
+    DEFAULT = ZE_BIT(0)                                                     ## Local IPC memory handle type for use within the same machine.
+    FABRIC_ACCESSIBLE = ZE_BIT(1)                                           ## Fabric accessible IPC memory handle type for use across machines via a
+                                                                            ## supported fabric.
+
+class ze_ipc_mem_handle_type_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief ['IPC Memory Handle Type Extension Descriptor', 'Used in
+##        ::zeMemGetIpcHandleWithProperties, ::zeMemAllocDevice, and
+##        ::zeMemAllocHost, ::zePhysicalMemCreate to specify the IPC memory
+##        handle type to create for this allocation.']
+class ze_ipc_mem_handle_type_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("typeFlags", ze_ipc_mem_handle_type_flags_t)                   ## [in] valid combination of ::ze_ipc_mem_handle_type_flag_t
     ]
 
 ###############################################################################
@@ -4689,7 +4961,7 @@ class ze_event_pool_counter_based_exp_flags_t(c_int):
 ###############################################################################
 ## @brief Event pool descriptor for counter-based events. This structure may be
 ##        passed to ::zeEventPoolCreate as pNext member of
-##        ::ze_event_pool_desc_t.
+##        ::ze_event_pool_desc_t. @deprecated since 1.15
 class ze_event_pool_counter_based_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -4780,15 +5052,33 @@ class ze_device_pitched_alloc_exp_properties_t(Structure):
 ## @brief Pitch information for 2-dimensional linear pitched allocations
 ## 
 ## @details
-##     - This structure may be passed to ::zeDeviceGetImageProperties via the
-##       pNext member of x_device_pitched_alloc_exp_properties_t.
+##     - This structure may be passed to ::zeDeviceGetImageProperties in
+##       conjunction with the ::ze_device_pitched_alloc_exp_properties_t via
+##       its pNext member
 class ze_pitched_alloc_2dimage_linear_pitch_exp_info_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("pitchAlign", c_size_t),                                       ## [out] Required pitch Aligment.
-        ("maxSupportedPitch", c_size_t)                                 ## [out] Maximum allowed pitch.
+        ("pitchAlign", c_size_t),                                       ## [out] Required pitch Aligment in Bytes.
+        ("maxSupportedPitch", c_size_t)                                 ## [out] Maximum allowed pitch in Bytes.
+    ]
+
+###############################################################################
+## @brief Specify user defined pitch for pitched linear image allocations. This
+##        structure may be passed to ::zeImageCreate in conjunction with
+##        ::ze_image_pitched_exp_desc_t via its pNext member
+class ze_custom_pitch_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("rowPitch", c_size_t),                                         ## [in] user programmed aligned pitch for pitched linear image
+                                                                        ## allocations. This pitch should satisfy the pitchAlign requirement in
+                                                                        ## ::ze_pitched_alloc_2dimage_linear_pitch_exp_info_t 
+        ("slicePitch", c_size_t)                                        ## [in] user programmed slice pitch , must be multiple of rowPitch.  For
+                                                                        ## 2D image arrary or a slice of a 3D image array - this pitch should be
+                                                                        ## >= rowPitch * image_height . For 1D iamge array >= rowPitch.
     ]
 
 ###############################################################################
@@ -5417,6 +5707,13 @@ if __use_win_types:
 else:
     _zeDeviceSynchronize_t = CFUNCTYPE( ze_result_t, ze_device_handle_t )
 
+###############################################################################
+## @brief Function-pointer for zeDeviceGetAggregatedCopyOffloadIncrementValue
+if __use_win_types:
+    _zeDeviceGetAggregatedCopyOffloadIncrementValue_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong) )
+else:
+    _zeDeviceGetAggregatedCopyOffloadIncrementValue_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong) )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -5444,7 +5741,8 @@ class _ze_device_dditable_t(Structure):
         ("pfnImportExternalSemaphoreExt", c_void_p),                    ## _zeDeviceImportExternalSemaphoreExt_t
         ("pfnReleaseExternalSemaphoreExt", c_void_p),                   ## _zeDeviceReleaseExternalSemaphoreExt_t
         ("pfnGetVectorWidthPropertiesExt", c_void_p),                   ## _zeDeviceGetVectorWidthPropertiesExt_t
-        ("pfnSynchronize", c_void_p)                                    ## _zeDeviceSynchronize_t
+        ("pfnSynchronize", c_void_p),                                   ## _zeDeviceSynchronize_t
+        ("pfnGetAggregatedCopyOffloadIncrementValue", c_void_p)         ## _zeDeviceGetAggregatedCopyOffloadIncrementValue_t
     ]
 
 ###############################################################################
@@ -6140,6 +6438,13 @@ if __use_win_types:
 else:
     _zeMemGetPitchFor2dImage_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_size_t, c_size_t, c_int, * )
 
+###############################################################################
+## @brief Function-pointer for zeMemGetIpcHandleWithProperties
+if __use_win_types:
+    _zeMemGetIpcHandleWithProperties_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, c_void_p, POINTER(ze_ipc_mem_handle_t) )
+else:
+    _zeMemGetIpcHandleWithProperties_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, c_void_p, POINTER(ze_ipc_mem_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of Mem functions pointers
@@ -6156,7 +6461,8 @@ class _ze_mem_dditable_t(Structure):
         ("pfnCloseIpcHandle", c_void_p),                                ## _zeMemCloseIpcHandle_t
         ("pfnFreeExt", c_void_p),                                       ## _zeMemFreeExt_t
         ("pfnPutIpcHandle", c_void_p),                                  ## _zeMemPutIpcHandle_t
-        ("pfnGetPitchFor2dImage", c_void_p)                             ## _zeMemGetPitchFor2dImage_t
+        ("pfnGetPitchFor2dImage", c_void_p),                            ## _zeMemGetPitchFor2dImage_t
+        ("pfnGetIpcHandleWithProperties", c_void_p)                     ## _zeMemGetIpcHandleWithProperties_t
     ]
 
 ###############################################################################
@@ -6393,6 +6699,41 @@ if __use_win_types:
 else:
     _zeEventGetWaitScope_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_scope_flags_t) )
 
+###############################################################################
+## @brief Function-pointer for zeEventCounterBasedCreate
+if __use_win_types:
+    _zeEventCounterBasedCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_event_counter_based_desc_t), POINTER(ze_event_handle_t) )
+else:
+    _zeEventCounterBasedCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_event_counter_based_desc_t), POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventCounterBasedGetIpcHandle
+if __use_win_types:
+    _zeEventCounterBasedGetIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_ipc_event_counter_based_handle_t) )
+else:
+    _zeEventCounterBasedGetIpcHandle_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_ipc_event_counter_based_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventCounterBasedOpenIpcHandle
+if __use_win_types:
+    _zeEventCounterBasedOpenIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_counter_based_handle_t, POINTER(ze_event_handle_t) )
+else:
+    _zeEventCounterBasedOpenIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_counter_based_handle_t, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventCounterBasedCloseIpcHandle
+if __use_win_types:
+    _zeEventCounterBasedCloseIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t )
+else:
+    _zeEventCounterBasedCloseIpcHandle_t = CFUNCTYPE( ze_result_t, ze_event_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeEventCounterBasedGetDeviceAddress
+if __use_win_types:
+    _zeEventCounterBasedGetDeviceAddress_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+else:
+    _zeEventCounterBasedGetDeviceAddress_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+
 
 ###############################################################################
 ## @brief Table of Event functions pointers
@@ -6408,7 +6749,12 @@ class _ze_event_dditable_t(Structure):
         ("pfnQueryKernelTimestampsExt", c_void_p),                      ## _zeEventQueryKernelTimestampsExt_t
         ("pfnGetEventPool", c_void_p),                                  ## _zeEventGetEventPool_t
         ("pfnGetSignalScope", c_void_p),                                ## _zeEventGetSignalScope_t
-        ("pfnGetWaitScope", c_void_p)                                   ## _zeEventGetWaitScope_t
+        ("pfnGetWaitScope", c_void_p),                                  ## _zeEventGetWaitScope_t
+        ("pfnCounterBasedCreate", c_void_p),                            ## _zeEventCounterBasedCreate_t
+        ("pfnCounterBasedGetIpcHandle", c_void_p),                      ## _zeEventCounterBasedGetIpcHandle_t
+        ("pfnCounterBasedOpenIpcHandle", c_void_p),                     ## _zeEventCounterBasedOpenIpcHandle_t
+        ("pfnCounterBasedCloseIpcHandle", c_void_p),                    ## _zeEventCounterBasedCloseIpcHandle_t
+        ("pfnCounterBasedGetDeviceAddress", c_void_p)                   ## _zeEventCounterBasedGetDeviceAddress_t
     ]
 
 ###############################################################################
@@ -6707,13 +7053,21 @@ if __use_win_types:
 else:
     _zePhysicalMemDestroy_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_physical_mem_handle_t )
 
+###############################################################################
+## @brief Function-pointer for zePhysicalMemGetProperties
+if __use_win_types:
+    _zePhysicalMemGetProperties_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_physical_mem_handle_t, POINTER(ze_physical_mem_properties_t) )
+else:
+    _zePhysicalMemGetProperties_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_physical_mem_handle_t, POINTER(ze_physical_mem_properties_t) )
+
 
 ###############################################################################
 ## @brief Table of PhysicalMem functions pointers
 class _ze_physical_mem_dditable_t(Structure):
     _fields_ = [
         ("pfnCreate", c_void_p),                                        ## _zePhysicalMemCreate_t
-        ("pfnDestroy", c_void_p)                                        ## _zePhysicalMemDestroy_t
+        ("pfnDestroy", c_void_p),                                       ## _zePhysicalMemDestroy_t
+        ("pfnGetProperties", c_void_p)                                  ## _zePhysicalMemGetProperties_t
     ]
 
 ###############################################################################
@@ -7020,6 +7374,7 @@ class ZE_DDI:
         self.zeDeviceReleaseExternalSemaphoreExt = _zeDeviceReleaseExternalSemaphoreExt_t(self.__dditable.Device.pfnReleaseExternalSemaphoreExt)
         self.zeDeviceGetVectorWidthPropertiesExt = _zeDeviceGetVectorWidthPropertiesExt_t(self.__dditable.Device.pfnGetVectorWidthPropertiesExt)
         self.zeDeviceSynchronize = _zeDeviceSynchronize_t(self.__dditable.Device.pfnSynchronize)
+        self.zeDeviceGetAggregatedCopyOffloadIncrementValue = _zeDeviceGetAggregatedCopyOffloadIncrementValue_t(self.__dditable.Device.pfnGetAggregatedCopyOffloadIncrementValue)
 
         # call driver to get function pointers
         _DeviceExp = _ze_device_exp_dditable_t()
@@ -7174,6 +7529,7 @@ class ZE_DDI:
         self.zeMemFreeExt = _zeMemFreeExt_t(self.__dditable.Mem.pfnFreeExt)
         self.zeMemPutIpcHandle = _zeMemPutIpcHandle_t(self.__dditable.Mem.pfnPutIpcHandle)
         self.zeMemGetPitchFor2dImage = _zeMemGetPitchFor2dImage_t(self.__dditable.Mem.pfnGetPitchFor2dImage)
+        self.zeMemGetIpcHandleWithProperties = _zeMemGetIpcHandleWithProperties_t(self.__dditable.Mem.pfnGetIpcHandleWithProperties)
 
         # call driver to get function pointers
         _MemExp = _ze_mem_exp_dditable_t()
@@ -7238,6 +7594,11 @@ class ZE_DDI:
         self.zeEventGetEventPool = _zeEventGetEventPool_t(self.__dditable.Event.pfnGetEventPool)
         self.zeEventGetSignalScope = _zeEventGetSignalScope_t(self.__dditable.Event.pfnGetSignalScope)
         self.zeEventGetWaitScope = _zeEventGetWaitScope_t(self.__dditable.Event.pfnGetWaitScope)
+        self.zeEventCounterBasedCreate = _zeEventCounterBasedCreate_t(self.__dditable.Event.pfnCounterBasedCreate)
+        self.zeEventCounterBasedGetIpcHandle = _zeEventCounterBasedGetIpcHandle_t(self.__dditable.Event.pfnCounterBasedGetIpcHandle)
+        self.zeEventCounterBasedOpenIpcHandle = _zeEventCounterBasedOpenIpcHandle_t(self.__dditable.Event.pfnCounterBasedOpenIpcHandle)
+        self.zeEventCounterBasedCloseIpcHandle = _zeEventCounterBasedCloseIpcHandle_t(self.__dditable.Event.pfnCounterBasedCloseIpcHandle)
+        self.zeEventCounterBasedGetDeviceAddress = _zeEventCounterBasedGetDeviceAddress_t(self.__dditable.Event.pfnCounterBasedGetDeviceAddress)
 
         # call driver to get function pointers
         _EventExp = _ze_event_exp_dditable_t()
@@ -7333,6 +7694,7 @@ class ZE_DDI:
         # attach function interface to function address
         self.zePhysicalMemCreate = _zePhysicalMemCreate_t(self.__dditable.PhysicalMem.pfnCreate)
         self.zePhysicalMemDestroy = _zePhysicalMemDestroy_t(self.__dditable.PhysicalMem.pfnDestroy)
+        self.zePhysicalMemGetProperties = _zePhysicalMemGetProperties_t(self.__dditable.PhysicalMem.pfnGetProperties)
 
         # call driver to get function pointers
         _VirtualMem = _ze_virtual_mem_dditable_t()

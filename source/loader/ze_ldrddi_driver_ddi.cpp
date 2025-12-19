@@ -443,17 +443,21 @@ namespace loader_driver_ddi
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetCommandQueueGroupProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of command queue group properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of command queue group properties available.
-                                                        ///< if count is greater than the number of command queue group properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of command queue group properties available.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of available command queue groups.
+                                                        ///< If count is zero, then the driver shall update the value with the
+                                                        ///< total number of command queue groups available.
+                                                        ///< If count is less than the number of command queue groups available,
+                                                        ///< then the driver shall only retrieve command queue group properties for
+                                                        ///< the given number of command queue groups.
+                                                        ///< If count is greater than or equal to the number of command queue
+                                                        ///< groups available, then the driver shall retrieve command queue group
+                                                        ///< properties for all available command queue groups.
         ze_command_queue_group_properties_t* pCommandQueueGroupProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
                                                         ///< command queue group properties.
-                                                        ///< if count is less than the number of command queue group properties
-                                                        ///< available, then driver shall only retrieve that number of command
-                                                        ///< queue group properties.
+                                                        ///< If count is less than the number of command queue groups available,
+                                                        ///< then the driver shall only retrieve that number of command queue group properties.
+                                                        ///< The order of properties in the array corresponds to the command queue
+                                                        ///< group ordinal.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -806,6 +810,37 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnSynchronize( hDevice );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetAggregatedCopyOffloadIncrementValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetAggregatedCopyOffloadIncrementValue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* incrementValue                        ///< [out] increment value that can be used for Event creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Device == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetAggregatedCopyOffloadIncrementValue = dditable->Device->pfnGetAggregatedCopyOffloadIncrementValue;
+        if( nullptr == pfnGetAggregatedCopyOffloadIncrementValue ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetAggregatedCopyOffloadIncrementValue( hDevice, incrementValue );
         return result;
     }
 
@@ -2112,6 +2147,39 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedCreate
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedCreate(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        const ze_event_counter_based_desc_t* desc,      ///< [in] pointer to counter based event descriptor
+        ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Event == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnCounterBasedCreate = dditable->Event->pfnCounterBasedCreate;
+        if( nullptr == pfnCounterBasedCreate ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnCounterBasedCreate( hContext, hDevice, desc, phEvent );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeEventDestroy
     __zedlllocal ze_result_t ZE_APICALL
     zeEventDestroy(
@@ -2264,6 +2332,132 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnCloseIpcHandle( hEventPool );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedGetIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedGetIpcHandle(
+        ze_event_handle_t hEvent,                       ///< [in] handle of event object
+        ze_ipc_event_counter_based_handle_t* phIpc      ///< [out] Returned IPC event handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Event == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnCounterBasedGetIpcHandle = dditable->Event->pfnCounterBasedGetIpcHandle;
+        if( nullptr == pfnCounterBasedGetIpcHandle ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnCounterBasedGetIpcHandle( hEvent, phIpc );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedOpenIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedOpenIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object to associate with the IPC event
+                                                        ///< handle
+        ze_ipc_event_counter_based_handle_t hIpc,       ///< [in] IPC event handle
+        ze_event_handle_t* phEvent                      ///< [out] pointer handle of event object created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Event == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnCounterBasedOpenIpcHandle = dditable->Event->pfnCounterBasedOpenIpcHandle;
+        if( nullptr == pfnCounterBasedOpenIpcHandle ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnCounterBasedOpenIpcHandle( hContext, hIpc, phEvent );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedCloseIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedCloseIpcHandle(
+        ze_event_handle_t hEvent                        ///< [in][release] handle of event object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Event == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnCounterBasedCloseIpcHandle = dditable->Event->pfnCounterBasedCloseIpcHandle;
+        if( nullptr == pfnCounterBasedCloseIpcHandle ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnCounterBasedCloseIpcHandle( hEvent );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedGetDeviceAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedGetDeviceAddress(
+        ze_event_handle_t hEvent,                       ///< [in] handle of event object
+        uint64_t* completionValue,                      ///< [in][out] completion value
+        uint64_t* deviceAddress                         ///< [in][out] counter device address
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Event == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnCounterBasedGetDeviceAddress = dditable->Event->pfnCounterBasedGetDeviceAddress;
+        if( nullptr == pfnCounterBasedGetDeviceAddress ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnCounterBasedGetDeviceAddress( hEvent, completionValue, deviceAddress );
         return result;
     }
 
@@ -4694,6 +4888,38 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zePhysicalMemGetProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zePhysicalMemGetProperties(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_physical_mem_handle_t hPhysicalMem,          ///< [in] handle of the physical memory object
+        ze_physical_mem_properties_t* pMemProperties    ///< [in,out] pointer to physical memory properties structure.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->PhysicalMem == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetProperties = dditable->PhysicalMem->pfnGetProperties;
+        if( nullptr == pfnGetProperties ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetProperties( hContext, hPhysicalMem, pMemProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zePhysicalMemCreate
     __zedlllocal ze_result_t ZE_APICALL
     zePhysicalMemCreate(
@@ -5508,6 +5734,39 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleWithProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleWithProperties(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const void* ptr,                                ///< [in] pointer to the device memory allocation
+        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_15) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Mem == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetIpcHandleWithProperties = dditable->Mem->pfnGetIpcHandleWithProperties;
+        if( nullptr == pfnGetIpcHandleWithProperties ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
         return result;
     }
 

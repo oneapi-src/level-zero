@@ -783,6 +783,32 @@ typedef void (ZE_APICALL *ze_pfnDeviceSynchronizeCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeDeviceGetAggregatedCopyOffloadIncrementValue
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_device_get_aggregated_copy_offload_increment_value_params_t
+{
+    ze_device_handle_t* phDevice;
+    uint32_t** pincrementValue;
+} ze_device_get_aggregated_copy_offload_increment_value_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeDeviceGetAggregatedCopyOffloadIncrementValue
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnDeviceGetAggregatedCopyOffloadIncrementValueCb_t)(
+    ze_device_get_aggregated_copy_offload_increment_value_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeDeviceReserveCacheExt
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -1566,6 +1592,139 @@ typedef void (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventCounterBasedCreate
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_event_counter_based_create_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_device_handle_t* phDevice;
+    const ze_event_counter_based_desc_t** pdesc;
+    ze_event_handle_t** pphEvent;
+} ze_event_counter_based_create_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventCounterBasedCreate
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnEventCounterBasedCreateCb_t)(
+    ze_event_counter_based_create_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventCounterBasedGetIpcHandle
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_event_counter_based_get_ipc_handle_params_t
+{
+    ze_event_handle_t* phEvent;
+    ze_ipc_event_counter_based_handle_t** pphIpc;
+} ze_event_counter_based_get_ipc_handle_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventCounterBasedGetIpcHandle
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnEventCounterBasedGetIpcHandleCb_t)(
+    ze_event_counter_based_get_ipc_handle_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventCounterBasedOpenIpcHandle
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_event_counter_based_open_ipc_handle_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_ipc_event_counter_based_handle_t* phIpc;
+    ze_event_handle_t** pphEvent;
+} ze_event_counter_based_open_ipc_handle_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventCounterBasedOpenIpcHandle
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnEventCounterBasedOpenIpcHandleCb_t)(
+    ze_event_counter_based_open_ipc_handle_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventCounterBasedCloseIpcHandle
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_event_counter_based_close_ipc_handle_params_t
+{
+    ze_event_handle_t* phEvent;
+} ze_event_counter_based_close_ipc_handle_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventCounterBasedCloseIpcHandle
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnEventCounterBasedCloseIpcHandleCb_t)(
+    ze_event_counter_based_close_ipc_handle_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventCounterBasedGetDeviceAddress
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_event_counter_based_get_device_address_params_t
+{
+    ze_event_handle_t* phEvent;
+    uint64_t** pcompletionValue;
+    uint64_t** pdeviceAddress;
+} ze_event_counter_based_get_device_address_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventCounterBasedGetDeviceAddress
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnEventCounterBasedGetDeviceAddressCb_t)(
+    ze_event_counter_based_get_device_address_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeEventQueryTimestampsExp
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -2023,6 +2182,34 @@ typedef void (ZE_APICALL *ze_pfnKernelSchedulingHintExpCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeMemGetIpcHandleWithProperties
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_mem_get_ipc_handle_with_properties_params_t
+{
+    ze_context_handle_t* phContext;
+    const void** pptr;
+    void** ppNext;
+    ze_ipc_mem_handle_t** ppIpcHandle;
+} ze_mem_get_ipc_handle_with_properties_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeMemGetIpcHandleWithProperties
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnMemGetIpcHandleWithPropertiesCb_t)(
+    ze_mem_get_ipc_handle_with_properties_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeMemFreeExt
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -2240,6 +2427,33 @@ typedef struct _ze_module_inspect_linkage_ext_params_t
 
 typedef void (ZE_APICALL *ze_pfnModuleInspectLinkageExtCb_t)(
     ze_module_inspect_linkage_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zePhysicalMemGetProperties
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_physical_mem_get_properties_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_physical_mem_handle_t* phPhysicalMem;
+    ze_physical_mem_properties_t** ppMemProperties;
+} ze_physical_mem_get_properties_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zePhysicalMemGetProperties
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnPhysicalMemGetPropertiesCb_t)(
+    ze_physical_mem_get_properties_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -2764,6 +2978,14 @@ zelTracerDeviceSynchronizeRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetAggregatedCopyOffloadIncrementValueRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetAggregatedCopyOffloadIncrementValueCb_t pfnGetAggregatedCopyOffloadIncrementValueCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerContextCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -3068,6 +3290,14 @@ zelTracerEventCreateRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedCreateRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedCreateCb_t pfnCounterBasedCreateCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerEventDestroyRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -3104,6 +3334,38 @@ zelTracerEventPoolCloseIpcHandleRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnEventPoolCloseIpcHandleCb_t pfnCloseIpcHandleCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedGetIpcHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedGetIpcHandleCb_t pfnCounterBasedGetIpcHandleCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedOpenIpcHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedOpenIpcHandleCb_t pfnCounterBasedOpenIpcHandleCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedCloseIpcHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedCloseIpcHandleCb_t pfnCounterBasedCloseIpcHandleCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedGetDeviceAddressRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedGetDeviceAddressCb_t pfnCounterBasedGetDeviceAddressCb
     );
 
 
@@ -3692,6 +3954,14 @@ zelTracerVirtualMemQueryPageSizeRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerPhysicalMemGetPropertiesRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnPhysicalMemGetPropertiesCb_t pfnGetPropertiesCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerPhysicalMemCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -3880,6 +4150,14 @@ zelTracerKernelGetAllocationPropertiesExpRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnKernelGetAllocationPropertiesExpCb_t pfnGetAllocationPropertiesExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerMemGetIpcHandleWithPropertiesRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnMemGetIpcHandleWithPropertiesCb_t pfnGetIpcHandleWithPropertiesCb
     );
 
 

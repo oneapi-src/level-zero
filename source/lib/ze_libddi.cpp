@@ -176,6 +176,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDeviceGetVectorWidthPropertiesExt") );
             initialzeDdiTable.Device.pfnSynchronize = reinterpret_cast<ze_pfnDeviceSynchronize_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceSynchronize") );
+            initialzeDdiTable.Device.pfnGetAggregatedCopyOffloadIncrementValue = reinterpret_cast<ze_pfnDeviceGetAggregatedCopyOffloadIncrementValue_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceGetAggregatedCopyOffloadIncrementValue") );
             initialzeDdiTable.Device.pfnReserveCacheExt = reinterpret_cast<ze_pfnDeviceReserveCacheExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceReserveCacheExt") );
             initialzeDdiTable.Device.pfnSetCacheAdviceExt = reinterpret_cast<ze_pfnDeviceSetCacheAdviceExt_t>(
@@ -366,6 +368,16 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeEventHostReset") );
             initialzeDdiTable.Event.pfnQueryKernelTimestamp = reinterpret_cast<ze_pfnEventQueryKernelTimestamp_t>(
                 GET_FUNCTION_PTR(loader, "zeEventQueryKernelTimestamp") );
+            initialzeDdiTable.Event.pfnCounterBasedCreate = reinterpret_cast<ze_pfnEventCounterBasedCreate_t>(
+                GET_FUNCTION_PTR(loader, "zeEventCounterBasedCreate") );
+            initialzeDdiTable.Event.pfnCounterBasedGetIpcHandle = reinterpret_cast<ze_pfnEventCounterBasedGetIpcHandle_t>(
+                GET_FUNCTION_PTR(loader, "zeEventCounterBasedGetIpcHandle") );
+            initialzeDdiTable.Event.pfnCounterBasedOpenIpcHandle = reinterpret_cast<ze_pfnEventCounterBasedOpenIpcHandle_t>(
+                GET_FUNCTION_PTR(loader, "zeEventCounterBasedOpenIpcHandle") );
+            initialzeDdiTable.Event.pfnCounterBasedCloseIpcHandle = reinterpret_cast<ze_pfnEventCounterBasedCloseIpcHandle_t>(
+                GET_FUNCTION_PTR(loader, "zeEventCounterBasedCloseIpcHandle") );
+            initialzeDdiTable.Event.pfnCounterBasedGetDeviceAddress = reinterpret_cast<ze_pfnEventCounterBasedGetDeviceAddress_t>(
+                GET_FUNCTION_PTR(loader, "zeEventCounterBasedGetDeviceAddress") );
             initialzeDdiTable.Event.pfnQueryKernelTimestampsExt = reinterpret_cast<ze_pfnEventQueryKernelTimestampsExt_t>(
                 GET_FUNCTION_PTR(loader, "zeEventQueryKernelTimestampsExt") );
             initialzeDdiTable.Event.pfnGetEventPool = reinterpret_cast<ze_pfnEventGetEventPool_t>(
@@ -527,6 +539,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeMemOpenIpcHandle") );
             initialzeDdiTable.Mem.pfnCloseIpcHandle = reinterpret_cast<ze_pfnMemCloseIpcHandle_t>(
                 GET_FUNCTION_PTR(loader, "zeMemCloseIpcHandle") );
+            initialzeDdiTable.Mem.pfnGetIpcHandleWithProperties = reinterpret_cast<ze_pfnMemGetIpcHandleWithProperties_t>(
+                GET_FUNCTION_PTR(loader, "zeMemGetIpcHandleWithProperties") );
             initialzeDdiTable.Mem.pfnFreeExt = reinterpret_cast<ze_pfnMemFreeExt_t>(
                 GET_FUNCTION_PTR(loader, "zeMemFreeExt") );
             initialzeDdiTable.Mem.pfnPutIpcHandle = reinterpret_cast<ze_pfnMemPutIpcHandle_t>(
@@ -596,6 +610,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zePhysicalMemCreate") );
             initialzeDdiTable.PhysicalMem.pfnDestroy = reinterpret_cast<ze_pfnPhysicalMemDestroy_t>(
                 GET_FUNCTION_PTR(loader, "zePhysicalMemDestroy") );
+            initialzeDdiTable.PhysicalMem.pfnGetProperties = reinterpret_cast<ze_pfnPhysicalMemGetProperties_t>(
+                GET_FUNCTION_PTR(loader, "zePhysicalMemGetProperties") );
         }
 
         if( ZE_RESULT_SUCCESS == result )

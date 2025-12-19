@@ -4048,6 +4048,33 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDevicePciLinkSpeedUpdateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDevicePciLinkSpeedUpdateExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                        ///< or set to default speed(false)
+        zes_device_action_t* pendingAction              ///< [out] Pending action
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnPciLinkSpeedUpdateExt = dditable->zes.Device.pfnPciLinkSpeedUpdateExt;
+        if( nullptr == pfnPciLinkSpeedUpdateExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesPowerGetLimitsExt
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetLimitsExt(
@@ -4747,6 +4774,7 @@ zesGetDeviceProcAddrTableLegacy()
     loader::loaderDispatch->pSysman->Device->pfnEnumSchedulers                           = loader::zesDeviceEnumSchedulers;
     loader::loaderDispatch->pSysman->Device->pfnEnumStandbyDomains                       = loader::zesDeviceEnumStandbyDomains;
     loader::loaderDispatch->pSysman->Device->pfnEnumTemperatureSensors                   = loader::zesDeviceEnumTemperatureSensors;
+    loader::loaderDispatch->pSysman->Device->pfnPciLinkSpeedUpdateExt                    = loader::zesDevicePciLinkSpeedUpdateExt;
     loader::loaderDispatch->pSysman->Device->pfnEccAvailable                             = loader::zesDeviceEccAvailable;
     loader::loaderDispatch->pSysman->Device->pfnEccConfigurable                          = loader::zesDeviceEccConfigurable;
     loader::loaderDispatch->pSysman->Device->pfnGetEccState                              = loader::zesDeviceGetEccState;
@@ -5931,6 +5959,13 @@ zesGetDeviceProcAddrTable(
                 pDdiTable->pfnEnumTemperatureSensors                   = loader_driver_ddi::zesDeviceEnumTemperatureSensors;
             } else {
                 pDdiTable->pfnEnumTemperatureSensors                   = loader::zesDeviceEnumTemperatureSensors;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnPciLinkSpeedUpdateExt                    = loader_driver_ddi::zesDevicePciLinkSpeedUpdateExt;
+            } else {
+                pDdiTable->pfnPciLinkSpeedUpdateExt                    = loader::zesDevicePciLinkSpeedUpdateExt;
             }
             }
             if (version >= ZE_API_VERSION_1_4) {

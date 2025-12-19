@@ -146,6 +146,7 @@ namespace validation_layer
         ze_result_t zesTemperatureGetConfigPrologue( zes_temp_handle_t hTemperature, zes_temp_config_t* pConfig ) override;
         ze_result_t zesTemperatureSetConfigPrologue( zes_temp_handle_t hTemperature, const zes_temp_config_t* pConfig ) override;
         ze_result_t zesTemperatureGetStatePrologue( zes_temp_handle_t hTemperature, double* pTemperature ) override;
+        ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) override;
         ze_result_t zesPowerGetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) override;
         ze_result_t zesPowerSetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) override;
         ze_result_t zesEngineGetActivityExtPrologue( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) override;

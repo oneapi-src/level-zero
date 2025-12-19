@@ -3900,6 +3900,35 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDevicePciLinkSpeedUpdateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDevicePciLinkSpeedUpdateExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                        ///< or set to default speed(false)
+        zes_device_action_t* pendingAction              ///< [out] Pending action
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnPciLinkSpeedUpdateExt = context.zesDdiTable.Device.pfnPciLinkSpeedUpdateExt;
+        if( nullptr != pfnPciLinkSpeedUpdateExt )
+        {
+            result = pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesDevicePciLinkSpeedUpdateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesPowerGetLimitsExt
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetLimitsExt(
@@ -4661,6 +4690,8 @@ zesGetDeviceProcAddrTable(
     pDdiTable->pfnEnumStandbyDomains                     = driver::zesDeviceEnumStandbyDomains;
 
     pDdiTable->pfnEnumTemperatureSensors                 = driver::zesDeviceEnumTemperatureSensors;
+
+    pDdiTable->pfnPciLinkSpeedUpdateExt                  = driver::zesDevicePciLinkSpeedUpdateExt;
 
     pDdiTable->pfnEccAvailable                           = driver::zesDeviceEccAvailable;
 

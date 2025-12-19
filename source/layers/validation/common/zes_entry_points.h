@@ -275,6 +275,8 @@ public:
     virtual ze_result_t zesTemperatureSetConfigEpilogue( zes_temp_handle_t hTemperature, const zes_temp_config_t* pConfig , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesTemperatureGetStatePrologue( zes_temp_handle_t hTemperature, double* pTemperature ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesTemperatureGetStateEpilogue( zes_temp_handle_t hTemperature, double* pTemperature , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDevicePciLinkSpeedUpdateExtEpilogue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerGetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerGetLimitsExtEpilogue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}

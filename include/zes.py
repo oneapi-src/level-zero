@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.14-r1.14.33
+ @version v1.15-r1.15.26
 
  """
 import platform
@@ -170,6 +170,8 @@ class zes_structure_type_v(IntEnum):
     VF_UTIL_ENGINE_EXP2 = 0x00020010                                        ## ::zes_vf_util_engine_exp2_t
     VF_EXP2_CAPABILITIES = 0x00020011                                       ## ::zes_vf_exp2_capabilities_t
     DEVICE_ECC_DEFAULT_PROPERTIES_EXT = 0x00020012                          ## ::zes_device_ecc_default_properties_ext_t
+    PCI_LINK_SPEED_DOWNGRADE_EXT_STATE = 0x00020013                         ## ::zes_pci_link_speed_downgrade_ext_state_t
+    PCI_LINK_SPEED_DOWNGRADE_EXT_PROPERTIES = 0x00020014                    ## ::zes_pci_link_speed_downgrade_ext_properties_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -1369,6 +1371,9 @@ class zes_freq_throttle_reason_flags_v(IntEnum):
     SW_RANGE = ZE_BIT(5)                                                    ## frequency throttled due to software supplied frequency range
     HW_RANGE = ZE_BIT(6)                                                    ## frequency throttled due to a sub block that has a lower frequency
                                                                             ## range when it receives clocks
+    VOLTAGE = ZE_BIT(7)                                                     ## frequency throttled due to voltage excursion
+    THERMAL = ZE_BIT(8)                                                     ## frequency throttled due to thermal conditions
+    POWER = ZE_BIT(9)                                                       ## frequency throttled due to power constraints
 
 class zes_freq_throttle_reason_flags_t(c_int):
     def __str__(self):
@@ -1590,9 +1595,9 @@ class zes_mem_properties_t(Structure):
                                                                         ## that the resource is on the device of the calling Sysman handle
         ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("location", zes_mem_loc_t),                                    ## [out] Location of this memory (system, device)
-        ("physicalSize", c_ulonglong),                                  ## [out] Physical memory size in bytes. A value of 0 indicates that this
-                                                                        ## property is not known. However, a call to ::zesMemoryGetState() will
-                                                                        ## correctly return the total size of usable memory.
+        ("physicalSize", c_ulonglong),                                  ## [out] Physical memory capacity in bytes. A value of 0 indicates that
+                                                                        ## this property is not known. However, a call to zesMemoryGetState()
+                                                                        ## will return the available free physical memory.
         ("busWidth", c_int32_t),                                        ## [out] Width of the memory bus. A value of -1 means that this property
                                                                         ## is unknown.
         ("numChannels", c_int32_t)                                      ## [out] The number of memory channels. A value of -1 means that this
@@ -1603,17 +1608,21 @@ class zes_mem_properties_t(Structure):
 ## @brief Memory state - health, allocated
 ## 
 ## @details
-##     - Percent allocation is given by 100 * (size - free / size.
-##     - Percent free is given by 100 * free / size.
+##     - Percent free is given by 100 * free / pysical mem size.
 class zes_mem_state_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("health", zes_mem_health_t),                                   ## [out] Indicates the health of the memory
-        ("free", c_ulonglong),                                          ## [out] The free memory in bytes
+        ("free", c_ulonglong),                                          ## [out] The free physical memory in bytes
         ("size", c_ulonglong)                                           ## [out] The total allocatable memory in bytes (can be less than the
-                                                                        ## `physicalSize` member of ::zes_mem_properties_t)
+                                                                        ## `physicalSize` member of ::zes_mem_properties_t). *DEPRECATED* 
+                                                                        ## This member can no longer track the allocatable memory reliably.
+                                                                        ## Clients depending on this information can use the 
+                                                                        ## zeDeviceGetMemoryProperties with 
+                                                                        ## ze_device_usablemem_size_ext_properties_t extention to get information
+                                                                        ## of the available usable memory.
     ]
 
 ###############################################################################
@@ -2172,6 +2181,49 @@ class zes_device_ecc_default_properties_ext_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("defaultState", zes_device_ecc_state_t)                        ## [out] Default ECC state
+    ]
+
+###############################################################################
+## @brief PCI Link Speed Downgrade Extension Name
+ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME = "ZES_extension_pci_link_speed_downgrade"
+
+###############################################################################
+## @brief PCI Link Speed Downgrade Extension Version(s)
+class zes_pci_link_speed_downgrade_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_pci_link_speed_downgrade_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_pci_link_speed_downgrade_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Query PCIe downgrade status.
+## 
+## @details
+##     - This structure can be passed in the 'pNext' of ::zes_pci_state_t
+class zes_pci_link_speed_downgrade_ext_state_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("pciLinkSpeedDowngradeStatus", ze_bool_t)                      ## [out] Returns the current PCIe downgrade status.
+    ]
+
+###############################################################################
+## @brief Query PCIe downgrade capability.
+## 
+## @details
+##     - This structure can be passed in the 'pNext' of ::zes_pci_properties_t
+class zes_pci_link_speed_downgrade_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("pciLinkSpeedUpdateCapable", ze_bool_t),                       ## [out] Returns if PCIe downgrade capability is available.
+        ("maxPciGenSupported", c_int32_t)                               ## [out] Returns the max supported PCIe generation of the device. -1
+                                                                        ## indicates the information is not available
     ]
 
 ###############################################################################
@@ -2866,6 +2918,13 @@ if __use_win_types:
 else:
     _zesDeviceResetExt_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_reset_properties_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDevicePciLinkSpeedUpdateExt
+if __use_win_types:
+    _zesDevicePciLinkSpeedUpdateExt_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, ze_bool_t, POINTER(zes_device_action_t) )
+else:
+    _zesDevicePciLinkSpeedUpdateExt_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, ze_bool_t, POINTER(zes_device_action_t) )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -2907,7 +2966,8 @@ class _zes_device_dditable_t(Structure):
         ("pfnResetOverclockSettings", c_void_p),                        ## _zesDeviceResetOverclockSettings_t
         ("pfnReadOverclockState", c_void_p),                            ## _zesDeviceReadOverclockState_t
         ("pfnEnumOverclockDomains", c_void_p),                          ## _zesDeviceEnumOverclockDomains_t
-        ("pfnResetExt", c_void_p)                                       ## _zesDeviceResetExt_t
+        ("pfnResetExt", c_void_p),                                      ## _zesDeviceResetExt_t
+        ("pfnPciLinkSpeedUpdateExt", c_void_p)                          ## _zesDevicePciLinkSpeedUpdateExt_t
     ]
 
 ###############################################################################
@@ -4049,6 +4109,7 @@ class ZES_DDI:
         self.zesDeviceReadOverclockState = _zesDeviceReadOverclockState_t(self.__dditable.Device.pfnReadOverclockState)
         self.zesDeviceEnumOverclockDomains = _zesDeviceEnumOverclockDomains_t(self.__dditable.Device.pfnEnumOverclockDomains)
         self.zesDeviceResetExt = _zesDeviceResetExt_t(self.__dditable.Device.pfnResetExt)
+        self.zesDevicePciLinkSpeedUpdateExt = _zesDevicePciLinkSpeedUpdateExt_t(self.__dditable.Device.pfnPciLinkSpeedUpdateExt)
 
         # call driver to get function pointers
         _DeviceExp = _zes_device_exp_dditable_t()
