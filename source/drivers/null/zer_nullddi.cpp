@@ -149,7 +149,7 @@ zerGetGlobalProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;

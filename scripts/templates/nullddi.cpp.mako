@@ -156,7 +156,7 @@ ${tbl['export']['name']}(
     if( nullptr == pDdiTable )
         return ${X}_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ${X}_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;

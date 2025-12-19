@@ -4580,7 +4580,7 @@ zesGetGlobalProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4607,7 +4607,7 @@ zesGetDeviceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4706,7 +4706,7 @@ zesGetDeviceExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4737,7 +4737,7 @@ zesGetDriverProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4772,7 +4772,7 @@ zesGetDriverExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4799,7 +4799,7 @@ zesGetDiagnosticsProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4830,7 +4830,7 @@ zesGetEngineProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4861,7 +4861,7 @@ zesGetFabricPortProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4902,7 +4902,7 @@ zesGetFanProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4939,7 +4939,7 @@ zesGetFirmwareProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4972,7 +4972,7 @@ zesGetFirmwareExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5001,7 +5001,7 @@ zesGetFrequencyProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5060,7 +5060,7 @@ zesGetLedProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5093,7 +5093,7 @@ zesGetMemoryProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5124,7 +5124,7 @@ zesGetOverclockProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5167,7 +5167,7 @@ zesGetPerformanceFactorProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5198,7 +5198,7 @@ zesGetPowerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5239,7 +5239,7 @@ zesGetPsuProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5268,7 +5268,7 @@ zesGetRasProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5301,7 +5301,7 @@ zesGetRasExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5330,7 +5330,7 @@ zesGetSchedulerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5371,7 +5371,7 @@ zesGetStandbyProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5402,7 +5402,7 @@ zesGetTemperatureProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5435,7 +5435,7 @@ zesGetVFManagementExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( driver::context.version < version )
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
