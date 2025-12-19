@@ -13,6 +13,28 @@ using namespace loader_driver_ddi;
 
 namespace loader
 {
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Initialize all DDI tables for a driver by calling *FromDriver functions
+    ///
+    /// @details This function can fail in the following scenarios:
+    ///     - driver->initStatus is already set to a failure code (from a previous
+    ///       required DDI initialization failure). Each *FromDriver call first checks
+    ///       driver->initStatus and returns it immediately if it's already a failure.
+    ///     - A required DDI table's getTable call into the driver returns a failure,
+    ///       which updates driver->initStatus and is propagated back
+    ///
+    ///     Note: If GET_FUNCTION_PTR returns null (function not found in driver),
+    ///     it only fails if driver->initStatus was already a failure. Otherwise,
+    ///     driver->initStatus is returned (which would be SUCCESS).
+    ///
+    ///     Note: Optional DDI tables (when namespace != "zer") are ignored if they
+    ///     fail, and this function continues to attempt loading remaining tables.
+    ///     Only required DDI table failures cause this function to fail and return
+    ///     immediately.
+    ///
+    /// @returns
+    ///     - ::ZE_RESULT_SUCCESS if all required DDI tables loaded successfully
+    ///     - ::ZE_RESULT_ERROR_* if any required DDI table failed to load
     __zedlllocal ze_result_t ZE_APICALL
     zeloaderInitDriverDDITables(loader::driver_t *driver) {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -20,38 +42,32 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetRTASBuilderProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
-        result = zeGetRTASBuilderExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
-        result = zeGetRTASParallelOperationProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
-        result = zeGetRTASParallelOperationExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetRTASBuilderProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetRTASBuilderExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetRTASParallelOperationProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetRTASParallelOperationExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetDriverProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetDriverExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetDriverExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetDeviceProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetDeviceExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetDeviceExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetContextProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -64,18 +80,16 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetCommandListExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetCommandListExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetEventProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetEventExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetEventExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetEventPoolProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -88,26 +102,23 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetImageExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetImageExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetKernelProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetKernelExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetKernelExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetMemProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetMemExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetMemExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zeGetModuleProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -128,14 +139,12 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zeGetFabricEdgeExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
-        result = zeGetFabricVertexExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetFabricEdgeExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zeGetFabricVertexExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         return result;
     }
     ///////////////////////////////////////////////////////////////////////////////
@@ -7819,11 +7828,7 @@ zeGetRTASBuilderProcAddrTableFromDriver(loader::driver_t *driver)
         GET_FUNCTION_PTR( driver->handle, "zeGetRTASBuilderProcAddrTable") );
     if(!getTable) 
         return driver->initStatus;
-    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.ze.RTASBuilder);
-    if(getTableResult == ZE_RESULT_SUCCESS) {
-        loader::context->configured_version = loader::context->ddi_init_version;
-    } else
-        driver->initStatus = getTableResult;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.ze.RTASBuilder);
     return result;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -7867,11 +7872,7 @@ zeGetRTASParallelOperationProcAddrTableFromDriver(loader::driver_t *driver)
         GET_FUNCTION_PTR( driver->handle, "zeGetRTASParallelOperationProcAddrTable") );
     if(!getTable) 
         return driver->initStatus;
-    auto getTableResult = getTable( loader::context->ddi_init_version, &driver->dditable.ze.RTASParallelOperation);
-    if(getTableResult == ZE_RESULT_SUCCESS) {
-        loader::context->configured_version = loader::context->ddi_init_version;
-    } else
-        driver->initStatus = getTableResult;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.ze.RTASParallelOperation);
     return result;
 }
 ///////////////////////////////////////////////////////////////////////////////

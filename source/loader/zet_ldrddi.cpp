@@ -13,29 +13,47 @@ using namespace loader_driver_ddi;
 
 namespace loader
 {
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Initialize all DDI tables for a driver by calling *FromDriver functions
+    ///
+    /// @details This function can fail in the following scenarios:
+    ///     - driver->initStatus is already set to a failure code (from a previous
+    ///       required DDI initialization failure). Each *FromDriver call first checks
+    ///       driver->initStatus and returns it immediately if it's already a failure.
+    ///     - A required DDI table's getTable call into the driver returns a failure,
+    ///       which updates driver->initStatus and is propagated back
+    ///
+    ///     Note: If GET_FUNCTION_PTR returns null (function not found in driver),
+    ///     it only fails if driver->initStatus was already a failure. Otherwise,
+    ///     driver->initStatus is returned (which would be SUCCESS).
+    ///
+    ///     Note: Optional DDI tables (when namespace != "zer") are ignored if they
+    ///     fail, and this function continues to attempt loading remaining tables.
+    ///     Only required DDI table failures cause this function to fail and return
+    ///     immediately.
+    ///
+    /// @returns
+    ///     - ::ZE_RESULT_SUCCESS if all required DDI tables loaded successfully
+    ///     - ::ZE_RESULT_ERROR_* if any required DDI table failed to load
     __zedlllocal ze_result_t ZE_APICALL
     zetloaderInitDriverDDITables(loader::driver_t *driver) {
         ze_result_t result = ZE_RESULT_SUCCESS;
-        result = zetGetMetricDecoderExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
-        result = zetGetMetricProgrammableExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
-        result = zetGetMetricTracerExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zetGetMetricDecoderExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zetGetMetricProgrammableExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zetGetMetricTracerExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zetGetDeviceProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zetGetDeviceExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zetGetDeviceExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zetGetContextProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -44,10 +62,9 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zetGetCommandListExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zetGetCommandListExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zetGetKernelProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
@@ -64,18 +81,16 @@ namespace loader
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zetGetMetricExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zetGetMetricExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zetGetMetricGroupProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
         }
-        result = zetGetMetricGroupExpProcAddrTableFromDriver(driver);
-        if (result != ZE_RESULT_SUCCESS) {
-            return result;
-        }
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zetGetMetricGroupExpProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
         result = zetGetMetricQueryProcAddrTableFromDriver(driver);
         if (result != ZE_RESULT_SUCCESS) {
             return result;
