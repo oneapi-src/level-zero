@@ -86,6 +86,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zesDeviceEnumStandbyDomains") );
             initialzesDdiTable.Device.pfnEnumTemperatureSensors = reinterpret_cast<zes_pfnDeviceEnumTemperatureSensors_t>(
                 GET_FUNCTION_PTR(loader, "zesDeviceEnumTemperatureSensors") );
+            initialzesDdiTable.Device.pfnPciLinkSpeedUpdateExt = reinterpret_cast<zes_pfnDevicePciLinkSpeedUpdateExt_t>(
+                GET_FUNCTION_PTR(loader, "zesDevicePciLinkSpeedUpdateExt") );
             initialzesDdiTable.Device.pfnEccAvailable = reinterpret_cast<zes_pfnDeviceEccAvailable_t>(
                 GET_FUNCTION_PTR(loader, "zesDeviceEccAvailable") );
             initialzesDdiTable.Device.pfnEccConfigurable = reinterpret_cast<zes_pfnDeviceEccConfigurable_t>(

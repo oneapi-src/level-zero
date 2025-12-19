@@ -528,17 +528,21 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetCommandQueueGroupProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of command queue group properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of command queue group properties available.
-                                                        ///< if count is greater than the number of command queue group properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of command queue group properties available.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of available command queue groups.
+                                                        ///< If count is zero, then the driver shall update the value with the
+                                                        ///< total number of command queue groups available.
+                                                        ///< If count is less than the number of command queue groups available,
+                                                        ///< then the driver shall only retrieve command queue group properties for
+                                                        ///< the given number of command queue groups.
+                                                        ///< If count is greater than or equal to the number of command queue
+                                                        ///< groups available, then the driver shall retrieve command queue group
+                                                        ///< properties for all available command queue groups.
         ze_command_queue_group_properties_t* pCommandQueueGroupProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
                                                         ///< command queue group properties.
-                                                        ///< if count is less than the number of command queue group properties
-                                                        ///< available, then driver shall only retrieve that number of command
-                                                        ///< queue group properties.
+                                                        ///< If count is less than the number of command queue groups available,
+                                                        ///< then the driver shall only retrieve that number of command queue group properties.
+                                                        ///< The order of properties in the array corresponds to the command queue
+                                                        ///< group ordinal.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -845,6 +849,33 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeDeviceSynchronize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetAggregatedCopyOffloadIncrementValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetAggregatedCopyOffloadIncrementValue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* incrementValue                        ///< [out] increment value that can be used for Event creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetAggregatedCopyOffloadIncrementValue = context.zeDdiTable.Device.pfnGetAggregatedCopyOffloadIncrementValue;
+        if( nullptr != pfnGetAggregatedCopyOffloadIncrementValue )
+        {
+            result = pfnGetAggregatedCopyOffloadIncrementValue( hDevice, incrementValue );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetAggregatedCopyOffloadIncrementValue", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2023,6 +2054,37 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedCreate
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedCreate(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        const ze_event_counter_based_desc_t* desc,      ///< [in] pointer to counter based event descriptor
+        ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCounterBasedCreate = context.zeDdiTable.Event.pfnCounterBasedCreate;
+        if( nullptr != pfnCounterBasedCreate )
+        {
+            result = pfnCounterBasedCreate( hContext, hDevice, desc, phEvent );
+        }
+        else
+        {
+            // generic implementation
+            *phEvent = reinterpret_cast<ze_event_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventCounterBasedCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeEventDestroy
     __zedlllocal ze_result_t ZE_APICALL
     zeEventDestroy(
@@ -2157,6 +2219,119 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeEventPoolCloseIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedGetIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedGetIpcHandle(
+        ze_event_handle_t hEvent,                       ///< [in] handle of event object
+        ze_ipc_event_counter_based_handle_t* phIpc      ///< [out] Returned IPC event handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCounterBasedGetIpcHandle = context.zeDdiTable.Event.pfnCounterBasedGetIpcHandle;
+        if( nullptr != pfnCounterBasedGetIpcHandle )
+        {
+            result = pfnCounterBasedGetIpcHandle( hEvent, phIpc );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventCounterBasedGetIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedOpenIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedOpenIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object to associate with the IPC event
+                                                        ///< handle
+        ze_ipc_event_counter_based_handle_t hIpc,       ///< [in] IPC event handle
+        ze_event_handle_t* phEvent                      ///< [out] pointer handle of event object created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCounterBasedOpenIpcHandle = context.zeDdiTable.Event.pfnCounterBasedOpenIpcHandle;
+        if( nullptr != pfnCounterBasedOpenIpcHandle )
+        {
+            result = pfnCounterBasedOpenIpcHandle( hContext, hIpc, phEvent );
+        }
+        else
+        {
+            // generic implementation
+            *phEvent = reinterpret_cast<ze_event_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventCounterBasedOpenIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedCloseIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedCloseIpcHandle(
+        ze_event_handle_t hEvent                        ///< [in][release] handle of event object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCounterBasedCloseIpcHandle = context.zeDdiTable.Event.pfnCounterBasedCloseIpcHandle;
+        if( nullptr != pfnCounterBasedCloseIpcHandle )
+        {
+            result = pfnCounterBasedCloseIpcHandle( hEvent );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventCounterBasedCloseIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventCounterBasedGetDeviceAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventCounterBasedGetDeviceAddress(
+        ze_event_handle_t hEvent,                       ///< [in] handle of event object
+        uint64_t* completionValue,                      ///< [in][out] completion value
+        uint64_t* deviceAddress                         ///< [in][out] counter device address
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCounterBasedGetDeviceAddress = context.zeDdiTable.Event.pfnCounterBasedGetDeviceAddress;
+        if( nullptr != pfnCounterBasedGetDeviceAddress )
+        {
+            result = pfnCounterBasedGetDeviceAddress( hEvent, completionValue, deviceAddress );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventCounterBasedGetDeviceAddress", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -4323,6 +4498,34 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zePhysicalMemGetProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zePhysicalMemGetProperties(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_physical_mem_handle_t hPhysicalMem,          ///< [in] handle of the physical memory object
+        ze_physical_mem_properties_t* pMemProperties    ///< [in,out] pointer to physical memory properties structure.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetProperties = context.zeDdiTable.PhysicalMem.pfnGetProperties;
+        if( nullptr != pfnGetProperties )
+        {
+            result = pfnGetProperties( hContext, hPhysicalMem, pMemProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zePhysicalMemGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zePhysicalMemCreate
     __zedlllocal ze_result_t ZE_APICALL
     zePhysicalMemCreate(
@@ -5050,6 +5253,35 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeKernelGetAllocationPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleWithProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleWithProperties(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const void* ptr,                                ///< [in] pointer to the device memory allocation
+        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetIpcHandleWithProperties = context.zeDdiTable.Mem.pfnGetIpcHandleWithProperties;
+        if( nullptr != pfnGetIpcHandleWithProperties )
+        {
+            result = pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetIpcHandleWithProperties", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -6628,6 +6860,8 @@ zeGetDeviceProcAddrTable(
 
     pDdiTable->pfnSynchronize                            = driver::zeDeviceSynchronize;
 
+    pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue = driver::zeDeviceGetAggregatedCopyOffloadIncrementValue;
+
     pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
 
     pDdiTable->pfnSetCacheAdviceExt                      = driver::zeDeviceSetCacheAdviceExt;
@@ -6923,6 +7157,16 @@ zeGetEventProcAddrTable(
     pDdiTable->pfnHostReset                              = driver::zeEventHostReset;
 
     pDdiTable->pfnQueryKernelTimestamp                   = driver::zeEventQueryKernelTimestamp;
+
+    pDdiTable->pfnCounterBasedCreate                     = driver::zeEventCounterBasedCreate;
+
+    pDdiTable->pfnCounterBasedGetIpcHandle               = driver::zeEventCounterBasedGetIpcHandle;
+
+    pDdiTable->pfnCounterBasedOpenIpcHandle              = driver::zeEventCounterBasedOpenIpcHandle;
+
+    pDdiTable->pfnCounterBasedCloseIpcHandle             = driver::zeEventCounterBasedCloseIpcHandle;
+
+    pDdiTable->pfnCounterBasedGetDeviceAddress           = driver::zeEventCounterBasedGetDeviceAddress;
 
     pDdiTable->pfnQueryKernelTimestampsExt               = driver::zeEventQueryKernelTimestampsExt;
 
@@ -7226,6 +7470,8 @@ zeGetMemProcAddrTable(
 
     pDdiTable->pfnCloseIpcHandle                         = driver::zeMemCloseIpcHandle;
 
+    pDdiTable->pfnGetIpcHandleWithProperties             = driver::zeMemGetIpcHandleWithProperties;
+
     pDdiTable->pfnFreeExt                                = driver::zeMemFreeExt;
 
     pDdiTable->pfnPutIpcHandle                           = driver::zeMemPutIpcHandle;
@@ -7365,6 +7611,8 @@ zeGetPhysicalMemProcAddrTable(
     pDdiTable->pfnCreate                                 = driver::zePhysicalMemCreate;
 
     pDdiTable->pfnDestroy                                = driver::zePhysicalMemDestroy;
+
+    pDdiTable->pfnGetProperties                          = driver::zePhysicalMemGetProperties;
 
     return result;
 }

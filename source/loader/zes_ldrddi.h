@@ -1053,6 +1053,13 @@ namespace loader_driver_ddi
                                                         ///< in degrees Celsius.
         );
     __zedlllocal ze_result_t ZE_APICALL
+    zesDevicePciLinkSpeedUpdateExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                        ///< or set to default speed(false)
+        zes_device_action_t* pendingAction              ///< [out] Pending action
+        );
+    __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetLimitsExt(
         zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
         uint32_t* pCount,                               ///< [in,out] Pointer to the number of power limit descriptors. If count is

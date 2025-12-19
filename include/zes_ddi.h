@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.14-r1.14.33
+ * @version v1.15-r1.15.26
  *
  */
 #ifndef _ZES_DDI_H
@@ -338,6 +338,14 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDeviceResetExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDevicePciLinkSpeedUpdateExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnDevicePciLinkSpeedUpdateExt_t)(
+    zes_device_handle_t,
+    ze_bool_t,
+    zes_device_action_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _zes_device_dditable_t
 {
@@ -378,6 +386,7 @@ typedef struct _zes_device_dditable_t
     zes_pfnDeviceReadOverclockState_t                           pfnReadOverclockState;
     zes_pfnDeviceEnumOverclockDomains_t                         pfnEnumOverclockDomains;
     zes_pfnDeviceResetExt_t                                     pfnResetExt;
+    zes_pfnDevicePciLinkSpeedUpdateExt_t                        pfnPciLinkSpeedUpdateExt;
 } zes_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

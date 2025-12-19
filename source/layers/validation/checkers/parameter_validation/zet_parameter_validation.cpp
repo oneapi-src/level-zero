@@ -783,9 +783,6 @@ namespace validation_layer
         if( nullptr == hDevice )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-        if( nullptr == phMetricGroups )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
         return ZE_RESULT_SUCCESS;
     }
 
@@ -1398,9 +1395,6 @@ namespace validation_layer
         )
     {
         if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == phMetrics )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         return ZE_RESULT_SUCCESS;

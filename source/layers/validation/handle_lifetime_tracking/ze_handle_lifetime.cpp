@@ -197,17 +197,21 @@ namespace validation_layer
     ze_result_t
     ZEHandleLifetimeValidation::zeDeviceGetCommandQueueGroupPropertiesPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of command queue group properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of command queue group properties available.
-                                                        ///< if count is greater than the number of command queue group properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of command queue group properties available.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of available command queue groups.
+                                                        ///< If count is zero, then the driver shall update the value with the
+                                                        ///< total number of command queue groups available.
+                                                        ///< If count is less than the number of command queue groups available,
+                                                        ///< then the driver shall only retrieve command queue group properties for
+                                                        ///< the given number of command queue groups.
+                                                        ///< If count is greater than or equal to the number of command queue
+                                                        ///< groups available, then the driver shall retrieve command queue group
+                                                        ///< properties for all available command queue groups.
         ze_command_queue_group_properties_t* pCommandQueueGroupProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
                                                         ///< command queue group properties.
-                                                        ///< if count is less than the number of command queue group properties
-                                                        ///< available, then driver shall only retrieve that number of command
-                                                        ///< queue group properties.
+                                                        ///< If count is less than the number of command queue groups available,
+                                                        ///< then the driver shall only retrieve that number of command queue group properties.
+                                                        ///< The order of properties in the array corresponds to the command queue
+                                                        ///< group ordinal.
         )
     { 
         
@@ -354,6 +358,18 @@ namespace validation_layer
     ze_result_t
     ZEHandleLifetimeValidation::zeDeviceSynchronizePrologue(
         ze_device_handle_t hDevice                      ///< [in] handle of the device
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetAggregatedCopyOffloadIncrementValuePrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* incrementValue                        ///< [out] increment value that can be used for Event creation
         )
     { 
         
@@ -1155,6 +1171,23 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeEventCounterBasedCreatePrologue(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        const ze_event_counter_based_desc_t* desc,      ///< [in] pointer to counter based event descriptor
+        ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeEventDestroyPrologue(
         ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
         )
@@ -1217,6 +1250,56 @@ namespace validation_layer
     { 
         
         if ( !context.handleLifetime->isHandleValid( hEventPool )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeEventCounterBasedGetIpcHandlePrologue(
+        ze_event_handle_t hEvent,                       ///< [in] handle of event object
+        ze_ipc_event_counter_based_handle_t* phIpc      ///< [out] Returned IPC event handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeEventCounterBasedOpenIpcHandlePrologue(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object to associate with the IPC event
+                                                        ///< handle
+        ze_ipc_event_counter_based_handle_t hIpc,       ///< [in] IPC event handle
+        ze_event_handle_t* phEvent                      ///< [out] pointer handle of event object created
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeEventCounterBasedCloseIpcHandlePrologue(
+        ze_event_handle_t hEvent                        ///< [in][release] handle of event object
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeEventCounterBasedGetDeviceAddressPrologue(
+        ze_event_handle_t hEvent,                       ///< [in] handle of event object
+        uint64_t* completionValue,                      ///< [in][out] completion value
+        uint64_t* deviceAddress                         ///< [in][out] counter device address
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hEvent )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;
@@ -2466,6 +2549,22 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zePhysicalMemGetPropertiesPrologue(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_physical_mem_handle_t hPhysicalMem,          ///< [in] handle of the physical memory object
+        ze_physical_mem_properties_t* pMemProperties    ///< [in,out] pointer to physical memory properties structure.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hPhysicalMem )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zePhysicalMemCreatePrologue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object, can be `nullptr` if creating
@@ -2890,6 +2989,20 @@ namespace validation_layer
     { 
         
         if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeMemGetIpcHandleWithPropertiesPrologue(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const void* ptr,                                ///< [in] pointer to the device memory allocation
+        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;

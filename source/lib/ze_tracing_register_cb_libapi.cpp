@@ -694,6 +694,31 @@ zelTracerDeviceSynchronizeRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetAggregatedCopyOffloadIncrementValueRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetAggregatedCopyOffloadIncrementValueCb_t pfnGetAggregatedCopyOffloadIncrementValueCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnDeviceGetAggregatedCopyOffloadIncrementValueCb_t pfnGetAggregatedCopyOffloadIncrementValueCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerDeviceGetAggregatedCopyOffloadIncrementValueRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetAggregatedCopyOffloadIncrementValueCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerContextCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -1644,6 +1669,31 @@ zelTracerEventCreateRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedCreateRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedCreateCb_t pfnCounterBasedCreateCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnEventCounterBasedCreateCb_t pfnCounterBasedCreateCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerEventCounterBasedCreateRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnCounterBasedCreateCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerEventDestroyRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -1763,6 +1813,106 @@ zelTracerEventPoolCloseIpcHandleRegisterCallback(
 
     if(func)
         return func(hTracer, callback_type, pfnCloseIpcHandleCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedGetIpcHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedGetIpcHandleCb_t pfnCounterBasedGetIpcHandleCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnEventCounterBasedGetIpcHandleCb_t pfnCounterBasedGetIpcHandleCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerEventCounterBasedGetIpcHandleRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnCounterBasedGetIpcHandleCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedOpenIpcHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedOpenIpcHandleCb_t pfnCounterBasedOpenIpcHandleCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnEventCounterBasedOpenIpcHandleCb_t pfnCounterBasedOpenIpcHandleCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerEventCounterBasedOpenIpcHandleRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnCounterBasedOpenIpcHandleCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedCloseIpcHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedCloseIpcHandleCb_t pfnCounterBasedCloseIpcHandleCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnEventCounterBasedCloseIpcHandleCb_t pfnCounterBasedCloseIpcHandleCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerEventCounterBasedCloseIpcHandleRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnCounterBasedCloseIpcHandleCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventCounterBasedGetDeviceAddressRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventCounterBasedGetDeviceAddressCb_t pfnCounterBasedGetDeviceAddressCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnEventCounterBasedGetDeviceAddressCb_t pfnCounterBasedGetDeviceAddressCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerEventCounterBasedGetDeviceAddressRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnCounterBasedGetDeviceAddressCb);
 
     return ZE_RESULT_ERROR_UNINITIALIZED;    
 }
@@ -3594,6 +3744,31 @@ zelTracerVirtualMemQueryPageSizeRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerPhysicalMemGetPropertiesRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnPhysicalMemGetPropertiesCb_t pfnGetPropertiesCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnPhysicalMemGetPropertiesCb_t pfnGetPropertiesCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerPhysicalMemGetPropertiesRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetPropertiesCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerPhysicalMemCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -4188,6 +4363,31 @@ zelTracerKernelGetAllocationPropertiesExpRegisterCallback(
 
     if(func)
         return func(hTracer, callback_type, pfnGetAllocationPropertiesExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerMemGetIpcHandleWithPropertiesRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnMemGetIpcHandleWithPropertiesCb_t pfnGetIpcHandleWithPropertiesCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnMemGetIpcHandleWithPropertiesCb_t pfnGetIpcHandleWithPropertiesCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerMemGetIpcHandleWithPropertiesRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetIpcHandleWithPropertiesCb);
 
     return ZE_RESULT_ERROR_UNINITIALIZED;    
 }

@@ -5802,6 +5802,50 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDevicePciLinkSpeedUpdateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDevicePciLinkSpeedUpdateExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                        ///< or set to default speed(false)
+        zes_device_action_t* pendingAction              ///< [out] Pending action
+        )
+    {
+        context.logger->log_trace("zesDevicePciLinkSpeedUpdateExt(hDevice, shouldDowngrade, pendingAction)");
+
+        auto pfnPciLinkSpeedUpdateExt = context.zesDdiTable.Device.pfnPciLinkSpeedUpdateExt;
+
+        if( nullptr == pfnPciLinkSpeedUpdateExt )
+            return logAndPropagateResult("zesDevicePciLinkSpeedUpdateExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDevicePciLinkSpeedUpdateExtPrologue( hDevice, shouldDowngrade, pendingAction );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zesDevicePciLinkSpeedUpdateExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDevicePciLinkSpeedUpdateExtPrologue( hDevice, shouldDowngrade, pendingAction );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zesDevicePciLinkSpeedUpdateExt", result);
+        }
+
+        auto driver_result = pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDevicePciLinkSpeedUpdateExtEpilogue( hDevice, shouldDowngrade, pendingAction ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zesDevicePciLinkSpeedUpdateExt", result);
+        }
+
+        return logAndPropagateResult("zesDevicePciLinkSpeedUpdateExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesPowerGetLimitsExt
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetLimitsExt(
@@ -6948,6 +6992,10 @@ zesGetDeviceProcAddrTable(
     if (version >= ZE_API_VERSION_1_0) {
         dditable.pfnEnumTemperatureSensors                   = pDdiTable->pfnEnumTemperatureSensors;
         pDdiTable->pfnEnumTemperatureSensors                 = validation_layer::zesDeviceEnumTemperatureSensors;
+    }
+    if (version >= ZE_API_VERSION_1_15) {
+        dditable.pfnPciLinkSpeedUpdateExt                    = pDdiTable->pfnPciLinkSpeedUpdateExt;
+        pDdiTable->pfnPciLinkSpeedUpdateExt                  = validation_layer::zesDevicePciLinkSpeedUpdateExt;
     }
     if (version >= ZE_API_VERSION_1_4) {
         dditable.pfnEccAvailable                             = pDdiTable->pfnEccAvailable;
