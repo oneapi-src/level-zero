@@ -20,6 +20,10 @@
 #include "zes_entry_points.h"
 #include "zer_entry_points.h"
 #include "logging.h"
+#include "ze_to_string.h"
+#include "zes_to_string.h"
+#include "zet_to_string.h"
+#include "zer_to_string.h"
 #include <memory>
 #include <vector>
 
