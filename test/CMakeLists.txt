@@ -491,6 +491,56 @@ else()
   set_property(TEST tests_multi_driver_sysman_vf_management_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
 endif()
 
+add_test(NAME tests_single_driver_sysman_device_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDeviceApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_sysman_device_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME tests_multi_driver_sysman_device_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDeviceApisThenExpectNullDriverIsReachedSuccessfully)
+if (MSVC)
+  set_property(TEST tests_multi_driver_sysman_device_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_sysman_device_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
+add_test(NAME tests_single_driver_sysman_device_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDeviceExtApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_sysman_device_ext_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME tests_multi_driver_sysman_device_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDeviceExtApisThenExpectNullDriverIsReachedSuccessfully)
+if (MSVC)
+  set_property(TEST tests_multi_driver_sysman_device_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_sysman_device_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
+add_test(NAME tests_single_driver_sysman_engine_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEngineApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_sysman_engine_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME tests_multi_driver_sysman_engine_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEngineApisThenExpectNullDriverIsReachedSuccessfully)
+if (MSVC)
+  set_property(TEST tests_multi_driver_sysman_engine_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_sysman_engine_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
+add_test(NAME tests_single_driver_sysman_engine_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEngineExtApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_sysman_engine_ext_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME tests_multi_driver_sysman_engine_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEngineExtApisThenExpectNullDriverIsReachedSuccessfully)
+if (MSVC)
+  set_property(TEST tests_multi_driver_sysman_engine_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_sysman_engine_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
+add_test(NAME tests_single_driver_sysman_memory_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManMemoryApisThenExpectNullDriverIsReachedSuccessfully)
+set_property(TEST tests_single_driver_sysman_memory_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME tests_multi_driver_sysman_memory_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManMemoryApisThenExpectNullDriverIsReachedSuccessfully)
+if (MSVC)
+  set_property(TEST tests_multi_driver_sysman_memory_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_sysman_memory_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
 # Driver ordering tests - each test added individually
 add_test(NAME tests_driver_ordering_specific_type_and_index COMMAND tests --gtest_filter=*GivenZelDriversOrderWithSpecificTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
