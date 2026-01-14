@@ -120,45 +120,385 @@ typedef enum _zel_handle_type_t {
    ZEL_HANDLE_PHYSICAL_MEM
 } zel_handle_type_t;
 
-//Translates Loader Handles to Driver Handles if loader handle intercept is enabled.
-//If handle intercept is not enabled handleOut is set to handleIn  
+/**
+ * @brief Translates loader handles to driver handles when handle interception is enabled.
+ *
+ * This function provides handle translation for scenarios where the loader intercepts
+ * and wraps driver handles. When handle interception is enabled, the loader maintains
+ * a mapping between loader-visible handles and underlying driver handles. This function
+ * performs the translation from loader handles to their corresponding driver handles.
+ *
+ * Handle interception is typically used by validation layers, tracing layers, or other
+ * middleware that needs to track handle lifecycles and API usage patterns.
+ *
+ * Behavior:
+ * - If handle interception is enabled: Translates handleIn to the corresponding driver handle
+ *   and stores the result in *handleOut.
+ * - If handle interception is disabled: Sets *handleOut equal to handleIn (pass-through).
+ *
+ * Thread-safety: This function is thread-safe and can be called concurrently from multiple
+ * threads with different handle values.
+ *
+ * @param[in] handleType
+ *   The type of handle being translated, specified using zel_handle_type_t enumeration.
+ *   This indicates whether the handle is a driver, device, context, command queue, etc.
+ *
+ * @param[in] handleIn
+ *   The loader handle to translate. This is the handle visible to the application or layer.
+ *   Must be a valid handle of the type specified by handleType, or NULL.
+ *
+ * @param[out] handleOut
+ *   Pointer to a void* that will receive the driver handle. If handle interception is enabled,
+ *   this will be set to the underlying driver handle. If disabled, it will be set to handleIn.
+ *   Must be a valid, non-null pointer.
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS if the translation was successful.
+ *   - ZE_RESULT_ERROR_INVALID_NULL_POINTER if handleOut is null.
+ *   - ZE_RESULT_ERROR_INVALID_ARGUMENT if handleType is invalid or handleIn is invalid.
+ *   - Other ze_result_t error codes as appropriate.
+ *
+ * @note If handleIn is NULL, *handleOut will be set to NULL regardless of interception state.
+ */
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zelLoaderTranslateHandle(
-   zel_handle_type_t handleType,   //Handle Type
-   void *handleIn,                  //Input: handle to translate from loader handle to driver handle
-   void **handleOut);                //Output: Pointer to handleOut is set to driver handle if successful
+   zel_handle_type_t handleType,
+   void *handleIn,
+   void **handleOut);
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for handling calls to released drivers in teardown.
-///
+/**
+ * @brief Notifies the loader that a driver has been removed and forces prevention of subsequent API calls.
+ *
+ * This function is intended to be called ONLY by Level Zero drivers, not by applications.
+ * It signals to the loader that at least one driver has been removed from the application
+ * environment, forcing the loader into a protective state that will prevent subsequent calls
+ * to Level Zero APIs to avoid crashes or undefined behavior when accessing freed driver resources.
+ *
+ * When a driver calls this function, the loader will:
+ * - Enter a special teardown state that blocks new API calls
+ * - Track that at least one driver has been removed from the environment
+ * - Return appropriate error codes (typically ZE_RESULT_ERROR_UNINITIALIZED) for subsequent API calls
+ * - Prevent crashes from accessing freed driver resources during teardown
+ *
+ * Use Case:
+ * This function exists to handle scenarios where drivers are dynamically unloaded or released
+ * (e.g., during process teardown, driver updates, or hot-plugging) while the application may
+ * still attempt to make Level Zero API calls. By forcing the loader into this protective state,
+ * drivers can ensure safe shutdown even when application threads are not fully synchronized.
+ *
+ * This function should be called by the driver after zeInit() or zeInitDrivers() has been
+ * successfully invoked, typically during the driver's own teardown or cleanup sequence.
+ *
+ * Typical usage (by driver implementation):
+ *   // In driver teardown code:
+ *   zelSetDriverTeardown();  // Signal loader that driver is being removed
+ *   // Continue with driver cleanup...
+ *
+ * Thread-safety: This function is thread-safe and can be called from any thread. Once called,
+ * the loader state change is global and affects all subsequent API calls across all threads.
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS if the loader was successfully placed into teardown prevention mode.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if zeInit() or zeInitDrivers() was not called.
+ *   - ZE_RESULT_ERROR_UNSUPPORTED if the current loader configuration does not support this feature.
+ *   - Other ze_result_t error codes as appropriate.
+ *
+ * @warning This function is for DRIVER USE ONLY. Applications should NOT call this function.
+ *          Calling this from application code will cause all subsequent Level Zero API calls
+ *          to fail, effectively disabling Level Zero functionality for the remainder of the
+ *          process lifetime.
+ *
+ * @note Once this function is called, the loader enters an irreversible state where API calls
+ *       are prevented. The loader cannot be re-initialized after this function has been invoked.
+ *
+ * @note This function only affects the loader's handling of API calls. It does not directly
+ *       manage driver resources or perform driver cleanup.
+ */
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelSetDriverTeardown();
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for informing the loader to delay teardown of its context until the call to zelLoaderContextTeardown().Only applies during static loader usage.
-/// NOTE: This function is a work around for legacy stacks that use L0 apis after the application is already in teardown. Unless you need to use the L0 apis during teardown, do not use this function. 
+/**
+ * @brief Delays automatic loader context teardown until explicitly requested.
+ *
+ * This function instructs the loader to postpone its automatic context teardown sequence,
+ * allowing the application to continue using Level Zero APIs during the application's
+ * own teardown process. The loader context will remain active until explicitly torn down
+ * via a call to zelLoaderContextTeardown().
+ *
+ * Applicability:
+ * - This function ONLY applies to static loader builds.
+ * - In dynamic loader builds, this function has no effect.
+ *
+ * Use Cases:
+ * This is a workaround for legacy software stacks that:
+ * - Use Level Zero APIs during application teardown (e.g., in global destructors)
+ * - Have complex teardown sequences where L0 resources need to outlive other components
+ * - Cannot easily be refactored to complete all L0 API calls before teardown
+ *
+ * Without this function, the static loader's context may be automatically destroyed during
+ * process teardown (e.g., via atexit handlers or destructor ordering), potentially before
+ * the application has finished using Level Zero APIs. This can lead to crashes or undefined
+ * behavior if L0 APIs are called after the context is destroyed.
+ *
+ * Call Sequence:
+ *   zelSetDelayLoaderContextTeardown();  // Delay automatic teardown
+ *   // Application uses L0 APIs during teardown...
+ *   zelLoaderContextTeardown();          // Explicitly tear down when done
+ *
+ * Thread-safety: This function should be called from the main thread before any teardown
+ * begins. It is not thread-safe to call this concurrently with other loader operations.
+ *
+ * @warning This function is a workaround for legacy code and should NOT be used in new
+ *          applications. The recommended practice is to ensure all Level Zero API calls
+ *          complete before application teardown begins. Delaying loader teardown can
+ *          complicate resource cleanup and may mask underlying architectural issues.
+ *
+ * @note This function does not return a result. Once called, the loader context will
+ *       remain active until zelLoaderContextTeardown() is explicitly invoked.
+ */
 ZE_DLLEXPORT void ZE_APICALL
 zelSetDelayLoaderContextTeardown();
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for explicitly tearing down the loader's context. Only applies during static loader usage.
-/// NOTE: This function is a work around for legacy stacks that use L0 apis after the application is already in teardown. Unless you need to use the L0 apis during teardown, do not use this function. 
+/**
+ * @brief Explicitly tears down the loader's context and releases all associated resources.
+ *
+ * This function performs a complete teardown of the loader's internal context, including:
+ * - Releasing all driver handles and associated resources
+ * - Unloading driver libraries
+ * - Freeing internal data structures and caches
+ * - Invoking registered teardown callbacks
+ * - Cleaning up inter-process communication resources (if applicable)
+ *
+ * Applicability:
+ * - This function ONLY applies to static loader builds.
+ * - In dynamic loader builds, teardown occurs automatically when the loader library is unloaded.
+ *
+ * Preconditions:
+ * - This function should only be called after zelSetDelayLoaderContextTeardown() has been invoked.
+ * - All Level Zero API calls must be completed before calling this function.
+ * - All application threads using Level Zero APIs must have finished execution.
+ *
+ * Post-conditions:
+ * - After this function returns, no Level Zero APIs can be called.
+ * - Attempting to use L0 APIs after teardown results in undefined behavior (typically crashes).
+ * - The loader context cannot be re-initialized after teardown.
+ *
+ * Typical Usage Pattern:
+ *   // During application initialization:
+ *   zelSetDelayLoaderContextTeardown();
+ *   
+ *   // Use Level Zero APIs throughout application lifetime...
+ *   
+ *   // During application teardown:
+ *   // Ensure all L0 operations complete
+ *   // Wait for all threads using L0 to finish
+ *   zelLoaderContextTeardown();  // Explicit teardown
+ *
+ * Thread-safety: This function is NOT thread-safe and must be called from a single thread
+ * when no other threads are executing Level Zero APIs. Calling this function concurrently
+ * with L0 API usage will result in undefined behavior.
+ *
+ * @warning This function is a workaround for legacy code patterns and should NOT be used
+ *          in new applications. Modern applications should rely on automatic teardown by
+ *          ensuring all L0 API usage completes before process termination. Using explicit
+ *          teardown requires careful coordination of application shutdown sequences.
+ *
+ * @note This function does not return a result. Errors during teardown are logged but
+ *       do not prevent the teardown from completing. Once called, the loader context
+ *       is considered invalid regardless of any internal errors encountered.
+ */
 ZE_DLLEXPORT void ZE_APICALL
 zelLoaderContextTeardown();
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for Enabling the Tracing Layer During Runtime.
-///
+/**
+ * @brief Enables the Level Zero tracing layer at runtime.
+ *
+ * This function activates the tracing layer, which intercepts and logs Level Zero API calls.
+ * The tracing layer is useful for debugging, performance analysis, and understanding the
+ * sequence and parameters of API calls made by an application.
+ *
+ * When enabled, the tracing layer:
+ * - Intercepts all Level Zero API calls (ze*, zes*, zet*, zer* functions)
+ * - Logs function entry and exit points
+ * - Records function parameters and return values
+ * - Measures API call timing and performance metrics
+ * - Provides hooks for custom tracing callbacks (if registered)
+ *
+ * The tracing layer can be enabled at any point during application execution, but is most
+ * commonly enabled during initialization or before a specific code region of interest.
+ *
+ * Runtime vs Build-time Configuration:
+ * - This function enables tracing at runtime, overriding build-time or environment settings.
+ * - Tracing can also be enabled via environment variables (e.g., ZE_ENABLE_TRACING_LAYER).
+ * - Runtime enabling via this function takes precedence over environment configuration.
+ *
+ * Preconditions:
+ * - The tracing layer library must be available and loadable by the loader.
+ * - For best results, call this function after zeInit() or zeInitDrivers() and around the specific code region of interest.
+ * - Can be called after initialization, but will only affect subsequent API calls.
+ *
+ * Performance Considerations:
+ * - Enabling tracing adds overhead to every API call (typically 1-10 microseconds per call).
+ * - Applications should disable tracing in performance-critical production code.
+ * - Tracing overhead varies based on logging verbosity and callback complexity.
+ *
+ * Thread-safety: This function is thread-safe and can be called from any thread. However,
+ * enabling tracing while other threads are actively making API calls may result in some
+ * calls not being traced if they were already in progress.
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS if the tracing layer was successfully enabled.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if the loader has not been properly initialized.
+ *   - ZE_RESULT_ERROR_UNSUPPORTED if the tracing layer is not available (missing library).
+ *   - ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE if tracing dependencies cannot be loaded.
+ *   - ZE_RESULT_SUCCESS if tracing is already enabled (idempotent operation).
+ *   - Other ze_result_t error codes as appropriate.
+ *
+ * @see zelDisableTracingLayer() to disable tracing
+ * @see zelGetTracingLayerState() to query current tracing state
+ */
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelEnableTracingLayer();
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for Checking if the Loader is torndown.
-///
+/**
+ * @brief Checks whether the loader is currently in teardown state.
+ *
+ * This function provides a way for applications, layers, and drivers to query whether
+ * the loader is currently executing its teardown sequence. This information is useful
+ * for making decisions about resource cleanup, avoiding operations that may fail during
+ * teardown, and implementing safe shutdown logic in complex multi-threaded applications.
+ *
+ * Teardown State:
+ * The loader enters teardown state when:
+ * - The process is terminating (exit() called or main() returns)
+ * - zelLoaderContextTeardown() has been explicitly called
+ * - atexit handlers or global destructors are executing
+ * - Dynamic loader library is being unloaded (dlclose() or FreeLibrary())
+ *
+ * Use Cases:
+ * - Preventing new API calls during shutdown to avoid crashes
+ * - Implementing conditional cleanup logic in global destructors
+ * - Deciding whether to log errors or silently fail during teardown
+ * - Coordinating shutdown sequences across multiple components
+ * - Avoiding deadlocks by skipping synchronization during teardown
+ *
+ * Typical Usage:
+ *   if (zelCheckIsLoaderInTearDown()) {
+ *       // Loader is shutting down - skip operation or use simplified cleanup
+ *       return;
+ *   }
+ *   // Normal operation - proceed with API calls
+ *   zeDeviceGet(...);
+ *
+ * Thread-safety: This function is thread-safe and can be called from any thread at any
+ * time. It provides a snapshot of the loader's teardown state at the moment of the call.
+ * The state may change immediately after the function returns if teardown begins on
+ * another thread.
+ *
+ * Performance: This is a lightweight query operation with minimal overhead, suitable for
+ * frequent checking in performance-sensitive code paths.
+ *
+ * @return
+ *   - true if the loader is currently in teardown state or has completed teardown.
+ *   - false if the loader is in normal operational state.
+ *
+ * @note Race conditions: In multi-threaded scenarios, teardown may begin immediately
+ *       after this function returns false. Callers should be prepared to handle errors
+ *       from subsequent API calls even if this function returns false.
+ *
+ * @note During teardown, most Level Zero API calls will return error codes or exhibit
+ *       undefined behavior. Applications should avoid making API calls when this function
+ *       returns true.
+ */
 ZE_DLLEXPORT bool ZE_APICALL
 zelCheckIsLoaderInTearDown();
 
+/**
+ * @brief Function pointer type for application-provided teardown callbacks.
+ *
+ * This typedef defines the signature for callback functions that applications can register
+ * to be notified when the loader begins its teardown sequence. The loader invokes these
+ * callbacks to give applications an opportunity to perform cleanup, save state, or prepare
+ * for shutdown before the loader's internal resources are released.
+ *
+ * Callback Requirements:
+ * - Must not take any parameters
+ * - Must not return any value (void return type)
+ * - Must be thread-safe (may be called from any thread)
+ * - Must not block or take locks that could deadlock the teardown sequence
+ * - Should complete quickly (ideally < 100 microseconds)
+ * - Must not call Level Zero APIs (may result in undefined behavior or deadlock)
+ *
+ * Implementation Guidelines:
+ * The callback should perform minimal work, typically limited to:
+ * - Setting flags or updating state variables
+ * - Signaling condition variables or event objects
+ * - Initiating asynchronous cleanup on other threads
+ * - Logging or diagnostic output
+ *
+ * What NOT to do in callbacks:
+ * - DO NOT call Level Zero APIs (ze*, zes*, zet*, zer* functions)
+ * - DO NOT allocate or free memory (may deadlock during process teardown)
+ * - DO NOT acquire locks (risk of deadlock with loader's internal locks)
+ * - DO NOT perform I/O operations (may block or fail during shutdown)
+ * - DO NOT start new threads or wait for thread completion
+ *
+ * Example Implementation:
+ *   static volatile bool loader_teardown_started = false;
+ *   
+ *   void myTeardownCallback() {
+ *       loader_teardown_started = true;  // Simple flag update
+ *   }
+ *
+ * @see zelRegisterTeardownCallback() for registering callbacks
+ */
 typedef void (*zel_loader_teardown_callback_t)();
+
+/**
+ * @brief Function pointer type for loader-provided callbacks to notify application of teardown.
+ *
+ * This typedef defines the signature for callbacks that the loader provides to applications
+ * during teardown callback registration. The loader uses this callback mechanism to notify
+ * the application when teardown is complete or to coordinate multi-stage shutdown sequences.
+ *
+ * Unlike zel_loader_teardown_callback_t (which applications provide to the loader), this
+ * callback type is implemented by the loader and given to the application. The application
+ * stores this callback and may invoke it at appropriate points during its own shutdown.
+ *
+ * Parameter:
+ * @param index
+ *   The index value assigned to the registered callback during zelRegisterTeardownCallback().
+ *   This allows the loader to identify which callback invocation is being acknowledged or
+ *   to coordinate multiple registered callbacks in a specific order.
+ *
+ * Usage Pattern:
+ *   zel_application_teardown_callback_t loader_callback;
+ *   uint32_t callback_index;
+ *   
+ *   zelRegisterTeardownCallback(my_callback, &loader_callback, &callback_index);
+ *   
+ *   // Later, during application teardown:
+ *   if (loader_callback != nullptr) {
+ *       loader_callback(callback_index);  // Notify loader of application teardown progress
+ *   }
+ *
+ * Thread-safety: The implementation of this callback (provided by the loader) is thread-safe
+ * and can be called from any thread. However, applications should typically call it from
+ * the same thread that is coordinating shutdown.
+ *
+ * Callback Requirements:
+ * - Must be safe to call during application teardown
+ * - Must not block indefinitely
+ * - May be called multiple times with the same index (idempotent)
+ * - May be nullptr if the loader does not require application notification
+ *
+ * @note This callback is part of the bidirectional communication mechanism between the
+ *       application and loader during teardown. The loader calls the application's callback
+ *       (zel_loader_teardown_callback_t) to signal loader teardown, and the application
+ *       calls the loader's callback (this type) to acknowledge or coordinate its own teardown.
+ *
+ * @see zelRegisterTeardownCallback() for the complete callback registration mechanism
+ */
 typedef void (*zel_application_teardown_callback_t)(uint32_t index);
 
 /**
