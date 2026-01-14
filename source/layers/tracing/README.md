@@ -8,7 +8,50 @@ Tracing provides for a tool to create one or more __tracers__.  A __tracer__  is
 In summary, this tracing implementation provides functions to create one or more __tracers__, acquiring a __tracer handle__ for each, then registering a set of __prologue__ and __epilogue__ functions for each __tracer handle__, enabling and disabling a __tracer__, and for destroying a __tracer__.
 
 ## Enabling Tracing in the Loader
-Tracing is implemented as a layer in the loader.  This tracing layer must be enabled by setting the environment variable **ZE_ENABLE_TRACING_LAYER** to 1.  This environment variable must be defined in the application process's context before that process calls _zeInit()_.
+Tracing is implemented as a layer in the loader. There are two ways to enable the tracing layer:
+
+### Static Tracing Layer Enablement (Environment Variable)
+The tracing layer can be enabled for the entire process runtime by setting the environment variable **ZE_ENABLE_TRACING_LAYER** to 1. This environment variable must be defined in the application process's context before that process calls _zeInitDrivers()_. When enabled this way, the tracing layer remains active for the entire duration of the application.
+
+### Dynamic Tracing Layer Enablement (Runtime Control)
+The tracing layer can also be enabled and disabled dynamically at runtime using the following APIs:
+
+- **zelEnableTracingLayer()** - Enables the tracing layer at runtime. Can be called at any point during application execution, but will only affect subsequent API calls made after the call to this function.
+
+- **zelDisableTracingLayer()** - Disables the tracing layer at runtime. After calling this function, subsequent API calls will not be intercepted by the tracing layer.
+
+- **zelGetTracingLayerState(bool* enabled)** - Queries the current state of the tracing layer. Sets the boolean pointed to by `enabled` to `true` if the tracing layer is currently active, or `false` if it is disabled.
+
+These functions are defined in `include/loader/ze_loader.h`.
+
+Dynamic tracing control provides the flexibility to:
+- Enable tracing only for specific regions of code
+- Reduce performance overhead by disabling tracing when not needed
+- Programmatically control tracing based on runtime conditions
+
+### Tracing Layer vs Tracer Enable/Disable
+
+It is important to understand the distinction between **enabling/disabling the tracing layer** and **enabling/disabling individual tracers**:
+
+#### Tracing Layer Enable/Disable
+- Controls whether the tracing layer infrastructure is active in the loader
+- Affects **all** Level Zero API calls globally
+- When the tracing layer is disabled, **no** API calls are intercepted regardless of individual tracer states
+- Controlled via `zelEnableTracingLayer()`, `zelDisableTracingLayer()`, and the `ZE_ENABLE_TRACING_LAYER` environment variable
+- Represents a global on/off switch for the entire tracing infrastructure
+
+#### Individual Tracer Enable/Disable
+- Controls whether a specific tracer's callbacks are invoked
+- Requires the tracing layer to be enabled first
+- Controlled via `zelTracerSetEnabled()` for each tracer handle
+- Multiple tracers can coexist, each with their own enabled/disabled state
+- A tracer being enabled has no effect if the tracing layer itself is disabled
+
+**In summary:**
+- The **tracing layer** must be enabled for any tracing to occur
+- Individual **tracers** must also be enabled for their callbacks to be invoked
+- Disabling the tracing layer stops all tracing regardless of individual tracer states
+- When the tracing layer is enabled, only those tracers that are also enabled will have their callbacks invoked
 
 ## Tracing API
 The API for using this tracing implementation is this header file below.  Please examine that header file for tracing API details.
@@ -89,6 +132,7 @@ The following pseudo-code demonstrates a basic usage of API tracing:
 ```
 #include "level_zero/ze_api.h"
 #include "level_zero/layers/zel_tracing_api.h"
+#include "level_zero/loader/ze_loader.h"
 
 typedef struct _my_tracer_data_t
 {
@@ -137,7 +181,7 @@ void TracingExample1( ... )
     tracer_desc.stype = ZEL_STRUCTURE_TYPE_TRACER_DESC;
     tracer_desc.pUserData = &tracer_data;
     zel_tracer_handle_t hTracer;
-    zelTracerCreate(hDevice, &tracer_desc, &hTracer);
+    zelTracerCreate(&tracer_desc, &hTracer);
 
     // Set all callbacks
     zel_core_callbacks_t prologCbs = {};
@@ -164,7 +208,7 @@ void TracingExample2( ... )
     tracer_desc.stype = ZEL_STRUCTURE_TYPE_TRACER_DESC;
     tracer_desc.pUserData = &tracer_data;
     zel_tracer_handle_t hTracer;
-    zelTracerCreate(hDevice, &tracer_desc, &hTracer);
+    zelTracerCreate(&tracer_desc, &hTracer);
 
     zelTracerCommandListAppendLaunchKernelRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE, OnEnterCommandListAppendLaunchKernel);
     zelTracerCommandListAppendLaunchKernelRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE, OnExitCommandListAppendLaunchKernel);
@@ -175,5 +219,47 @@ void TracingExample2( ... )
 
     zelTracerSetEnabled(hTracer, false);
     zelTracerDestroy(hTracer);
+}
+
+// An example demonstrating dynamic tracing layer control
+void DynamicTracingExample( ... )
+{
+    // Query current tracing layer state
+    bool tracingEnabled = false;
+    zelGetTracingLayerState(&tracingEnabled);
+    printf("Tracing layer initially %s\n", tracingEnabled ? "enabled" : "disabled");
+
+    // Enable the tracing layer dynamically
+    ze_result_t result = zelEnableTracingLayer();
+    if (result == ZE_RESULT_SUCCESS) {
+        printf("Tracing layer enabled successfully\n");
+    }
+
+    // Create and configure tracer
+    my_tracer_data_t tracer_data = {};
+    zel_tracer_desc_t tracer_desc;
+    tracer_desc.stype = ZEL_STRUCTURE_TYPE_TRACER_DESC;
+    tracer_desc.pUserData = &tracer_data;
+    zel_tracer_handle_t hTracer;
+    zelTracerCreate(&tracer_desc, &hTracer);
+
+    zelTracerCommandListAppendLaunchKernelRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE, OnEnterCommandListAppendLaunchKernel);
+    zelTracerCommandListAppendLaunchKernelRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE, OnExitCommandListAppendLaunchKernel);
+
+    // Enable the tracer (note: tracing layer must also be enabled)
+    zelTracerSetEnabled(hTracer, true);
+
+    // Code section where tracing is active
+    zeCommandListAppendLaunchKernel(hCommandList, hFunction, &launchArgs, nullptr, 0, nullptr);
+
+    // Disable the tracer
+    zelTracerSetEnabled(hTracer, false);
+    zelTracerDestroy(hTracer);
+
+    // Disable the tracing layer to reduce overhead for subsequent code
+    zelDisableTracingLayer();
+
+    // Subsequent API calls will not be traced
+    zeCommandListAppendLaunchKernel(hCommandList, hFunction, &launchArgs, nullptr, 0, nullptr);
 }
 ```
