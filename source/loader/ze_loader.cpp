@@ -824,7 +824,7 @@ namespace loader
             }
         }
 
-        for( auto& drv : allDrivers )
+        for( auto& drv : zeDrivers )
         {
             if (drv.handle) {
                 auto free_result = FREE_DRIVER_LIBRARY( drv.handle );
