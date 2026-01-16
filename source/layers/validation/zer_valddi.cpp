@@ -10,13 +10,63 @@
  *
  */
 #include "ze_validation_layer.h"
+#include <sstream>
+
+// Define a macro for marking potentially unused functions
+#if defined(_MSC_VER)
+    // MSVC doesn't support __attribute__((unused)), just omit the marking
+    #define VALIDATION_MAYBE_UNUSED
+#elif defined(__GNUC__) || defined(__clang__)
+    // GCC and Clang support __attribute__((unused))
+    #define VALIDATION_MAYBE_UNUSED __attribute__((unused))
+#else
+    #define VALIDATION_MAYBE_UNUSED
+#endif
 
 namespace validation_layer
 {
-    static ze_result_t logAndPropagateResult(const char* fname, ze_result_t result) {
-        if (result != ZE_RESULT_SUCCESS) {
-            context.logger->log_trace("Error (" + loader::to_string(result) + ") in " + std::string(fname));
-        }
+    // Generate specific logAndPropagateResult functions for each API function
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zerGetLastErrorDescription(
+        ze_result_t result,
+        const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                        ///< cause of error.
+) {
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zerGetLastErrorDescription(";
+        oss << "ppString=" << loader::to_string(ppString);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zerTranslateDeviceHandleToIdentifier(
+        ze_result_t result,
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
+) {
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zerTranslateDeviceHandleToIdentifier(";
+        oss << "hDevice=" << loader::to_string(hDevice);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zerTranslateIdentifierToDeviceHandle(
+        ze_result_t result,
+        uint32_t identifier                             ///< [in] integer identifier of the device
+) {
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zerTranslateIdentifierToDeviceHandle(";
+        oss << "identifier=" << loader::to_string(identifier);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zerGetDefaultContext(
+        ze_result_t result) {
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        context.logger->log_trace(status + " (" + loader::to_string(result) + ") in zerGetDefaultContext()");
         return result;
     }
 
@@ -33,12 +83,12 @@ namespace validation_layer
         auto pfnGetLastErrorDescription = context.zerDdiTable.Global.pfnGetLastErrorDescription;
 
         if( nullptr == pfnGetLastErrorDescription )
-            return logAndPropagateResult("zerGetLastErrorDescription", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+            return logAndPropagateResult_zerGetLastErrorDescription(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, ppString);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zerValidation->zerGetLastErrorDescriptionPrologue( ppString );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zerGetLastErrorDescription", result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zerGetLastErrorDescription(result, ppString);
         }
 
 
@@ -49,17 +99,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zerHandleLifetime.zerGetLastErrorDescriptionPrologue( ppString );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zerGetLastErrorDescription", result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zerGetLastErrorDescription(result, ppString);
         }
 
         auto driver_result = pfnGetLastErrorDescription( ppString );
 
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zerValidation->zerGetLastErrorDescriptionEpilogue( ppString ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zerGetLastErrorDescription", result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zerGetLastErrorDescription(result, ppString);
         }
 
-        return logAndPropagateResult("zerGetLastErrorDescription", driver_result);
+        return logAndPropagateResult_zerGetLastErrorDescription(driver_result, ppString);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
