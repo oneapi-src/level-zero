@@ -9,10 +9,13 @@ add_executable(
   loader_tracing_layer.cpp
 )
 
-# Only include driver_ordering_unit_tests for static builds or non-Windows platforms
-# as it requires internal loader symbols that are not exported in Windows DLLs
+# Only include driver_ordering_unit_tests and driver_teardown_unit_tests for static builds or non-Windows platforms
+# as they require internal loader symbols that are not exported in Windows DLLs
 if(BUILD_STATIC OR NOT WIN32)
-  target_sources(tests PRIVATE driver_ordering_unit_tests.cpp)
+  target_sources(tests PRIVATE
+    driver_ordering_unit_tests.cpp
+    driver_teardown_unit_tests.cpp
+  )
 endif()
 
 # For builds on non-Windows platforms, include init_driver_unit_tests
@@ -745,7 +748,28 @@ set_property(TEST driver_ordering_trim_function PROPERTY ENVIRONMENT "ZE_ENABLE_
 
 add_test(NAME driver_ordering_parse_driver_order COMMAND tests --gtest_filter=DriverOrderingHelperFunctionsTest.ParseDriverOrder_*)
 set_property(TEST driver_ordering_parse_driver_order PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+# Driver Teardown Unit Tests
+add_test(NAME driver_teardown_unit_tests COMMAND tests --gtest_filter=DriverTeardownUnitTest.*)
+set_property(TEST driver_teardown_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
+# Individual Driver Teardown Unit Tests for better granular reporting
+add_test(NAME driver_teardown_basic_collection COMMAND tests --gtest_filter=DriverTeardownUnitTest.NoDrivers_*:DriverTeardownUnitTest.AllNullHandles_*:DriverTeardownUnitTest.SingleDriverInAllDrivers_*:DriverTeardownUnitTest.MultipleUniqueHandlesInAllDrivers_*)
+set_property(TEST driver_teardown_basic_collection PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME driver_teardown_duplicate_handles COMMAND tests --gtest_filter=DriverTeardownUnitTest.SameHandleInAllThreeVectors_*:DriverTeardownUnitTest.MultipleDuplicateHandlesAcrossVectors_*:DriverTeardownUnitTest.SameHandleInZeAndZesOnly_*)
+set_property(TEST driver_teardown_duplicate_handles PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME driver_teardown_handle_distribution COMMAND tests --gtest_filter=DriverTeardownUnitTest.OnlyZeDriversHaveHandles_*:DriverTeardownUnitTest.OnlyZesDriversHaveHandles_*:DriverTeardownUnitTest.DifferentHandlesInEachVector_*)
+set_property(TEST driver_teardown_handle_distribution PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME driver_teardown_realistic_scenarios COMMAND tests --gtest_filter=DriverTeardownUnitTest.SingleDriverScenario_*:DriverTeardownUnitTest.MultipleDriversScenario_*:DriverTeardownUnitTest.PartialInitialization_*:DriverTeardownUnitTest.DifferentDriversInitializedInZeVsZes_*)
+set_property(TEST driver_teardown_realistic_scenarios PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME driver_teardown_edge_cases COMMAND tests --gtest_filter=DriverTeardownUnitTest.MixedNullAndValidHandles_*:DriverTeardownUnitTest.VectorSizeMismatch_*:DriverTeardownUnitTest.LargeNumberOfDrivers_*:DriverTeardownUnitTest.CustomDriverScenario_*)
+set_property(TEST driver_teardown_edge_cases PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+add_test(NAME driver_teardown_driver_types COMMAND tests --gtest_filter=DriverTeardownUnitTest.MixedDriverTypes_*:DriverTeardownUnitTest.ComplexRealWorldScenario_*)
+set_property(TEST driver_teardown_driver_types PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 # Init Driver Unit Tests
 add_test(NAME init_driver_unit_tests COMMAND tests --gtest_filter=InitDriverUnitTest.*)
 if (MSVC)
