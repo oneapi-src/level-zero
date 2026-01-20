@@ -180,9 +180,6 @@ namespace loader
     };
 
     extern ze_handle_t* loaderDispatch;
-    extern ze_dditable_t* loaderZeDdiTable;
-    extern zet_dditable_t* loaderZetDdiTable;
-    extern zes_dditable_t* loaderZesDdiTable;
     extern zer_dditable_t* defaultZerDdiTable;
     extern context_t *context;
 }
