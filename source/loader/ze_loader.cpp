@@ -19,9 +19,6 @@
 namespace loader
 {
     ze_handle_t* loaderDispatch = nullptr;
-    ze_dditable_t* loaderZeDdiTable = nullptr;
-    zet_dditable_t* loaderZetDdiTable = nullptr;
-    zes_dditable_t* loaderZesDdiTable = nullptr;
     zer_dditable_t *defaultZerDdiTable = nullptr;
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
@@ -602,10 +599,6 @@ namespace loader
         loader::loaderDispatch->pRuntime = new zer_dditable_driver_t();
         loader::loaderDispatch->pRuntime->version = ZE_API_VERSION_CURRENT;
         loader::loaderDispatch->pRuntime->isValidFlag = 1;
-        loader::loaderZeDdiTable = new ze_dditable_t();
-        loader::loaderZetDdiTable = new zet_dditable_t();
-        loader::loaderZesDdiTable = new zes_dditable_t();
-        loader::defaultZerDdiTable = new zer_dditable_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
         // DDI Driver Extension Path is enabled by default.
         // This can be overridden by the environment variable ZE_ENABLE_LOADER_DRIVER_DDI_PATH.
