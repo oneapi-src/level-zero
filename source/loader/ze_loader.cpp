@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -9,6 +9,7 @@
 
 #include "driver_discovery.h"
 #include <iostream>
+#include <set>
 
 #ifdef __linux__
 #include <unistd.h>
@@ -817,18 +818,36 @@ namespace loader
             }
         }
 
-        for( auto& drv : allDrivers )
-        {
+        // Collect all unique driver handles from allDrivers, zeDrivers, and zesDrivers
+        // to ensure we free each library exactly once, avoiding double-free issues
+        std::set<HMODULE> uniqueHandles;
+        for (const auto& drv : allDrivers) {
             if (drv.handle) {
-                auto free_result = FREE_DRIVER_LIBRARY( drv.handle );
-                auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
-                if (debugTraceEnabled && failure) {
-                    GET_LIBRARY_ERROR(freeLibraryErrorValue);
-                    if (!freeLibraryErrorValue.empty()) {
-                        std::string errorMessage = "Free Library Failed for " + drv.name + " With ";
-                        debug_trace_message(errorMessage, freeLibraryErrorValue);
-                        freeLibraryErrorValue.clear();
-                    }
+                uniqueHandles.insert(drv.handle);
+            }
+        }
+        for (const auto& drv : zeDrivers) {
+            if (drv.handle) {
+                uniqueHandles.insert(drv.handle);
+            }
+        }
+        for (const auto& drv : zesDrivers) {
+            if (drv.handle) {
+                uniqueHandles.insert(drv.handle);
+            }
+        }
+
+        // Free each unique driver library exactly once
+        for (auto handle : uniqueHandles)
+        {
+            auto free_result = FREE_DRIVER_LIBRARY( handle );
+            auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
+            if (debugTraceEnabled && failure) {
+                GET_LIBRARY_ERROR(freeLibraryErrorValue);
+                if (!freeLibraryErrorValue.empty()) {
+                    std::string errorMessage = "Free Library Failed With ";
+                    debug_trace_message(errorMessage, freeLibraryErrorValue);
+                    freeLibraryErrorValue.clear();
                 }
             }
         }
