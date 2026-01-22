@@ -2028,6 +2028,30 @@ TEST(
 
   TEST(
       SysManApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWhenCallingSysManDriverApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+    uint32_t driverCount = 0;
+    std::vector<zes_driver_handle_t> driverHandles{};
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+    driverHandles.resize(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, driverHandles.data()));
+    for (std::size_t i = 0; i < driverHandles.size(); i++)
+    {
+      uint32_t count = 1;
+      zes_driver_extension_properties_t extensionProperties{};
+      char * functionName = nullptr;
+      void * pFunctionAddress = nullptr;
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGetExtensionProperties(driverHandles[i], &count, &extensionProperties));
+      EXPECT_TRUE(compare_env("zesDriverGetExtensionProperties", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGetExtensionFunctionAddress(driverHandles[i], functionName, &pFunctionAddress));
+      EXPECT_TRUE(compare_env("zesDriverGetExtensionFunctionAddress", std::to_string(i + 1)));
+    }
+  }
+
+  TEST(
+      SysManApiLoaderDriverInteraction,
       GivenLevelZeroLoaderPresentWhenCallingSysManDeviceApisThenExpectNullDriverIsReachedSuccessfully)
   {
     EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
@@ -2362,6 +2386,7 @@ TEST(
       zes_fan_properties_t fanProperties{};
       zes_fan_config_t fanConfig{};
       zes_fan_speed_t fanSpeed{};
+      zes_fan_speed_table_t speedTable{};
       EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGet(driverHandles[i], &deviceCount, &deviceHandle));
       EXPECT_TRUE(compare_env("zesDeviceGet", std::to_string(i + 1)));
       EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceEnumFans(deviceHandle, &count, &fanHandle));
@@ -2374,6 +2399,8 @@ TEST(
       EXPECT_TRUE(compare_env("zesFanSetDefaultMode", std::to_string(i + 1)));
       EXPECT_EQ(ZE_RESULT_SUCCESS, zesFanSetFixedSpeedMode(fanHandle, &fanSpeed));
       EXPECT_TRUE(compare_env("zesFanSetFixedSpeedMode", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesFanSetSpeedTableMode(fanHandle, &speedTable));
+      EXPECT_TRUE(compare_env("zesFanSetSpeedTableMode", std::to_string(i + 1)));
       EXPECT_EQ(ZE_RESULT_SUCCESS, zesFanGetState(fanHandle, ZES_FAN_SPEED_UNITS_RPM, &fanSpeed.speed));
       EXPECT_TRUE(compare_env("zesFanGetState", std::to_string(i + 1)));
     }
@@ -2861,6 +2888,154 @@ TEST(
       EXPECT_TRUE(compare_env("zesOverclockGetVFPointValues", std::to_string(i + 1)));
       EXPECT_EQ(ZE_RESULT_SUCCESS, zesOverclockSetVFPointValues(overclockHandle, vfType, pointIndex, pointValue));
       EXPECT_TRUE(compare_env("zesOverclockSetVFPointValues", std::to_string(i + 1)));
+    }
+  }
+
+  TEST(
+      SysManApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWhenCallingSysManPciLinkSpeedDowngradeApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+    uint32_t driverCount = 0;
+    std::vector<zes_driver_handle_t> driverHandles{};
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+    driverHandles.resize(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, driverHandles.data()));
+
+    for (std::size_t i = 0; i < driverHandles.size(); i++)
+    {
+      uint32_t deviceCount = 1;
+      zes_device_handle_t deviceHandle{};
+      zes_device_action_t pendingAction{};
+      ze_bool_t shouldDowngrade = true;
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGet(driverHandles[i], &deviceCount, &deviceHandle));
+      EXPECT_TRUE(compare_env("zesDeviceGet", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDevicePciLinkSpeedUpdateExt(deviceHandle, shouldDowngrade, &pendingAction));
+      EXPECT_TRUE(compare_env("zesDevicePciLinkSpeedUpdateExt", std::to_string(i + 1)));
+    }
+  }
+
+  TEST(
+      SysManApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWhenCallingSysManPowerLimitsExtApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+      uint32_t driverCount = 0;
+      std::vector<zes_driver_handle_t> driverHandles{};
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, nullptr));
+      EXPECT_GT(driverCount, 0);
+      driverHandles.resize(driverCount);
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, driverHandles.data()));
+
+      for (std::size_t i = 0; i < driverHandles.size(); i++) 
+      {
+        uint32_t deviceCount = 1;
+        zes_device_handle_t deviceHandle{};
+        zes_pwr_handle_t powerHandle{};
+        uint32_t count = 1;
+        zes_power_limit_ext_desc_t powerLimitsExt{};
+        
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGet(driverHandles[i], &deviceCount, &deviceHandle));
+        EXPECT_TRUE(compare_env("zesDeviceGet", std::to_string(i + 1)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceEnumPowerDomains(deviceHandle, &count, &powerHandle));
+        EXPECT_TRUE(compare_env("zesDeviceEnumPowerDomains", std::to_string(i + 1)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zesPowerGetLimitsExt(powerHandle, &count, &powerLimitsExt));
+        EXPECT_TRUE(compare_env("zesPowerGetLimitsExt", std::to_string(i + 1)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zesPowerSetLimitsExt(powerHandle, &count, &powerLimitsExt));
+        EXPECT_TRUE(compare_env("zesPowerSetLimitsExt", std::to_string(i + 1)));
+      }
+  }
+
+  TEST(
+      SysManApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWhenCallingSysManRasStateExtApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+    uint32_t driverCount = 0;
+    std::vector<zes_driver_handle_t> driverHandles{};
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+    driverHandles.resize(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, driverHandles.data()));
+
+    for (std::size_t i = 0; i < driverHandles.size(); i++)
+    {
+      uint32_t deviceCount = 1;
+      zes_device_handle_t deviceHandle{};
+      zes_ras_handle_t rasHandle{};
+      zes_ras_state_exp_t rasState{};
+      zes_ras_error_category_exp_t errorCategory = ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS;
+      uint32_t count = 1;
+      uint32_t stateCount = 0;
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGet(driverHandles[i], &deviceCount, &deviceHandle));
+      EXPECT_TRUE(compare_env("zesDeviceGet", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceEnumRasErrorSets(deviceHandle, &count, &rasHandle));
+      EXPECT_TRUE(compare_env("zesDeviceEnumRasErrorSets", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesRasGetStateExp(rasHandle, &stateCount, &rasState));
+      EXPECT_TRUE(compare_env("zesRasGetStateExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesRasClearStateExp(rasHandle, errorCategory));
+      EXPECT_TRUE(compare_env("zesRasClearStateExp", std::to_string(i + 1)));
+    }
+  }
+
+  TEST(
+      SysManApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWhenCallingSysManFirmwareSecurityVersionExtApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+    uint32_t driverCount = 0;
+    std::vector<zes_driver_handle_t> driverHandles{};
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+    driverHandles.resize(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, driverHandles.data()));
+
+    for (std::size_t i = 0; i < driverHandles.size(); i++)
+    {
+      uint32_t deviceCount = 1;
+      zes_device_handle_t deviceHandle{};
+      uint32_t count = 1;
+      zes_firmware_handle_t firmwareHandle{};
+      char version[ZES_STRING_PROPERTY_SIZE];
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGet(driverHandles[i], &deviceCount, &deviceHandle));
+      EXPECT_TRUE(compare_env("zesDeviceGet", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceEnumFirmwares(deviceHandle, &count, &firmwareHandle));
+      EXPECT_TRUE(compare_env("zesDeviceEnumFirmwares", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesFirmwareGetSecurityVersionExp(firmwareHandle, version));
+      EXPECT_TRUE(compare_env("zesFirmwareGetSecurityVersionExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesFirmwareSetSecurityVersionExp(firmwareHandle));
+      EXPECT_TRUE(compare_env("zesFirmwareSetSecurityVersionExp", std::to_string(i + 1)));
+    }
+  }
+
+  TEST(
+      SysManApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWhenCallingSysManDeviceMappingExtApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+    uint32_t driverCount = 0;
+    std::vector<zes_driver_handle_t> driverHandles{};
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+    driverHandles.resize(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, driverHandles.data()));
+
+    for (std::size_t i = 0; i < driverHandles.size(); i++)
+    {
+      uint32_t deviceCount = 1;
+      zes_device_handle_t deviceHandle{};
+      zes_subdevice_exp_properties_t subDeviceProps{};
+      zes_uuid_t uuid{};
+      uint32_t subDeviceCount = 0;
+      uint32_t subdeviceId = 0;
+      ze_bool_t onSubdevice = false;
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGet(driverHandles[i], &deviceCount, &deviceHandle));
+      EXPECT_TRUE(compare_env("zesDeviceGet", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGetSubDevicePropertiesExp(deviceHandle, &subDeviceCount, &subDeviceProps));
+      EXPECT_TRUE(compare_env("zesDeviceGetSubDevicePropertiesExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGetDeviceByUuidExp(driverHandles[i], uuid, &deviceHandle, &onSubdevice, &subdeviceId));
+      EXPECT_TRUE(compare_env("zesDriverGetDeviceByUuidExp", std::to_string(i + 1)));
     }
   }
 
