@@ -1,0 +1,31 @@
+[flake8]
+# Maximum line length
+max-line-length = 88
+
+# Ignore certain error codes that conflict with black or are not critical
+ignore = E203,E501,W503,E402,E266,F403,F405,F541
+
+# Exclude directories
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    .coverage,
+    htmlcov,
+    build,
+    dist,
+    .venv,
+    venv,
+    .env
+
+# Maximum complexity (cyclomatic complexity) - increased for binding code
+max-complexity = 25
+
+# Show source code for each error
+show-source = True
+
+# Show pep8 violation statistics
+statistics = True
+
+# Count errors and warnings
+count = True
