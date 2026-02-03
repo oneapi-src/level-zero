@@ -5256,9 +5256,10 @@ namespace loader_driver_ddi
     zeCommandListAppendSignalExternalSemaphoreExt(
         ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
         uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
-                                                        ///< to be appended into command list.
-        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in] Signal parameters.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
                                                         ///< if `nullptr == phWaitEvents`
@@ -5295,9 +5296,10 @@ namespace loader_driver_ddi
     zeCommandListAppendWaitExternalSemaphoreExt(
         ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
         uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
-                                                        ///< to append into command list.
-        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in] Wait parameters.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
                                                         ///< if `nullptr == phWaitEvents`

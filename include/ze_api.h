@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.15-r1.15.26
+ * @version v1.15-r1.15.31
  *
  */
 #ifndef _ZE_API_H
@@ -3042,10 +3042,11 @@ typedef enum _ze_command_queue_flag_t
                                                                             ///< the next to define an in-order list, and application is allowed to
                                                                             ///< pass signal and wait events
                                                                             ///< to each appended command to implement more complex dependency graphs.
-    ZE_COMMAND_QUEUE_FLAG_COPY_OFFLOAD_HINT = ZE_BIT(2),                    ///< Try to offload copy operations to different engines. Applicable only
-                                                                            ///< for compute queues.
-                                                                            ///< This is only a hint. Driver may ignore it per append call, based on
-                                                                            ///< platform capabilities or internal heuristics.
+    ZE_COMMAND_QUEUE_FLAG_COPY_OFFLOAD_HINT = ZE_BIT(2),                    ///< To be used only when creating immediate command lists and only for
+                                                                            ///< compute queues.
+                                                                            ///< Try to offload copy operations to different engines. This is only a hint.
+                                                                            ///< Driver may ignore it per append call, based on platform capabilities
+                                                                            ///< or internal heuristics.
     ZE_COMMAND_QUEUE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_QUEUE_FLAG_* ENUMs
 
 } ze_command_queue_flag_t;
@@ -3376,6 +3377,10 @@ typedef enum _ze_command_list_flag_t
                                                                             ///< more complex dependency graphs. Cannot be combined with ::ZE_COMMAND_LIST_FLAG_RELAXED_ORDERING.
     ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE = ZE_BIT(4),                         ///< this command list may be cloned using ::zeCommandListCreateCloneExp
                                                                             ///< after ::zeCommandListClose.
+    ZE_COMMAND_LIST_FLAG_COPY_OFFLOAD_HINT = ZE_BIT(5),                     ///< Try to offload copy operations to different engines. Applicable only
+                                                                            ///< for compute queues.
+                                                                            ///< This is only a hint. Driver may ignore it per append call, based on
+                                                                            ///< platform capabilities or internal heuristics.
     ZE_COMMAND_LIST_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_LIST_FLAG_* ENUMs
 
 } ze_command_list_flag_t;
@@ -3429,7 +3434,7 @@ typedef struct _ze_command_list_desc_t
 ///         + `nullptr == desc`
 ///         + `nullptr == phCommandList`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1f < desc->flags`
+///         + `0x3f < desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeCommandListCreate(
@@ -4103,6 +4108,7 @@ zeCommandListAppendMemoryCopy(
 ///         + `nullptr == ptr`
 ///         + `nullptr == pattern`
 ///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
 ZE_APIEXPORT ze_result_t ZE_APICALL
@@ -8632,21 +8638,21 @@ typedef enum _ze_module_program_exp_version_t
 ///     - Implementation must support ::ZE_MODULE_PROGRAM_EXP_NAME extension
 ///     - Modules support import and export linkage for functions and global
 ///       variables.
-///     - SPIR-V import and export linkage types are used. See SPIR-V
-///       specification for linkage details.
 ///     - pInputModules, pBuildFlags, and pConstants from ::ze_module_desc_t is
 ///       ignored.
 ///     - Format in ::ze_module_desc_t needs to be set to
-///       ::ZE_MODULE_FORMAT_IL_SPIRV.
+///       ::ZE_MODULE_FORMAT_IL_SPIRV or ::ZE_MODULE_FORMAT_NATIVE.
+///     - All modules in the list must be of the same format and match the
+///       format specified in ::ze_module_desc_t.
 typedef struct _ze_module_program_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     uint32_t count;                                                         ///< [in] Count of input modules
-    const size_t* inputSizes;                                               ///< [in][range(0, count)] sizes of each input IL module in pInputModules.
-    const uint8_t** pInputModules;                                          ///< [in][range(0, count)] pointer to an array of IL (e.g. SPIR-V modules).
-                                                                            ///< Valid only for SPIR-V input.
+    const size_t* inputSizes;                                               ///< [in][range(0, count)] sizes of each input module in pInputModules.
+    const uint8_t** pInputModules;                                          ///< [in][range(0, count)] pointer to an array of binary modules in format
+                                                                            ///< specified as part of ::ze_module_desc_t.
     const char** pBuildFlags;                                               ///< [in][optional][range(0, count)] array of strings containing build
                                                                             ///< flags. See pBuildFlags in ::ze_module_desc_t.
     const ze_module_constants_t** pConstants;                               ///< [in][optional][range(0, count)] pointer to array of specialization
@@ -9976,9 +9982,10 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zeCommandListAppendSignalExternalSemaphoreExt(
     ze_command_list_handle_t hCommandList,                                  ///< [in] The command list handle.
     uint32_t numSemaphores,                                                 ///< [in] The number of external semaphores.
-    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
-                                                                            ///< to be appended into command list.
-    ze_external_semaphore_signal_params_ext_t* signalParams,                ///< [in] Signal parameters.
+    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore handles to be appended into command list.
+    ze_external_semaphore_signal_params_ext_t* signalParams,                ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore signal parameters.
     ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
     uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
                                                                             ///< if `nullptr == phWaitEvents`
@@ -10025,9 +10032,10 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zeCommandListAppendWaitExternalSemaphoreExt(
     ze_command_list_handle_t hCommandList,                                  ///< [in] The command list handle.
     uint32_t numSemaphores,                                                 ///< [in] The number of external semaphores.
-    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
-                                                                            ///< to append into command list.
-    ze_external_semaphore_wait_params_ext_t* waitParams,                    ///< [in] Wait parameters.
+    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore handles to append into command list.
+    ze_external_semaphore_wait_params_ext_t* waitParams,                    ///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore wait parameters.
     ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
     uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
                                                                             ///< if `nullptr == phWaitEvents`
