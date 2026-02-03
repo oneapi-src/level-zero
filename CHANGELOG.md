@@ -1,4 +1,13 @@
 # Level zero loader changelog
+## v1.28.0
+* feature: Update to support L0 Spec v1.15.31
+* Loader Driver Interaction conformance tests for Sysman Exp and Ext APIs (#418)
+* Loader Driver Interaction conformance tests for Sysman Modules (#411)
+* Ensure explicit multidriver teardown during context destroy (#416)
+* fix memory leaks in loader (#417)
+* Update Tracing Layer Documentation for the expanded support (#414)
+* Expand Loader API Documentation to be more detailed (#410)
+* Added tests for Loader Driver interaction conformance for Sysman Modules (#409)
 ## v1.27.0
 * feature: Update to support L0 Spec v1.15.26
 * fix: fix Driver Search Paths for all Linux Distros
