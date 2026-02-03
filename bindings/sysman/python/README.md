@@ -203,6 +203,17 @@ Notes:
 
     zesDeviceEnumEngineGroups shows no handles found error when not in super user mode.
 
-COPYRIGHT
----------
-Copyright (c) 2025, INTEL Corporation. All rights reserved.
+# Contributing
+
+See [CONTRIBUTING](CONTRIBUTING.md) for more information.
+
+# License
+
+Distributed under the MIT license. See [LICENSE](LICENSE) for more information.
+
+# Security
+
+See Intel's [Security Center](https://www.intel.com/content/www/us/en/security-center/default.html) for information on how to report a potential security issue or vulnerability.
+
+See also [SECURITY](SECURITY.md).
+

@@ -1,3 +1,10 @@
+##
+# Copyright (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: MIT
+#
+##
+
 """
 Pytest configuration for unit tests with GPU library mocking.
 Unit tests should always use mocked GPU libraries to test logic in isolation.
