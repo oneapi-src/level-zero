@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Intel Corporation
+# Copyright (C) 2024-2026 Intel Corporation
 # SPDX-License-Identifier: MIT
 
 set(logging_files logging.h logging.cpp ze_to_string.h zes_to_string.h zet_to_string.h zer_to_string.h)
