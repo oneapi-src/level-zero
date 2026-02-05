@@ -170,7 +170,7 @@ class APITracerCallbackDataImp {
     currentTracerArray =                                                            \
         (tracing_layer::tracer_array_t *)                                           \
             tracing_layer::pGlobalAPITracerContextImp->getActiveTracersList();      \
-    if (currentTracerArray && currentTracerArray->tracerArrayCount > 0) {           \
+    if (currentTracerArray && currentTracerArray->tracerArrayCount) {           \
         for (size_t i = 0; i < currentTracerArray->tracerArrayCount; i++) {         \
             tracerType prologueCallbackPtr;                                         \
             tracerType epilogue_callback_ptr;                                       \
@@ -201,7 +201,7 @@ class APITracerCallbackDataImp {
     currentTracerArray =                                                             \
         (tracing_layer::tracer_array_t *)                                            \
             tracing_layer::pGlobalAPITracerContextImp->getActiveTracersList();       \
-    if (currentTracerArray && currentTracerArray->tracerArrayCount > 0) {            \
+    if (currentTracerArray && currentTracerArray->tracerArrayCount) {            \
         for (size_t i = 0; i < currentTracerArray->tracerArrayCount; i++){           \
             tracerType prologueCallbackPtr;                                          \
             tracerType epilogue_callback_ptr;                                        \
