@@ -84,6 +84,33 @@ validation layer is enabled. Following variables need to be set to enable API lo
 By default logs will be written to the log file, as described above. To print the logs
 to stderr instead, `ZEL_LOADER_LOG_CONSOLE=1` needs to be set.
 
+The API logging output format includes both function entry and exit information, showing parameter names on entry and parameter values with the result code on exit. Each log entry is timestamped and includes the logger name and log level. Example output:
+
+```
+[2026-01-14 09:01:38.951] [ze_loader] [trace] zeContextCreate(hDriver, desc, phContext)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextCreate(hDriver=0x5b261fa70588, desc={stype=0x7ffdd20fe1e0, flags=0}, phContext=0x7ffdd20fe148)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x5b261fa74228, hDevice=0x5b261fa708b8, altdesc={stype=0x7ffdd20fe240, ordinal=0, index=0, flags=0, mode=0x7ffdd20fe25c, priority=0x7ffdd20fe260}, phCommandList=0x7ffdd20fe150)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] zeEventPoolCreate(hContext, desc, numDevices, phDevicesLocal, phEventPool)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventPoolCreate(hContext=0x5b261fa74228, desc={stype=0x7ffdd20fe200, flags=1, count=1}, numDevices=1, phDevices=0x7ffdd20fe138, phEventPool=0x7ffdd20fe160)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] zeEventCreate(hEventPool, desc, phEvent)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventCreate(hEventPool=0x5b261fa19c18, desc={stype=0x7ffdd20fe220, index=0, signal=4, wait=4}, phEvent=0x7ffdd20fe158)
+[2026-01-14 09:01:38.951] [ze_loader] [trace] zeCommandListAppendSignalEvent(hCommandList, hEvent)
+[2026-01-14 09:01:38.952] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendSignalEvent(hCommandList=0x5b261fa743c8, hEvent=0x5b261c69e5d8)
+[2026-01-14 09:01:38.952] [ze_loader] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-01-14 09:01:38.954] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0x5b261c69e5d8, timeout=18446744073709551615)
+[2026-01-14 09:01:38.954] [ze_loader] [trace] zeContextDestroy(hContext)
+[2026-01-14 09:01:38.954] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextDestroy(hContext=0x5b261fa74228)
+[2026-01-14 09:01:38.954] [ze_loader] [trace] zeCommandListDestroy(hCommandList)
+[2026-01-14 09:01:38.955] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x5b261fa743c8)
+[2026-01-14 09:01:38.955] [ze_loader] [trace] zeEventDestroy(hEvent)
+[2026-01-14 09:01:38.955] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x5b261c69e5d8)
+[2026-01-14 09:01:38.955] [ze_loader] [trace] zeEventPoolDestroy(hEventPool)
+[2026-01-14 09:01:38.955] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventPoolDestroy(hEventPool=0x5b261fa19c18)
+```
+
+
+
 # Driver/Device Sorting
 
 As of v1.20.3 of the Loader, Drivers and Devices reported to the user are sorted to enable the first device to be the best available device.
