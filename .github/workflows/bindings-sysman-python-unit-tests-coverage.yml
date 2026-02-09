@@ -27,7 +27,6 @@ jobs:
         working-directory: bindings/sysman/python
     permissions:
       contents: read
-      pull-requests: write  # For PR comments
       checks: write        # For check results
 
     steps:
@@ -274,48 +273,6 @@ jobs:
             echo "### Detailed Coverage Report" >> $GITHUB_STEP_SUMMARY
             echo "Coverage data file not found. Report not available." >> $GITHUB_STEP_SUMMARY
           fi
-
-      - name: Comment PR with Coverage
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const coverage = '${{ steps.coverage.outputs.coverage_pct }}';
-            const baselineCoverage = '${{ steps.baseline.outputs.baseline_coverage }}' || '0';
-            const coverageNum = parseFloat(coverage);
-            const baselineNum = parseFloat(baselineCoverage);
-            const passed = coverageNum >= baselineNum;
-            const improvement = coverageNum - baselineNum;
-            const isFirstBaseline = baselineNum === 0;
-            
-            const body = `## 📊 Unit Tests & Coverage Report
-            
-            ${passed ? '✅' : '❌'} **Coverage:** ${coverage}%${isFirstBaseline ? ' (Baseline Established)' : ` vs ${baselineCoverage}% (target branch)`}
-            
-            ### Test Results
-            - **Status:** ${passed ? 'PASSED' : 'FAILED'}
-            - **Current Coverage:** ${coverage}%
-            - **Target Branch Coverage:** ${baselineCoverage}%${isFirstBaseline ? ' (First commit with tests)' : ''}
-            - **Change:** ${improvement > 0 ? '+' : ''}${improvement.toFixed(1)}%
-            
-            ${isFirstBaseline ? 
-              '🎉 Baseline coverage established at ' + coverage + '%! This will be used for future comparisons.' :
-              (passed ? 
-                (improvement > 0 ? 
-                  `🎉 Coverage improved by ${improvement.toFixed(1)}%! Great work on adding tests.` : 
-                  '✅ Coverage maintained. No regression detected.') :
-                '⚠️ Coverage regression detected. This PR would reduce test coverage. Please add more tests.')
-            }
-            
-            📁 Detailed reports are available in the workflow artifacts.
-            `;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
