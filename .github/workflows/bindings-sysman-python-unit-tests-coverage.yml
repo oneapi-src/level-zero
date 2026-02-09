@@ -264,11 +264,16 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          # Add detailed coverage report
-          echo "### Detailed Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          python -m coverage report >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          # Add detailed coverage report (only if .coverage file exists)
+          if [ -f .coverage ]; then
+            echo "### Detailed Coverage Report" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            python -m coverage report >> $GITHUB_STEP_SUMMARY || echo "Coverage report generation failed" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Detailed Coverage Report" >> $GITHUB_STEP_SUMMARY
+            echo "Coverage data file not found. Report not available." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Comment PR with Coverage
         if: github.event_name == 'pull_request'
@@ -276,25 +281,30 @@ jobs:
         with:
           script: |
             const coverage = '${{ steps.coverage.outputs.coverage_pct }}';
-            const baselineCoverage = '${{ steps.baseline.outputs.baseline_coverage }}';
-            const passed = parseFloat(coverage) >= parseFloat(baselineCoverage);
-            const improvement = parseFloat(coverage) - parseFloat(baselineCoverage);
+            const baselineCoverage = '${{ steps.baseline.outputs.baseline_coverage }}' || '0';
+            const coverageNum = parseFloat(coverage);
+            const baselineNum = parseFloat(baselineCoverage);
+            const passed = coverageNum >= baselineNum;
+            const improvement = coverageNum - baselineNum;
+            const isFirstBaseline = baselineNum === 0;
             
             const body = `## 📊 Unit Tests & Coverage Report
             
-            ${passed ? '✅' : '❌'} **Coverage:** ${coverage}% vs ${baselineCoverage}% (target branch)
+            ${passed ? '✅' : '❌'} **Coverage:** ${coverage}%${isFirstBaseline ? ' (Baseline Established)' : ` vs ${baselineCoverage}% (target branch)`}
             
             ### Test Results
             - **Status:** ${passed ? 'PASSED' : 'FAILED'}
             - **Current Coverage:** ${coverage}%
-            - **Target Branch Coverage:** ${baselineCoverage}%
+            - **Target Branch Coverage:** ${baselineCoverage}%${isFirstBaseline ? ' (First commit with tests)' : ''}
             - **Change:** ${improvement > 0 ? '+' : ''}${improvement.toFixed(1)}%
             
-            ${passed ? 
-              (improvement > 0 ? 
-                `🎉 Coverage improved by ${improvement.toFixed(1)}%! Great work on adding tests.` : 
-                '✅ Coverage maintained. No regression detected.') :
-              '⚠️ Coverage regression detected. This PR would reduce test coverage. Please add more tests.'
+            ${isFirstBaseline ? 
+              '🎉 Baseline coverage established at ' + coverage + '%! This will be used for future comparisons.' :
+              (passed ? 
+                (improvement > 0 ? 
+                  `🎉 Coverage improved by ${improvement.toFixed(1)}%! Great work on adding tests.` : 
+                  '✅ Coverage maintained. No regression detected.') :
+                '⚠️ Coverage regression detected. This PR would reduce test coverage. Please add more tests.')
             }
             
             📁 Detailed reports are available in the workflow artifacts.
