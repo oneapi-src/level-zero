@@ -251,8 +251,13 @@ jobs:
           echo "| Current Coverage | ${{ steps.coverage.outputs.coverage_pct }}% |" >> $GITHUB_STEP_SUMMARY
           echo "| Target Branch Coverage | ${{ steps.baseline.outputs.baseline_coverage }}% |" >> $GITHUB_STEP_SUMMARY
           
-          THRESHOLD="${{ steps.baseline.outputs.baseline_coverage }}"
-          if [ $(echo "${{ steps.coverage.outputs.coverage_pct }} >= $THRESHOLD" | awk '{print ($1 >= $3)}') -eq 1 ]; then
+          CURRENT_COV="${{ steps.coverage.outputs.coverage_pct }}"
+          BASELINE_COV="${{ steps.baseline.outputs.baseline_coverage }}"
+          
+          # Use awk for comparison (handles empty/zero baseline gracefully)
+          if [ -z "$BASELINE_COV" ] || [ "$BASELINE_COV" == "0" ]; then
+            echo "| Status | ✅ PASSED (Baseline Established) |" >> $GITHUB_STEP_SUMMARY
+          elif awk "BEGIN {exit !($CURRENT_COV >= $BASELINE_COV)}"; then
             echo "| Status | ✅ PASSED |" >> $GITHUB_STEP_SUMMARY
           else
             echo "| Status | ❌ FAILED |" >> $GITHUB_STEP_SUMMARY
