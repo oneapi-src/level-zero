@@ -24,7 +24,7 @@ from ctypes import *
 
 # Add the source directory to Python path so we can import pyzes
 script_dir = os.path.dirname(os.path.abspath(__file__))
-source_dir = os.path.join(script_dir, "..", "source")
+source_dir = os.path.join(script_dir, "..")
 source_dir = os.path.abspath(source_dir)
 if source_dir not in sys.path:
     sys.path.insert(0, source_dir)
@@ -38,10 +38,11 @@ os.environ["ZES_ENABLE_SYSMAN"] = "1"
 os.environ["ZELLO_SYSMAN_USE_ZESINIT"] = "1"
 
 
-#####################################################################################################################################
+###############################################################################
 # Helper utilities ##
 def zes_driver_get_device_by_uuid(hDriver, uuid_bytes: bytes):
-    """Helper: given a 16-byte UUID (from core device properties), retrieve the corresponding Sysman device handle.
+    """Helper: given a 16-byte UUID (from core device properties), retrieve
+    the corresponding Sysman device handle.
     Returns (result_code, device_handle, on_subdevice(bool), subdevice_id(int)).
     """
     if len(uuid_bytes) != ZES_MAX_UUID_SIZE:
@@ -187,7 +188,9 @@ def enumerate_devices(hDriver, devices, dev_count):
             if rc2 == 0:
                 same = handle_val(mapped_handle) == handle_val(devices[i])
                 print(
-                    f" zesDriverGetDeviceByUuidExp: SUCCESS same_handle={same} on_subdevice={on_sub} subdevice_id={sub_id}"
+                    f" zesDriverGetDeviceByUuidExp: SUCCESS "
+                    f"same_handle={same} on_subdevice={on_sub} "
+                    f"subdevice_id={sub_id}"
                 )
             else:
                 print(f" zesDriverGetDeviceByUuidExp: rc={rc2}")
@@ -330,7 +333,9 @@ def demonstrate_memory_state(hDriver, devices, dev_count):
                     continue
                 print(f"    Bandwidth: {mem_bandwidth}")
                 print(
-                    f"    Max Bandwidth: {mem_bandwidth.maxBandwidth:,} bytes/sec ({mem_bandwidth.maxBandwidth / (1024**3):.2f} GB/s)"
+                    f"    Max Bandwidth: {mem_bandwidth.maxBandwidth:,} "
+                    f"bytes/sec "
+                    f"({mem_bandwidth.maxBandwidth / (1024**3):.2f} GB/s)"
                 )
                 print(f"    Read Counter: {mem_bandwidth.readCounter:,} bytes")
                 print(f"    Write Counter: {mem_bandwidth.writeCounter:,} bytes")
@@ -440,17 +445,20 @@ def demonstrate_power_energy(hDriver, devices, dev_count):
                         energy_counter2.timestamp - energy_counter.timestamp
                     ) / 1000000.0
 
-                    print(f"    Second reading:")
+                    print("    Second reading:")
                     print(
-                        f"      Energy: {energy_counter2.energy} microjoules ({energy_counter2.energy / 1000000.0:.6f} joules)"
+                        f"      Energy: {energy_counter2.energy} microjoules "
+                        f"({energy_counter2.energy / 1000000.0:.6f} joules)"
                     )
                     print(
-                        f"      Energy consumed: {energy_diff} microjoules ({energy_diff / 1000000.0:.6f} joules)"
+                        f"      Energy consumed: {energy_diff} microjoules "
+                        f"({energy_diff / 1000000.0:.6f} joules)"
                     )
                     if time_diff > 0:
                         avg_power = (energy_diff / 1000000.0) / time_diff  # Watts
                         print(
-                            f"      Average power: {avg_power:.6f} watts over {time_diff:.6f} seconds"
+                            f"      Average power: {avg_power:.6f} watts "
+                            f"over {time_diff:.6f} seconds"
                         )
 
             except Exception as e:
