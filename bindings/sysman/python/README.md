@@ -152,28 +152,28 @@ SUPPORTED APIs
 
 | API Function | Module | Since Version | Limitations |
 |--------------|--------|---------------|-------------|
-| `zesInit` | Device | 0.0.0 | None |
-| `zesDriverGet` | Device | 0.0.0 | None |
-| `zesDeviceGet` | Device | 0.0.0 | None |
-| `zesDeviceGetProperties` | Device | 0.0.0 | None |
-| `zesDriverGetDeviceByUuidExp` | Device | 0.0.0 | Experimental API |
-| `zesDeviceProcessesGetState` | Device | 0.0.0 | None |
+| `zesInit` | Device | 0.1.0 | None |
+| `zesDriverGet` | Device | 0.1.0 | None |
+| `zesDeviceGet` | Device | 0.1.0 | None |
+| `zesDeviceGetProperties` | Device | 0.1.0 | None |
+| `zesDriverGetDeviceByUuidExp` | Device | 0.1.0 | Experimental API |
+| `zesDeviceProcessesGetState` | Device | 0.1.0 | None |
 | **Memory Management** |-|-|-|
-| `zesDeviceEnumMemoryModules` | Memory | 0.0.0 | None |
-| `zesMemoryGetProperties` | Memory | 0.0.0 | None |
-| `zesMemoryGetState` | Memory | 0.0.0 | None |
-| `zesMemoryGetBandwidth` | Memory | 0.0.0 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesDeviceEnumMemoryModules` | Memory | 0.1.0 | None |
+| `zesMemoryGetProperties` | Memory | 0.1.0 | None |
+| `zesMemoryGetState` | Memory | 0.1.0 | None |
+| `zesMemoryGetBandwidth` | Memory | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
 | **Power Management** |-|-|-|
-| `zesDeviceEnumPowerDomains` | Power | 0.0.0 | None |
-| `zesPowerGetEnergyCounter` | Power | 0.0.0 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesDeviceEnumPowerDomains` | Power | 0.1.0 | None |
+| `zesPowerGetEnergyCounter` | Power | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
 | **Frequency Management** |-|-|-|
-| `zesDeviceEnumFrequencyDomains` | Frequency | 0.0.0 | None |
-| `zesFrequencyGetState` | Frequency | 0.0.0 | None |
+| `zesDeviceEnumFrequencyDomains` | Frequency | 0.1.0 | None |
+| `zesFrequencyGetState` | Frequency | 0.1.0 | None |
 | **Temperature Monitoring** |-|-|-|
-| `zesDeviceEnumTemperatureSensors` | Temperature | 0.0.0 | None |
-| `zesTemperatureGetProperties` | Temperature | 0.0.0 | None |
-| `zesTemperatureGetConfig` | Temperature | 0.0.0 | None |
-| `zesTemperatureGetState` | Temperature | 0.0.0 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesDeviceEnumTemperatureSensors` | Temperature | 0.1.0 | None |
+| `zesTemperatureGetProperties` | Temperature | 0.1.0 | None |
+| `zesTemperatureGetConfig` | Temperature | 0.1.0 | None |
+| `zesTemperatureGetState` | Temperature | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
 | **Engine Management** |-|-|-|
 | `zesDeviceEnumEngineGroups` | Engine | 0.1.0 | Linux: Shows "no handles found" error when not in superuser mode |
 | `zesEngineGetProperties` | Engine | 0.1.0 | None |
@@ -181,16 +181,17 @@ SUPPORTED APIs
 
 RELEASE NOTES
 -------------
-Version 0.0.0
-- Added pyzes.py module that has python binding wrapper functions.
-- Added pyzes_example.py tool as a sample app.
-
-Version 0.1.0
-- Added support for engine module APIs.
-- Added APIs:
-  zesDeviceEnumEngineGroups
-  zesEngineGetProperties
-  zesEngineGetActivity
+Version 0.1.0 (Initial Release)
+- Initial release of pyzes Python bindings for Intel Level-Zero Driver Library
+- Added pyzes.py module with Python binding wrapper functions
+- Added pyzes_example.py and pyzes_black_box_test.py as sample applications
+- Supported API modules:
+  - Device Management APIs
+  - Memory Management APIs
+  - Power Management APIs
+  - Frequency Management APIs
+  - Temperature Monitoring APIs
+  - Engine Management APIs
 
 Notes:
   Linux:
