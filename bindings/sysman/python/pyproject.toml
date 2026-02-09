@@ -35,3 +35,9 @@ Issues = "https://github.com/oneapi-src/level-zero/issues"
 package-dir = {"" = "source"}
 py-modules = ["pyzes"]
 packages = ["examples"]
+
+[tool.coverage.run]
+omit = [
+    "source/examples/*",
+    "test/*",
+]

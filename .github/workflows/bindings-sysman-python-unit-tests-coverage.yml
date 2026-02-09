@@ -93,6 +93,7 @@ jobs:
           # Run tests with coverage and generate multiple report formats
           python -m pytest test/unit_tests/ \
             --cov=source \
+            --cov-config=pyproject.toml \
             --cov-report=term-missing \
             --cov-report=html:htmlcov \
             --cov-report=xml:coverage.xml \
