@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 Intel Corporation
+ * Copyright (C) 2020-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -170,7 +170,7 @@ class APITracerCallbackDataImp {
     currentTracerArray =                                                            \
         (tracing_layer::tracer_array_t *)                                           \
             tracing_layer::pGlobalAPITracerContextImp->getActiveTracersList();      \
-    if (currentTracerArray) {                                                       \
+    if (currentTracerArray && currentTracerArray->tracerArrayCount) {           \
         for (size_t i = 0; i < currentTracerArray->tracerArrayCount; i++) {         \
             tracerType prologueCallbackPtr;                                         \
             tracerType epilogue_callback_ptr;                                       \
@@ -201,7 +201,7 @@ class APITracerCallbackDataImp {
     currentTracerArray =                                                             \
         (tracing_layer::tracer_array_t *)                                            \
             tracing_layer::pGlobalAPITracerContextImp->getActiveTracersList();       \
-    if (currentTracerArray) {                                                        \
+    if (currentTracerArray && currentTracerArray->tracerArrayCount) {            \
         for (size_t i = 0; i < currentTracerArray->tracerArrayCount; i++){           \
             tracerType prologueCallbackPtr;                                          \
             tracerType epilogue_callback_ptr;                                        \
@@ -237,6 +237,15 @@ APITracerWrapperImp(TFunction_pointer zeApiPtr, TParams paramsStruct,
     TRet ret {};
     std::vector<APITracerCallbackStateImp<TTracer>> *callbacks_prologs =
         &prologCallbacks;
+    std::vector<APITracerCallbackStateImp<TTracer>> *callbacksEpilogs =
+        &epilogCallbacks;
+    // Fast path: if no callbacks are registered, directly call the API
+    if (callbacks_prologs->empty() && callbacksEpilogs->empty()) {
+        ret = zeApiPtr(args...);
+        tracing_layer::tracingInProgress = 0;
+        tracing_layer::pGlobalAPITracerContextImp->releaseActivetracersList();
+        return ret;
+    }
 
     std::vector<void *> ppTracerInstanceUserData;
     ppTracerInstanceUserData.resize(callbacks_prologs->size());
@@ -248,8 +257,6 @@ APITracerWrapperImp(TFunction_pointer zeApiPtr, TParams paramsStruct,
                 &ppTracerInstanceUserData[i]);
     }
     ret = zeApiPtr(args...);
-    std::vector<APITracerCallbackStateImp<TTracer>> *callbacksEpilogs =
-        &epilogCallbacks;
     for (size_t i = 0; i < callbacksEpilogs->size(); i++) {
         if (callbacksEpilogs->at(i).current_api_callback != nullptr)
             callbacksEpilogs->at(i).current_api_callback(

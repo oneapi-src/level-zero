@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.15-r1.15.26
+ @version v1.15-r1.15.31
 
  """
 import platform
@@ -1040,10 +1040,11 @@ class ze_command_queue_flags_v(IntEnum):
                                                                             ## the next to define an in-order list, and application is allowed to
                                                                             ## pass signal and wait events
                                                                             ## to each appended command to implement more complex dependency graphs.
-    COPY_OFFLOAD_HINT = ZE_BIT(2)                                           ## Try to offload copy operations to different engines. Applicable only
-                                                                            ## for compute queues.
-                                                                            ## This is only a hint. Driver may ignore it per append call, based on
-                                                                            ## platform capabilities or internal heuristics.
+    COPY_OFFLOAD_HINT = ZE_BIT(2)                                           ## To be used only when creating immediate command lists and only for
+                                                                            ## compute queues.
+                                                                            ## Try to offload copy operations to different engines. This is only a hint.
+                                                                            ## Driver may ignore it per append call, based on platform capabilities
+                                                                            ## or internal heuristics.
 
 class ze_command_queue_flags_t(c_int):
     def __str__(self):
@@ -1124,6 +1125,10 @@ class ze_command_list_flags_v(IntEnum):
                                                                             ## more complex dependency graphs. Cannot be combined with ::ZE_COMMAND_LIST_FLAG_RELAXED_ORDERING.
     EXP_CLONEABLE = ZE_BIT(4)                                               ## this command list may be cloned using ::zeCommandListCreateCloneExp
                                                                             ## after ::zeCommandListClose.
+    COPY_OFFLOAD_HINT = ZE_BIT(5)                                           ## Try to offload copy operations to different engines. Applicable only
+                                                                            ## for compute queues.
+                                                                            ## This is only a hint. Driver may ignore it per append call, based on
+                                                                            ## platform capabilities or internal heuristics.
 
 class ze_command_list_flags_t(c_int):
     def __str__(self):
@@ -2048,21 +2053,21 @@ class ze_module_program_exp_version_t(c_int):
 ##     - Implementation must support ::ZE_MODULE_PROGRAM_EXP_NAME extension
 ##     - Modules support import and export linkage for functions and global
 ##       variables.
-##     - SPIR-V import and export linkage types are used. See SPIR-V
-##       specification for linkage details.
 ##     - pInputModules, pBuildFlags, and pConstants from ::ze_module_desc_t is
 ##       ignored.
 ##     - Format in ::ze_module_desc_t needs to be set to
-##       ::ZE_MODULE_FORMAT_IL_SPIRV.
+##       ::ZE_MODULE_FORMAT_IL_SPIRV or ::ZE_MODULE_FORMAT_NATIVE.
+##     - All modules in the list must be of the same format and match the
+##       format specified in ::ze_module_desc_t.
 class ze_module_program_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("count", c_ulong),                                             ## [in] Count of input modules
-        ("inputSizes", POINTER(c_size_t)),                              ## [in][range(0, count)] sizes of each input IL module in pInputModules.
-        ("pInputModules", POINTER(c_ubyte*)),                           ## [in][range(0, count)] pointer to an array of IL (e.g. SPIR-V modules).
-                                                                        ## Valid only for SPIR-V input.
+        ("inputSizes", POINTER(c_size_t)),                              ## [in][range(0, count)] sizes of each input module in pInputModules.
+        ("pInputModules", POINTER(c_ubyte*)),                           ## [in][range(0, count)] pointer to an array of binary modules in format
+                                                                        ## specified as part of ::ze_module_desc_t.
         ("pBuildFlags", POINTER(c_char_p)),                             ## [in][optional][range(0, count)] array of strings containing build
                                                                         ## flags. See pBuildFlags in ::ze_module_desc_t.
         ("pConstants", POINTER(ze_module_constants_t*))                 ## [in][optional][range(0, count)] pointer to array of specialization
