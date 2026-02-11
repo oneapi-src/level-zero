@@ -58,16 +58,25 @@ The Level Zero Loader uses spdlog logging and can be controlled via environment 
 
 `ZEL_ENABLE_LOADER_LOGGING=1`
 
-[DEPRECATED] `ZEL_LOADER_LOG_FILE=/path/to/logfile`
-
 `ZEL_LOADER_LOG_DIR='/directory/path'`
 
 `ZEL_LOADER_LOGGING_LEVEL=debug`
+
+Default Log Pattern (Does not need to be set, please see below):
+`ZEL_LOADER_LOG_PATTERN='[%Y-%m-%d %H:%M:%S.%e] [thread-id: %t] [%^%l%$] %v'`
 
 Valid logging levels are trace, debug, info, warn, error, critical, off.
 Logging is disabled by default but when enabled the default level is 'warn'.
 The default log file is 'ze_loader.log' in '.oneapi_logs' in the current
 user's home directory.
+
+The default log pattern includes timestamps, thread IDs, log levels, and messages.
+You can customize the pattern using `ZEL_LOADER_LOG_PATTERN`. Common pattern flags:
+- `%t` - thread id
+- `%Y-%m-%d %H:%M:%S.%e` - timestamp with milliseconds
+- `%l` - log level
+- `%v` - the actual log message
+See spdlog documentation for more pattern options.
 
 This feature is in early development and is preview only.
 
@@ -84,29 +93,28 @@ validation layer is enabled. Following variables need to be set to enable API lo
 By default logs will be written to the log file, as described above. To print the logs
 to stderr instead, `ZEL_LOADER_LOG_CONSOLE=1` needs to be set.
 
-The API logging output format includes both function entry and exit information, showing parameter names on entry and parameter values with the result code on exit. Each log entry is timestamped and includes the logger name and log level. Example output:
+The API logging output format includes both function entry and exit information, showing parameter names on entry and parameter values with the result code on exit. Each log entry is timestamped and includes the thread-id, logger name, log level. Example output:
 
 ```
-[2026-01-14 09:01:38.951] [ze_loader] [trace] zeContextCreate(hDriver, desc, phContext)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextCreate(hDriver=0x5b261fa70588, desc={stype=0x7ffdd20fe1e0, flags=0}, phContext=0x7ffdd20fe148)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x5b261fa74228, hDevice=0x5b261fa708b8, altdesc={stype=0x7ffdd20fe240, ordinal=0, index=0, flags=0, mode=0x7ffdd20fe25c, priority=0x7ffdd20fe260}, phCommandList=0x7ffdd20fe150)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] zeEventPoolCreate(hContext, desc, numDevices, phDevicesLocal, phEventPool)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventPoolCreate(hContext=0x5b261fa74228, desc={stype=0x7ffdd20fe200, flags=1, count=1}, numDevices=1, phDevices=0x7ffdd20fe138, phEventPool=0x7ffdd20fe160)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] zeEventCreate(hEventPool, desc, phEvent)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventCreate(hEventPool=0x5b261fa19c18, desc={stype=0x7ffdd20fe220, index=0, signal=4, wait=4}, phEvent=0x7ffdd20fe158)
-[2026-01-14 09:01:38.951] [ze_loader] [trace] zeCommandListAppendSignalEvent(hCommandList, hEvent)
-[2026-01-14 09:01:38.952] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendSignalEvent(hCommandList=0x5b261fa743c8, hEvent=0x5b261c69e5d8)
-[2026-01-14 09:01:38.952] [ze_loader] [trace] zeEventHostSynchronize(hEvent, timeout)
-[2026-01-14 09:01:38.954] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0x5b261c69e5d8, timeout=18446744073709551615)
-[2026-01-14 09:01:38.954] [ze_loader] [trace] zeContextDestroy(hContext)
-[2026-01-14 09:01:38.954] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextDestroy(hContext=0x5b261fa74228)
-[2026-01-14 09:01:38.954] [ze_loader] [trace] zeCommandListDestroy(hCommandList)
-[2026-01-14 09:01:38.955] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x5b261fa743c8)
-[2026-01-14 09:01:38.955] [ze_loader] [trace] zeEventDestroy(hEvent)
-[2026-01-14 09:01:38.955] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x5b261c69e5d8)
-[2026-01-14 09:01:38.955] [ze_loader] [trace] zeEventPoolDestroy(hEventPool)
-[2026-01-14 09:01:38.955] [ze_loader] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventPoolDestroy(hEventPool=0x5b261fa19c18)
+[2026-02-13 18:51:29.960] [thread-id: 3139] [trace] zeDriverGet(pCount, phDrivers)
+[2026-02-13 18:51:29.960] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+[2026-02-13 18:51:29.960] [thread-id: 3139] [trace] zeDriverGet(pCount, phDrivers)
+[2026-02-13 18:51:29.960] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0x5651c11920f0)
+[2026-02-13 18:51:29.961010] [0x00007f5d45f57780] [info]    Default Driver retrieved at index 0
+[2026-02-13 18:51:29.961] [thread-id: 3139] [trace] zeContextCreate(hDriver, desc, phContext)
+[2026-02-13 18:51:29.961] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextCreate(hDriver=0x5651c1166418, desc={stype=0x7ffdb52dc060, flags=0}, phContext=0x5651c0276c48)
+[2026-02-13 18:51:29.962] [thread-id: 3139] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-02-13 18:51:29.962] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x5651c1166418, pCount=2, phDevices=nullptr)
+[2026-02-13 18:51:29.962] [thread-id: 3139] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-02-13 18:51:29.962] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x5651c1166418, pCount=2, phDevices=0x5651c1192230)
+[2026-02-13 18:51:29.962] [thread-id: 3139] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-02-13 18:51:29.962] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x5651c1166418, pCount=2, phDevices=nullptr)
+[2026-02-13 18:51:29.962692] [0x00007f5d45f57780] [info]    Default Device retrieved at index 0
+[2026-02-13 18:51:29.963] [thread-id: 3139] [trace] zeCommandQueueCreate(hContext, hDevice, desc, phCommandQueue)
+[2026-02-13 18:51:29.963] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandQueueCreate(hContext=0x5651c0276c48, hDevice=0x5651c1166778, desc={stype=0x7ffdb52dbf90, ordinal=0, index=0, flags=0, mode=0x7ffdb52dbfac, priority=0x7ffdb52dbfb0}, phCommandQueue=0x5651c1192748)
+[2026-02-13 18:51:29.963] [thread-id: 3139] [trace] zeCommandListCreate(hContext, hDevice, desc, phCommandList)
+[2026-02-13 18:51:29.964] [thread-id: 3139] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreate(hContext=0x5651c0276c48, hDevice=0x5651c1166778, desc={stype=0x7ffdb52dbf70, commandQueueGroupOrdinal=0, flags=0}, phCommandList=0x5651c119af68)
+[2026-02-13 18:51:29.965] [thread-id: 3139] [trace] zeMemOpenIpcHandle(hContext, hDevice, handle, flags, pptr)
 ```
 
 

@@ -34,7 +34,10 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesInit(";
-        oss << "flags=" << loader::to_string(flags);
+        
+        
+        oss << "flags=";
+        oss << loader::to_string(flags);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -54,9 +57,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDriverGet(";
-        oss << "pCount=" << loader::to_string(pCount);
+        
+        
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phDrivers=" << loader::to_string(phDrivers);
+        oss << "phDrivers=";
+        oss << loader::to_string(phDrivers);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -78,11 +86,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDriverGetExtensionProperties(";
-        oss << "hDriver=" << loader::to_string(hDriver);
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pExtensionProperties=" << loader::to_string(pExtensionProperties);
+        oss << "pExtensionProperties=";
+        oss << loader::to_string(pExtensionProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -96,11 +111,23 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDriverGetExtensionFunctionAddress(";
-        oss << "hDriver=" << loader::to_string(hDriver);
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
         oss << ", ";
-        oss << "name=" << loader::to_string(name);
+        oss << "name=";
+        oss << loader::to_string(name);
+        
         oss << ", ";
-        oss << "ppFunctionAddress=" << loader::to_string(ppFunctionAddress);
+        oss << "ppFunctionAddress=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && ppFunctionAddress != nullptr) {
+            oss << loader::to_string(*ppFunctionAddress);
+        } else {
+            oss << loader::to_string(ppFunctionAddress);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -121,11 +148,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGet(";
-        oss << "hDriver=" << loader::to_string(hDriver);
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phDevices=" << loader::to_string(phDevices);
+        oss << "phDevices=";
+        oss << loader::to_string(phDevices);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -138,9 +172,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetProperties(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -153,9 +192,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetState(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -169,9 +213,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceReset(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "force=" << loader::to_string(force);
+        oss << "force=";
+        oss << loader::to_string(force);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -184,9 +233,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceResetExt(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -208,11 +262,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceProcessesGetState(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pProcesses=" << loader::to_string(pProcesses);
+        oss << "pProcesses=";
+        oss << loader::to_string(pProcesses);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -225,9 +286,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDevicePciGetProperties(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -240,9 +306,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDevicePciGetState(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -263,11 +334,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDevicePciGetBars(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -280,9 +358,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDevicePciGetStats(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pStats=" << loader::to_string(pStats);
+        oss << "pStats=";
+        oss << loader::to_string(pStats);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -294,7 +377,10 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceSetOverclockWaiver(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -309,9 +395,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetOverclockDomains(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pOverclockDomains=" << loader::to_string(pOverclockDomains);
+        oss << "pOverclockDomains=";
+        oss << loader::to_string(pOverclockDomains);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -327,11 +418,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetOverclockControls(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "domainType=" << loader::to_string(domainType);
+        oss << "domainType=";
+        oss << loader::to_string(domainType);
+        
         oss << ", ";
-        oss << "pAvailableControls=" << loader::to_string(pAvailableControls);
+        oss << "pAvailableControls=";
+        oss << loader::to_string(pAvailableControls);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -345,9 +443,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceResetOverclockSettings(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "onShippedState=" << loader::to_string(onShippedState);
+        oss << "onShippedState=";
+        oss << loader::to_string(onShippedState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -365,17 +468,55 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceReadOverclockState(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pOverclockMode=" << loader::to_string(pOverclockMode);
+        oss << "pOverclockMode=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pOverclockMode != nullptr) {
+            oss << loader::to_string(*pOverclockMode);
+        } else {
+            oss << loader::to_string(pOverclockMode);
+        }
+        
         oss << ", ";
-        oss << "pWaiverSetting=" << loader::to_string(pWaiverSetting);
+        oss << "pWaiverSetting=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pWaiverSetting != nullptr) {
+            oss << loader::to_string(*pWaiverSetting);
+        } else {
+            oss << loader::to_string(pWaiverSetting);
+        }
+        
         oss << ", ";
-        oss << "pOverclockState=" << loader::to_string(pOverclockState);
+        oss << "pOverclockState=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pOverclockState != nullptr) {
+            oss << loader::to_string(*pOverclockState);
+        } else {
+            oss << loader::to_string(pOverclockState);
+        }
+        
         oss << ", ";
-        oss << "pPendingAction=" << loader::to_string(pPendingAction);
+        oss << "pPendingAction=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pPendingAction != nullptr) {
+            oss << loader::to_string(*pPendingAction);
+        } else {
+            oss << loader::to_string(pPendingAction);
+        }
+        
         oss << ", ";
-        oss << "pPendingReset=" << loader::to_string(pPendingReset);
+        oss << "pPendingReset=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pPendingReset != nullptr) {
+            oss << loader::to_string(*pPendingReset);
+        } else {
+            oss << loader::to_string(pPendingReset);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -398,11 +539,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumOverclockDomains(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phDomainHandle=" << loader::to_string(phDomainHandle);
+        oss << "phDomainHandle=";
+        oss << loader::to_string(phDomainHandle);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -415,9 +563,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockGetDomainProperties(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "pDomainProperties=" << loader::to_string(pDomainProperties);
+        oss << "pDomainProperties=";
+        oss << loader::to_string(pDomainProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -430,9 +583,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockGetDomainVFProperties(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "pVFProperties=" << loader::to_string(pVFProperties);
+        oss << "pVFProperties=";
+        oss << loader::to_string(pVFProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -446,11 +604,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockGetDomainControlProperties(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "DomainControl=" << loader::to_string(DomainControl);
+        oss << "DomainControl=";
+        oss << loader::to_string(DomainControl);
+        
         oss << ", ";
-        oss << "pControlProperties=" << loader::to_string(pControlProperties);
+        oss << "pControlProperties=";
+        oss << loader::to_string(pControlProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -464,11 +629,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockGetControlCurrentValue(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "DomainControl=" << loader::to_string(DomainControl);
+        oss << "DomainControl=";
+        oss << loader::to_string(DomainControl);
+        
         oss << ", ";
-        oss << "pValue=" << loader::to_string(pValue);
+        oss << "pValue=";
+        oss << loader::to_string(pValue);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -483,11 +655,23 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockGetControlPendingValue(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "DomainControl=" << loader::to_string(DomainControl);
+        oss << "DomainControl=";
+        oss << loader::to_string(DomainControl);
+        
         oss << ", ";
-        oss << "pValue=" << loader::to_string(pValue);
+        oss << "pValue=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pValue != nullptr) {
+            oss << loader::to_string(*pValue);
+        } else {
+            oss << loader::to_string(pValue);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -503,13 +687,27 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockSetControlUserValue(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "DomainControl=" << loader::to_string(DomainControl);
+        oss << "DomainControl=";
+        oss << loader::to_string(DomainControl);
+        
         oss << ", ";
-        oss << "pValue=" << loader::to_string(pValue);
+        oss << "pValue=";
+        oss << loader::to_string(pValue);
+        
         oss << ", ";
-        oss << "pPendingAction=" << loader::to_string(pPendingAction);
+        oss << "pPendingAction=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pPendingAction != nullptr) {
+            oss << loader::to_string(*pPendingAction);
+        } else {
+            oss << loader::to_string(pPendingAction);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -524,13 +722,32 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockGetControlState(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "DomainControl=" << loader::to_string(DomainControl);
+        oss << "DomainControl=";
+        oss << loader::to_string(DomainControl);
+        
         oss << ", ";
-        oss << "pControlState=" << loader::to_string(pControlState);
+        oss << "pControlState=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pControlState != nullptr) {
+            oss << loader::to_string(*pControlState);
+        } else {
+            oss << loader::to_string(pControlState);
+        }
+        
         oss << ", ";
-        oss << "pPendingAction=" << loader::to_string(pPendingAction);
+        oss << "pPendingAction=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pPendingAction != nullptr) {
+            oss << loader::to_string(*pPendingAction);
+        } else {
+            oss << loader::to_string(pPendingAction);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -547,15 +764,31 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockGetVFPointValues(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "VFType=" << loader::to_string(VFType);
+        oss << "VFType=";
+        oss << loader::to_string(VFType);
+        
         oss << ", ";
-        oss << "VFArrayType=" << loader::to_string(VFArrayType);
+        oss << "VFArrayType=";
+        oss << loader::to_string(VFArrayType);
+        
         oss << ", ";
-        oss << "PointIndex=" << loader::to_string(PointIndex);
+        oss << "PointIndex=";
+        oss << loader::to_string(PointIndex);
+        
         oss << ", ";
-        oss << "PointValue=" << loader::to_string(PointValue);
+        oss << "PointValue=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && PointValue != nullptr) {
+            oss << loader::to_string(*PointValue);
+        } else {
+            oss << loader::to_string(PointValue);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -571,13 +804,22 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesOverclockSetVFPointValues(";
-        oss << "hDomainHandle=" << loader::to_string(hDomainHandle);
+        
+        
+        oss << "hDomainHandle=";
+        oss << loader::to_string(hDomainHandle);
+        
         oss << ", ";
-        oss << "VFType=" << loader::to_string(VFType);
+        oss << "VFType=";
+        oss << loader::to_string(VFType);
+        
         oss << ", ";
-        oss << "PointIndex=" << loader::to_string(PointIndex);
+        oss << "PointIndex=";
+        oss << loader::to_string(PointIndex);
+        
         oss << ", ";
-        oss << "PointValue=" << loader::to_string(PointValue);
+        oss << "PointValue=";
+        oss << loader::to_string(PointValue);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -600,11 +842,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumDiagnosticTestSuites(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phDiagnostics=" << loader::to_string(phDiagnostics);
+        oss << "phDiagnostics=";
+        oss << loader::to_string(phDiagnostics);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -618,9 +867,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDiagnosticsGetProperties(";
-        oss << "hDiagnostics=" << loader::to_string(hDiagnostics);
+        
+        
+        oss << "hDiagnostics=";
+        oss << loader::to_string(hDiagnostics);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -641,11 +895,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDiagnosticsGetTests(";
-        oss << "hDiagnostics=" << loader::to_string(hDiagnostics);
+        
+        
+        oss << "hDiagnostics=";
+        oss << loader::to_string(hDiagnostics);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pTests=" << loader::to_string(pTests);
+        oss << "pTests=";
+        oss << loader::to_string(pTests);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -662,13 +923,22 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDiagnosticsRunTests(";
-        oss << "hDiagnostics=" << loader::to_string(hDiagnostics);
+        
+        
+        oss << "hDiagnostics=";
+        oss << loader::to_string(hDiagnostics);
+        
         oss << ", ";
-        oss << "startIndex=" << loader::to_string(startIndex);
+        oss << "startIndex=";
+        oss << loader::to_string(startIndex);
+        
         oss << ", ";
-        oss << "endIndex=" << loader::to_string(endIndex);
+        oss << "endIndex=";
+        oss << loader::to_string(endIndex);
+        
         oss << ", ";
-        oss << "pResult=" << loader::to_string(pResult);
+        oss << "pResult=";
+        oss << loader::to_string(pResult);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -681,9 +951,19 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEccAvailable(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pAvailable=" << loader::to_string(pAvailable);
+        oss << "pAvailable=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pAvailable != nullptr) {
+            oss << loader::to_string(*pAvailable);
+        } else {
+            oss << loader::to_string(pAvailable);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -696,9 +976,19 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEccConfigurable(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pConfigurable=" << loader::to_string(pConfigurable);
+        oss << "pConfigurable=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pConfigurable != nullptr) {
+            oss << loader::to_string(*pConfigurable);
+        } else {
+            oss << loader::to_string(pConfigurable);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -711,9 +1001,19 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetEccState(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pState != nullptr) {
+            oss << loader::to_string(*pState);
+        } else {
+            oss << loader::to_string(pState);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -727,11 +1027,23 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceSetEccState(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "newState=" << loader::to_string(newState);
+        oss << "newState=";
+        oss << loader::to_string(newState);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pState != nullptr) {
+            oss << loader::to_string(*pState);
+        } else {
+            oss << loader::to_string(pState);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -754,11 +1066,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumEngineGroups(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phEngine=" << loader::to_string(phEngine);
+        oss << "phEngine=";
+        oss << loader::to_string(phEngine);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -771,9 +1090,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesEngineGetProperties(";
-        oss << "hEngine=" << loader::to_string(hEngine);
+        
+        
+        oss << "hEngine=";
+        oss << loader::to_string(hEngine);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -787,9 +1111,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesEngineGetActivity(";
-        oss << "hEngine=" << loader::to_string(hEngine);
+        
+        
+        oss << "hEngine=";
+        oss << loader::to_string(hEngine);
+        
         oss << ", ";
-        oss << "pStats=" << loader::to_string(pStats);
+        oss << "pStats=";
+        oss << loader::to_string(pStats);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -802,9 +1131,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEventRegister(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "events=" << loader::to_string(events);
+        oss << "events=";
+        oss << loader::to_string(events);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -833,17 +1167,30 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDriverEventListen(";
-        oss << "hDriver=" << loader::to_string(hDriver);
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
         oss << ", ";
-        oss << "timeout=" << loader::to_string(timeout);
+        oss << "timeout=";
+        oss << loader::to_string(timeout);
+        
         oss << ", ";
-        oss << "count=" << loader::to_string(count);
+        oss << "count=";
+        oss << loader::to_string(count);
+        
         oss << ", ";
-        oss << "phDevices=" << loader::to_string(phDevices);
+        oss << "phDevices=";
+        oss << loader::to_string(phDevices);
+        
         oss << ", ";
-        oss << "pNumDeviceEvents=" << loader::to_string(pNumDeviceEvents);
+        oss << "pNumDeviceEvents=";
+        oss << loader::to_string(pNumDeviceEvents);
+        
         oss << ", ";
-        oss << "pEvents=" << loader::to_string(pEvents);
+        oss << "pEvents=";
+        oss << loader::to_string(pEvents);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -872,17 +1219,30 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDriverEventListenEx(";
-        oss << "hDriver=" << loader::to_string(hDriver);
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
         oss << ", ";
-        oss << "timeout=" << loader::to_string(timeout);
+        oss << "timeout=";
+        oss << loader::to_string(timeout);
+        
         oss << ", ";
-        oss << "count=" << loader::to_string(count);
+        oss << "count=";
+        oss << loader::to_string(count);
+        
         oss << ", ";
-        oss << "phDevices=" << loader::to_string(phDevices);
+        oss << "phDevices=";
+        oss << loader::to_string(phDevices);
+        
         oss << ", ";
-        oss << "pNumDeviceEvents=" << loader::to_string(pNumDeviceEvents);
+        oss << "pNumDeviceEvents=";
+        oss << loader::to_string(pNumDeviceEvents);
+        
         oss << ", ";
-        oss << "pEvents=" << loader::to_string(pEvents);
+        oss << "pEvents=";
+        oss << loader::to_string(pEvents);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -905,11 +1265,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumFabricPorts(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phPort=" << loader::to_string(phPort);
+        oss << "phPort=";
+        oss << loader::to_string(phPort);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -922,9 +1289,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortGetProperties(";
-        oss << "hPort=" << loader::to_string(hPort);
+        
+        
+        oss << "hPort=";
+        oss << loader::to_string(hPort);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -938,9 +1310,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortGetLinkType(";
-        oss << "hPort=" << loader::to_string(hPort);
+        
+        
+        oss << "hPort=";
+        oss << loader::to_string(hPort);
+        
         oss << ", ";
-        oss << "pLinkType=" << loader::to_string(pLinkType);
+        oss << "pLinkType=";
+        oss << loader::to_string(pLinkType);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -953,9 +1330,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortGetConfig(";
-        oss << "hPort=" << loader::to_string(hPort);
+        
+        
+        oss << "hPort=";
+        oss << loader::to_string(hPort);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -968,9 +1350,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortSetConfig(";
-        oss << "hPort=" << loader::to_string(hPort);
+        
+        
+        oss << "hPort=";
+        oss << loader::to_string(hPort);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -983,9 +1370,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortGetState(";
-        oss << "hPort=" << loader::to_string(hPort);
+        
+        
+        oss << "hPort=";
+        oss << loader::to_string(hPort);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -998,9 +1390,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortGetThroughput(";
-        oss << "hPort=" << loader::to_string(hPort);
+        
+        
+        oss << "hPort=";
+        oss << loader::to_string(hPort);
+        
         oss << ", ";
-        oss << "pThroughput=" << loader::to_string(pThroughput);
+        oss << "pThroughput=";
+        oss << loader::to_string(pThroughput);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1013,9 +1410,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortGetFabricErrorCounters(";
-        oss << "hPort=" << loader::to_string(hPort);
+        
+        
+        oss << "hPort=";
+        oss << loader::to_string(hPort);
+        
         oss << ", ";
-        oss << "pErrors=" << loader::to_string(pErrors);
+        oss << "pErrors=";
+        oss << loader::to_string(pErrors);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1032,13 +1434,27 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFabricPortGetMultiPortThroughput(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "numPorts=" << loader::to_string(numPorts);
+        oss << "numPorts=";
+        oss << loader::to_string(numPorts);
+        
         oss << ", ";
-        oss << "phPort=" << loader::to_string(phPort);
+        oss << "phPort=";
+        oss << loader::to_string(phPort);
+        
         oss << ", ";
-        oss << "pThroughput=" << loader::to_string(pThroughput);
+        oss << "pThroughput=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pThroughput != nullptr) {
+            oss << loader::to_string(*pThroughput);
+        } else {
+            oss << loader::to_string(pThroughput);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1061,11 +1477,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumFans(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phFan=" << loader::to_string(phFan);
+        oss << "phFan=";
+        oss << loader::to_string(phFan);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1078,9 +1501,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFanGetProperties(";
-        oss << "hFan=" << loader::to_string(hFan);
+        
+        
+        oss << "hFan=";
+        oss << loader::to_string(hFan);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1093,9 +1521,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFanGetConfig(";
-        oss << "hFan=" << loader::to_string(hFan);
+        
+        
+        oss << "hFan=";
+        oss << loader::to_string(hFan);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1107,7 +1540,10 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFanSetDefaultMode(";
-        oss << "hFan=" << loader::to_string(hFan);
+        
+        
+        oss << "hFan=";
+        oss << loader::to_string(hFan);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1120,9 +1556,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFanSetFixedSpeedMode(";
-        oss << "hFan=" << loader::to_string(hFan);
+        
+        
+        oss << "hFan=";
+        oss << loader::to_string(hFan);
+        
         oss << ", ";
-        oss << "speed=" << loader::to_string(speed);
+        oss << "speed=";
+        oss << loader::to_string(speed);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1135,9 +1576,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFanSetSpeedTableMode(";
-        oss << "hFan=" << loader::to_string(hFan);
+        
+        
+        oss << "hFan=";
+        oss << loader::to_string(hFan);
+        
         oss << ", ";
-        oss << "speedTable=" << loader::to_string(speedTable);
+        oss << "speedTable=";
+        oss << loader::to_string(speedTable);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1153,11 +1599,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFanGetState(";
-        oss << "hFan=" << loader::to_string(hFan);
+        
+        
+        oss << "hFan=";
+        oss << loader::to_string(hFan);
+        
         oss << ", ";
-        oss << "units=" << loader::to_string(units);
+        oss << "units=";
+        oss << loader::to_string(units);
+        
         oss << ", ";
-        oss << "pSpeed=" << loader::to_string(pSpeed);
+        oss << "pSpeed=";
+        oss << loader::to_string(pSpeed);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1180,11 +1633,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumFirmwares(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phFirmware=" << loader::to_string(phFirmware);
+        oss << "phFirmware=";
+        oss << loader::to_string(phFirmware);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1198,9 +1658,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFirmwareGetProperties(";
-        oss << "hFirmware=" << loader::to_string(hFirmware);
+        
+        
+        oss << "hFirmware=";
+        oss << loader::to_string(hFirmware);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1214,11 +1679,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFirmwareFlash(";
-        oss << "hFirmware=" << loader::to_string(hFirmware);
+        
+        
+        oss << "hFirmware=";
+        oss << loader::to_string(hFirmware);
+        
         oss << ", ";
-        oss << "pImage=" << loader::to_string(pImage);
+        oss << "pImage=";
+        oss << loader::to_string(pImage);
+        
         oss << ", ";
-        oss << "size=" << loader::to_string(size);
+        oss << "size=";
+        oss << loader::to_string(size);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1231,9 +1703,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFirmwareGetFlashProgress(";
-        oss << "hFirmware=" << loader::to_string(hFirmware);
+        
+        
+        oss << "hFirmware=";
+        oss << loader::to_string(hFirmware);
+        
         oss << ", ";
-        oss << "pCompletionPercent=" << loader::to_string(pCompletionPercent);
+        oss << "pCompletionPercent=";
+        oss << loader::to_string(pCompletionPercent);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1247,11 +1724,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFirmwareGetConsoleLogs(";
-        oss << "hFirmware=" << loader::to_string(hFirmware);
+        
+        
+        oss << "hFirmware=";
+        oss << loader::to_string(hFirmware);
+        
         oss << ", ";
-        oss << "pSize=" << loader::to_string(pSize);
+        oss << "pSize=";
+        oss << loader::to_string(pSize);
+        
         oss << ", ";
-        oss << "pFirmwareLog=" << loader::to_string(pFirmwareLog);
+        oss << "pFirmwareLog=";
+        oss << loader::to_string(pFirmwareLog);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1274,11 +1758,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumFrequencyDomains(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phFrequency=" << loader::to_string(phFrequency);
+        oss << "phFrequency=";
+        oss << loader::to_string(phFrequency);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1291,9 +1782,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyGetProperties(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1314,11 +1810,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyGetAvailableClocks(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phFrequency=" << loader::to_string(phFrequency);
+        oss << "phFrequency=";
+        oss << loader::to_string(phFrequency);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1332,9 +1835,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyGetRange(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pLimits=" << loader::to_string(pLimits);
+        oss << "pLimits=";
+        oss << loader::to_string(pLimits);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1348,9 +1856,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencySetRange(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pLimits=" << loader::to_string(pLimits);
+        oss << "pLimits=";
+        oss << loader::to_string(pLimits);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1363,9 +1876,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyGetState(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1379,9 +1897,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyGetThrottleTime(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pThrottleTime=" << loader::to_string(pThrottleTime);
+        oss << "pThrottleTime=";
+        oss << loader::to_string(pThrottleTime);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1394,9 +1917,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcGetCapabilities(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pOcCapabilities=" << loader::to_string(pOcCapabilities);
+        oss << "pOcCapabilities=";
+        oss << loader::to_string(pOcCapabilities);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1412,9 +1940,19 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcGetFrequencyTarget(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pCurrentOcFrequency=" << loader::to_string(pCurrentOcFrequency);
+        oss << "pCurrentOcFrequency=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pCurrentOcFrequency != nullptr) {
+            oss << loader::to_string(*pCurrentOcFrequency);
+        } else {
+            oss << loader::to_string(pCurrentOcFrequency);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1430,9 +1968,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcSetFrequencyTarget(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "CurrentOcFrequency=" << loader::to_string(CurrentOcFrequency);
+        oss << "CurrentOcFrequency=";
+        oss << loader::to_string(CurrentOcFrequency);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1450,11 +1993,28 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcGetVoltageTarget(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pCurrentVoltageTarget=" << loader::to_string(pCurrentVoltageTarget);
+        oss << "pCurrentVoltageTarget=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pCurrentVoltageTarget != nullptr) {
+            oss << loader::to_string(*pCurrentVoltageTarget);
+        } else {
+            oss << loader::to_string(pCurrentVoltageTarget);
+        }
+        
         oss << ", ";
-        oss << "pCurrentVoltageOffset=" << loader::to_string(pCurrentVoltageOffset);
+        oss << "pCurrentVoltageOffset=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pCurrentVoltageOffset != nullptr) {
+            oss << loader::to_string(*pCurrentVoltageOffset);
+        } else {
+            oss << loader::to_string(pCurrentVoltageOffset);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1472,11 +2032,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcSetVoltageTarget(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "CurrentVoltageTarget=" << loader::to_string(CurrentVoltageTarget);
+        oss << "CurrentVoltageTarget=";
+        oss << loader::to_string(CurrentVoltageTarget);
+        
         oss << ", ";
-        oss << "CurrentVoltageOffset=" << loader::to_string(CurrentVoltageOffset);
+        oss << "CurrentVoltageOffset=";
+        oss << loader::to_string(CurrentVoltageOffset);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1489,9 +2056,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcSetMode(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "CurrentOcMode=" << loader::to_string(CurrentOcMode);
+        oss << "CurrentOcMode=";
+        oss << loader::to_string(CurrentOcMode);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1504,9 +2076,19 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcGetMode(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pCurrentOcMode=" << loader::to_string(pCurrentOcMode);
+        oss << "pCurrentOcMode=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pCurrentOcMode != nullptr) {
+            oss << loader::to_string(*pCurrentOcMode);
+        } else {
+            oss << loader::to_string(pCurrentOcMode);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1520,9 +2102,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcGetIccMax(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pOcIccMax=" << loader::to_string(pOcIccMax);
+        oss << "pOcIccMax=";
+        oss << loader::to_string(pOcIccMax);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1535,9 +2122,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcSetIccMax(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "ocIccMax=" << loader::to_string(ocIccMax);
+        oss << "ocIccMax=";
+        oss << loader::to_string(ocIccMax);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1551,9 +2143,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcGetTjMax(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "pOcTjMax=" << loader::to_string(pOcTjMax);
+        oss << "pOcTjMax=";
+        oss << loader::to_string(pOcTjMax);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1566,9 +2163,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFrequencyOcSetTjMax(";
-        oss << "hFrequency=" << loader::to_string(hFrequency);
+        
+        
+        oss << "hFrequency=";
+        oss << loader::to_string(hFrequency);
+        
         oss << ", ";
-        oss << "ocTjMax=" << loader::to_string(ocTjMax);
+        oss << "ocTjMax=";
+        oss << loader::to_string(ocTjMax);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1591,11 +2193,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumLeds(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phLed=" << loader::to_string(phLed);
+        oss << "phLed=";
+        oss << loader::to_string(phLed);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1608,9 +2217,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesLedGetProperties(";
-        oss << "hLed=" << loader::to_string(hLed);
+        
+        
+        oss << "hLed=";
+        oss << loader::to_string(hLed);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1623,9 +2237,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesLedGetState(";
-        oss << "hLed=" << loader::to_string(hLed);
+        
+        
+        oss << "hLed=";
+        oss << loader::to_string(hLed);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1638,9 +2257,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesLedSetState(";
-        oss << "hLed=" << loader::to_string(hLed);
+        
+        
+        oss << "hLed=";
+        oss << loader::to_string(hLed);
+        
         oss << ", ";
-        oss << "enable=" << loader::to_string(enable);
+        oss << "enable=";
+        oss << loader::to_string(enable);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1653,9 +2277,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesLedSetColor(";
-        oss << "hLed=" << loader::to_string(hLed);
+        
+        
+        oss << "hLed=";
+        oss << loader::to_string(hLed);
+        
         oss << ", ";
-        oss << "pColor=" << loader::to_string(pColor);
+        oss << "pColor=";
+        oss << loader::to_string(pColor);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1678,11 +2307,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumMemoryModules(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phMemory=" << loader::to_string(phMemory);
+        oss << "phMemory=";
+        oss << loader::to_string(phMemory);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1695,9 +2331,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesMemoryGetProperties(";
-        oss << "hMemory=" << loader::to_string(hMemory);
+        
+        
+        oss << "hMemory=";
+        oss << loader::to_string(hMemory);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1710,9 +2351,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesMemoryGetState(";
-        oss << "hMemory=" << loader::to_string(hMemory);
+        
+        
+        oss << "hMemory=";
+        oss << loader::to_string(hMemory);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1726,9 +2372,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesMemoryGetBandwidth(";
-        oss << "hMemory=" << loader::to_string(hMemory);
+        
+        
+        oss << "hMemory=";
+        oss << loader::to_string(hMemory);
+        
         oss << ", ";
-        oss << "pBandwidth=" << loader::to_string(pBandwidth);
+        oss << "pBandwidth=";
+        oss << loader::to_string(pBandwidth);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1751,11 +2402,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumPerformanceFactorDomains(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phPerf=" << loader::to_string(phPerf);
+        oss << "phPerf=";
+        oss << loader::to_string(phPerf);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1769,9 +2427,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPerformanceFactorGetProperties(";
-        oss << "hPerf=" << loader::to_string(hPerf);
+        
+        
+        oss << "hPerf=";
+        oss << loader::to_string(hPerf);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1785,9 +2448,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPerformanceFactorGetConfig(";
-        oss << "hPerf=" << loader::to_string(hPerf);
+        
+        
+        oss << "hPerf=";
+        oss << loader::to_string(hPerf);
+        
         oss << ", ";
-        oss << "pFactor=" << loader::to_string(pFactor);
+        oss << "pFactor=";
+        oss << loader::to_string(pFactor);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1800,9 +2468,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPerformanceFactorSetConfig(";
-        oss << "hPerf=" << loader::to_string(hPerf);
+        
+        
+        oss << "hPerf=";
+        oss << loader::to_string(hPerf);
+        
         oss << ", ";
-        oss << "factor=" << loader::to_string(factor);
+        oss << "factor=";
+        oss << loader::to_string(factor);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1825,11 +2498,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumPowerDomains(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phPower=" << loader::to_string(phPower);
+        oss << "phPower=";
+        oss << loader::to_string(phPower);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1842,9 +2522,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetCardPowerDomain(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "phPower=" << loader::to_string(phPower);
+        oss << "phPower=";
+        oss << loader::to_string(phPower);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1857,9 +2542,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerGetProperties(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1873,9 +2563,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerGetEnergyCounter(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "pEnergy=" << loader::to_string(pEnergy);
+        oss << "pEnergy=";
+        oss << loader::to_string(pEnergy);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1893,13 +2588,22 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerGetLimits(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "pSustained=" << loader::to_string(pSustained);
+        oss << "pSustained=";
+        oss << loader::to_string(pSustained);
+        
         oss << ", ";
-        oss << "pBurst=" << loader::to_string(pBurst);
+        oss << "pBurst=";
+        oss << loader::to_string(pBurst);
+        
         oss << ", ";
-        oss << "pPeak=" << loader::to_string(pPeak);
+        oss << "pPeak=";
+        oss << loader::to_string(pPeak);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1917,13 +2621,22 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerSetLimits(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "pSustained=" << loader::to_string(pSustained);
+        oss << "pSustained=";
+        oss << loader::to_string(pSustained);
+        
         oss << ", ";
-        oss << "pBurst=" << loader::to_string(pBurst);
+        oss << "pBurst=";
+        oss << loader::to_string(pBurst);
+        
         oss << ", ";
-        oss << "pPeak=" << loader::to_string(pPeak);
+        oss << "pPeak=";
+        oss << loader::to_string(pPeak);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1937,9 +2650,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerGetEnergyThreshold(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "pThreshold=" << loader::to_string(pThreshold);
+        oss << "pThreshold=";
+        oss << loader::to_string(pThreshold);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1952,9 +2670,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerSetEnergyThreshold(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "threshold=" << loader::to_string(threshold);
+        oss << "threshold=";
+        oss << loader::to_string(threshold);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1977,11 +2700,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumPsus(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phPsu=" << loader::to_string(phPsu);
+        oss << "phPsu=";
+        oss << loader::to_string(phPsu);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -1994,9 +2724,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPsuGetProperties(";
-        oss << "hPsu=" << loader::to_string(hPsu);
+        
+        
+        oss << "hPsu=";
+        oss << loader::to_string(hPsu);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2009,9 +2744,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPsuGetState(";
-        oss << "hPsu=" << loader::to_string(hPsu);
+        
+        
+        oss << "hPsu=";
+        oss << loader::to_string(hPsu);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2034,11 +2774,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumRasErrorSets(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phRas=" << loader::to_string(phRas);
+        oss << "phRas=";
+        oss << loader::to_string(phRas);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2051,9 +2798,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesRasGetProperties(";
-        oss << "hRas=" << loader::to_string(hRas);
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2067,9 +2819,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesRasGetConfig(";
-        oss << "hRas=" << loader::to_string(hRas);
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2082,9 +2839,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesRasSetConfig(";
-        oss << "hRas=" << loader::to_string(hRas);
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2098,11 +2860,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesRasGetState(";
-        oss << "hRas=" << loader::to_string(hRas);
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
         oss << ", ";
-        oss << "clear=" << loader::to_string(clear);
+        oss << "clear=";
+        oss << loader::to_string(clear);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2125,11 +2894,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumSchedulers(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phScheduler=" << loader::to_string(phScheduler);
+        oss << "phScheduler=";
+        oss << loader::to_string(phScheduler);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2142,9 +2918,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerGetProperties(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2157,9 +2938,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerGetCurrentMode(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "pMode=" << loader::to_string(pMode);
+        oss << "pMode=";
+        oss << loader::to_string(pMode);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2174,11 +2960,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerGetTimeoutModeProperties(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "getDefaults=" << loader::to_string(getDefaults);
+        oss << "getDefaults=";
+        oss << loader::to_string(getDefaults);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2193,11 +2986,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerGetTimesliceModeProperties(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "getDefaults=" << loader::to_string(getDefaults);
+        oss << "getDefaults=";
+        oss << loader::to_string(getDefaults);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2212,11 +3012,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerSetTimeoutMode(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
+        
         oss << ", ";
-        oss << "pNeedReload=" << loader::to_string(pNeedReload);
+        oss << "pNeedReload=";
+        oss << loader::to_string(pNeedReload);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2231,11 +3038,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerSetTimesliceMode(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
+        
         oss << ", ";
-        oss << "pNeedReload=" << loader::to_string(pNeedReload);
+        oss << "pNeedReload=";
+        oss << loader::to_string(pNeedReload);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2249,9 +3063,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerSetExclusiveMode(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "pNeedReload=" << loader::to_string(pNeedReload);
+        oss << "pNeedReload=";
+        oss << loader::to_string(pNeedReload);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2265,9 +3084,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesSchedulerSetComputeUnitDebugMode(";
-        oss << "hScheduler=" << loader::to_string(hScheduler);
+        
+        
+        oss << "hScheduler=";
+        oss << loader::to_string(hScheduler);
+        
         oss << ", ";
-        oss << "pNeedReload=" << loader::to_string(pNeedReload);
+        oss << "pNeedReload=";
+        oss << loader::to_string(pNeedReload);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2290,11 +3114,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumStandbyDomains(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phStandby=" << loader::to_string(phStandby);
+        oss << "phStandby=";
+        oss << loader::to_string(phStandby);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2307,9 +3138,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesStandbyGetProperties(";
-        oss << "hStandby=" << loader::to_string(hStandby);
+        
+        
+        oss << "hStandby=";
+        oss << loader::to_string(hStandby);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2322,9 +3158,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesStandbyGetMode(";
-        oss << "hStandby=" << loader::to_string(hStandby);
+        
+        
+        oss << "hStandby=";
+        oss << loader::to_string(hStandby);
+        
         oss << ", ";
-        oss << "pMode=" << loader::to_string(pMode);
+        oss << "pMode=";
+        oss << loader::to_string(pMode);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2337,9 +3178,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesStandbySetMode(";
-        oss << "hStandby=" << loader::to_string(hStandby);
+        
+        
+        oss << "hStandby=";
+        oss << loader::to_string(hStandby);
+        
         oss << ", ";
-        oss << "mode=" << loader::to_string(mode);
+        oss << "mode=";
+        oss << loader::to_string(mode);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2362,11 +3208,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumTemperatureSensors(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phTemperature=" << loader::to_string(phTemperature);
+        oss << "phTemperature=";
+        oss << loader::to_string(phTemperature);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2379,9 +3232,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesTemperatureGetProperties(";
-        oss << "hTemperature=" << loader::to_string(hTemperature);
+        
+        
+        oss << "hTemperature=";
+        oss << loader::to_string(hTemperature);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2394,9 +3252,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesTemperatureGetConfig(";
-        oss << "hTemperature=" << loader::to_string(hTemperature);
+        
+        
+        oss << "hTemperature=";
+        oss << loader::to_string(hTemperature);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2409,9 +3272,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesTemperatureSetConfig(";
-        oss << "hTemperature=" << loader::to_string(hTemperature);
+        
+        
+        oss << "hTemperature=";
+        oss << loader::to_string(hTemperature);
+        
         oss << ", ";
-        oss << "pConfig=" << loader::to_string(pConfig);
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2425,9 +3293,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesTemperatureGetState(";
-        oss << "hTemperature=" << loader::to_string(hTemperature);
+        
+        
+        oss << "hTemperature=";
+        oss << loader::to_string(hTemperature);
+        
         oss << ", ";
-        oss << "pTemperature=" << loader::to_string(pTemperature);
+        oss << "pTemperature=";
+        oss << loader::to_string(pTemperature);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2442,11 +3315,23 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDevicePciLinkSpeedUpdateExt(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "shouldDowngrade=" << loader::to_string(shouldDowngrade);
+        oss << "shouldDowngrade=";
+        oss << loader::to_string(shouldDowngrade);
+        
         oss << ", ";
-        oss << "pendingAction=" << loader::to_string(pendingAction);
+        oss << "pendingAction=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pendingAction != nullptr) {
+            oss << loader::to_string(*pendingAction);
+        } else {
+            oss << loader::to_string(pendingAction);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2467,11 +3352,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerGetLimitsExt(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pSustained=" << loader::to_string(pSustained);
+        oss << "pSustained=";
+        oss << loader::to_string(pSustained);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2485,11 +3377,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesPowerSetLimitsExt(";
-        oss << "hPower=" << loader::to_string(hPower);
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pSustained=" << loader::to_string(pSustained);
+        oss << "pSustained=";
+        oss << loader::to_string(pSustained);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2515,11 +3414,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesEngineGetActivityExt(";
-        oss << "hEngine=" << loader::to_string(hEngine);
+        
+        
+        oss << "hEngine=";
+        oss << loader::to_string(hEngine);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pStats=" << loader::to_string(pStats);
+        oss << "pStats=";
+        oss << loader::to_string(pStats);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2540,11 +3446,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesRasGetStateExp(";
-        oss << "hRas=" << loader::to_string(hRas);
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pState=" << loader::to_string(pState);
+        oss << "pState=";
+        oss << loader::to_string(pState);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2557,9 +3470,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesRasClearStateExp(";
-        oss << "hRas=" << loader::to_string(hRas);
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
         oss << ", ";
-        oss << "category=" << loader::to_string(category);
+        oss << "category=";
+        oss << loader::to_string(category);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2573,9 +3491,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFirmwareGetSecurityVersionExp(";
-        oss << "hFirmware=" << loader::to_string(hFirmware);
+        
+        
+        oss << "hFirmware=";
+        oss << loader::to_string(hFirmware);
+        
         oss << ", ";
-        oss << "pVersion=" << loader::to_string(pVersion);
+        oss << "pVersion=";
+        oss << loader::to_string(pVersion);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2587,7 +3510,10 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesFirmwareSetSecurityVersionExp(";
-        oss << "hFirmware=" << loader::to_string(hFirmware);
+        
+        
+        oss << "hFirmware=";
+        oss << loader::to_string(hFirmware);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2608,11 +3534,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetSubDevicePropertiesExp(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pSubdeviceProps=" << loader::to_string(pSubdeviceProps);
+        oss << "pSubdeviceProps=";
+        oss << loader::to_string(pSubdeviceProps);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2629,15 +3562,41 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDriverGetDeviceByUuidExp(";
-        oss << "hDriver=" << loader::to_string(hDriver);
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
         oss << ", ";
-        oss << "uuid=" << loader::to_string(uuid);
+        oss << "uuid=";
+        oss << loader::to_string(uuid);
+        
         oss << ", ";
-        oss << "phDevice=" << loader::to_string(phDevice);
+        oss << "phDevice=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phDevice != nullptr) {
+            oss << loader::to_string(*phDevice);
+        } else {
+            oss << loader::to_string(phDevice);
+        }
+        
         oss << ", ";
-        oss << "onSubdevice=" << loader::to_string(onSubdevice);
+        oss << "onSubdevice=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && onSubdevice != nullptr) {
+            oss << loader::to_string(*onSubdevice);
+        } else {
+            oss << loader::to_string(onSubdevice);
+        }
+        
         oss << ", ";
-        oss << "subdeviceId=" << loader::to_string(subdeviceId);
+        oss << "subdeviceId=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && subdeviceId != nullptr) {
+            oss << loader::to_string(*subdeviceId);
+        } else {
+            oss << loader::to_string(subdeviceId);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2660,11 +3619,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumActiveVFExp(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phVFhandle=" << loader::to_string(phVFhandle);
+        oss << "phVFhandle=";
+        oss << loader::to_string(phVFhandle);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2677,9 +3643,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementGetVFPropertiesExp(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "pProperties=" << loader::to_string(pProperties);
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2704,11 +3675,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementGetVFMemoryUtilizationExp(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pMemUtil=" << loader::to_string(pMemUtil);
+        oss << "pMemUtil=";
+        oss << loader::to_string(pMemUtil);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2733,11 +3711,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementGetVFEngineUtilizationExp(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pEngineUtil=" << loader::to_string(pEngineUtil);
+        oss << "pEngineUtil=";
+        oss << loader::to_string(pEngineUtil);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2752,11 +3737,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementSetVFTelemetryModeExp(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "flags=" << loader::to_string(flags);
+        oss << "flags=";
+        oss << loader::to_string(flags);
+        
         oss << ", ";
-        oss << "enable=" << loader::to_string(enable);
+        oss << "enable=";
+        oss << loader::to_string(enable);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2771,11 +3763,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementSetVFTelemetrySamplingIntervalExp(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "flag=" << loader::to_string(flag);
+        oss << "flag=";
+        oss << loader::to_string(flag);
+        
         oss << ", ";
-        oss << "samplingInterval=" << loader::to_string(samplingInterval);
+        oss << "samplingInterval=";
+        oss << loader::to_string(samplingInterval);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2798,11 +3797,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesDeviceEnumEnabledVFExp(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "phVFhandle=" << loader::to_string(phVFhandle);
+        oss << "phVFhandle=";
+        oss << loader::to_string(phVFhandle);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2815,9 +3821,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementGetVFCapabilitiesExp(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "pCapability=" << loader::to_string(pCapability);
+        oss << "pCapability=";
+        oss << loader::to_string(pCapability);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2840,11 +3851,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementGetVFMemoryUtilizationExp2(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pMemUtil=" << loader::to_string(pMemUtil);
+        oss << "pMemUtil=";
+        oss << loader::to_string(pMemUtil);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2867,11 +3885,18 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementGetVFEngineUtilizationExp2(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "pCount=" << loader::to_string(pCount);
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
         oss << ", ";
-        oss << "pEngineUtil=" << loader::to_string(pEngineUtil);
+        oss << "pEngineUtil=";
+        oss << loader::to_string(pEngineUtil);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -2884,9 +3909,14 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zesVFManagementGetVFCapabilitiesExp2(";
-        oss << "hVFhandle=" << loader::to_string(hVFhandle);
+        
+        
+        oss << "hVFhandle=";
+        oss << loader::to_string(hVFhandle);
+        
         oss << ", ";
-        oss << "pCapability=" << loader::to_string(pCapability);
+        oss << "pCapability=";
+        oss << loader::to_string(pCapability);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
