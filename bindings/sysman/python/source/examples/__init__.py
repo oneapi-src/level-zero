@@ -1,3 +1,10 @@
+##
+# Copyright (C) 2026 Intel Corporation
+#
+# SPDX-License-Identifier: MIT
+#
+##
+
 """
 Example scripts demonstrating pyzes usage.
 
