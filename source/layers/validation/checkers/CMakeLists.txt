@@ -1,6 +1,7 @@
 add_subdirectory(basic_leak)
 add_subdirectory(certification)
 add_subdirectory(events_checker)
+add_subdirectory(performance)
 add_subdirectory(parameter_validation)
 add_subdirectory(template)
 

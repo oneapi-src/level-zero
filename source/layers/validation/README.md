@@ -90,6 +90,22 @@ Validates:
 When this mode is enabled, the certification checker validates API usage against the version supported by the driver or an explicitly specified version.
 If an API is used that was introduced in a version higher than the supported version, the checker will return `ZE_RESULT_ERROR_UNSUPPORTED_VERSION`.
 
+### `ZEL_ENABLE_PERFORMANCE_CHECKER`
+
+When this mode is enabled, the performance checker validates API usage against known performance best practices. It can be used to identify potential performance issues in an application and provide recommendations for improvement.
+To enable use following environment variable:
+```bash
+export ZEL_ENABLE_PERFORMANCE_CHECKER=1
+export ZEL_ENABLE_LOADER_LOGGING=1
+export ZE_ENABLE_VALIDATION_LAYER=1
+export ZEL_LOADER_LOG_CONSOLE=1 # Optional: enable console logging for immediate feedback
+```
+
+Currently checked things:
+- check whether created immediate command lists are not synchrnous
+- check whether created immediate command lists are using in order queues
+- check whether in order command lists are using copy offload
+
 ### `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER` (Linux Only)
 
 The System Resource Tracker monitors both Level Zero API resources and system resources in real-time. It tracks:
