@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2024 Intel Corporation
+ * Copyright (C) 2024-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -135,6 +135,12 @@ public:
     if (!logging_enabled)
       return;
     _logger->critical(msg);
+  }
+
+  void log_performance(std::string msg) {
+      if (!logging_enabled)
+          return;
+      _logger->warn("[performance] " + msg);
   }
 
   std::shared_ptr<spdlog::logger> get_base_logger(){
