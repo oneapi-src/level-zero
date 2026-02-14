@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2024 Intel Corporation
+ * Copyright (C) 2024-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -602,3 +602,371 @@ TEST(
     ze_result_t result = zerGetLastErrorDescription(nullptr);
     EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_POINTER, result);
   }
+
+///////////////////////////////////////////////////////////////////////////////
+// API Call Tracing Tests
+//
+// These tests validate that API call tracing in the validation layer works
+// correctly on both Linux and Windows without crashing. They test:
+// 1. Basic API calls with single output parameters  
+// 2. APIs with multiple output parameters
+// 3. Event creation and management
+// 4. Memory allocation APIs  
+// 5. Immediate command lists
+// 6. Command queues with integer output parameters
+//
+// The tests ensure that when trace-level logging is enabled, the validation
+// layer can properly dereference and log output parameter values without
+// causing segfaults or other crashes. This validates the dereferencing logic
+// added to logAndPropagateResult functions.
+//
+// Note: These tests require the null driver to be built and available.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(
+    ValidationLayerApiTracing,
+    GivenValidationLayerEnabledWithTraceLevelLoggingWhenCallingBasicApisThenTracingDoesNotCrash) {
+
+    // Enable validation layer and trace level logging
+    putenv_safe(const_cast<char *>("ZE_ENABLE_VALIDATION_LAYER=1"));
+    putenv_safe(const_cast<char *>("ZEL_ENABLE_LOADER_LOGGING=1"));
+    putenv_safe(const_cast<char *>("ZEL_LOADER_LOGGING_LEVEL=trace"));
+    putenv_safe(const_cast<char *>("ZE_ENABLE_NULL_DRIVER=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+
+    // Initialize Level Zero
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+    
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    // Get driver
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    // Get device
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    // Create context
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &context_desc, &context));
+    EXPECT_NE(context, nullptr);
+
+    // Create command list - this will trigger trace logging with output parameters
+    ze_command_list_desc_t cmdlist_desc = {};
+    cmdlist_desc.stype = ZE_STRUCTURE_TYPE_COMMAND_LIST_DESC;
+    ze_command_list_handle_t commandList = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListCreate(context, devices[0], &cmdlist_desc, &commandList));
+    EXPECT_NE(commandList, nullptr);
+
+    // Cleanup
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListDestroy(commandList));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+}
+
+TEST(
+    ValidationLayerApiTracing,
+    GivenValidationLayerEnabledWithTraceLevelLoggingWhenCallingApiWithMultipleOutputParametersThenTracingDoesNotCrash) {
+
+    // Enable validation layer and trace level logging
+    putenv_safe(const_cast<char *>("ZE_ENABLE_VALIDATION_LAYER=1"));
+    putenv_safe(const_cast<char *>("ZEL_ENABLE_LOADER_LOGGING=1"));
+    putenv_safe(const_cast<char *>("ZEL_LOADER_LOGGING_LEVEL=trace"));
+    putenv_safe(const_cast<char *>("ZE_ENABLE_NULL_DRIVER=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+
+    // Initialize
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+    
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    // Test API with multiple output parameters
+    uint64_t hostTimestamp = 0;
+    uint64_t deviceTimestamp = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGetGlobalTimestamps(devices[0], &hostTimestamp, &deviceTimestamp));
+
+    // Get device properties - tests struct output parameters
+    ze_device_properties_t deviceProperties = {};
+    deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGetProperties(devices[0], &deviceProperties));
+}
+
+TEST(
+    ValidationLayerApiTracing,
+    GivenValidationLayerEnabledWithTraceLevelLoggingWhenCallingEventApisThenTracingDoesNotCrash) {
+
+    // Enable validation layer and trace level logging
+    putenv_safe(const_cast<char *>("ZE_ENABLE_VALIDATION_LAYER=1"));
+    putenv_safe(const_cast<char *>("ZEL_ENABLE_LOADER_LOGGING=1"));
+    putenv_safe(const_cast<char *>("ZEL_LOADER_LOGGING_LEVEL=trace"));
+    putenv_safe(const_cast<char *>("ZE_ENABLE_NULL_DRIVER=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+
+    // Initialize
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+    
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    // Create context
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &context_desc, &context));
+
+    // Create event pool
+    ze_event_pool_desc_t ep_desc = {};
+    ep_desc.stype = ZE_STRUCTURE_TYPE_EVENT_POOL_DESC;
+    ep_desc.count = 1;
+    ep_desc.flags = ZE_EVENT_POOL_FLAG_HOST_VISIBLE;
+    ze_event_pool_handle_t event_pool = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeEventPoolCreate(context, &ep_desc, 1, &devices[0], &event_pool));
+    EXPECT_NE(event_pool, nullptr);
+
+    // Create event - tests handle creation tracing
+    ze_event_desc_t ev_desc = {};
+    ev_desc.stype = ZE_STRUCTURE_TYPE_EVENT_DESC;
+    ev_desc.index = 0;
+    ev_desc.signal = ZE_EVENT_SCOPE_FLAG_DEVICE;
+    ev_desc.wait = ZE_EVENT_SCOPE_FLAG_HOST;
+    ze_event_handle_t event = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeEventCreate(event_pool, &ev_desc, &event));
+    EXPECT_NE(event, nullptr);
+
+    // Cleanup
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeEventDestroy(event));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeEventPoolDestroy(event_pool));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+}
+
+TEST(
+    ValidationLayerApiTracing,
+    GivenValidationLayerEnabledWithTraceLevelLoggingWhenCallingMemoryApisThenTracingDoesNotCrash) {
+
+    // Enable validation layer and trace level logging
+    putenv_safe(const_cast<char *>("ZE_ENABLE_VALIDATION_LAYER=1"));
+    putenv_safe(const_cast<char *>("ZEL_ENABLE_LOADER_LOGGING=1"));
+    putenv_safe(const_cast<char *>("ZEL_LOADER_LOGGING_LEVEL=trace"));
+    putenv_safe(const_cast<char *>("ZE_ENABLE_NULL_DRIVER=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+
+    // Initialize
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+    
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    // Create context
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &context_desc, &context));
+
+    // Allocate host memory - tests pointer output parameters
+    ze_host_mem_alloc_desc_t host_desc = {};
+    host_desc.stype = ZE_STRUCTURE_TYPE_HOST_MEM_ALLOC_DESC;
+    void *host_mem = nullptr;
+    size_t size = 1024;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemAllocHost(context, &host_desc, size, 1, &host_mem));
+    EXPECT_NE(host_mem, nullptr);
+
+    // Allocate device memory
+    ze_device_mem_alloc_desc_t device_desc = {};
+    device_desc.stype = ZE_STRUCTURE_TYPE_DEVICE_MEM_ALLOC_DESC;
+    void *device_mem = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemAllocDevice(context, &device_desc, size, 0, devices[0], &device_mem));
+    EXPECT_NE(device_mem, nullptr);
+
+    // Cleanup
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemFree(context, host_mem));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemFree(context, device_mem));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+}
+
+TEST(
+    ValidationLayerApiTracing,
+    GivenValidationLayerEnabledWithTraceLevelLoggingWhenCallingImmediateCommandListApisThenTracingDoesNotCrash) {
+
+    // Enable validation layer and trace level logging
+    putenv_safe(const_cast<char *>("ZE_ENABLE_VALIDATION_LAYER=1"));
+    putenv_safe(const_cast<char *>("ZEL_ENABLE_LOADER_LOGGING=1"));
+    putenv_safe(const_cast<char *>("ZEL_LOADER_LOGGING_LEVEL=trace"));
+    putenv_safe(const_cast<char *>("ZE_ENABLE_NULL_DRIVER=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+
+    // Initialize
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+    
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    // Create context
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &context_desc, &context));
+
+    // Create immediate command list - tests immediate command list handle tracing
+    ze_command_queue_desc_t cmdqueue_desc = {};
+    cmdqueue_desc.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
+    ze_command_list_handle_t immediateCommandList = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListCreateImmediate(context, devices[0], &cmdqueue_desc, &immediateCommandList));
+    EXPECT_NE(immediateCommandList, nullptr);
+
+    // Test if command list is immediate
+    ze_bool_t isImmediate = false;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListIsImmediate(immediateCommandList, &isImmediate));
+
+    // Cleanup
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListDestroy(immediateCommandList));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+}
+
+TEST(
+    ValidationLayerApiTracing,
+    GivenValidationLayerEnabledWithTraceLevelLoggingWhenCallingCommandQueueApisThenTracingDoesNotCrash) {
+
+    // Enable validation layer and trace level logging
+    putenv_safe(const_cast<char *>("ZE_ENABLE_VALIDATION_LAYER=1"));
+    putenv_safe(const_cast<char *>("ZEL_ENABLE_LOADER_LOGGING=1"));
+    putenv_safe(const_cast<char *>("ZEL_LOADER_LOGGING_LEVEL=trace"));
+    putenv_safe(const_cast<char *>("ZE_ENABLE_NULL_DRIVER=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+
+    // Initialize
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+    
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    // Create context
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &context_desc, &context));
+
+    // Create command queue - tests queue handle tracing
+    ze_command_queue_desc_t cmdqueue_desc = {};
+    cmdqueue_desc.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
+    cmdqueue_desc.mode = ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS;
+    ze_command_queue_handle_t commandQueue = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueCreate(context, devices[0], &cmdqueue_desc, &commandQueue));
+    EXPECT_NE(commandQueue, nullptr);
+
+    // Get queue ordinal and index - tests integer output parameters
+    uint32_t ordinal = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueGetOrdinal(commandQueue, &ordinal));
+
+    uint32_t index = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueGetIndex(commandQueue, &index));
+
+    // Cleanup
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueDestroy(commandQueue));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+}

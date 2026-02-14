@@ -226,10 +226,19 @@ inline std::shared_ptr<Logger> createLogger() {
       log_level = "warn";
   }
 
+  // Default pattern includes thread ID: [timestamp] [thread-id: id] [level] message
+  std::string log_pattern = "[%Y-%m-%d %H:%M:%S.%e] [thread-id: %t] [%^%l%$] %v";
+  
+  // Allow users to override the pattern via environment variable
+  auto custom_pattern = getenv_string("ZEL_LOADER_LOG_PATTERN");
+  if (!custom_pattern.empty()) {
+      log_pattern = custom_pattern;
+  }
+
   if (!log_console) {
-      zel_logger =  std::make_shared<Logger>("ze_loader", full_log_file_path, log_level, logging_enabled);
+      zel_logger =  std::make_shared<Logger>("ze_loader", full_log_file_path, log_level, logging_enabled, log_pattern);
   } else {
-      zel_logger =  std::make_shared<Logger>("ze_loader", Console::out_stderr, log_level, logging_enabled);
+      zel_logger =  std::make_shared<Logger>("ze_loader", Console::out_stderr, log_level, logging_enabled, log_pattern);
   }
 
   if (!logging_enabled){

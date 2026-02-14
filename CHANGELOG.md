@@ -1,4 +1,7 @@
 # Level zero loader changelog
+## v1.28.1
+* feature: Improve API Call Tracing and add ults
+* add performance validation layer checker
 ## v1.28.0
 * feature: Update to support L0 Spec v1.15.31
 * Loader Driver Interaction conformance tests for Sysman Exp and Ext APIs (#418)

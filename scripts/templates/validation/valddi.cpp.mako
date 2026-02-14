@@ -71,11 +71,32 @@ namespace validation_layer
         %else:
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in ${func_name}(";
-        %for i, param in enumerate([p for p in th.make_param_lines(n, tags, obj, format=['name'])]):
+        <%
+        params_list = obj.get('params', [])
+        %>
+        %for i, param_name in enumerate([p for p in th.make_param_lines(n, tags, obj, format=['name'])]):
+        <%
+        # Get parameter metadata
+        param_obj = params_list[i] if i < len(params_list) else None
+        param_type = param_obj.get('type', '') if param_obj else ''
+        param_desc = param_obj.get('desc', '') if param_obj else ''
+        is_output_param = '[out]' in param_desc
+        is_pointer = '*' in param_type and param_type.strip().endswith('*')
+        %>
         %if i > 0:
         oss << ", ";
         %endif
-        oss << "${param}=" << loader::to_string(${param});
+        oss << "${param_name}=";
+        %if is_output_param and is_pointer:
+        // Dereference output parameter if not null and result is success
+        if (result == ${X}_RESULT_SUCCESS && ${param_name} != nullptr) {
+            oss << loader::to_string(*${param_name});
+        } else {
+            oss << loader::to_string(${param_name});
+        }
+        %else:
+        oss << loader::to_string(${param_name});
+        %endif
         %endfor
         oss << ")";
         context.logger->log_trace(oss.str());
@@ -102,7 +123,14 @@ namespace validation_layer
             << "hContext=" << static_cast<const void*>(hContext) << ", "
             << "hDevice=" << static_cast<const void*>(hDevice) << ", "
             << "desc=" << desc << ", "
-            << "phEvent=" << static_cast<const void*>(phEvent) << ")";
+            << "phEvent=";
+        // Dereference output parameter if not null and result is success
+        if (result == ${X}_RESULT_SUCCESS && phEvent != nullptr) {
+            oss << loader::to_string(*phEvent);
+        } else {
+            oss << static_cast<const void*>(phEvent);
+        }
+        oss << ")";
         context.logger->log_trace(oss.str());
         return result;
     }
