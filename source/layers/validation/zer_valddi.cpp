@@ -34,7 +34,10 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zerGetLastErrorDescription(";
-        oss << "ppString=" << loader::to_string(ppString);
+        
+        
+        oss << "ppString=";
+        oss << loader::to_string(ppString);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -46,7 +49,10 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zerTranslateDeviceHandleToIdentifier(";
-        oss << "hDevice=" << loader::to_string(hDevice);
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -58,7 +64,10 @@ namespace validation_layer
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zerTranslateIdentifierToDeviceHandle(";
-        oss << "identifier=" << loader::to_string(identifier);
+        
+        
+        oss << "identifier=";
+        oss << loader::to_string(identifier);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
