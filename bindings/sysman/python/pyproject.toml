@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyzes"
+version = "0.1.0"
+description = "Python bindings for Intel Level-Zero Driver Library (Sysman API)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Intel Corporation", email = "secure@intel.com"}
+]
+keywords = ["level-zero", "gpu", "intel", "monitoring", "sysman"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Hardware",
+]
+
+[project.urls]
+Homepage = "https://github.com/oneapi-src/level-zero"
+Documentation = "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/index.html"
+Repository = "https://github.com/oneapi-src/level-zero"
+Issues = "https://github.com/oneapi-src/level-zero/issues"
+
+[tool.setuptools]
+package-dir = {"" = "source"}
+py-modules = ["pyzes"]
+packages = ["examples"]
+
+[tool.coverage.run]
+omit = [
+    "source/examples/*",
+    "test/*",
+]
