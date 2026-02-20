@@ -2728,6 +2728,7 @@ typedef void (ZE_APICALL *zer_pfnTranslateIdentifierToDeviceHandleCb_t)(
 
 typedef struct _zer_get_default_context_params_t
 {
+    void* _dummy;
 } zer_get_default_context_params_t;
 
 
