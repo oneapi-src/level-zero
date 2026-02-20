@@ -47,6 +47,7 @@ namespace validation_layer
 
         bool enableHandleLifetime = false;
         bool enableThreadingValidation = false;
+        bool verboseLogging = false;
 
         ze_dditable_t   zeDdiTable = {};
         zet_dditable_t  zetDdiTable = {};

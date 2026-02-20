@@ -40,6 +40,10 @@ namespace validation_layer
         ze_init_flags_t flags                           ///< [in] initialization flags.
                                                         ///< must be 0 (default) or a combination of ::ze_init_flag_t.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeInit(";
@@ -62,6 +66,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of drivers available, then the loader
                                                         ///< shall only retrieve that number of drivers.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGet(";
@@ -90,6 +98,10 @@ namespace validation_layer
         ze_init_driver_type_desc_t* desc                ///< [in] descriptor containing the driver type initialization details
                                                         ///< including ::ze_init_driver_type_flag_t combinations.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeInitDrivers(";
@@ -114,6 +126,10 @@ namespace validation_layer
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         ze_api_version_t* version                       ///< [out] api version
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGetApiVersion(";
@@ -139,6 +155,10 @@ namespace validation_layer
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         ze_driver_properties_t* pDriverProperties       ///< [in,out] query result for driver properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGetProperties(";
@@ -159,6 +179,10 @@ namespace validation_layer
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGetIpcProperties(";
@@ -188,6 +212,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of extension properties available,
                                                         ///< then driver shall only retrieve that number of extension properties.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGetExtensionProperties(";
@@ -213,6 +241,10 @@ namespace validation_layer
         const char* name,                               ///< [in] extension function name
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGetExtensionFunctionAddress(";
@@ -243,6 +275,10 @@ namespace validation_layer
         const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
                                                         ///< cause of error.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGetLastErrorDescription(";
@@ -262,6 +298,10 @@ namespace validation_layer
         ze_result_t result,
         ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverGetDefaultContext(";
@@ -285,6 +325,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of devices available, then driver
                                                         ///< shall only retrieve that number of devices.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGet(";
@@ -309,6 +353,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetRootDevice(";
@@ -336,6 +384,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of sub-devices available, then driver
                                                         ///< shall only retrieve that number of sub-devices.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetSubDevices(";
@@ -360,6 +412,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_properties_t* pDeviceProperties       ///< [in,out] query result for device properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetProperties(";
@@ -380,6 +436,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_compute_properties_t* pComputeProperties  ///< [in,out] query result for compute properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetComputeProperties(";
@@ -400,6 +460,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_module_properties_t* pModuleProperties///< [in,out] query result for module properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetModuleProperties(";
@@ -434,6 +498,10 @@ namespace validation_layer
                                                         ///< The order of properties in the array corresponds to the command queue
                                                         ///< group ordinal.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetCommandQueueGroupProperties(";
@@ -467,6 +535,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of memory properties available, then
                                                         ///< driver shall only retrieve that number of memory properties.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetMemoryProperties(";
@@ -491,6 +563,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_memory_access_properties_t* pMemAccessProperties  ///< [in,out] query result for memory access properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetMemoryAccessProperties(";
@@ -519,6 +595,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of cache properties available, then
                                                         ///< driver shall only retrieve that number of cache properties.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetCacheProperties(";
@@ -543,6 +623,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_image_properties_t* pImageProperties  ///< [in,out] query result for image properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetImageProperties(";
@@ -563,6 +647,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_external_memory_properties_t* pExternalMemoryProperties   ///< [in,out] query result for external memory properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetExternalMemoryProperties(";
@@ -584,6 +672,10 @@ namespace validation_layer
         ze_device_handle_t hPeerDevice,                 ///< [in] handle of the peer device with the allocation
         ze_device_p2p_properties_t* pP2PProperties      ///< [in,out] Peer-to-Peer properties between source and peer device
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetP2PProperties(";
@@ -609,6 +701,10 @@ namespace validation_layer
         ze_device_handle_t hPeerDevice,                 ///< [in] handle of the peer device with the allocation
         ze_bool_t* value                                ///< [out] returned access capability
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceCanAccessPeer(";
@@ -637,6 +733,10 @@ namespace validation_layer
         ze_result_t result,
         ze_device_handle_t hDevice                      ///< [in] handle of the device
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetStatus(";
@@ -656,6 +756,10 @@ namespace validation_layer
         uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
                                                         ///< Host's global timestamp value.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetGlobalTimestamps(";
@@ -689,6 +793,10 @@ namespace validation_layer
         ze_result_t result,
         ze_device_handle_t hDevice                      ///< [in] handle of the device
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceSynchronize(";
@@ -705,6 +813,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* incrementValue                        ///< [out] increment value that can be used for Event creation
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetAggregatedCopyOffloadIncrementValue(";
@@ -731,6 +843,10 @@ namespace validation_layer
         const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextCreate(";
@@ -771,6 +887,10 @@ namespace validation_layer
                                                         ///< devices in this array.
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextCreateEx(";
@@ -807,6 +927,10 @@ namespace validation_layer
         ze_result_t result,
         ze_context_handle_t hContext                    ///< [in][release] handle of context object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextDestroy(";
@@ -822,6 +946,10 @@ namespace validation_layer
         ze_result_t result,
         ze_context_handle_t hContext                    ///< [in] handle of context object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextGetStatus(";
@@ -840,6 +968,10 @@ namespace validation_layer
         const ze_command_queue_desc_t* desc,            ///< [in] pointer to command queue descriptor
         ze_command_queue_handle_t* phCommandQueue       ///< [out] pointer to handle of command queue object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueCreate(";
@@ -872,6 +1004,10 @@ namespace validation_layer
         ze_result_t result,
         ze_command_queue_handle_t hCommandQueue         ///< [in][release] handle of command queue object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueDestroy(";
@@ -891,6 +1027,10 @@ namespace validation_layer
                                                         ///< to execute
         ze_fence_handle_t hFence                        ///< [in][optional] handle of the fence to signal on completion
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueExecuteCommandLists(";
@@ -925,6 +1065,10 @@ namespace validation_layer
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueSynchronize(";
@@ -945,6 +1089,10 @@ namespace validation_layer
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
         uint32_t* pOrdinal                              ///< [out] command queue group ordinal
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueGetOrdinal(";
@@ -970,6 +1118,10 @@ namespace validation_layer
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
         uint32_t* pIndex                                ///< [out] command queue index within the group
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueGetIndex(";
@@ -997,6 +1149,10 @@ namespace validation_layer
         const ze_command_list_desc_t* desc,             ///< [in] pointer to command list descriptor
         ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListCreate(";
@@ -1032,6 +1188,10 @@ namespace validation_layer
         const ze_command_queue_desc_t* altdesc,         ///< [in] pointer to command queue descriptor
         ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListCreateImmediate(";
@@ -1064,6 +1224,10 @@ namespace validation_layer
         ze_result_t result,
         ze_command_list_handle_t hCommandList           ///< [in][release] handle of command list object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListDestroy(";
@@ -1079,6 +1243,10 @@ namespace validation_layer
         ze_result_t result,
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to close
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListClose(";
@@ -1094,6 +1262,10 @@ namespace validation_layer
         ze_result_t result,
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to reset
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListReset(";
@@ -1116,6 +1288,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before executing query
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendWriteGlobalTimestamp(";
@@ -1154,6 +1330,10 @@ namespace validation_layer
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListHostSynchronize(";
@@ -1174,6 +1354,10 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetDeviceHandle(";
@@ -1199,6 +1383,10 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetContextHandle(";
@@ -1224,6 +1412,10 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetOrdinal(";
@@ -1250,6 +1442,10 @@ namespace validation_layer
         uint32_t* pIndex                                ///< [out] command queue index within the group to which the immediate
                                                         ///< command list is submitted
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListImmediateGetIndex(";
@@ -1276,6 +1472,10 @@ namespace validation_layer
         ze_bool_t* pIsImmediate                         ///< [out] Boolean indicating whether the command list is an immediate
                                                         ///< command list (true) or not (false)
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListIsImmediate(";
@@ -1305,6 +1505,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before executing barrier
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendBarrier(";
@@ -1340,6 +1544,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before executing barrier
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryRangesBarrier(";
@@ -1380,6 +1588,10 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of context object
         ze_device_handle_t hDevice                      ///< [in] handle of the device
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextSystemBarrier(";
@@ -1407,6 +1619,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryCopy(";
@@ -1455,6 +1671,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryFill(";
@@ -1515,6 +1735,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryCopyRegion(";
@@ -1583,6 +1807,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryCopyFromContext(";
@@ -1633,6 +1861,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendImageCopy(";
@@ -1677,6 +1909,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendImageCopyRegion(";
@@ -1728,6 +1964,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendImageCopyToMemory(";
@@ -1775,6 +2015,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendImageCopyFromMemory(";
@@ -1816,6 +2060,10 @@ namespace validation_layer
         const void* ptr,                                ///< [in] pointer to start of the memory range to prefetch
         size_t size                                     ///< [in] size in bytes of the memory range to prefetch
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryPrefetch(";
@@ -1843,6 +2091,10 @@ namespace validation_layer
         size_t size,                                    ///< [in] Size in bytes of the memory range
         ze_memory_advice_t advice                       ///< [in] Memory advice for the memory range
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemAdvise(";
@@ -1882,6 +2134,10 @@ namespace validation_layer
                                                         ///< driver instance.
         ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolCreate(";
@@ -1918,6 +2174,10 @@ namespace validation_layer
         ze_result_t result,
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolDestroy(";
@@ -1935,6 +2195,10 @@ namespace validation_layer
         const ze_event_desc_t* desc,                    ///< [in] pointer to event descriptor
         ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventCreate(";
@@ -1966,6 +2230,10 @@ namespace validation_layer
         const ze_event_counter_based_desc_t* desc,      ///< [in] pointer to counter based event descriptor
         ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventCounterBasedCreate(";
@@ -1998,6 +2266,10 @@ namespace validation_layer
         ze_result_t result,
         ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventDestroy(";
@@ -2014,6 +2286,10 @@ namespace validation_layer
         ze_event_pool_handle_t hEventPool,              ///< [in] handle of event pool object
         ze_ipc_event_pool_handle_t* phIpc               ///< [out] Returned IPC event handle
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolGetIpcHandle(";
@@ -2040,6 +2316,10 @@ namespace validation_layer
                                                         ///< handle
         ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolPutIpcHandle(";
@@ -2062,6 +2342,10 @@ namespace validation_layer
         ze_ipc_event_pool_handle_t hIpc,                ///< [in] IPC event pool handle
         ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolOpenIpcHandle(";
@@ -2090,6 +2374,10 @@ namespace validation_layer
         ze_result_t result,
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolCloseIpcHandle(";
@@ -2106,6 +2394,10 @@ namespace validation_layer
         ze_event_handle_t hEvent,                       ///< [in] handle of event object
         ze_ipc_event_counter_based_handle_t* phIpc      ///< [out] Returned IPC event handle
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventCounterBasedGetIpcHandle(";
@@ -2133,6 +2425,10 @@ namespace validation_layer
         ze_ipc_event_counter_based_handle_t hIpc,       ///< [in] IPC event handle
         ze_event_handle_t* phEvent                      ///< [out] pointer handle of event object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventCounterBasedOpenIpcHandle(";
@@ -2161,6 +2457,10 @@ namespace validation_layer
         ze_result_t result,
         ze_event_handle_t hEvent                        ///< [in][release] handle of event object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventCounterBasedCloseIpcHandle(";
@@ -2178,6 +2478,10 @@ namespace validation_layer
         uint64_t* completionValue,                      ///< [in][out] completion value
         uint64_t* deviceAddress                         ///< [in][out] counter device address
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventCounterBasedGetDeviceAddress(";
@@ -2212,6 +2516,10 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_event_handle_t hEvent                        ///< [in] handle of the event
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendSignalEvent(";
@@ -2234,6 +2542,10 @@ namespace validation_layer
         ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
                                                         ///< continuing
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendWaitOnEvents(";
@@ -2257,6 +2569,10 @@ namespace validation_layer
         ze_result_t result,
         ze_event_handle_t hEvent                        ///< [in] handle of the event
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventHostSignal(";
@@ -2279,6 +2595,10 @@ namespace validation_layer
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventHostSynchronize(";
@@ -2298,6 +2618,10 @@ namespace validation_layer
         ze_result_t result,
         ze_event_handle_t hEvent                        ///< [in] handle of the event
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventQueryStatus(";
@@ -2314,6 +2638,10 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_event_handle_t hEvent                        ///< [in] handle of the event
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendEventReset(";
@@ -2333,6 +2661,10 @@ namespace validation_layer
         ze_result_t result,
         ze_event_handle_t hEvent                        ///< [in] handle of the event
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventHostReset(";
@@ -2349,6 +2681,10 @@ namespace validation_layer
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_kernel_timestamp_result_t* dstptr            ///< [in,out] pointer to memory for where timestamp result will be written.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventQueryKernelTimestamp(";
@@ -2380,6 +2716,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before executing query
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendQueryKernelTimestamps(";
@@ -2424,6 +2764,10 @@ namespace validation_layer
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventGetEventPool(";
@@ -2451,6 +2795,10 @@ namespace validation_layer
                                                         ///< hierarchies that are flushed on a signal action before the event is
                                                         ///< triggered. May be 0 or a valid combination of ::ze_event_scope_flag_t.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventGetSignalScope(";
@@ -2478,6 +2826,10 @@ namespace validation_layer
                                                         ///< hierarchies invalidated on a wait action after the event is complete.
                                                         ///< May be 0 or a valid combination of ::ze_event_scope_flag_t.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventGetWaitScope(";
@@ -2503,6 +2855,10 @@ namespace validation_layer
         ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
         ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolGetContextHandle(";
@@ -2529,6 +2885,10 @@ namespace validation_layer
         ze_event_pool_flags_t* pFlags                   ///< [out] creation flags used to create the event pool; may be 0 or a
                                                         ///< valid combination of ::ze_event_pool_flag_t
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventPoolGetFlags(";
@@ -2555,6 +2915,10 @@ namespace validation_layer
         const ze_fence_desc_t* desc,                    ///< [in] pointer to fence descriptor
         ze_fence_handle_t* phFence                      ///< [out] pointer to handle of fence object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFenceCreate(";
@@ -2583,6 +2947,10 @@ namespace validation_layer
         ze_result_t result,
         ze_fence_handle_t hFence                        ///< [in][release] handle of fence object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFenceDestroy(";
@@ -2605,6 +2973,10 @@ namespace validation_layer
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFenceHostSynchronize(";
@@ -2624,6 +2996,10 @@ namespace validation_layer
         ze_result_t result,
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFenceQueryStatus(";
@@ -2639,6 +3015,10 @@ namespace validation_layer
         ze_result_t result,
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFenceReset(";
@@ -2656,6 +3036,10 @@ namespace validation_layer
         const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
         ze_image_properties_t* pImageProperties         ///< [out] pointer to image properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageGetProperties(";
@@ -2687,6 +3071,10 @@ namespace validation_layer
         const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
         ze_image_handle_t* phImage                      ///< [out] pointer to handle of image object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageCreate(";
@@ -2719,6 +3107,10 @@ namespace validation_layer
         ze_result_t result,
         ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageDestroy(";
@@ -2742,6 +3134,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in][optional] device handle to associate with
         void** pptr                                     ///< [out] pointer to shared allocation
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemAllocShared(";
@@ -2793,6 +3189,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         void** pptr                                     ///< [out] pointer to device allocation
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemAllocDevice(";
@@ -2839,6 +3239,10 @@ namespace validation_layer
                                                         ///< two
         void** pptr                                     ///< [out] pointer to host allocation
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemAllocHost(";
@@ -2876,6 +3280,10 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         void* ptr                                       ///< [in][release] pointer to memory to free
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemFree(";
@@ -2898,6 +3306,10 @@ namespace validation_layer
         ze_memory_allocation_properties_t* pMemAllocProperties, ///< [in,out] query result for memory allocation properties
         ze_device_handle_t* phDevice                    ///< [out][optional] device associated with this allocation
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetAllocProperties(";
@@ -2933,6 +3345,10 @@ namespace validation_layer
         void** pBase,                                   ///< [in,out][optional] base address of the allocation
         size_t* pSize                                   ///< [in,out][optional] size of the allocation
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetAddressRange(";
@@ -2962,6 +3378,10 @@ namespace validation_layer
         const void* ptr,                                ///< [in] pointer to the device memory allocation
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetIpcHandle(";
@@ -2992,6 +3412,10 @@ namespace validation_layer
         uint64_t handle,                                ///< [in] file descriptor
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetIpcHandleFromFileDescriptorExp(";
@@ -3022,6 +3446,10 @@ namespace validation_layer
         ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
         uint64_t* pHandle                               ///< [out] Returned file descriptor
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetFileDescriptorFromIpcHandleExp(";
@@ -3051,6 +3479,10 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemPutIpcHandle(";
@@ -3075,6 +3507,10 @@ namespace validation_layer
                                                         ///< must be 0 (default) or a valid combination of ::ze_ipc_memory_flag_t.
         void** pptr                                     ///< [out] pointer to device allocation in this process
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemOpenIpcHandle(";
@@ -3112,6 +3548,10 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr                                 ///< [in][release] pointer to device allocation in this process
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemCloseIpcHandle(";
@@ -3136,6 +3576,10 @@ namespace validation_layer
         ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
                                                         ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemSetAtomicAccessAttributeExp(";
@@ -3171,6 +3615,10 @@ namespace validation_layer
         size_t size,                                    ///< [in] Size in bytes of the memory range
         ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetAtomicAccessAttributeExp(";
@@ -3211,6 +3659,10 @@ namespace validation_layer
         ze_module_handle_t* phModule,                   ///< [out] pointer to handle of module object created
         ze_module_build_log_handle_t* phBuildLog        ///< [out][optional] pointer to handle of module's build log.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleCreate(";
@@ -3252,6 +3704,10 @@ namespace validation_layer
         ze_result_t result,
         ze_module_handle_t hModule                      ///< [in][release] handle of the module
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleDestroy(";
@@ -3270,6 +3726,10 @@ namespace validation_layer
                                                         ///< dynamically link together.
         ze_module_build_log_handle_t* phLinkLog         ///< [out][optional] pointer to handle of dynamic link log.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleDynamicLink(";
@@ -3298,6 +3758,10 @@ namespace validation_layer
         ze_result_t result,
         ze_module_build_log_handle_t hModuleBuildLog    ///< [in][release] handle of the module build log object.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleBuildLogDestroy(";
@@ -3315,6 +3779,10 @@ namespace validation_layer
         size_t* pSize,                                  ///< [in,out] size of build log string.
         char* pBuildLog                                 ///< [in,out][optional] pointer to null-terminated string of the log.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleBuildLogGetString(";
@@ -3340,6 +3808,10 @@ namespace validation_layer
         size_t* pSize,                                  ///< [in,out] size of native binary in bytes.
         uint8_t* pModuleNativeBinary                    ///< [in,out][optional] byte pointer to native binary
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleGetNativeBinary(";
@@ -3366,6 +3838,10 @@ namespace validation_layer
         size_t* pSize,                                  ///< [in,out][optional] size of global variable
         void** pptr                                     ///< [in,out][optional] device visible pointer
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleGetGlobalPointer(";
@@ -3401,6 +3877,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of names available, then driver shall
                                                         ///< only retrieve that number of names.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleGetKernelNames(";
@@ -3425,6 +3905,10 @@ namespace validation_layer
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         ze_module_properties_t* pModuleProperties       ///< [in,out] query result for module properties.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleGetProperties(";
@@ -3446,6 +3930,10 @@ namespace validation_layer
         const ze_kernel_desc_t* desc,                   ///< [in] pointer to kernel descriptor
         ze_kernel_handle_t* phKernel                    ///< [out] handle of the Function object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelCreate(";
@@ -3474,6 +3962,10 @@ namespace validation_layer
         ze_result_t result,
         ze_kernel_handle_t hKernel                      ///< [in][release] handle of the kernel object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelDestroy(";
@@ -3491,6 +3983,10 @@ namespace validation_layer
         const char* pFunctionName,                      ///< [in] Name of function to retrieve function pointer for.
         void** pfnFunction                              ///< [out] pointer to function.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleGetFunctionPointer(";
@@ -3522,6 +4018,10 @@ namespace validation_layer
         uint32_t groupSizeY,                            ///< [in] group size for Y dimension to use for this kernel
         uint32_t groupSizeZ                             ///< [in] group size for Z dimension to use for this kernel
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSetGroupSize(";
@@ -3555,6 +4055,10 @@ namespace validation_layer
         uint32_t* groupSizeY,                           ///< [out] recommended size of group for Y dimension
         uint32_t* groupSizeZ                            ///< [out] recommended size of group for Z dimension
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSuggestGroupSize(";
@@ -3610,6 +4114,10 @@ namespace validation_layer
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t* totalGroupCount                       ///< [out] recommended total group count.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSuggestMaxCooperativeGroupCount(";
@@ -3638,6 +4146,10 @@ namespace validation_layer
         const void* pArgValue                           ///< [in][optional] argument value represented as matching arg type. If
                                                         ///< null then argument value is considered null.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSetArgumentValue(";
@@ -3666,6 +4178,10 @@ namespace validation_layer
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_kernel_indirect_access_flags_t flags         ///< [in] kernel indirect access flags
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSetIndirectAccess(";
@@ -3686,6 +4202,10 @@ namespace validation_layer
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_kernel_indirect_access_flags_t* pFlags       ///< [out] query result for kernel indirect access flags.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelGetIndirectAccess(";
@@ -3723,6 +4243,10 @@ namespace validation_layer
                                                         ///< compatible reasons. It can be corrected in v2.0. Suggestion is to
                                                         ///< create your own char *pString and then pass to this API with &pString.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelGetSourceAttributes(";
@@ -3748,6 +4272,10 @@ namespace validation_layer
         ze_cache_config_flags_t flags                   ///< [in] cache configuration.
                                                         ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSetCacheConfig(";
@@ -3768,6 +4296,10 @@ namespace validation_layer
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_kernel_properties_t* pKernelProperties       ///< [in,out] query result for kernel properties.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelGetProperties(";
@@ -3790,6 +4322,10 @@ namespace validation_layer
                                                         ///< bytes.
         char* pName                                     ///< [in,out][optional] char pointer to kernel name.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelGetName(";
@@ -3820,6 +4356,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendLaunchKernel(";
@@ -3863,6 +4403,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendLaunchKernelWithParameters(";
@@ -3912,6 +4456,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendLaunchKernelWithArguments(";
@@ -3966,6 +4514,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendLaunchCooperativeKernel(";
@@ -4009,6 +4561,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendLaunchKernelIndirect(";
@@ -4056,6 +4612,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendLaunchMultipleKernelsIndirect(";
@@ -4102,6 +4662,10 @@ namespace validation_layer
         void* ptr,                                      ///< [in] pointer to memory to make resident
         size_t size                                     ///< [in] size in bytes to make resident
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextMakeMemoryResident(";
@@ -4132,6 +4696,10 @@ namespace validation_layer
         void* ptr,                                      ///< [in] pointer to memory to evict
         size_t size                                     ///< [in] size in bytes to evict
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextEvictMemory(";
@@ -4161,6 +4729,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_image_handle_t hImage                        ///< [in] handle of image to make resident
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextMakeImageResident(";
@@ -4186,6 +4758,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_image_handle_t hImage                        ///< [in] handle of image to make evict
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeContextEvictImage(";
@@ -4212,6 +4788,10 @@ namespace validation_layer
         const ze_sampler_desc_t* desc,                  ///< [in] pointer to sampler descriptor
         ze_sampler_handle_t* phSampler                  ///< [out] handle of the sampler
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeSamplerCreate(";
@@ -4244,6 +4824,10 @@ namespace validation_layer
         ze_result_t result,
         ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeSamplerDestroy(";
@@ -4263,6 +4847,10 @@ namespace validation_layer
         size_t size,                                    ///< [in] size in bytes to reserve; must be page aligned.
         void** pptr                                     ///< [out] pointer to virtual reservation.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeVirtualMemReserve(";
@@ -4297,6 +4885,10 @@ namespace validation_layer
         const void* ptr,                                ///< [in] pointer to start of region to free.
         size_t size                                     ///< [in] size in bytes to free; must be page aligned.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeVirtualMemFree(";
@@ -4324,6 +4916,10 @@ namespace validation_layer
         size_t* pagesize                                ///< [out] pointer to page size to use for start address and size
                                                         ///< alignments.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeVirtualMemQueryPageSize(";
@@ -4358,6 +4954,10 @@ namespace validation_layer
         ze_physical_mem_handle_t hPhysicalMem,          ///< [in] handle of the physical memory object
         ze_physical_mem_properties_t* pMemProperties    ///< [in,out] pointer to physical memory properties structure.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zePhysicalMemGetProperties(";
@@ -4385,6 +4985,10 @@ namespace validation_layer
         ze_physical_mem_desc_t* desc,                   ///< [in] pointer to physical memory descriptor.
         ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zePhysicalMemCreate(";
@@ -4418,6 +5022,10 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_physical_mem_handle_t hPhysicalMemory        ///< [in][release] handle of physical memory object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zePhysicalMemDestroy(";
@@ -4445,6 +5053,10 @@ namespace validation_layer
         ze_memory_access_attribute_t access             ///< [in] specifies page access attributes to apply to the virtual address
                                                         ///< range.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeVirtualMemMap(";
@@ -4482,6 +5094,10 @@ namespace validation_layer
         const void* ptr,                                ///< [in] pointer to start of region to unmap.
         size_t size                                     ///< [in] size in bytes to unmap; must be page aligned.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeVirtualMemUnmap(";
@@ -4509,6 +5125,10 @@ namespace validation_layer
         ze_memory_access_attribute_t access             ///< [in] specifies page access attributes to apply to the virtual address
                                                         ///< range.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeVirtualMemSetAccessAttribute(";
@@ -4541,6 +5161,10 @@ namespace validation_layer
         size_t* outSize                                 ///< [out] query result for size of virtual address range, starting at ptr,
                                                         ///< that shares same access attribute.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeVirtualMemGetAccessAttribute(";
@@ -4585,6 +5209,10 @@ namespace validation_layer
         uint32_t offsetY,                               ///< [in] global offset for Y dimension to use for this kernel
         uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSetGlobalOffsetExp(";
@@ -4614,6 +5242,10 @@ namespace validation_layer
         size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
         uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelGetBinaryExp(";
@@ -4639,6 +5271,10 @@ namespace validation_layer
         const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
         ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceImportExternalSemaphoreExt(";
@@ -4667,6 +5303,10 @@ namespace validation_layer
         ze_result_t result,
         ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceReleaseExternalSemaphoreExt(";
@@ -4692,6 +5332,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendSignalExternalSemaphoreExt(";
@@ -4741,6 +5385,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendWaitExternalSemaphoreExt(";
@@ -4782,6 +5430,10 @@ namespace validation_layer
         const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
         ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderCreateExt(";
@@ -4812,6 +5464,10 @@ namespace validation_layer
         const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
         ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderGetBuildPropertiesExt(";
@@ -4837,6 +5493,10 @@ namespace validation_layer
         ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
         ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverRTASFormatCompatibilityCheckExt(";
@@ -4872,6 +5532,10 @@ namespace validation_layer
         size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
                                                         ///< bytes
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderBuildExt(";
@@ -4938,6 +5602,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderCommandListAppendCopyExt(";
@@ -4977,6 +5645,10 @@ namespace validation_layer
         ze_result_t result,
         ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderDestroyExt(";
@@ -4993,6 +5665,10 @@ namespace validation_layer
         ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
         ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationCreateExt(";
@@ -5018,6 +5694,10 @@ namespace validation_layer
         ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
         ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationGetPropertiesExt(";
@@ -5037,6 +5717,10 @@ namespace validation_layer
         ze_result_t result,
         ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationJoinExt(";
@@ -5052,6 +5736,10 @@ namespace validation_layer
         ze_result_t result,
         ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationDestroyExt(";
@@ -5076,6 +5764,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of properties available, then the
                                                         ///< driver will return only the number requested.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetVectorWidthPropertiesExt(";
@@ -5109,6 +5801,10 @@ namespace validation_layer
                                                         ///< available, then driver shall only retrieve that number of kernel
                                                         ///< allocation properties.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelGetAllocationPropertiesExp(";
@@ -5135,6 +5831,10 @@ namespace validation_layer
         void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetIpcHandleWithProperties(";
@@ -5172,6 +5872,10 @@ namespace validation_layer
         size_t cacheReservationSize                     ///< [in] value for reserving size, in bytes. If zero, then the driver
                                                         ///< shall remove prior reservation
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceReserveCacheExt(";
@@ -5198,6 +5902,10 @@ namespace validation_layer
         size_t regionSize,                              ///< [in] region size, in pages
         ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceSetCacheAdviceExt(";
@@ -5234,6 +5942,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of timestamps available, then driver
                                                         ///< shall only retrieve that number of timestamps.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventQueryTimestampsExp(";
@@ -5262,6 +5974,10 @@ namespace validation_layer
         ze_image_handle_t hImage,                       ///< [in] handle of image object
         ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageGetMemoryPropertiesExp(";
@@ -5285,6 +6001,10 @@ namespace validation_layer
         ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
         ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageViewCreateExt(";
@@ -5325,6 +6045,10 @@ namespace validation_layer
         ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
         ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageViewCreateExp(";
@@ -5362,6 +6086,10 @@ namespace validation_layer
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeKernelSchedulingHintExp(";
@@ -5382,6 +6110,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
         ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDevicePciGetPropertiesExt(";
@@ -5413,6 +6145,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendImageCopyToMemoryExt(";
@@ -5472,6 +6208,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendImageCopyFromMemoryExt(";
@@ -5521,6 +6261,10 @@ namespace validation_layer
         ze_image_handle_t hImage,                       ///< [in] handle of image object to query
         ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageGetAllocPropertiesExt(";
@@ -5549,6 +6293,10 @@ namespace validation_layer
         ze_module_build_log_handle_t* phLog             ///< [out] pointer to handle of linkage inspection log. Log object will
                                                         ///< contain separate lists of imports, un-resolvable imports, and exports.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeModuleInspectLinkageExt(";
@@ -5583,6 +6331,10 @@ namespace validation_layer
         const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
         void* ptr                                       ///< [in][release] pointer to memory to free
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemFreeExt(";
@@ -5615,6 +6367,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of fabric vertices available, then
                                                         ///< driver shall only retrieve that number of fabric vertices.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFabricVertexGetExp(";
@@ -5647,6 +6403,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of sub-vertices available, then
                                                         ///< driver shall only retrieve that number of sub-vertices.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFabricVertexGetSubVerticesExp(";
@@ -5671,6 +6431,10 @@ namespace validation_layer
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
         ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFabricVertexGetPropertiesExp(";
@@ -5691,6 +6455,10 @@ namespace validation_layer
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
         ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFabricVertexGetDeviceExp(";
@@ -5716,6 +6484,10 @@ namespace validation_layer
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetFabricVertexExp(";
@@ -5750,6 +6522,10 @@ namespace validation_layer
                                                         ///< if count is less than the number of fabric edges available, then
                                                         ///< driver shall only retrieve that number of fabric edges.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFabricEdgeGetExp(";
@@ -5779,6 +6555,10 @@ namespace validation_layer
         ze_fabric_vertex_handle_t* phVertexA,           ///< [out] fabric vertex connected to one end of the given fabric edge.
         ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFabricEdgeGetVerticesExp(";
@@ -5813,6 +6593,10 @@ namespace validation_layer
         ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge
         ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeFabricEdgeGetPropertiesExp(";
@@ -5848,6 +6632,10 @@ namespace validation_layer
                                                         ///<    - if `*pCount` is greater than the number of event packets
                                                         ///< available, the driver may only update the valid elements.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeEventQueryKernelTimestampsExt(";
@@ -5877,6 +6665,10 @@ namespace validation_layer
         const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
         ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderCreateExp(";
@@ -5907,6 +6699,10 @@ namespace validation_layer
         const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
         ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderGetBuildPropertiesExp(";
@@ -5932,6 +6728,10 @@ namespace validation_layer
         ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
         ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeDriverRTASFormatCompatibilityCheckExp(";
@@ -5967,6 +6767,10 @@ namespace validation_layer
         size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
                                                         ///< bytes
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderBuildExp(";
@@ -6023,6 +6827,10 @@ namespace validation_layer
         ze_result_t result,
         ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderDestroyExp(";
@@ -6039,6 +6847,10 @@ namespace validation_layer
         ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
         ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationCreateExp(";
@@ -6064,6 +6876,10 @@ namespace validation_layer
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
         ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationGetPropertiesExp(";
@@ -6083,6 +6899,10 @@ namespace validation_layer
         ze_result_t result,
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationJoinExp(";
@@ -6098,6 +6918,10 @@ namespace validation_layer
         ze_result_t result,
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationDestroyExp(";
@@ -6118,6 +6942,10 @@ namespace validation_layer
         unsigned int elementSizeInBytes,                ///< [in] Element size in bytes
         size_t * rowPitch                               ///< [out] rowPitch
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeMemGetPitchFor2dImage(";
@@ -6159,6 +6987,10 @@ namespace validation_layer
         ze_image_handle_t hImage,                       ///< [in] handle of the image
         uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeImageGetDeviceOffsetExp(";
@@ -6184,6 +7016,10 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList,          ///< [in] handle to source command list (the command list to clone)
         ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListCreateCloneExp(";
@@ -6219,6 +7055,10 @@ namespace validation_layer
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListImmediateAppendCommandListsExp(";
@@ -6256,6 +7096,10 @@ namespace validation_layer
         const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
         uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetNextCommandIdExp(";
@@ -6290,6 +7134,10 @@ namespace validation_layer
                                                         ///< call
         uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetNextCommandIdWithKernelsExp(";
@@ -6333,6 +7181,10 @@ namespace validation_layer
         const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
                                                         ///< be chained via `pNext` member
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandsExp(";
@@ -6354,6 +7206,10 @@ namespace validation_layer
         uint64_t commandId,                             ///< [in] command identifier
         ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandSignalEventExp(";
@@ -6381,6 +7237,10 @@ namespace validation_layer
         ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                         ///< on before launching
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandWaitEventsExp(";
@@ -6412,6 +7272,10 @@ namespace validation_layer
         ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
                                                         ///< identifier to switch to
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandKernelsExp(";
@@ -6443,6 +7307,10 @@ namespace validation_layer
         const void* desc,
         ze_event_handle_t* phEvent
     ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zexCounterBasedEventCreate2("

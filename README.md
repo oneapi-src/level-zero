@@ -90,6 +90,11 @@ validation layer is enabled. Following variables need to be set to enable API lo
 
 `ZE_ENABLE_VALIDATION_LAYER=1`
 
+To print successful API call results, set
+`ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT=1`
+Otherwise, only error results will be printed in the API trace output.
+NOTE: This will become the default behavior in future releases. for now, please set the env var to enable this logging feature.
+
 By default logs will be written to the log file, as described above. To print the logs
 to stderr instead, `ZEL_LOADER_LOG_CONSOLE=1` needs to be set.
 
