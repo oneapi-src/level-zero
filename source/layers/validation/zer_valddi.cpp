@@ -31,6 +31,10 @@ namespace validation_layer
         const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
                                                         ///< cause of error.
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zerGetLastErrorDescription(";
@@ -46,6 +50,10 @@ namespace validation_layer
         ze_result_t result,
         ze_device_handle_t hDevice                      ///< [in] handle of the device
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zerTranslateDeviceHandleToIdentifier(";
@@ -61,6 +69,10 @@ namespace validation_layer
         ze_result_t result,
         uint32_t identifier                             ///< [in] integer identifier of the device
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zerTranslateIdentifierToDeviceHandle(";
@@ -74,6 +86,10 @@ namespace validation_layer
     }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zerGetDefaultContext(
         ze_result_t result) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         context.logger->log_trace(status + " (" + loader::to_string(result) + ") in zerGetDefaultContext()");
         return result;

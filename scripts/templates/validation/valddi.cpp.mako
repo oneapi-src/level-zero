@@ -65,6 +65,10 @@ namespace validation_layer
         %endfor
 %endif
 ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ${X}_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ${X}_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         %if is_void_params:
         context.logger->log_trace(status + " (" + loader::to_string(result) + ") in ${func_name}()");
@@ -117,6 +121,10 @@ namespace validation_layer
         const void* desc,
         ze_event_handle_t* phEvent
     ) {
+        // Only log success results if verbose logging is enabled
+        if (result == ${X}_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
         std::string status = (result == ${X}_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
         std::ostringstream oss;
         oss << status << " (" << loader::to_string(result) << ") in zexCounterBasedEventCreate2("
