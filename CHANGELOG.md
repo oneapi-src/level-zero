@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.28.3
+* Creating a sample local release
 ## v1.28.2
 * fix logging of apis in validation layer to only print successful apis given ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT
 ## v1.28.1
