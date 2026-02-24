@@ -1,3 +1,8 @@
 /build
 /scripts/__pycache__/
 /scripts/templates/__pycache__/
+
+# Editor temporary files
+*~
+.*.sw?
+/.vscode
