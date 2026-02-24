@@ -12824,7 +12824,7 @@ typedef struct _ze_memory_free_ext_desc_t
 /// 
 /// @details
 ///     - Similar to zeMemFree, with added parameter to choose the free policy.
-///     - Does not gaurantee memory is freed upon return. See free policy
+///     - Does not guarantee memory is freed upon return. See free policy
 ///       descriptions for details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same pointer.
