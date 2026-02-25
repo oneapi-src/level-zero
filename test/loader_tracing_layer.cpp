@@ -422,7 +422,7 @@ namespace
             data->incrementZerPrologueCallCount("zerTranslateIdentifierToDeviceHandle");
         }
 
-        static void zerGetDefaultContextPrologueCallback(zer_get_default_context_params_t *params, ze_context_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        static void zerGetDefaultContextPrologueCallback(void *params, ze_context_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
             TracingData *data = static_cast<TracingData *>(pTracerUserData);
             data->incrementZerPrologueCallCount("zerGetDefaultContext");
@@ -446,7 +446,7 @@ namespace
             data->incrementZerEpilogueCallCount("zerTranslateIdentifierToDeviceHandle");
         }
 
-        static void zerGetDefaultContextEpilogueCallback(zer_get_default_context_params_t *params, ze_context_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
+        static void zerGetDefaultContextEpilogueCallback(void *params, ze_context_handle_t result, void *pTracerUserData, void **ppTracerInstanceUserData)
         {
             TracingData *data = static_cast<TracingData *>(pTracerUserData);
             data->incrementZerEpilogueCallCount("zerGetDefaultContext");

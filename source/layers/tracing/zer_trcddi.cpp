@@ -125,8 +125,6 @@ namespace tracing_layer
         ZE_HANDLE_TRACER_RECURSION(context.zerDdiTable.Global.pfnGetDefaultContext);
 
         // capture parameters
-        zer_get_default_context_params_t tracerParams = {
-        };
 
         tracing_layer::APITracerCallbackDataImp<zer_pfnGetDefaultContextCb_t> apiCallbackData;
 
@@ -134,7 +132,7 @@ namespace tracing_layer
 
 
         return tracing_layer::APITracerWrapperImp<ze_context_handle_t>(context.zerDdiTable.Global.pfnGetDefaultContext,
-                                                  &tracerParams,
+                                                  nullptr,
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
                                                   apiCallbackData.epilogCallbacks);

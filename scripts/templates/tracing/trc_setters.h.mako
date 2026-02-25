@@ -45,32 +45,39 @@ typedef struct _zel_tracer_handle_t *zel_tracer_handle_t;
 <%
     ret_type = obj['return_type']
     param_lines = th.make_param_lines(n, tags, obj, format=["type*", "name"])
-%>///////////////////////////////////////////////////////////////////////////////
+%>\
+%if param_lines:
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for ${th.make_func_name(n, tags, obj)}
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
 
 typedef struct _${th.make_pfncb_param_type(n, tags, obj)}
 {
-    %if param_lines:
     %for line in param_lines:
     ${line};
     %endfor
-    %else:
-    void* dummy;  // Placeholder for empty parameter list
-    %endif
 } ${th.make_pfncb_param_type(n, tags, obj)};
 
+%endif
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function-pointer for ${th.make_func_name(n, tags, obj)}
-/// @param[in] params Parameters passed to this instance
+/// @param[in] params Parameters passed to this instance\
+%if not param_lines:
+ (NULL for parameter-less functions)\
+%endif
+
 /// @param[in] result Return value
 /// @param[in] pTracerUserData Per-Tracer user data
 /// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
 
 typedef void (${X}_APICALL *${th.make_pfncb_type(n, tags, obj)})(
+    %if param_lines:
     ${th.make_pfncb_param_type(n, tags, obj)}* params,
+    %else:
+    void* params,
+    %endif
     ${ret_type} result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData

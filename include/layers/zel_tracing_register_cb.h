@@ -2721,26 +2721,16 @@ typedef void (ZE_APICALL *zer_pfnTranslateIdentifierToDeviceHandleCb_t)(
     void** ppTracerInstanceUserData
     );
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zerGetDefaultContext
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _zer_get_default_context_params_t
-{
-    void* dummy;  // Placeholder for empty parameter list
-} zer_get_default_context_params_t;
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function-pointer for zerGetDefaultContext
-/// @param[in] params Parameters passed to this instance
+/// @param[in] params Parameters passed to this instance (NULL for parameter-less functions)
 /// @param[in] result Return value
 /// @param[in] pTracerUserData Per-Tracer user data
 /// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
 
 typedef void (ZE_APICALL *zer_pfnGetDefaultContextCb_t)(
-    zer_get_default_context_params_t* params,
+    void* params,
     ze_context_handle_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData

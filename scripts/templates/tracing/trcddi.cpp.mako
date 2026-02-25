@@ -58,11 +58,11 @@ namespace tracing_layer
 );
 
         // capture parameters
-        ${th.make_pfncb_param_type(n, tags, obj)} tracerParams = {
 %if not is_void_params:
+        ${th.make_pfncb_param_type(n, tags, obj)} tracerParams = {
             &${",\n            &".join(params_list)}
-%endif
         };
+%endif
 
         tracing_layer::APITracerCallbackDataImp<${th.make_pfncb_type(n, tags, obj)}> apiCallbackData;
 
@@ -70,7 +70,11 @@ namespace tracing_layer
 
 
         return tracing_layer::APITracerWrapperImp<${ret_type}>(context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)},
+                                                  %if not is_void_params:
                                                   &tracerParams,
+                                                  %else:
+                                                  nullptr,
+                                                  %endif
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
                                                   apiCallbackData.epilogCallbacks\
