@@ -44,6 +44,7 @@ typedef struct _zel_tracer_handle_t *zel_tracer_handle_t;
 %for obj in tbl['functions']:
 <%
     ret_type = obj['return_type']
+    param_lines = th.make_param_lines(n, tags, obj, format=["type*", "name"])
 %>///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for ${th.make_func_name(n, tags, obj)}
 /// @details Each entry is a pointer to the parameter passed to the function;
@@ -51,9 +52,13 @@ typedef struct _zel_tracer_handle_t *zel_tracer_handle_t;
 
 typedef struct _${th.make_pfncb_param_type(n, tags, obj)}
 {
-    %for line in th.make_param_lines(n, tags, obj, format=["type*", "name"]):
+    %if param_lines:
+    %for line in param_lines:
     ${line};
     %endfor
+    %else:
+    void* dummy;  // Placeholder for empty parameter list
+    %endif
 } ${th.make_pfncb_param_type(n, tags, obj)};
 
 
