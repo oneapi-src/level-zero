@@ -46,6 +46,9 @@ static std::vector<std::string> getLibrarySearchPaths() {
     auto split = splitPaths(ldLibPath);
     paths.insert(paths.end(), split.begin(), split.end());
   }
+#if defined(ANDROID)
+  paths.push_back("/vendor/lib64");
+#else
   // Standard locations - Common across all Linux distributions
   paths.push_back("/lib");
   paths.push_back("/usr/lib");
@@ -68,6 +71,7 @@ static std::vector<std::string> getLibrarySearchPaths() {
   paths.push_back("/var/lib/flatpak/runtime");
   paths.push_back("/snap/core/current/lib");
   paths.push_back("/snap/core/current/usr/lib");
+#endif // ANDROID
 
   // /etc/ld.so.conf and included files
   std::ifstream ldSoConf("/etc/ld.so.conf");
