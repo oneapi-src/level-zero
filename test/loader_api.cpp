@@ -9,6 +9,7 @@
 #include "gtest/gtest.h"
 
 #include "loader/ze_loader.h"
+#include "source/lib/ze_lib.h"
 #include "ze_api.h"
 #include "zes_api.h"
 #include "zer_api.h"
@@ -252,6 +253,22 @@ TEST(
   desc.flags = UINT32_MAX;
   EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
   EXPECT_GT(pCount, 0);
+}
+
+TEST(
+    LoaderInit,
+    GivenNoInitializationWhenCallingZeInitDriversThenErrorUninitializedIsReturned) {
+  
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(pCount, 0);
+
+  pCount = 0;
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(pCount, 0);
 }
 
 TEST(
@@ -3979,6 +3996,5 @@ TEST_F(DriverOrderingTest,
     EXPECT_NE(errorDesc, nullptr);
     EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
   }
-  
 
 } // namespace

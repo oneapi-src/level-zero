@@ -267,6 +267,10 @@ zeInitDrivers(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
+    if (ze_lib::context->zeDdiTable.load() == nullptr) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnInitDrivers = ze_lib::context->zeDdiTable.load()->Global.pfnInitDrivers;
     if( nullptr == pfnInitDrivers ) {
         if(!ze_lib::context->isInitialized)
