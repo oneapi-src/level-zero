@@ -253,3 +253,74 @@ TEST_F(InitDriverUnitTest, zeInitDriversWithAllTypes_VerifyRoutingToCorrectDrive
         EXPECT_TRUE(foundGPUDriver || foundNPUDriver);
     }
 }
+
+// Derived fixture for the NPU-loss regression test so it runs as its own
+// named test suite and can be targeted independently via --gtest_filter.
+class InitDriverGPUNPURegressionTest : public InitDriverUnitTest {};
+
+// Regression test for the bug where calling zeInitDrivers with GPU-only flags
+// causes the NPU driver to be absent in a subsequent NPU|GPU call.
+//
+// Reproduction sequence:
+//   Step 1: NPU|GPU  → count=N  (GPU + NPU)       [expected: success]
+//   Step 2: GPU      → count=1  (GPU only)         [expected: success]
+//   Step 3: NPU      → count=1  (NPU only)         [expected: success]
+//   Step 4: NPU|GPU  → count should still equal N  [BUG: count was < N]
+TEST_F(InitDriverGPUNPURegressionTest, zeInitDriversGPUAndNPU_AfterGPUOnlyThenNPUOnly_BothStillReturnedOnCombined) {
+    ze_init_driver_type_desc_t descBoth = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    descBoth.flags = ZE_INIT_DRIVER_TYPE_FLAG_GPU | ZE_INIT_DRIVER_TYPE_FLAG_NPU;
+    descBoth.pNext = nullptr;
+
+    ze_init_driver_type_desc_t descGPU = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    descGPU.flags = ZE_INIT_DRIVER_TYPE_FLAG_GPU;
+    descGPU.pNext = nullptr;
+
+    ze_init_driver_type_desc_t descNPU = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    descNPU.flags = ZE_INIT_DRIVER_TYPE_FLAG_NPU;
+    descNPU.pNext = nullptr;
+
+    // Step 1: NPU|GPU — establish the baseline combined count
+    uint32_t countBothFirst = 0;
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&countBothFirst, nullptr, &descBoth));
+
+    // Only meaningful if at least one driver is present
+    if (countBothFirst == 0) {
+        GTEST_SKIP() << "No GPU or NPU drivers available; skipping regression test";
+    }
+
+    EXPECT_EQ(countBothFirst, 2);
+
+    // Step 2: GPU-only call
+    uint32_t countGPU = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&countGPU, nullptr, &descGPU));
+
+    EXPECT_EQ(countGPU, 1);
+
+    // Step 3: NPU-only call
+    uint32_t countNPU = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&countNPU, nullptr, &descNPU));
+
+    EXPECT_EQ(countNPU, 1);
+
+    // Step 4: NPU|GPU again — must return the same count as Step 1
+    // This is the regression check: the NPU driver must not have been lost
+    // as a side-effect of the intermediate GPU-only or NPU-only calls.
+    uint32_t countBothSecond = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&countBothSecond, nullptr, &descBoth));
+    EXPECT_EQ(countBothFirst, countBothSecond)
+        << "Regression: zeInitDrivers(NPU|GPU) returned fewer drivers after "
+           "intermediate GPU-only and NPU-only calls. "
+           "First combined count=" << countBothFirst
+        << ", second combined count=" << countBothSecond;
+
+    // Verify the returned handles are valid
+    if (countBothSecond > 0) {
+        std::vector<ze_driver_handle_t> drivers(countBothSecond);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&countBothSecond, drivers.data(), &descBoth));
+        for (uint32_t i = 0; i < countBothSecond; i++) {
+            EXPECT_NE(drivers[i], nullptr);
+            uint32_t deviceCount = 0;
+            EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[i], &deviceCount, nullptr));
+        }
+    }
+}

@@ -161,6 +161,18 @@ set_property(TEST tests_missing_api PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG
 add_test(NAME tests_multi_call_failure COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithTypesUnsupportedWithFailureThenSupportedTypesThenSuccessReturned*)
 set_property(TEST tests_multi_call_failure PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
+# Regression test: NPU driver must not be lost after an intermediate GPU-only call
+# Uses ze_intel_gpu (ZEL_NULL_DRIVER_TYPE_GPU) and ze_intel_npu (ZEL_NULL_DRIVER_TYPE_NPU)
+# from lib_fake so each driver has a distinct compile-time type, making the 4-step
+# sequence (NPU|GPU → GPU → NPU → NPU|GPU) a meaningful regression check.
+if(NOT BUILD_STATIC AND NOT WIN32)
+  add_test(NAME tests_init_gpu_npu_regression_combined
+    COMMAND tests --gtest_filter=*InitDriverGPUNPURegressionTest*)
+  set_property(TEST tests_init_gpu_npu_regression_combined PROPERTY ENVIRONMENT
+    "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib_fake/libze_intel_gpu.so,${CMAKE_BINARY_DIR}/lib_fake/libze_intel_npu.so")
+endif()
+
+
 # Run with multiple drivers
 add_test(NAME tests_multi_driver_missing_initDrivers COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInit)
 if (MSVC)
