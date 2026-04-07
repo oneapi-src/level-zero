@@ -160,6 +160,8 @@ add_test(NAME tests_missing_api COMMAND tests --gtest_filter=*GivenZeInitDrivers
 set_property(TEST tests_missing_api PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 add_test(NAME tests_multi_call_failure COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithTypesUnsupportedWithFailureThenSupportedTypesThenSuccessReturned*)
 set_property(TEST tests_multi_call_failure PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+add_test(NAME tests_no_initialization COMMAND tests --gtest_filter=*LoaderInit.GivenNoInitializationWhenCallingZeInitDriversThenErrorUninitializedIsReturned*)
+set_property(TEST tests_no_initialization PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
 
 # Run with multiple drivers
 add_test(NAME tests_multi_driver_missing_initDrivers COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInit)
