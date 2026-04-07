@@ -8,7 +8,9 @@
 
 #define VER_PRODUCT_NAME_STR        "oneAPI Level Zero Validation Layer for Windows(R)"
 
-#define VER_LEGALCOPYRIGHT_STR      "Copyright (C) 2020 Intel Corporation"
+#define VER_LEGALCOPYRIGHT_STR      "Copyright (C) 2020-@CURRENT_YEAR@ Intel Corporation"
+
+#define VER_COMPANY_NAME_STR        "Intel Corporation"
 
 1 VERSIONINFO
 FILEVERSION     VER_FILEVERSION
@@ -18,6 +20,7 @@ BEGIN
     BEGIN
         BLOCK "040904E4"
         BEGIN
+            VALUE "CompanyName",      VER_COMPANY_NAME_STR
             VALUE "FileDescription",  VER_FILEDESCRIPTION_STR
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
