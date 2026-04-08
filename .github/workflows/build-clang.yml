@@ -1,0 +1,43 @@
+on:
+  push:
+    branches: [ master,release_branch* ]
+  pull_request:
+    branches: [ master,release_branch* ]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build-clang-linux:
+    if: github.repository_owner == 'oneapi-src'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          - ubuntu:22.04
+          - ubuntu:24.04
+        build_type:
+          - static
+          - dynamic
+    container:
+      image: ${{ matrix.container }}
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y clang cmake make git
+      - uses: actions/checkout@v4
+      - name: Build Loader (${{ matrix.build_type }}) with Clang on ${{ matrix.container }}
+        run: |
+          mkdir build
+          cd build
+          cmake \
+            -D CMAKE_C_COMPILER=clang \
+            -D CMAKE_CXX_COMPILER=clang++ \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D BUILD_L0_LOADER_TESTS=1 \
+            -D INSTALL_NULL_DRIVER=1 \
+            -D BUILD_STATIC=${{ matrix.build_type == 'static' && '1' || '0' }} \
+            ..
+          cmake --build . --config Release
