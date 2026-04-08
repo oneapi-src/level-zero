@@ -2726,9 +2726,16 @@ typedef void (ZE_APICALL *zer_pfnTranslateIdentifierToDeviceHandleCb_t)(
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wextern-c-compat"
+#endif
 typedef struct _zer_get_default_context_params_t
 {
 } zer_get_default_context_params_t;
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

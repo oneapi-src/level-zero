@@ -44,17 +44,30 @@ typedef struct _zel_tracer_handle_t *zel_tracer_handle_t;
 %for obj in tbl['functions']:
 <%
     ret_type = obj['return_type']
+    params_list = th.make_param_lines(n, tags, obj, format=["type*", "name"])
+    is_void_params = len(params_list) == 0
 %>///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for ${th.make_func_name(n, tags, obj)}
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
 
+%if is_void_params:
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wextern-c-compat"
+#endif
+%endif
 typedef struct _${th.make_pfncb_param_type(n, tags, obj)}
 {
-    %for line in th.make_param_lines(n, tags, obj, format=["type*", "name"]):
+    %for line in params_list:
     ${line};
     %endfor
 } ${th.make_pfncb_param_type(n, tags, obj)};
+%if is_void_params:
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+%endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
