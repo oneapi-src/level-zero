@@ -1,4 +1,9 @@
 # Level zero loader changelog
+## v1.28.3
+* Address clang build warnings for empty structures
+* Fix successive calls to zeInitDivers when no drivers found failing
+* Fix Resource Copyright date and Company Name in compiled objects
+* Add /vendor/lib64 search path for android
 ## v1.28.2
 * fix logging of apis in validation layer to only print successful apis given ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT
 ## v1.28.1
