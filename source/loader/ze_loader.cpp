@@ -623,8 +623,14 @@ namespace loader
             zel_logger->log_to_console = false;
         }
 
-        if (zel_logger->logging_enabled)
-            zel_logger->get_base_logger()->info("Loader Version {}.{}.{} {}", LOADER_VERSION_MAJOR, LOADER_VERSION_MINOR, LOADER_VERSION_PATCH, LOADER_VERSION_SHA);
+        if (zel_logger->logging_enabled) {
+            std::string ver_msg = "Loader Version " +
+                std::to_string(LOADER_VERSION_MAJOR) + "." +
+                std::to_string(LOADER_VERSION_MINOR) + "." +
+                std::to_string(LOADER_VERSION_PATCH) + " " +
+                LOADER_VERSION_SHA;
+            zel_logger->log_info(ver_msg);
+        }
 
         add_loader_version();
         std::string loaderLibraryPath;

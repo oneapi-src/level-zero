@@ -9,25 +9,16 @@
 #ifndef level_zero_loader_LOGGING_HPP
 #define level_zero_loader_LOGGING_HPP
 
-#ifndef FMT_HEADER_ONLY
-#define FMT_HEADER_ONLY
-#endif
-
 #define LOADER_LOG_FILE "ze_loader.log"
 #define LOADER_LOG_FILE_DIRECTORY ".oneapi_logs"
 
 #include <iostream>
-#include <sstream>
 #include <string>
-#include <vector>
-#include <map>
-
-#include "spdlog/sinks/ansicolor_sink.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/spdlog.h"
+#include <memory>
 
 #include "ze_api.h"
 #include "ze_util.h"
+#include "ze_logger.h"
 
 #ifdef __linux__
 #include <unistd.h>
@@ -46,134 +37,83 @@ enum class Console {
 
 class Logger {
 public:
-  Logger(std::string logger_name, std::string filename, std::string log_level, bool logging_enabled_env, std::string format = "") {
+  // File sink constructor
+  Logger(std::string filename, std::string log_level, bool logging_enabled_env, std::string format = "") {
     if (logging_enabled_env) {
-      logging_enabled = logging_enabled_env;
-      try {
-        _logger = spdlog::basic_logger_st(logger_name, filename);
-      } catch (spdlog::spdlog_ex &exception) {
-        std::cerr << "Unable to create log file: " << exception.what() << "\n";
-        logging_enabled = false;
-        return;
-      }
-
-      if (!format.empty()) {
-        _logger->set_pattern(format);
-      }
-
-      setLogLevel(log_level);
+      logging_enabled = true;
+      std::string pattern = format.empty() ? _default_pattern : format;
+      LogLevel level = logLevelFromString(log_level);
+      _logger = std::shared_ptr<ZeLogger>(new ZeLogger(filename, level, pattern));
     }
   }
 
-  Logger(std::string logger_name, Console out, std::string log_level, bool logging_enabled_env, std::string format = "") {
+  // Console sink constructor
+  Logger(Console out, std::string log_level, bool logging_enabled_env, std::string format = "") {
     if (logging_enabled_env) {
-      logging_enabled = logging_enabled_env;
-      try {
-        if (out == Console::out_stdout) {
-          auto sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
-          _logger = std::make_shared<spdlog::logger>(logger_name, std::move(sink));
-        } else if (out == Console::out_stderr) {
-          auto sink = std::make_shared<spdlog::sinks::ansicolor_stderr_sink_mt>();
-          _logger = std::make_shared<spdlog::logger>(logger_name, std::move(sink));
-        } else {
-          std::cerr << "Invalid console output specified\n";
-          logging_enabled = false;
-          return;
-        }
-      } catch (spdlog::spdlog_ex &exception) {
-        std::cerr << "Unable to create log stdout logger " << exception.what() << "\n";
-        logging_enabled = false;
-        return;
-      }
-
-      if (!format.empty()) {
-        _logger->set_pattern(format);
-      }
-
-      setLogLevel(log_level);
+      logging_enabled = true;
+      std::string pattern = format.empty() ? _default_pattern : format;
+      LogLevel level = logLevelFromString(log_level);
+      bool use_stderr = (out != Console::out_stdout);
+      _logger = std::shared_ptr<ZeLogger>(new ZeLogger(use_stderr, level, pattern));
     }
   }
 
   ~Logger() {
-    if (!logging_enabled)
+    if (!logging_enabled || !_logger)
       return;
     _logger->flush();
   }
 
-  void set_level(spdlog::level::level_enum log_level){
-    if (!logging_enabled)
+  void set_level(LogLevel log_level) {
+    if (!logging_enabled || !_logger)
       return;
-    _logger->set_level(log_level);
+    _logger->setLevel(log_level);
   }
 
   void log_trace(std::string msg) {
-    if (!logging_enabled)
+    if (!logging_enabled || !_logger)
       return;
     _logger->trace(msg);
   }
   void log_debug(std::string msg) {
-    if (!logging_enabled)
+    if (!logging_enabled || !_logger)
       return;
     _logger->debug(msg);
   }
   void log_info(std::string msg) {
-    if (!logging_enabled)
+    if (!logging_enabled || !_logger)
       return;
     _logger->info(msg);
   }
   void log_warning(std::string msg) {
-    if (!logging_enabled)
+    if (!logging_enabled || !_logger)
       return;
     _logger->warn(msg);
   }
   void log_error(std::string msg) {
-    if (!logging_enabled)
+    if (!logging_enabled || !_logger)
       return;
     _logger->error(msg);
   }
   void log_fatal(std::string msg) {
-    if (!logging_enabled)
+    if (!logging_enabled || !_logger)
       return;
     _logger->critical(msg);
   }
 
   void log_performance(std::string msg) {
-      if (!logging_enabled)
-          return;
-      _logger->warn("[performance] " + msg);
-  }
-
-  std::shared_ptr<spdlog::logger> get_base_logger(){
-    return _logger;
+    if (!logging_enabled || !_logger)
+      return;
+    _logger->warn("[performance] " + msg);
   }
 
 bool log_to_console = true;
 bool logging_enabled = false;
 private:
-  void setLogLevel(std::string log_level) {
-    // validate log level
-    if ("trace" == log_level) {
-      _logger->set_level(spdlog::level::trace);
-    } else if ("debug" == log_level) {
-      _logger->set_level(spdlog::level::debug);
-    } else if ("info" == log_level) {
-      _logger->set_level(spdlog::level::info);
-    } else if ("warn" == log_level) {
-      _logger->set_level(spdlog::level::warn);
-    } else if ("error" == log_level) {
-      _logger->set_level(spdlog::level::err);
-    } else if ("critical" == log_level) {
-      _logger->set_level(spdlog::level::critical);
-    } else if ("off" == log_level) {
-      _logger->set_level(spdlog::level::off);
-    } else {
-      _logger->warn("Invalid logging level set: ", log_level);
-    }
+  static constexpr const char *_default_pattern =
+      "[%Y-%m-%d %H:%M:%S.%e] [thread-id: %t] [%^%l%$] %v";
 
-    spdlog::flush_on(spdlog::level::trace);
-  }
-
-  std::shared_ptr<spdlog::logger> _logger = nullptr;
+  std::shared_ptr<ZeLogger> _logger = nullptr;
 };
 
 inline std::shared_ptr<Logger> createLogger() {
@@ -228,7 +168,7 @@ inline std::shared_ptr<Logger> createLogger() {
 
   // Default pattern includes thread ID: [timestamp] [thread-id: id] [level] message
   std::string log_pattern = "[%Y-%m-%d %H:%M:%S.%e] [thread-id: %t] [%^%l%$] %v";
-  
+
   // Allow users to override the pattern via environment variable
   auto custom_pattern = getenv_string("ZEL_LOADER_LOG_PATTERN");
   if (!custom_pattern.empty()) {
@@ -236,15 +176,15 @@ inline std::shared_ptr<Logger> createLogger() {
   }
 
   if (!log_console) {
-      zel_logger =  std::make_shared<Logger>("ze_loader", full_log_file_path, log_level, logging_enabled, log_pattern);
+      zel_logger = std::shared_ptr<Logger>(new Logger(full_log_file_path, log_level, logging_enabled, log_pattern));
   } else {
-      zel_logger =  std::make_shared<Logger>("ze_loader", Console::out_stderr, log_level, logging_enabled, log_pattern);
+      zel_logger = std::shared_ptr<Logger>(new Logger(Console::out_stderr, log_level, logging_enabled, log_pattern));
   }
 
   if (!logging_enabled){
-      zel_logger->set_level(spdlog::level::off);
+      zel_logger->set_level(LogLevel::off);
   }
-  
+
   return zel_logger;
 }
 
