@@ -58,7 +58,7 @@ public:
 
 private:
     void write(LogLevel msg_level, const std::string &msg);
-    std::string formatLine(LogLevel msg_level, const std::string &msg);
+    void formatLine(LogLevel msg_level, const std::string &msg, std::string &out);
 
     LogLevel _level;
     std::string _pattern;
