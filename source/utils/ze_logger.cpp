@@ -105,14 +105,16 @@ struct LogSink {
     std::ofstream file_stream;  // only open for file sinks
     std::mutex    mtx;
     bool          color_enabled;
+    bool          is_good;      // cached stream health — avoids internal streambuf lock per write
 
     // File sink
     explicit LogSink(const std::string &path)
-        : stream(nullptr), color_enabled(false)
+        : stream(nullptr), color_enabled(false), is_good(false)
     {
         file_stream.open(path, std::ios::app);
         if (file_stream.is_open()) {
             stream = &file_stream;
+            is_good = true;
         }
         // Files never get color output
     }
@@ -120,16 +122,17 @@ struct LogSink {
     // Console sink
     explicit LogSink(bool use_stderr)
         : stream(use_stderr ? &std::cerr : &std::cout),
-          color_enabled(ISATTY_COLOR(use_stderr ? STDERR_FD : STDOUT_FD))
+          color_enabled(ISATTY_COLOR(use_stderr ? STDERR_FD : STDOUT_FD)),
+          is_good(true)
     {}
 
     bool good() const {
-        return stream != nullptr && stream->good();
+        return is_good;
     }
 
     void write(const std::string &line) {
         std::lock_guard<std::mutex> lk(mtx);
-        if (stream && stream->good()) {
+        if (is_good) {
             *stream << line << '\n';
         }
     }
@@ -163,7 +166,6 @@ ZeLogger::ZeLogger(const std::string &log_path, LogLevel level, const std::strin
 {
     if (!_sink->good()) {
         std::cerr << "ze_logger: Unable to open log file: " << log_path << "\n";
-        // Sink remains but writes will silently no-op via stream->good() check.
     }
 }
 
@@ -192,14 +194,15 @@ void ZeLogger::flush() {
 //
 // Default pattern tokens:
 //   %Y-%m-%d %H:%M:%S.%e  — timestamp with milliseconds
-//   %t                     — thread id (decimal)
+//   %t                     — thread id (cached thread_local, STB_LOCAL — safe for dlclose)
+//   %P                     — process id (cached at construction)
 //   %^%l%$                 — level label (with color when tty)
 //   %v                     — message
 //
-// We implement only the tokens actually used by the project's log_pattern.
-// Unknown tokens are passed through unchanged.
+// formatLine writes into an existing string (passed by ref) to avoid
+// a return-by-value heap allocation on every log call.
 // ---------------------------------------------------------------------------
-std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
+void ZeLogger::formatLine(LogLevel msg_level, const std::string &msg, std::string &out) {
     // Build timestamp: YYYY-MM-DD HH:MM:SS.mmm
     auto now   = std::chrono::system_clock::now();
     auto now_t = std::chrono::system_clock::to_time_t(now);
@@ -220,20 +223,21 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
     std::snprintf(ts_full, sizeof(ts_full), "%s.%03lld", ts,
                   static_cast<long long>(ms.count()));
 
-    // Thread id as decimal string
-    std::ostringstream tid_ss;
-    tid_ss << std::this_thread::get_id();
-    std::string tid_str = tid_ss.str();
-
-    // Process id
-    std::string pid_str = std::to_string(GET_PID());
+    // Thread id — computed once per thread, stored in a thread_local local
+    // static inside this non-inline, non-template .cpp function.
+    // This produces STB_LOCAL linkage (not STB_GNU_UNIQUE), so dlclose() is unaffected.
+    static thread_local const std::string tid_str = [](){
+        std::ostringstream ss;
+        ss << std::this_thread::get_id();
+        return ss.str();
+    }();
 
     const char *label = levelLabel(msg_level);
     const char *color = _sink->color_enabled ? levelColor(msg_level) : "";
     const char *reset = _sink->color_enabled ? AnsiColor::reset()     : "";
 
-    // Walk the pattern and substitute tokens
-    std::string out;
+    // Write directly into the caller-provided string — no extra allocation.
+    out.clear();
     out.reserve(_pattern.size() + msg.size() + 64);
 
     bool color_span_open = false;
@@ -243,15 +247,10 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
             char tok = _pattern[i + 1];
             switch (tok) {
                 case 'Y': {
-                    // Start of %Y-%m-%d %H:%M:%S.%e sequence — emit the full timestamp
-                    // and skip all the formatting chars that follow (%Y-%m-%d %H:%M:%S.%e)
-                    // We detect this by checking if the pattern has the full sequence.
-                    // For robustness we just emit the pre-computed ts_full and
-                    // advance past the known literal pattern.
                     const char *seq = "%Y-%m-%d %H:%M:%S.%e";
                     if (_pattern.compare(i, 20, seq) == 0) {
                         out += ts_full;
-                        i += 19; // skip the rest of the sequence (loop will ++i)
+                        i += 19;
                     } else {
                         out += '%';
                         out += tok;
@@ -264,11 +263,10 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
                     ++i;
                     break;
                 case 'P':
-                    out += pid_str;
+                    out += std::to_string(GET_PID());
                     ++i;
                     break;
                 case '^':
-                    // Begin colored level region
                     out += color;
                     color_span_open = true;
                     ++i;
@@ -278,7 +276,6 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
                     ++i;
                     break;
                 case '$':
-                    // End colored level region
                     out += reset;
                     color_span_open = false;
                     ++i;
@@ -289,7 +286,6 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
                     break;
                 default:
                     out += '%';
-                    // don't advance i; the next char will be handled naturally
                     break;
             }
         } else {
@@ -298,17 +294,19 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
     }
 
     if (color_span_open) {
-        out += reset; // safety: close any unclosed color span
+        out += reset;
     }
-
-    return out;
 }
 
 void ZeLogger::write(LogLevel msg_level, const std::string &msg) {
     if (msg_level < _level) {
         return;
     }
-    _sink->write(formatLine(msg_level, msg));
+    // Reuse a thread_local buffer to avoid a heap allocation per log call.
+    // STB_LOCAL linkage (non-inline, non-template .cpp function) — safe for dlclose.
+    static thread_local std::string line_buf;
+    formatLine(msg_level, msg, line_buf);
+    _sink->write(line_buf);
 }
 
 void ZeLogger::trace(const std::string &msg)    { write(LogLevel::trace,    msg); }
