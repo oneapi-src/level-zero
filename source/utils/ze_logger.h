@@ -33,9 +33,9 @@ LogLevel logLevelFromString(const std::string &s);
 // Opaque sink type. Implementations live entirely in ze_logger.cpp.
 struct LogSink;
 
-// A lightweight, thread-safe, spdlog-free logger.
+// A lightweight, thread-safe logger.
 // All state is in non-static member variables — no STB_GNU_UNIQUE symbols
-// are produced by this class.
+// are produced by this class so it can be unloaded by dlclose().
 class ZeLogger {
 public:
     // File sink constructor
