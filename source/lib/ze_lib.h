@@ -22,6 +22,7 @@
 #include "loader/ze_loader.h"
 #include "ze_util.h"
 #include <vector>
+#include <map>
 #include <mutex>
 #include <atomic>
 #include <typeinfo>
