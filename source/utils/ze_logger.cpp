@@ -17,12 +17,39 @@
 
 #ifdef _WIN32
 #include <io.h>
-#define ISATTY(fd) _isatty(fd)
+#include <process.h>
+#include <windows.h>
 #define STDERR_FD  2
 #define STDOUT_FD  1
+#define GET_PID()  _getpid()
+
+// On Windows, ANSI escape codes require ENABLE_VIRTUAL_TERMINAL_PROCESSING.
+// _isatty() alone is not sufficient — attempt to enable VT processing and
+// return true only if it succeeds.
+static bool winEnableAnsiColor(int fd) {
+    if (!_isatty(fd)) {
+        return false;
+    }
+    HANDLE h = (fd == 2) ? GetStdHandle(STD_ERROR_HANDLE)
+                         : GetStdHandle(STD_OUTPUT_HANDLE);
+    if (h == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+    DWORD mode = 0;
+    if (!GetConsoleMode(h, &mode)) {
+        return false;
+    }
+    if (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
+        return true; // already enabled
+    }
+    return SetConsoleMode(h, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
+}
+#define ISATTY_COLOR(fd) winEnableAnsiColor(fd)
+
 #else
 #include <unistd.h>
-#define ISATTY(fd) isatty(fd)
+#define ISATTY_COLOR(fd) (isatty(fd) != 0)
+#define GET_PID()  getpid()
 #define STDERR_FD  STDERR_FILENO
 #define STDOUT_FD  STDOUT_FILENO
 #endif
@@ -93,7 +120,7 @@ struct LogSink {
     // Console sink
     explicit LogSink(bool use_stderr)
         : stream(use_stderr ? &std::cerr : &std::cout),
-          color_enabled(ISATTY(use_stderr ? STDERR_FD : STDOUT_FD) != 0)
+          color_enabled(ISATTY_COLOR(use_stderr ? STDERR_FD : STDOUT_FD))
     {}
 
     bool good() const {
@@ -163,7 +190,7 @@ void ZeLogger::flush() {
 // ---------------------------------------------------------------------------
 // Formatting
 //
-// Default pattern tokens (mirrors spdlog's default used in the project):
+// Default pattern tokens:
 //   %Y-%m-%d %H:%M:%S.%e  — timestamp with milliseconds
 //   %t                     — thread id (decimal)
 //   %^%l%$                 — level label (with color when tty)
@@ -198,6 +225,9 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
     tid_ss << std::this_thread::get_id();
     std::string tid_str = tid_ss.str();
 
+    // Process id
+    std::string pid_str = std::to_string(GET_PID());
+
     const char *label = levelLabel(msg_level);
     const char *color = _sink->color_enabled ? levelColor(msg_level) : "";
     const char *reset = _sink->color_enabled ? AnsiColor::reset()     : "";
@@ -231,6 +261,10 @@ std::string ZeLogger::formatLine(LogLevel msg_level, const std::string &msg) {
                 }
                 case 't':
                     out += tid_str;
+                    ++i;
+                    break;
+                case 'P':
+                    out += pid_str;
                     ++i;
                     break;
                 case '^':

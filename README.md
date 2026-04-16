@@ -54,7 +54,7 @@ This will enforce the Loader to print all errors whether fatal or non-fatal to s
 
 
 # Logging to File - PREVIEW
-The Level Zero Loader uses spdlog logging and can be controlled via environment variables:
+The Level Zero Loader provides built-in logging controlled via environment variables:
 
 `ZEL_ENABLE_LOADER_LOGGING=1`
 
@@ -71,12 +71,14 @@ The default log file is 'ze_loader.log' in '.oneapi_logs' in the current
 user's home directory.
 
 The default log pattern includes timestamps, thread IDs, log levels, and messages.
-You can customize the pattern using `ZEL_LOADER_LOG_PATTERN`. Common pattern flags:
+You can customize the pattern using `ZEL_LOADER_LOG_PATTERN`. Supported pattern flags:
+- `%Y-%m-%d %H:%M:%S.%e` - timestamp with milliseconds (must appear as this full sequence)
 - `%t` - thread id
-- `%Y-%m-%d %H:%M:%S.%e` - timestamp with milliseconds
+- `%P` - process id
 - `%l` - log level
+- `%^` - begin color range (no-op if output is not a TTY)
+- `%$` - end color range
 - `%v` - the actual log message
-See spdlog documentation for more pattern options.
 
 This feature is in early development and is preview only.
 

@@ -33,7 +33,6 @@ from templates import helper as th
 
 #include "loader/ze_loader.h"
 #include "../utils/logging.h"
-#include "spdlog/spdlog.h"
 #include "source/lib/error_state.h"
 namespace loader
 {
