@@ -7,6 +7,7 @@
  */
 
 #include "ze_logger.h"
+#include "ze_util.h"
 
 #include <chrono>
 #include <ctime>
@@ -19,6 +20,7 @@
 #include <io.h>
 #include <process.h>
 #include <windows.h>
+#include <userenv.h>
 #define STDERR_FD  2
 #define STDOUT_FD  1
 #define GET_PID()  _getpid()
@@ -48,6 +50,8 @@ static bool winEnableAnsiColor(int fd) {
 
 #else
 #include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 #define ISATTY_COLOR(fd) (isatty(fd) != 0)
 #define GET_PID()  getpid()
 #define STDERR_FD  STDERR_FILENO
@@ -315,5 +319,194 @@ void ZeLogger::info(const std::string &msg)     { write(LogLevel::info,     msg)
 void ZeLogger::warn(const std::string &msg)     { write(LogLevel::warn,     msg); }
 void ZeLogger::error(const std::string &msg)    { write(LogLevel::err,      msg); }
 void ZeLogger::critical(const std::string &msg) { write(LogLevel::critical, msg); }
+
+// ---------------------------------------------------------------------------
+// to_string for ze_result_t
+// ---------------------------------------------------------------------------
+std::string to_string(ze_result_t result) {
+    if (result == ZE_RESULT_SUCCESS) {
+        return "ZE_RESULT_SUCCESS";
+    } else if (result == ZE_RESULT_NOT_READY) {
+        return "ZE_RESULT_NOT_READY";
+    } else if (result == ZE_RESULT_ERROR_UNINITIALIZED) {
+        return "ZE_RESULT_ERROR_UNINITIALIZED";
+    } else if (result == ZE_RESULT_ERROR_DEVICE_LOST) {
+        return "ZE_RESULT_ERROR_DEVICE_LOST";
+    } else if (result == ZE_RESULT_ERROR_INVALID_ARGUMENT) {
+        return "ZE_RESULT_ERROR_INVALID_ARGUMENT";
+    } else if (result == ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY) {
+        return "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY";
+    } else if (result == ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY) {
+        return "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY";
+    } else if (result == ZE_RESULT_ERROR_MODULE_BUILD_FAILURE) {
+        return "ZE_RESULT_ERROR_MODULE_BUILD_FAILURE";
+    } else if (result == ZE_RESULT_ERROR_MODULE_LINK_FAILURE) {
+        return "ZE_RESULT_ERROR_MODULE_LINK_FAILURE";
+    } else if (result == ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS) {
+        return "ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS";
+    } else if (result == ZE_RESULT_ERROR_NOT_AVAILABLE) {
+        return "ZE_RESULT_ERROR_NOT_AVAILABLE";
+    } else if (result == ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE) {
+        return "ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE";
+    } else if (result == ZE_RESULT_WARNING_DROPPED_DATA) {
+        return "ZE_RESULT_WARNING_DROPPED_DATA";
+    } else if (result == ZE_RESULT_ERROR_UNSUPPORTED_VERSION) {
+        return "ZE_RESULT_ERROR_UNSUPPORTED_VERSION";
+    } else if (result == ZE_RESULT_ERROR_UNSUPPORTED_FEATURE) {
+        return "ZE_RESULT_ERROR_UNSUPPORTED_FEATURE";
+    } else if (result == ZE_RESULT_ERROR_INVALID_NULL_HANDLE) {
+        return "ZE_RESULT_ERROR_INVALID_NULL_HANDLE";
+    } else if (result == ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE) {
+        return "ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE";
+    } else if (result == ZE_RESULT_ERROR_INVALID_NULL_POINTER) {
+        return "ZE_RESULT_ERROR_INVALID_NULL_POINTER";
+    } else if (result == ZE_RESULT_ERROR_INVALID_SIZE) {
+        return "ZE_RESULT_ERROR_INVALID_SIZE";
+    } else if (result == ZE_RESULT_ERROR_UNSUPPORTED_SIZE) {
+        return "ZE_RESULT_ERROR_UNSUPPORTED_SIZE";
+    } else if (result == ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT) {
+        return "ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT";
+    } else if (result == ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT) {
+        return "ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT";
+    } else if (result == ZE_RESULT_ERROR_INVALID_ENUMERATION) {
+        return "ZE_RESULT_ERROR_INVALID_ENUMERATION";
+    } else if (result == ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION) {
+        return "ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION";
+    } else if (result == ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT) {
+        return "ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT";
+    } else if (result == ZE_RESULT_ERROR_INVALID_NATIVE_BINARY) {
+        return "ZE_RESULT_ERROR_INVALID_NATIVE_BINARY";
+    } else if (result == ZE_RESULT_ERROR_INVALID_GLOBAL_NAME) {
+        return "ZE_RESULT_ERROR_INVALID_GLOBAL_NAME";
+    } else if (result == ZE_RESULT_ERROR_INVALID_KERNEL_NAME) {
+        return "ZE_RESULT_ERROR_INVALID_KERNEL_NAME";
+    } else if (result == ZE_RESULT_ERROR_INVALID_FUNCTION_NAME) {
+        return "ZE_RESULT_ERROR_INVALID_FUNCTION_NAME";
+    } else if (result == ZE_RESULT_ERROR_INVALID_GROUP_SIZE_DIMENSION) {
+        return "ZE_RESULT_ERROR_INVALID_GROUP_SIZE_DIMENSION";
+    } else if (result == ZE_RESULT_ERROR_INVALID_GLOBAL_WIDTH_DIMENSION) {
+        return "ZE_RESULT_ERROR_INVALID_GLOBAL_WIDTH_DIMENSION";
+    } else if (result == ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_INDEX) {
+        return "ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_INDEX";
+    } else if (result == ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_SIZE) {
+        return "ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_SIZE";
+    } else if (result == ZE_RESULT_ERROR_INVALID_KERNEL_ATTRIBUTE_VALUE) {
+        return "ZE_RESULT_ERROR_INVALID_KERNEL_ATTRIBUTE_VALUE";
+    } else if (result == ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED) {
+        return "ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED";
+    } else if (result == ZE_RESULT_ERROR_INVALID_COMMAND_LIST_TYPE) {
+        return "ZE_RESULT_ERROR_INVALID_COMMAND_LIST_TYPE";
+    } else if (result == ZE_RESULT_ERROR_OVERLAPPING_REGIONS) {
+        return "ZE_RESULT_ERROR_OVERLAPPING_REGIONS";
+    } else if (result == ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET) {
+        return "ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET";
+    } else if (result == ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE) {
+        return "ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE";
+    } else if (result == ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE) {
+        return "ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE";
+    } else if (result == ZE_RESULT_ERROR_SURVIVABILITY_MODE_DETECTED) {
+        return "ZE_RESULT_ERROR_SURVIVABILITY_MODE_DETECTED";
+    } else if (result == ZE_RESULT_ERROR_ADDRESS_NOT_FOUND) {
+        return "ZE_RESULT_ERROR_ADDRESS_NOT_FOUND";
+    } else if (result == ZE_RESULT_WARNING_ACTION_REQUIRED) {
+        return "ZE_RESULT_WARNING_ACTION_REQUIRED";
+    } else if (result == ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX) {
+        return "ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX";
+    } else if (result == ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE) {
+        return "ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE";
+    } else if (result == ZE_RESULT_EXP_ERROR_REMOTE_DEVICE) {
+        return "ZE_RESULT_EXP_ERROR_REMOTE_DEVICE";
+    } else if (result == ZE_RESULT_EXP_ERROR_OPERANDS_INCOMPATIBLE) {
+        return "ZE_RESULT_EXP_ERROR_OPERANDS_INCOMPATIBLE";
+    } else if (result == ZE_RESULT_EXP_RTAS_BUILD_RETRY) {
+        return "ZE_RESULT_EXP_RTAS_BUILD_RETRY";
+    } else if (result == ZE_RESULT_EXP_RTAS_BUILD_DEFERRED) {
+        return "ZE_RESULT_EXP_RTAS_BUILD_DEFERRED";
+    } else if (result == ZE_RESULT_EXT_RTAS_BUILD_RETRY) {
+        return "ZE_RESULT_EXT_RTAS_BUILD_RETRY";
+    } else if (result == ZE_RESULT_EXT_RTAS_BUILD_DEFERRED) {
+        return "ZE_RESULT_EXT_RTAS_BUILD_DEFERRED";
+    } else if (result == ZE_RESULT_EXT_ERROR_OPERANDS_INCOMPATIBLE) {
+        return "ZE_RESULT_EXT_ERROR_OPERANDS_INCOMPATIBLE";
+    } else if (result == ZE_RESULT_ERROR_UNKNOWN) {
+        return "ZE_RESULT_ERROR_UNKNOWN";
+    } else {
+        return std::to_string(static_cast<int>(result));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// createLogger — reads ZEL_* environment variables and constructs a logger.
+// ---------------------------------------------------------------------------
+#define LOADER_LOG_FILE           "ze_loader.log"
+#define LOADER_LOG_FILE_DIRECTORY ".oneapi_logs"
+
+std::shared_ptr<ZeLogger> createLogger() {
+    std::string log_directory = getenv_string("ZEL_LOADER_LOG_DIR");
+    if (log_directory.empty()) {
+        std::string home_dir;
+#ifdef _WIN32
+        home_dir = getenv_string("USERPROFILE");
+        if (home_dir.empty()) {
+            auto home_drive = getenv_string("HOMEDRIVE");
+            auto home_path  = getenv_string("HOMEPATH");
+            if (!home_drive.empty() && !home_path.empty()) {
+                home_dir = home_drive + home_path;
+            } else {
+                home_dir = ".";
+            }
+        }
+        log_directory = home_dir + "\\" + LOADER_LOG_FILE_DIRECTORY;
+#else
+        home_dir = getenv_string("HOME");
+        if (home_dir.empty()) {
+            auto *pw = getpwuid(getuid());
+            home_dir = (pw && pw->pw_dir) ? std::string(pw->pw_dir) : ".";
+        }
+        log_directory = home_dir + "/" + LOADER_LOG_FILE_DIRECTORY;
+#endif
+    }
+
+    auto loader_file = getenv_string("ZEL_LOADER_LOG_FILE");
+    if (loader_file.empty()) {
+        loader_file = LOADER_LOG_FILE;
+    } else {
+        std::cout << "ZEL_LOADER_LOG_FILE will be deprecated in a future release" << std::endl;
+    }
+
+#ifdef _WIN32
+    std::string full_log_file_path = log_directory + "\\" + loader_file;
+#else
+    std::string full_log_file_path = log_directory + "/" + loader_file;
+#endif
+
+    const bool logging_enabled = getenv_tobool("ZEL_ENABLE_LOADER_LOGGING");
+    auto log_level = getenv_string("ZEL_LOADER_LOGGING_LEVEL");
+    if (log_level.empty()) {
+        log_level = "warn";
+    }
+
+    std::string log_pattern = "[%Y-%m-%d %H:%M:%S.%e] [thread-id: %t] [%^%l%$] %v";
+    auto custom_pattern = getenv_string("ZEL_LOADER_LOG_PATTERN");
+    if (!custom_pattern.empty()) {
+        log_pattern = custom_pattern;
+    }
+
+    LogLevel level = logLevelFromString(log_level);
+    const bool log_console = getenv_tobool("ZEL_LOADER_LOG_CONSOLE");
+
+    std::shared_ptr<ZeLogger> logger;
+    if (!log_console) {
+        logger = std::make_shared<ZeLogger>(full_log_file_path, level, log_pattern);
+    } else {
+        logger = std::make_shared<ZeLogger>(/*use_stderr=*/true, level, log_pattern);
+    }
+
+    if (!logging_enabled) {
+        logger->setLevel(LogLevel::off);
+    }
+
+    return logger;
+}
 
 } // namespace loader

@@ -9,11 +9,13 @@
 #ifndef ZE_LOGGER_H
 #define ZE_LOGGER_H
 
-#include <string>
 #include <memory>
+#include <string>
 #include <mutex>
 #include <fstream>
 #include <ostream>
+
+#include "ze_api.h"
 
 namespace loader {
 
@@ -29,6 +31,12 @@ enum class LogLevel {
 };
 
 LogLevel logLevelFromString(const std::string &s);
+
+// Console sink selector used by createLogger().
+enum class Console {
+    out_stdout,
+    out_stderr
+};
 
 // Opaque sink type. Implementations live entirely in ze_logger.cpp.
 struct LogSink;
@@ -56,6 +64,19 @@ public:
 
     void flush();
 
+    // Convenience aliases matching the legacy Logger API used by callers.
+    void log_trace(const std::string &msg)       { trace(msg); }
+    void log_debug(const std::string &msg)        { debug(msg); }
+    void log_info(const std::string &msg)         { info(msg); }
+    void log_warning(const std::string &msg)      { warn(msg); }
+    void log_error(const std::string &msg)        { error(msg); }
+    void log_fatal(const std::string &msg)        { critical(msg); }
+    void log_performance(const std::string &msg)  { warn("[performance] " + msg); }
+
+    // When true, callers may mirror certain messages to stdout/stderr.
+    // Defaulted to true so init code can read it before explicitly disabling.
+    bool log_to_console = true;
+
 private:
     void write(LogLevel msg_level, const std::string &msg);
     void formatLine(LogLevel msg_level, const std::string &msg, std::string &out);
@@ -64,6 +85,12 @@ private:
     std::string _pattern;
     std::unique_ptr<LogSink> _sink;
 };
+
+// to_string for ze_result_t — declared here, implemented in ze_logger.cpp.
+std::string to_string(ze_result_t result);
+
+// Factory: reads ZEL_* env vars and constructs an appropriately configured logger.
+std::shared_ptr<ZeLogger> createLogger();
 
 } // namespace loader
 

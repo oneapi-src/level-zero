@@ -18,7 +18,7 @@
 #include "zer_ddi.h"
 #include "layers/zel_tracing_api.h"
 #include "layers/zel_tracing_ddi.h"
-#include "../utils/logging.h"
+#include "../utils/ze_logger.h"
 #include "loader/ze_loader.h"
 #include "ze_util.h"
 #include <vector>
