@@ -643,8 +643,12 @@ namespace loader
             loaderLibraryPath = readLevelZeroLoaderLibraryPath();
         }
 #endif
-        if (debugTraceEnabled)
-            debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
+        if (debugTraceEnabled) {
+            if (loaderLibraryPath.empty())
+                debug_trace_message("Using Loader Library Path: ", "Not set");
+            else
+                debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
+        }            
 
         if (debugTraceEnabled && driverDDIPathDefault) {
             debug_trace_message("DDI Driver Extension Path is Enabled", "");
