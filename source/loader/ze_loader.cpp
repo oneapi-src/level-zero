@@ -623,7 +623,7 @@ namespace loader
             zel_logger->log_to_console = false;
         }
 
-        if (zel_logger->logging_enabled) {
+        if (zel_logger->getLevel() != loader::LogLevel::off) {
             std::string ver_msg = "Loader Version " +
                 std::to_string(LOADER_VERSION_MAJOR) + "." +
                 std::to_string(LOADER_VERSION_MINOR) + "." +
