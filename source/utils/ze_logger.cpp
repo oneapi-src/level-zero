@@ -494,14 +494,18 @@ std::shared_ptr<ZeLogger> createLogger() {
         log_pattern = custom_pattern;
     }
 
-    // When logging is disabled, return a console-sink logger at level off.
-    // This avoids any file system access (open/create) for the default case.
-    if (!logging_enabled) {
+    const bool log_console = getenv_tobool("ZEL_LOADER_LOG_CONSOLE");
+
+    // Honour the matrix:
+    //   logging_enabled=0, log_console=0  → no-op (level off, no file I/O)
+    //   logging_enabled=0, log_console=1  → console (stderr), configured level
+    //   logging_enabled=1, log_console=0  → file sink, configured level
+    //   logging_enabled=1, log_console=1  → console (stderr), configured level
+    if (!logging_enabled && !log_console) {
         return std::make_shared<ZeLogger>(/*use_stderr=*/true, LogLevel::off, log_pattern);
     }
 
     LogLevel level = logLevelFromString(log_level);
-    const bool log_console = getenv_tobool("ZEL_LOADER_LOG_CONSOLE");
 
     std::shared_ptr<ZeLogger> logger;
     std::string output_dest;
