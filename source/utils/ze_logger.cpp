@@ -21,6 +21,7 @@
 #include <process.h>
 #include <windows.h>
 #include <userenv.h>
+#include <direct.h>   // _mkdir
 #define STDERR_FD  2
 #define STDOUT_FD  1
 #define GET_PID()  _getpid()
@@ -51,6 +52,7 @@ static bool winEnableAnsiColor(int fd) {
 #else
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <pwd.h>
 #define ISATTY_COLOR(fd) (isatty(fd) != 0)
 #define GET_PID()  getpid()
@@ -492,19 +494,53 @@ std::shared_ptr<ZeLogger> createLogger() {
         log_pattern = custom_pattern;
     }
 
+    // When logging is disabled, return a console-sink logger at level off.
+    // This avoids any file system access (open/create) for the default case.
+    if (!logging_enabled) {
+        return std::make_shared<ZeLogger>(/*use_stderr=*/true, LogLevel::off, log_pattern);
+    }
+
     LogLevel level = logLevelFromString(log_level);
     const bool log_console = getenv_tobool("ZEL_LOADER_LOG_CONSOLE");
 
     std::shared_ptr<ZeLogger> logger;
-    if (!log_console) {
-        logger = std::make_shared<ZeLogger>(full_log_file_path, level, log_pattern);
-    } else {
+    std::string output_dest;
+    if (log_console) {
         logger = std::make_shared<ZeLogger>(/*use_stderr=*/true, level, log_pattern);
+        output_dest = "stderr (console)";
+    } else {
+        // Create the log directory only if it does not already exist.
+#ifdef _WIN32
+        DWORD attrs = GetFileAttributesA(log_directory.c_str());
+        if (attrs == INVALID_FILE_ATTRIBUTES || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
+            _mkdir(log_directory.c_str());
+        }
+#else
+        struct stat st{};
+        if (stat(log_directory.c_str(), &st) != 0 || !S_ISDIR(st.st_mode)) {
+            mkdir(log_directory.c_str(), 0755);
+        }
+#endif
+        logger = std::make_shared<ZeLogger>(full_log_file_path, level, log_pattern);
+        output_dest = full_log_file_path;
     }
 
-    if (!logging_enabled) {
-        logger->setLevel(LogLevel::off);
-    }
+    // Emit the active configuration as the first log message so the user can
+    // confirm what was enabled and where output is going.
+    std::string cfg;
+    cfg  = "Loader logging enabled:";
+    cfg += "\n  Output    : " + output_dest;
+    cfg += "\n  Level     : " + log_level;
+    cfg += "\n  Pattern   : " + log_pattern;
+    if (!getenv_string("ZEL_LOADER_LOG_DIR").empty())
+        cfg += "\n  Log dir   : " + log_directory + " (ZEL_LOADER_LOG_DIR)";
+    if (!getenv_string("ZEL_LOADER_LOG_FILE").empty())
+        cfg += "\n  Log file  : " + loader_file + " (ZEL_LOADER_LOG_FILE, deprecated)";
+    if (!getenv_string("ZEL_LOADER_LOGGING_LEVEL").empty())
+        cfg += "\n  Level src : ZEL_LOADER_LOGGING_LEVEL";
+    if (!getenv_string("ZEL_LOADER_LOG_PATTERN").empty())
+        cfg += "\n  Pattern src: ZEL_LOADER_LOG_PATTERN";
+    logger->info(cfg);
 
     return logger;
 }
