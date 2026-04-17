@@ -56,29 +56,47 @@ This will enforce the Loader to print all errors whether fatal or non-fatal to s
 # Logging to File - PREVIEW
 The Level Zero Loader provides built-in logging controlled via environment variables:
 
-`ZEL_ENABLE_LOADER_LOGGING=1`
+| Environment Variable | Default | Description |
+|---|---|---|
+| `ZEL_ENABLE_LOADER_LOGGING` | `0` | Set to `1` to enable file logging |
+| `ZEL_LOADER_LOG_CONSOLE` | `0` | Set to `1` to enable console (stderr) logging |
+| `ZEL_LOADER_LOGGING_LEVEL` | `warn` | Log level: `trace`, `debug`, `info`, `warn`, `error`, `critical`, `off` |
+| `ZEL_LOADER_LOG_DIR` | `~/.oneapi_logs` | Directory to write the log file into |
+| `ZEL_LOADER_LOG_FILE` | `ze_loader.log` | Log filename (**deprecated**, will be removed in a future release) |
+| `ZEL_LOADER_LOG_PATTERN` | see below | Custom log format pattern |
 
-`ZEL_LOADER_LOG_DIR='/directory/path'`
+## Output destination
 
-`ZEL_LOADER_LOGGING_LEVEL=debug`
+The two flags control output as follows:
 
-Default Log Pattern (Does not need to be set, please see below):
-`ZEL_LOADER_LOG_PATTERN='[%Y-%m-%d %H:%M:%S.%e] [thread-id: %t] [%^%l%$] %v'`
+| `ZEL_ENABLE_LOADER_LOGGING` | `ZEL_LOADER_LOG_CONSOLE` | Output |
+|---|---|---|
+| `0` (default) | `0` (default) | Logging disabled — no file or console output |
+| `0` | `1` | Console output to **stderr** at the configured level |
+| `1` | `0` | File output to `ZEL_LOADER_LOG_DIR/ZEL_LOADER_LOG_FILE` |
+| `1` | `1` | Console output to **stderr** — file path is ignored |
 
-Valid logging levels are trace, debug, info, warn, error, critical, off.
-Logging is disabled by default but when enabled the default level is 'warn'.
-The default log file is 'ze_loader.log' in '.oneapi_logs' in the current
-user's home directory.
+> **Note:** When both `ZEL_ENABLE_LOADER_LOGGING=1` and `ZEL_LOADER_LOG_CONSOLE=1` are set,
+> output goes to the console only. The file path configuration is not used. If persistent file
+> capture is required, set `ZEL_LOADER_LOG_CONSOLE=0`.
 
-The default log pattern includes timestamps, thread IDs, log levels, and messages.
-You can customize the pattern using `ZEL_LOADER_LOG_PATTERN`. Supported pattern flags:
-- `%Y-%m-%d %H:%M:%S.%e` - timestamp with milliseconds (must appear as this full sequence)
-- `%t` - thread id
-- `%P` - process id
-- `%l` - log level
-- `%^` - begin color range (no-op if output is not a TTY)
-- `%$` - end color range
-- `%v` - the actual log message
+The log directory (`ZEL_LOADER_LOG_DIR`) is created automatically on first use if it does not exist.
+
+## Log pattern
+
+Default pattern (used when `ZEL_LOADER_LOG_PATTERN` is not set):
+```
+[%Y-%m-%d %H:%M:%S.%e] [thread-id: %t] [%^%l%$] %v
+```
+
+Supported pattern tokens:
+- `%Y-%m-%d %H:%M:%S.%e` — timestamp with milliseconds (must appear as this exact sequence)
+- `%t` — thread id
+- `%P` — process id
+- `%l` — log level label
+- `%^` — begin color range (no-op when output is not a TTY)
+- `%$` — end color range
+- `%v` — log message
 
 This feature is in early development and is preview only.
 
@@ -97,8 +115,10 @@ To print successful API call results, set
 Otherwise, only error results will be printed in the API trace output.
 NOTE: This will become the default behavior in future releases. for now, please set the env var to enable this logging feature.
 
-By default logs will be written to the log file, as described above. To print the logs
-to stderr instead, `ZEL_LOADER_LOG_CONSOLE=1` needs to be set.
+By default logs will be written to the log file as described above. To print logs
+to stderr instead of a file, set `ZEL_LOADER_LOG_CONSOLE=1`. Note that when
+`ZEL_LOADER_LOG_CONSOLE=1`, the file path configuration is ignored — output goes
+to the console only.
 
 The API logging output format includes both function entry and exit information, showing parameter names on entry and parameter values with the result code on exit. Each log entry is timestamped and includes the thread-id, logger name, log level. Example output:
 
