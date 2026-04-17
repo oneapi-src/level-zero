@@ -107,8 +107,12 @@ namespace ze_lib
             loaderLibraryPath = readLevelZeroLoaderLibraryPath();
         }
 #endif
-        if (debugTraceEnabled)
-            debug_trace_message("Static Loader Using Loader Library Path: ", loaderLibraryPath);
+        if (debugTraceEnabled) {
+            if (loaderLibraryPath.empty())
+                debug_trace_message("Static Loader Using Loader Library Path: ", "Not set");
+            else
+                debug_trace_message("Static Loader Using Loader Library Path: ", loaderLibraryPath);
+        }
         std::string loaderFullLibraryPath = create_library_path(MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION), loaderLibraryPath.c_str());
         loader = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
 
