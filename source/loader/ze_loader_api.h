@@ -61,9 +61,20 @@ zeLoaderGetTracingHandle();
 /// @brief Get pointer to Loader Context
 ///
 /// @returns
-///     - ::handle to tracing library
+///     - ::Pointer to the Loader's Context
 ZE_DLLEXPORT loader::context_t *ZE_APICALL
 zelLoaderGetContext();
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the loader's shared logger instance.
+///        Returns nullptr if the loader context is not yet initialized.
+///        Callers (e.g. the validation layer) should adopt this logger
+///        instead of creating their own to share a single file handle and mutex.
+///
+/// @returns
+///     - ::Pointer to the shared ZeLogger, or nullptr
+ZE_DLLEXPORT std::shared_ptr<loader::ZeLogger> *ZE_APICALL
+zelLoaderGetLogger();
 
 
 ///////////////////////////////////////////////////////////////////////////////

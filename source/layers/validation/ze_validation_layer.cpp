@@ -11,6 +11,9 @@
 #include "param_validation.h"
 #include <memory>
 
+// Forward declaration — resolves at link time against ze_loader.so.
+extern "C" ZE_DLLEXPORT std::shared_ptr<loader::ZeLogger> *ZE_APICALL zelLoaderGetLogger();
+
 namespace validation_layer
 {
     context_t& context = context_t::getInstance();
@@ -25,7 +28,18 @@ namespace validation_layer
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
         verboseLogging = getenv_tobool( "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT" );
 
-        logger = loader::createLogger("Validation Layer");
+        // Prefer the loader's already-constructed logger so both components
+        // share a single file handle, mutex, and startup banner.
+        // Fall back to creating an independent logger (e.g. static build).
+#ifndef L0_STATIC_LOADER_BUILD
+        auto *loaderLog = zelLoaderGetLogger();
+        if (loaderLog && *loaderLog) {
+            logger = *loaderLog;
+        } else
+#endif
+        {
+            logger = loader::createLogger("Validation Layer");
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////
