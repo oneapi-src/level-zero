@@ -53,16 +53,16 @@ To enable this debug tracing feature, set the environment variable `ZE_ENABLE_LO
 This will enforce the Loader to print all errors whether fatal or non-fatal to stderr with the PREFIX `ZE_LOADER_DEBUG_TRACE:`.
 
 
-# Logging to File - PREVIEW
+# Logging to File
 The Level Zero Loader provides built-in logging controlled via environment variables:
 
 | Environment Variable | Default | Description |
 |---|---|---|
 | `ZEL_ENABLE_LOADER_LOGGING` | `0` | Set to `1` to enable file logging |
-| `ZEL_LOADER_LOG_CONSOLE` | `0` | Set to `1` to enable console (stderr) logging |
+| `ZEL_LOADER_LOG_CONSOLE` | `0` | Set to `1` to enable console (stderr) logging, overrides file logging |
 | `ZEL_LOADER_LOGGING_LEVEL` | `warn` | Log level: `trace`, `debug`, `info`, `warn`, `error`, `critical`, `off` |
 | `ZEL_LOADER_LOG_DIR` | `~/.oneapi_logs` | Directory to write the log file into |
-| `ZEL_LOADER_LOG_FILE` | `ze_loader.log` | Log filename (**deprecated**, will be removed in a future release) |
+| `ZEL_LOADER_LOG_FILE` | `ze_loader.log` | Log filename |
 | `ZEL_LOADER_LOG_PATTERN` | see below | Custom log format pattern |
 
 ## Output destination
@@ -97,8 +97,6 @@ Supported pattern tokens:
 - `%^` — begin color range (no-op when output is not a TTY)
 - `%$` — end color range
 - `%v` — log message
-
-This feature is in early development and is preview only.
 
 # Logging API calls
 The Level Zero Loader will log all API calls whenever logging level is set to `trace` and

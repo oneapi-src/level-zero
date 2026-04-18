@@ -472,8 +472,6 @@ std::shared_ptr<ZeLogger> createLogger() {
     auto loader_file = getenv_string("ZEL_LOADER_LOG_FILE");
     if (loader_file.empty()) {
         loader_file = LOADER_LOG_FILE;
-    } else {
-        std::cout << "ZEL_LOADER_LOG_FILE will be deprecated in a future release" << std::endl;
     }
 
 #ifdef _WIN32
@@ -533,17 +531,13 @@ std::shared_ptr<ZeLogger> createLogger() {
     // confirm what was enabled and where output is going.
     std::string cfg;
     cfg  = "Loader logging enabled:";
-    cfg += "\n  Output    : " + output_dest;
-    cfg += "\n  Level     : " + log_level;
-    cfg += "\n  Pattern   : " + log_pattern;
-    if (!getenv_string("ZEL_LOADER_LOG_DIR").empty())
-        cfg += "\n  Log dir   : " + log_directory + " (ZEL_LOADER_LOG_DIR)";
-    if (!getenv_string("ZEL_LOADER_LOG_FILE").empty())
-        cfg += "\n  Log file  : " + loader_file + " (ZEL_LOADER_LOG_FILE, deprecated)";
-    if (!getenv_string("ZEL_LOADER_LOGGING_LEVEL").empty())
-        cfg += "\n  Level src : ZEL_LOADER_LOGGING_LEVEL";
-    if (!getenv_string("ZEL_LOADER_LOG_PATTERN").empty())
-        cfg += "\n  Pattern src: ZEL_LOADER_LOG_PATTERN";
+    cfg += "\n  ZEL_LOADER_LOG_CONSOLE          : " + std::string(log_console ? "stderr" : "disabled");
+    cfg += "\n  ZEL_ENABLE_LOADER_LOGGING        : " + std::string(logging_enabled ? "enabled" : "disabled");
+    cfg += "\n  ZEL_LOADER_LOGGING_LEVEL         : " + log_level;
+    cfg += "\n  ZEL_LOADER_LOG_DIR               : " + log_directory;
+    cfg += "\n  ZEL_LOADER_LOG_FILE              : " + loader_file;
+    cfg += "\n  ZEL_LOADER_LOG_PATTERN           : " + log_pattern;
+    cfg += "\n  Output                           : " + output_dest;
     logger->info(cfg);
 
     return logger;
