@@ -511,6 +511,19 @@ namespace loader
             auto handle = LOAD_DRIVER_LIBRARY( driver.name.c_str() );
             if( NULL != handle )
             {
+                if (debugTraceEnabled) {
+#if !defined(_WIN32) && !defined(ANDROID)
+                    struct link_map *dlinfo_map;
+                    if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
+                        debug_trace_message("init driver " + driver.name + " resolved path: ", std::string(dlinfo_map->l_name));
+                    }
+#elif defined(_WIN32)
+                    char resolved[MAX_PATH];
+                    if (GetModuleFileNameA(static_cast<HMODULE>(handle), resolved, MAX_PATH)) {
+                        debug_trace_message("init driver " + driver.name + " resolved path: ", std::string(resolved));
+                    }
+#endif
+                }
                 driver.handle = handle;
             } else {
                 std::string loadLibraryErrorValue;
@@ -662,19 +675,31 @@ namespace loader
         if( getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) )
         {
             zel_logger->log_info("Enabling Null Driver");
-            auto handle = LOAD_DRIVER_LIBRARY( create_library_path( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ), loaderLibraryPath.c_str()).c_str());
-            if (debugTraceEnabled) {
-                std::string message = "ze_null Driver Init";
-                debug_trace_message(message, "");
-            }
+            std::string nullDriverPath = create_library_path( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ), loaderLibraryPath.c_str());
+            if (debugTraceEnabled)
+                debug_trace_message("Null Driver Library Path (requested): ", nullDriverPath);
+            auto handle = LOAD_DRIVER_LIBRARY( nullDriverPath.c_str() );
             if( NULL != handle )
             {
+                if (debugTraceEnabled) {
+#if !defined(_WIN32) && !defined(ANDROID)
+                    struct link_map *dlinfo_map;
+                    if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
+                        debug_trace_message("Null Driver Library Path (resolved): ", std::string(dlinfo_map->l_name));
+                    }
+#elif defined(_WIN32)
+                    char resolved[MAX_PATH];
+                    if (GetModuleFileNameA(static_cast<HMODULE>(handle), resolved, MAX_PATH)) {
+                        debug_trace_message("Null Driver Library Path (resolved): ", std::string(resolved));
+                    }
+#endif
+                }
                 allDrivers.emplace_back();
                 allDrivers.rbegin()->handle = handle;
                 allDrivers.rbegin()->name = "ze_null";
             } else if (debugTraceEnabled) {
                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
-                std::string errorMessage = "Load Library of " + create_library_path( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ), loaderLibraryPath.c_str()) + " failed with ";
+                std::string errorMessage = "Load Library of " + nullDriverPath + " failed with ";
                 debug_trace_message(errorMessage, loadLibraryErrorValue);
                 loadLibraryErrorValue.clear();
             }
@@ -731,9 +756,24 @@ namespace loader
         {
             zel_logger->log_info("Validation Layer Enabled");
             std::string validationLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_validation_layer" ), loaderLibraryPath.c_str());
+            if (debugTraceEnabled)
+                debug_trace_message("Validation Layer Library Path (requested): ", validationLayerLibraryPath);
             validationLayer = LOAD_DRIVER_LIBRARY( validationLayerLibraryPath.c_str() );
             if(validationLayer)
             {
+                if (debugTraceEnabled) {
+#if !defined(_WIN32) && !defined(ANDROID)
+                    struct link_map *dlinfo_map;
+                    if (dlinfo(validationLayer, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
+                        debug_trace_message("Validation Layer Library Path (resolved): ", std::string(dlinfo_map->l_name));
+                    }
+#elif defined(_WIN32)
+                    char resolved[MAX_PATH];
+                    if (GetModuleFileNameA(static_cast<HMODULE>(validationLayer), resolved, MAX_PATH)) {
+                        debug_trace_message("Validation Layer Library Path (resolved): ", std::string(resolved));
+                    }
+#endif
+                }
                 auto getVersion = reinterpret_cast<getVersion_t>(
                     GET_FUNCTION_PTR(validationLayer, "zelLoaderGetVersion"));
                 zel_component_version_t compVersion;
@@ -755,10 +795,23 @@ namespace loader
         }
         std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
         if (debugTraceEnabled)
-            debug_trace_message("Tracing Layer Library Path: ", tracingLayerLibraryPath);
+            debug_trace_message("Tracing Layer Library Path (requested): ", tracingLayerLibraryPath);
         tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
         if(tracingLayer)
         {
+            if (debugTraceEnabled) {
+#if !defined(_WIN32) && !defined(ANDROID)
+                struct link_map *dlinfo_map;
+                if (dlinfo(tracingLayer, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
+                    debug_trace_message("Tracing Layer Library Path (resolved): ", std::string(dlinfo_map->l_name));
+                }
+#elif defined(_WIN32)
+                char resolved[MAX_PATH];
+                if (GetModuleFileNameA(static_cast<HMODULE>(tracingLayer), resolved, MAX_PATH)) {
+                    debug_trace_message("Tracing Layer Library Path (resolved): ", std::string(resolved));
+                }
+#endif
+            }
             auto getVersion = reinterpret_cast<getVersion_t>(
                 GET_FUNCTION_PTR(tracingLayer, "zelLoaderGetVersion"));
             zel_component_version_t compVersion;
