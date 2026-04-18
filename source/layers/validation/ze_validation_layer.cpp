@@ -25,7 +25,7 @@ namespace validation_layer
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
         verboseLogging = getenv_tobool( "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT" );
 
-        logger = loader::createLogger();
+        logger = loader::createLogger("Validation Layer");
     }
 
     ///////////////////////////////////////////////////////////////////////////////

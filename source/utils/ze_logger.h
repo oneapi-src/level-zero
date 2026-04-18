@@ -90,7 +90,7 @@ private:
 std::string to_string(ze_result_t result);
 
 // Factory: reads ZEL_* env vars and constructs an appropriately configured logger.
-std::shared_ptr<ZeLogger> createLogger();
+std::shared_ptr<ZeLogger> createLogger(const std::string &caller = "Loader");
 
 } // namespace loader
 

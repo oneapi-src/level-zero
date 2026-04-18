@@ -443,7 +443,7 @@ std::string to_string(ze_result_t result) {
 #define LOADER_LOG_FILE           "ze_loader.log"
 #define LOADER_LOG_FILE_DIRECTORY ".oneapi_logs"
 
-std::shared_ptr<ZeLogger> createLogger() {
+std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
     std::string log_directory = getenv_string("ZEL_LOADER_LOG_DIR");
     if (log_directory.empty()) {
         std::string home_dir;
@@ -530,7 +530,7 @@ std::shared_ptr<ZeLogger> createLogger() {
     // Emit the active configuration as the first log message so the user can
     // confirm what was enabled and where output is going.
     std::string cfg;
-    cfg  = "Loader logging enabled:";
+    cfg  = caller + " logging enabled:";
     cfg += "\n  ZEL_LOADER_LOG_CONSOLE          : " + std::string(log_console ? "stderr" : "disabled");
     cfg += "\n  ZEL_ENABLE_LOADER_LOGGING        : " + std::string(logging_enabled ? "enabled" : "disabled");
     cfg += "\n  ZEL_LOADER_LOGGING_LEVEL         : " + log_level;
