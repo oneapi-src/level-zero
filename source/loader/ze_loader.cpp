@@ -629,7 +629,11 @@ namespace loader
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;
 
-        zel_logger = createLogger();
+#ifdef L0_STATIC_LOADER_BUILD
+        zel_logger = createLogger("Static Loader");
+#else
+        zel_logger = createLogger("Dynamic Loader");
+#endif
 
         if ((getenv_string("ZEL_LOADER_LOGGING_LEVEL") == "trace") && !debugTraceEnabled) {
             debugTraceEnabled = true;
