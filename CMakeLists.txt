@@ -57,6 +57,7 @@ if(BUILD_L0_LOADER_TESTS)
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG        v1.14.0
+		FIND_PACKAGE_ARGS NAMES GTest
     )
     add_library(GTest::GTest INTERFACE IMPORTED)
     target_link_libraries(GTest::GTest INTERFACE gtest_main)
