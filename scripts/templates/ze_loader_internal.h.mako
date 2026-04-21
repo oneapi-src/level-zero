@@ -32,7 +32,7 @@ from templates import helper as th
 #include "zer_ldrddi.h"
 
 #include "loader/ze_loader.h"
-#include "../utils/logging.h"
+#include "../utils/ze_logger.h"
 #include "source/lib/error_state.h"
 namespace loader
 {
@@ -138,7 +138,7 @@ namespace loader
         bool instrumentationEnabled = false;
         bool pciOrderingRequested = false;
         dditable_t tracing_dditable = {};
-        std::shared_ptr<Logger> zel_logger;
+        std::shared_ptr<ZeLogger> zel_logger;
         ze_driver_handle_t defaultZerDriverHandle = nullptr;
     };
 
