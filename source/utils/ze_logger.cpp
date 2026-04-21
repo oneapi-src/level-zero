@@ -526,7 +526,7 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
     //   logging_enabled=1, log_console=1  → console (stderr), configured level
     if (!logging_enabled && !log_console) {
         // Pure no-op: no sink, no mutex, no isatty() syscall, no pattern string.
-        return std::make_shared<ZeLogger>();
+        return std::shared_ptr<ZeLogger>(new ZeLogger());
     }
 
     LogLevel level = logLevelFromString(log_level);
@@ -534,7 +534,7 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
     std::shared_ptr<ZeLogger> logger;
     std::string output_dest;
     if (log_console) {
-        logger = std::make_shared<ZeLogger>(/*use_stderr=*/true, level, log_pattern);
+        logger = std::shared_ptr<ZeLogger>(new ZeLogger(/*use_stderr=*/true, level, log_pattern));
         output_dest = "stderr (console)";
     } else {
         // Create the full directory path (equivalent to mkdir -p).
@@ -550,12 +550,12 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
                     if (_mkdir(partial.c_str()) != 0 && errno != EEXIST) {
                         std::cerr << "ze_logger: Failed to create log directory '"
                                   << partial << "': " << errnoToString(errno) << "\n";
-                        return std::make_shared<ZeLogger>();
+                        return std::shared_ptr<ZeLogger>(new ZeLogger());
                     }
                 } else if (!(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
                     std::cerr << "ze_logger: Log directory path component '"
                               << partial << "' exists but is not a directory\n";
-                    return std::make_shared<ZeLogger>();
+                    return std::shared_ptr<ZeLogger>(new ZeLogger());
                 }
             }
         }
@@ -570,17 +570,17 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
                     if (mkdir(partial.c_str(), 0755) != 0 && errno != EEXIST) {
                         std::cerr << "ze_logger: Failed to create log directory '"
                                   << partial << "': " << errnoToString(errno) << "\n";
-                        return std::make_shared<ZeLogger>();
+                        return std::shared_ptr<ZeLogger>(new ZeLogger());
                     }
                 } else if (!S_ISDIR(st.st_mode)) {
                     std::cerr << "ze_logger: Log directory path component '"
                               << partial << "' exists but is not a directory\n";
-                    return std::make_shared<ZeLogger>();
+                    return std::shared_ptr<ZeLogger>(new ZeLogger());
                 }
             }
         }
 #endif
-        logger = std::make_shared<ZeLogger>(full_log_file_path, level, log_pattern);
+        logger = std::shared_ptr<ZeLogger>(new ZeLogger(full_log_file_path, level, log_pattern));
         output_dest = full_log_file_path;
     }
 
