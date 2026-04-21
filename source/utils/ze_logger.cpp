@@ -9,7 +9,9 @@
 #include "ze_logger.h"
 #include "ze_util.h"
 
+#include <cerrno>
 #include <chrono>
+#include <cstdio>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -101,6 +103,24 @@ const char *levelColor(LogLevel l) {
     }
 }
 
+// Thread-safe, portable errno-to-string conversion.
+// MSVC deprecates strerror() in favour of strerror_s(); POSIX provides strerror_r().
+static std::string errnoToString(int err) {
+    char buf[256];
+#ifdef _WIN32
+    strerror_s(buf, sizeof(buf), err);
+    return buf;
+#elif defined(_GNU_SOURCE)
+    // GNU strerror_r returns char* (may or may not use buf)
+    const char *result = strerror_r(err, buf, sizeof(buf));
+    return result ? result : buf;
+#else
+    // XSI-compliant strerror_r returns int
+    strerror_r(err, buf, sizeof(buf));
+    return buf;
+#endif
+}
+
 } // anonymous namespace
 
 // ---------------------------------------------------------------------------
@@ -158,9 +178,10 @@ LogLevel logLevelFromString(const std::string &s) {
     if (s == "trace")    return LogLevel::trace;
     if (s == "debug")    return LogLevel::debug;
     if (s == "info")     return LogLevel::info;
-    if (s == "warn")     return LogLevel::warn;
-    if (s == "error")    return LogLevel::err;
-    if (s == "critical") return LogLevel::critical;
+    if (s == "warn" || s == "warning") return LogLevel::warn;
+    if (s == "err" || s == "error")    return LogLevel::err;
+    if (s == "crit" || s == "critical") return LogLevel::critical;
+    if (s == "off")      return LogLevel::off;
     return LogLevel::warn; // default
 }
 
@@ -205,7 +226,7 @@ void ZeLogger::flush() {
 // Default pattern tokens:
 //   %Y-%m-%d %H:%M:%S.%e  — timestamp with milliseconds
 //   %t                     — thread id (cached thread_local, STB_LOCAL — safe for dlclose)
-//   %P                     — process id (cached at construction)
+//   %P                     — process id
 //   %^%l%$                 — level label (with color when tty)
 //   %v                     — message
 //
@@ -516,16 +537,47 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
         logger = std::make_shared<ZeLogger>(/*use_stderr=*/true, level, log_pattern);
         output_dest = "stderr (console)";
     } else {
-        // Create the log directory only if it does not already exist.
+        // Create the full directory path (equivalent to mkdir -p).
 #ifdef _WIN32
-        DWORD attrs = GetFileAttributesA(log_directory.c_str());
-        if (attrs == INVALID_FILE_ATTRIBUTES || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-            _mkdir(log_directory.c_str());
+        // Walk each component and create it if missing.
+        for (std::size_t pos = 0; pos <= log_directory.size(); ++pos) {
+            if (pos == log_directory.size() ||
+                log_directory[pos] == '\\' || log_directory[pos] == '/') {
+                if (pos == 0) continue;
+                std::string partial = log_directory.substr(0, pos);
+                DWORD attrs = GetFileAttributesA(partial.c_str());
+                if (attrs == INVALID_FILE_ATTRIBUTES) {
+                    if (_mkdir(partial.c_str()) != 0 && errno != EEXIST) {
+                        std::cerr << "ze_logger: Failed to create log directory '"
+                                  << partial << "': " << errnoToString(errno) << "\n";
+                        return std::make_shared<ZeLogger>();
+                    }
+                } else if (!(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
+                    std::cerr << "ze_logger: Log directory path component '"
+                              << partial << "' exists but is not a directory\n";
+                    return std::make_shared<ZeLogger>();
+                }
+            }
         }
 #else
-        struct stat st{};
-        if (stat(log_directory.c_str(), &st) != 0 || !S_ISDIR(st.st_mode)) {
-            mkdir(log_directory.c_str(), 0755);
+        // Walk each component and create it if missing.
+        for (std::size_t pos = 0; pos <= log_directory.size(); ++pos) {
+            if (pos == log_directory.size() || log_directory[pos] == '/') {
+                if (pos == 0) continue;
+                std::string partial = log_directory.substr(0, pos);
+                struct stat st{};
+                if (stat(partial.c_str(), &st) != 0) {
+                    if (mkdir(partial.c_str(), 0755) != 0 && errno != EEXIST) {
+                        std::cerr << "ze_logger: Failed to create log directory '"
+                                  << partial << "': " << errnoToString(errno) << "\n";
+                        return std::make_shared<ZeLogger>();
+                    }
+                } else if (!S_ISDIR(st.st_mode)) {
+                    std::cerr << "ze_logger: Log directory path component '"
+                              << partial << "' exists but is not a directory\n";
+                    return std::make_shared<ZeLogger>();
+                }
+            }
         }
 #endif
         logger = std::make_shared<ZeLogger>(full_log_file_path, level, log_pattern);

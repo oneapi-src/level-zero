@@ -60,19 +60,6 @@ zelLoaderGetContext() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Get the loader's shared logger instance.
-///
-ZE_DLLEXPORT std::shared_ptr<loader::ZeLogger> *ZE_APICALL
-zelLoaderGetLogger() {
-    if (loader::context == nullptr)
-        return nullptr;
-    auto &log = loader::context->zel_logger;
-    if (!log)
-        return nullptr;
-    return &log;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Internal function for Setting the ZE ddi table for the Tracing Layer.
 ///
 ZE_DLLEXPORT ze_result_t ZE_APICALL
