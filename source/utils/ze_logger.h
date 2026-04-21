@@ -46,6 +46,9 @@ struct LogSink;
 // are produced by this class so it can be unloaded by dlclose().
 class ZeLogger {
 public:
+    // No-op constructor: level=off, no sink, no I/O, no syscalls, no mutex.
+    // Use this (or createLogger() with logging disabled) for zero-overhead paths.
+    ZeLogger();
     // File sink constructor
     ZeLogger(const std::string &log_path, LogLevel level, const std::string &pattern);
     // Console sink constructor (stderr or stdout)
