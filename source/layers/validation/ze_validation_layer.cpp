@@ -11,9 +11,6 @@
 #include "param_validation.h"
 #include <memory>
 
-// Forward declaration — resolves at link time against ze_loader.so.
-extern "C" ZE_DLLEXPORT std::shared_ptr<loader::ZeLogger> *ZE_APICALL zelLoaderGetLogger();
-
 namespace validation_layer
 {
     context_t& context = context_t::getInstance();
@@ -28,18 +25,16 @@ namespace validation_layer
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
         verboseLogging = getenv_tobool( "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT" );
 
-        // Prefer the loader's already-constructed logger so both components
-        // share a single file handle, mutex, and startup banner.
-        // Fall back to creating an independent logger (e.g. static build).
-#ifndef L0_STATIC_LOADER_BUILD
-        auto *loaderLog = zelLoaderGetLogger();
-        if (loaderLog && *loaderLog) {
-            logger = *loaderLog;
-        } else
-#endif
-        {
-            logger = loader::createLogger("Validation Layer");
-        }
+        // Initialize logger to a no-op sentinel (level=off, no file/console I/O, no banner).
+        // This is purely crash protection: in normal operation the loader calls
+        // zelLoaderSetLogger() immediately after dlopen — before the DDI tables
+        // go live — so no real log call ever hits this sentinel.
+        //
+        // Thread-safety note: zelLoaderSetLogger() writes this field once, on the
+        // init thread, before zeDdiTable.exchange() makes the validation layer
+        // reachable from other threads.  The non-atomic shared_ptr assignment is
+        // therefore safe in practice; no mutex is needed here.
+        logger = std::make_shared<loader::ZeLogger>(); // no-op sentinel: no sink, no mutex, no syscalls
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -66,6 +61,17 @@ zelLoaderGetVersion(zel_component_version_t *version)
     version->component_lib_version.patch = LOADER_VERSION_PATCH;
 
     return ZE_RESULT_SUCCESS;
+}
+
+/// @brief Called by the loader immediately after dlopen to share its logger.
+///        Replaces the fallback logger created in the constructor so that
+///        validation-layer messages flow through the same sink as the loader.
+ZE_DLLEXPORT void ZE_APICALL
+zelLoaderSetLogger(std::shared_ptr<loader::ZeLogger> *loaderLogger)
+{
+    if (loaderLogger && *loaderLogger) {
+        validation_layer::context_t::getInstance().logger = *loaderLogger;
+    }
 }
 
 #if defined(__cplusplus)

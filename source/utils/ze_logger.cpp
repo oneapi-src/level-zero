@@ -167,6 +167,10 @@ LogLevel logLevelFromString(const std::string &s) {
 // ---------------------------------------------------------------------------
 // ZeLogger
 // ---------------------------------------------------------------------------
+ZeLogger::ZeLogger()
+    : _level(LogLevel::off), _pattern(), _sink(nullptr)
+{}
+
 ZeLogger::ZeLogger(const std::string &log_path, LogLevel level, const std::string &pattern)
     : _level(level), _pattern(pattern), _sink(new LogSink(log_path))
 {
@@ -192,7 +196,7 @@ LogLevel ZeLogger::getLevel() const {
 }
 
 void ZeLogger::flush() {
-    _sink->flush();
+    if (_sink) _sink->flush();
 }
 
 // ---------------------------------------------------------------------------
@@ -305,7 +309,7 @@ void ZeLogger::formatLine(LogLevel msg_level, const std::string &msg, std::strin
 }
 
 void ZeLogger::write(LogLevel msg_level, const std::string &msg) {
-    if (msg_level < _level) {
+    if (!_sink || msg_level < _level) {
         return;
     }
     // Reuse a thread_local buffer to avoid a heap allocation per log call.
@@ -500,7 +504,8 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
     //   logging_enabled=1, log_console=0  → file sink, configured level
     //   logging_enabled=1, log_console=1  → console (stderr), configured level
     if (!logging_enabled && !log_console) {
-        return std::make_shared<ZeLogger>(/*use_stderr=*/true, LogLevel::off, log_pattern);
+        // Pure no-op: no sink, no mutex, no isatty() syscall, no pattern string.
+        return std::make_shared<ZeLogger>();
     }
 
     LogLevel level = logLevelFromString(log_level);
