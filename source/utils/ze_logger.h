@@ -95,6 +95,12 @@ std::string to_string(ze_result_t result);
 // Factory: reads ZEL_* env vars and constructs an appropriately configured logger.
 std::shared_ptr<ZeLogger> createLogger(const std::string &caller = "Loader");
 
+// A permanently-alive no-op logger instance suitable for use as a raw-pointer
+// default in components (e.g. the validation layer) that must never hold a
+// shared_ptr across dlclose/process-exit boundaries.
+// Level=off, no sink, no I/O.  Safe to call from any thread at any time.
+ZeLogger *noopLogger();
+
 } // namespace loader
 
 #endif // ZE_LOGGER_H

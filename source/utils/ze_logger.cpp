@@ -600,4 +600,13 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
     return logger;
 }
 
+// Returns a pointer to a process-lifetime no-op ZeLogger.
+// Using a function-local static here gives STB_LOCAL linkage (non-inline, non-template .cpp
+// function), avoiding STB_GNU_UNIQUE.  The instance is never destroyed, which is intentional:
+// components holding a raw pointer to this object are safe regardless of shutdown order.
+ZeLogger *noopLogger() {
+    static ZeLogger instance; // default constructor: level=off, _sink=nullptr
+    return &instance;
+}
+
 } // namespace loader

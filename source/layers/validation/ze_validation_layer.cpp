@@ -25,16 +25,11 @@ namespace validation_layer
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
         verboseLogging = getenv_tobool( "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT" );
 
-        // Initialize logger to a no-op sentinel (level=off, no file/console I/O, no banner).
-        // This is purely crash protection: in normal operation the loader calls
-        // zelLoaderSetLogger() immediately after dlopen — before the DDI tables
-        // go live — so no real log call ever hits this sentinel.
-        //
-        // Thread-safety note: zelLoaderSetLogger() writes this field once, on the
-        // init thread, before zeDdiTable.exchange() makes the validation layer
-        // reachable from other threads.  The non-atomic shared_ptr assignment is
-        // therefore safe in practice; no mutex is needed here.
-        logger = std::shared_ptr<loader::ZeLogger>(new loader::ZeLogger()); // no-op sentinel: no sink, no mutex, no syscalls
+        // Point at the process-lifetime no-op logger until the loader calls
+        // zelLoaderSetLogger().  This is never null, so call sites need no null check.
+        // Thread-safety: zelLoaderSetLogger() writes this field exactly once on the
+        // init thread before zeDdiTable.exchange() makes the layer reachable.
+        logger = loader::noopLogger();
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -64,13 +59,13 @@ zelLoaderGetVersion(zel_component_version_t *version)
 }
 
 /// @brief Called by the loader immediately after dlopen to share its logger.
-///        Replaces the fallback logger created in the constructor so that
-///        validation-layer messages flow through the same sink as the loader.
+///        Replaces the no-op default so that validation-layer messages flow
+///        through the same sink as the loader.
 ZE_DLLEXPORT void ZE_APICALL
-zelLoaderSetLogger(std::shared_ptr<loader::ZeLogger> *loaderLogger)
+zelLoaderSetLogger(loader::ZeLogger *loaderLogger)
 {
-    if (loaderLogger && *loaderLogger) {
-        validation_layer::context_t::getInstance().logger = *loaderLogger;
+    if (loaderLogger) {
+        validation_layer::context_t::getInstance().logger = loaderLogger;
     }
 }
 
