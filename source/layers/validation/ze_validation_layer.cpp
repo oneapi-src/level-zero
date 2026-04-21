@@ -34,7 +34,7 @@ namespace validation_layer
         // init thread, before zeDdiTable.exchange() makes the validation layer
         // reachable from other threads.  The non-atomic shared_ptr assignment is
         // therefore safe in practice; no mutex is needed here.
-        logger = std::make_shared<loader::ZeLogger>(); // no-op sentinel: no sink, no mutex, no syscalls
+        logger = std::shared_ptr<loader::ZeLogger>(new loader::ZeLogger()); // no-op sentinel: no sink, no mutex, no syscalls
     }
 
     ///////////////////////////////////////////////////////////////////////////////
