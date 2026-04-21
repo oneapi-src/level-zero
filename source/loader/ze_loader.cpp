@@ -780,11 +780,11 @@ namespace loader
                 }
                 // Inject this loader instance's logger into the validation layer
                 // so both share a single file handle and mutex.
-                using SetLoggerFn = void (*)(std::shared_ptr<loader::ZeLogger> *);
+                using SetLoggerFn = void (*)(loader::ZeLogger *);
                 auto setLogger = reinterpret_cast<SetLoggerFn>(
                     GET_FUNCTION_PTR(validationLayer, "zelLoaderSetLogger"));
                 if (setLogger) {
-                    setLogger(&zel_logger);
+                    setLogger(zel_logger.get());
                 }
 
                 auto getVersion = reinterpret_cast<getVersion_t>(
