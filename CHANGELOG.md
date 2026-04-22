@@ -1,4 +1,9 @@
 # Level zero loader changelog
+## v1.28.4
+* Add README.md and CONTRIBUTING.md changes for Unit Testing
+* Add CMakefile.txt check for PRODUCT_GUID.txt updates before release
+* Update to version 1.28.4
+* Fix bug in 1.28.3 that didn't update the PRODUCT_GUID.txt
 ## v1.28.3
 * Address clang build warnings for empty structures
 * Fix successive calls to zeInitDivers when no drivers found failing
