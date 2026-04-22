@@ -22,8 +22,8 @@ All tests are compiled into a single executable named `tests`, which includes:
 - `loader_validation_layer.cpp` - Validation layer tests
 - `loader_tracing_layer.cpp` - Tracing layer tests
 - `driver_ordering_helper_tests.cpp` - Driver ordering helper functions
-- `driver_ordering_unit_tests.cpp` - Driver ordering logic (static builds and non-Windows only)
-- `driver_teardown_unit_tests.cpp` - Driver teardown logic (static builds and non-Windows only)
+- `driver_ordering_unit_tests.cpp` - Driver ordering logic (static builds on all platforms, or dynamic builds on Linux only)
+- `driver_teardown_unit_tests.cpp` - Driver teardown logic (static builds on all platforms, or dynamic builds on Linux only)
 - `init_driver_unit_tests.cpp` - Driver initialization tests (non-Windows only)
 - `init_driver_dynamic_unit_tests.cpp` - Dynamic driver initialization tests (dynamic builds, non-Windows only)
 
@@ -31,7 +31,7 @@ All tests are compiled into a single executable named `tests`, which includes:
 
 Different test files are conditionally compiled based on the build configuration:
 
-**Static Build Only (`BUILD_STATIC` or non-Windows):**
+**Static Builds (All Platforms) OR Dynamic Builds (Linux Only):**
 - `driver_ordering_unit_tests.cpp`
 - `driver_teardown_unit_tests.cpp`
 
@@ -58,6 +58,11 @@ CTest automatically sets up the required environment variables, working director
 ### Prerequisites: Set ZEL_LIBRARY_PATH
 
 **Before running CTest, you must set the `ZEL_LIBRARY_PATH` environment variable** to point to where the loader libraries and null drivers are located. This ensures tests can find the required libraries at runtime.
+
+**Why `ZEL_LIBRARY_PATH`?**
+- **Targeted scope**: Only affects the Level Zero loader's library search path, not the entire system
+- **Cross-platform**: Works consistently across Linux, Windows, and macOS
+- **Preferred over `LD_LIBRARY_PATH`** (Linux) or `PATH` (Windows) which have broader system-wide effects
 
 **Linux/Mac:**
 ```bash
