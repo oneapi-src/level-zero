@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.28.3)
+project(level-zero VERSION 1.28.4)
 include(GNUInstallDirs)
 
 find_package(Git)
@@ -284,9 +284,14 @@ if(EXISTS "${PRODUCT_GUID_FILE}")
         )
         file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
         message(STATUS "Generated Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
+        message(FATAL_ERROR
+            "PRODUCT_GUID.txt has been regenerated for version ${PROJECT_VERSION}.\n"
+            "Please commit the updated PRODUCT_GUID.txt before continuing:\n"
+            "  git add ${PRODUCT_GUID_FILE}\n"
+            "  git commit -m 'Update PRODUCT_GUID.txt for version ${PROJECT_VERSION}'\n"
+            "Then re-run cmake.")
         else()
-        string(REPLACE "\n" ";" GUID_CONTENTS "${SAVED_PRODUCT_GUID}")
-        list(GET GUID_CONTENTS 1 GENERATED_PRODUCT_GUID)
+        list(GET SAVED_PRODUCT_GUID 1 GENERATED_PRODUCT_GUID)
     endif()
 else()
     execute_process(
@@ -295,6 +300,12 @@ else()
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
+    message(FATAL_ERROR
+        "PRODUCT_GUID.txt did not exist and has been created for version ${PROJECT_VERSION}.\n"
+        "Please commit it before continuing:\n"
+        "  git add ${PRODUCT_GUID_FILE}\n"
+        "  git commit -m 'Add PRODUCT_GUID.txt for version ${PROJECT_VERSION}'\n"
+        "Then re-run cmake.")
 endif()
 message(STATUS "Using Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
 
