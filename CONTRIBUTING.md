@@ -47,6 +47,80 @@ To generate the code from the scripts, run the following commands:
 
 These scripts update the code with what would be generated in the next specification update.
 
+## Updating the Loader Version
+
+When releasing a new version of the Level Zero Loader, the following steps must be performed:
+
+### 1. Update the Version Number
+
+The loader version is defined in the root [CMakeLists.txt](CMakeLists.txt) file using semantic versioning (https://semver.org/):
+
+```cmake
+project(level-zero VERSION 1.28.3)
+```
+
+Update the version number according to the type of changes:
+* **MAJOR version** (X.0.0): Incompatible API changes
+* **MINOR version** (1.X.0): Add functionality in a backward compatible manner
+* **PATCH version** (1.28.X): Backward compatible bug fixes
+
+### 2. Update the CHANGELOG.md
+
+Add a new version section at the top of [CHANGELOG.md](CHANGELOG.md) following this format:
+
+```markdown
+## v1.28.3
+* Brief description of change 1
+* Brief description of change 2 with PR reference (#123)
+* feature: Description for new features
+* fix: Description for bug fixes
+```
+
+Guidelines for changelog entries:
+* Use present tense for descriptions
+* Prefix feature additions with `feature:`
+* Prefix bug fixes with `fix:`
+* Include PR numbers when applicable using `(#123)` format
+* List the most significant changes first
+* Keep descriptions concise and user-focused
+
+### 3. Product GUID Management
+
+The `PRODUCT_GUID.txt` file in the root directory stores the version number and a unique GUID for Windows installer packages. **This is managed automatically by CMake** when you update the version:
+
+**Automatic GUID Generation Process:**
+1. When CMake runs, it checks if `PRODUCT_GUID.txt` exists
+2. If the version in the file doesn't match `PROJECT_VERSION` in CMakeLists.txt, CMake automatically:
+   * Generates a new UUID using `scripts/generate_wix_guid.py`
+   * Updates `PRODUCT_GUID.txt` with the new version and GUID
+3. The GUID is used for Windows WiX installer generation via `CPACK_WIX_PRODUCT_GUID`
+
+**Manual GUID Update (Rarely Needed):**
+If you need to manually generate a new GUID:
+```bash
+python3 scripts/generate_wix_guid.py
+```
+
+Then update `PRODUCT_GUID.txt` with:
+```
+<version>
+<new-guid>
+```
+
+**Important Notes:**
+* The PRODUCT_GUID should change with each version to ensure proper Windows installer upgrade behavior
+* The automatic update happens during CMake configuration, so the file may change after running cmake
+* Commit the updated `PRODUCT_GUID.txt` along with version changes
+
+### 4. Version Update Checklist
+
+When preparing a version release:
+- [ ] Update version number in [CMakeLists.txt](CMakeLists.txt)
+- [ ] Add new version section to [CHANGELOG.md](CHANGELOG.md) with all changes
+- [ ] Run CMake to automatically update PRODUCT_GUID.txt
+- [ ] Commit all version-related file changes together
+- [ ] Create a git tag for the release: `git tag -a v1.28.3 -m "Release v1.28.3"`
+- [ ] Verify the version is correctly reflected in build outputs
 
 ## Code Review
 
