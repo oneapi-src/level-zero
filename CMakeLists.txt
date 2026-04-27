@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2025 Intel Corporation
+# Copyright (C) 2020-2026 Intel Corporation
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR)
@@ -211,6 +211,12 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(TARGET_LOADER_NAME ze_loader)
 
+# Canonical Ubuntu/Debian package names (libze1 / libze-dev)
+# produced alongside the existing level-zero / level-zero-devel packages.
+if(NOT BUILD_INSTALLER)
+    set(CANONICAL_LIB_COMPONENT "libze1")
+    set(CANONICAL_SDK_COMPONENT "libze-dev")
+endif()
 
 add_subdirectory(source)
 add_subdirectory(samples)
@@ -253,6 +259,29 @@ install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
     DESTINATION ./include/level_zero/loader
     COMPONENT ${SDK_COMPONENT_STRING}
 )
+
+# Canonical Ubuntu/Debian package naming (libze1 / libze-dev) mirrors Canonical's own packaging.
+# EXCLUDE_FROM_ALL prevents these rules from running during 'make install' — the same files are
+# already installed by the level-zero / level-zero-devel components above. CPack ignores
+# EXCLUDE_FROM_ALL when building component packages, so 'cmake --build . --target package'
+# still produces all four .deb files without duplicating entries in install_manifest.txt.
+if(CANONICAL_SDK_COMPONENT)
+    install(FILES ${LEVEL_ZERO_API_HEADERS}
+        DESTINATION ./include/level_zero
+        COMPONENT ${CANONICAL_SDK_COMPONENT}
+        EXCLUDE_FROM_ALL
+    )
+    install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
+        DESTINATION ./include/level_zero/layers
+        COMPONENT ${CANONICAL_SDK_COMPONENT}
+        EXCLUDE_FROM_ALL
+    )
+    install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
+        DESTINATION ./include/level_zero/loader
+        COMPONENT ${CANONICAL_SDK_COMPONENT}
+        EXCLUDE_FROM_ALL
+    )
+endif()
 
 if (MSVC)
     set (PYTHON_EXECUTABLE "python")
@@ -346,7 +375,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "oneAPI Level Zero")
 set(CPACK_PACKAGE_VENDOR "Intel Corporation")
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CMAKE_INSTALL_PREFIX})
-set(CPACK_PACKAGE_CONTACT "Intel Corporation")
+set(CPACK_PACKAGE_CONTACT "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>")
 
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
@@ -398,6 +427,28 @@ if(CPACK_GENERATOR MATCHES "DEB")
     set(CPACK_DEBIAN_LEVEL-ZERO_FILE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
     set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_FILE_NAME "${PROJECT_NAME}-devel_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
     set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_DEPENDS "level-zero(=${PROJECT_VERSION})")
+    # Mutual exclusion with the canonical libze1 / libze-dev packages
+    set(CPACK_DEBIAN_LEVEL-ZERO_PACKAGE_CONFLICTS "libze1")
+    set(CPACK_DEBIAN_LEVEL-ZERO_PACKAGE_PROVIDES "libze1")
+    set(CPACK_DEBIAN_LEVEL-ZERO_PACKAGE_REPLACES "libze1")
+    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_CONFLICTS "libze-dev")
+    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_PROVIDES "libze-dev")
+    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_REPLACES "libze-dev")
+
+    # Canonical Ubuntu naming: libze1 (runtime) and libze-dev (development)
+    set(CPACK_DEBIAN_LIBZE1_PACKAGE_NAME "libze1")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_NAME "libze-dev")
+    set(CPACK_DEBIAN_LIBZE1_FILE_NAME "libze1_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
+    set(CPACK_DEBIAN_LIBZE-DEV_FILE_NAME "libze-dev_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_DEPENDS "libze1 (= ${PROJECT_VERSION})")
+    # Mutual exclusion with the level-zero / level-zero-devel packages
+    set(CPACK_DEBIAN_LIBZE1_PACKAGE_CONFLICTS "level-zero")
+    set(CPACK_DEBIAN_LIBZE1_PACKAGE_PROVIDES "level-zero")
+    set(CPACK_DEBIAN_LIBZE1_PACKAGE_REPLACES "level-zero")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_CONFLICTS "level-zero-devel")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_PROVIDES "level-zero-devel")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_REPLACES "level-zero-devel")
+
     set(CPACK_DEB_COMPONENT_INSTALL ON)
     set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 endif()

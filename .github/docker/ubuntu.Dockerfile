@@ -52,6 +52,7 @@ apt-get install -y \
   libc6:arm64 \
   libstdc++6:arm64 \
   git \
-  ninja-build
+  ninja-build \
+  python3
 rm -rf /var/lib/apt/lists/*
 EOF

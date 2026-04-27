@@ -27,6 +27,18 @@ if(INSTALL_NULL_DRIVER)
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero
         NAMELINK_COMPONENT level-zero-devel
     )
+    # EXCLUDE_FROM_ALL: canonical libze1/libze-dev components are for CPack .deb packaging only.
+    # 'make install' uses the level-zero/level-zero-devel components above to avoid duplicate
+    # entries in install_manifest.txt which would cause 'xargs rm' uninstall to fail.
+    if(CANONICAL_LIB_COMPONENT)
+        install(TARGETS ze_null
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${CANONICAL_SDK_COMPONENT}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${CANONICAL_LIB_COMPONENT}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${CANONICAL_LIB_COMPONENT}
+            NAMELINK_COMPONENT ${CANONICAL_SDK_COMPONENT}
+            EXCLUDE_FROM_ALL
+        )
+    endif()
 endif()
 
 if (BUILD_L0_LOADER_TESTS)
