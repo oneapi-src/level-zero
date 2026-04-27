@@ -39,13 +39,13 @@ jobs:
       run: |
         mkdir base/build
         cd base/build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
         make -j$(nproc)
     - name: Build debug head
       run: |
         mkdir head/build
         cd head/build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
       run: |
@@ -56,14 +56,14 @@ jobs:
       run: |
         ./abi-dumper.pl \
           ./base/build/lib/libze_loader.so \
-          -lver $(cat ./base/build/VERSION) \
+          -vnum $(cat ./base/build/VERSION) -lambda \
           -public-headers ./base/include \
           -o ./base.dump
     - name: Generate dump for head
       run: |
         ./abi-dumper.pl \
           ./head/build/lib/libze_loader.so \
-          -lver $(cat ./head/build/VERSION)-1 \
+          -vnum $(cat ./head/build/VERSION)-1 -lambda \
           -public-headers ./head/include \
           -o ./head.dump
     - name: Download and setup abi-compliance-checker
@@ -107,13 +107,13 @@ jobs:
       run: |
         mkdir base/build
         cd base/build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
         make -j$(nproc)
     - name: Build debug head
       run: |
         mkdir head/build
         cd head/build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
       run: |
@@ -124,14 +124,14 @@ jobs:
       run: |
         ./abi-dumper.pl \
           ./base/build/lib/libze_loader.so \
-          -lver $(cat ./base/build/VERSION) \
+          -vnum $(cat ./base/build/VERSION) -lambda \
           -public-headers ./base/include \
           -o ./base.dump
     - name: Generate dump for head
       run: |
         ./abi-dumper.pl \
           ./head/build/lib/libze_loader.so \
-          -lver $(cat ./head/build/VERSION)-1 \
+          -vnum $(cat ./head/build/VERSION)-1 -lambda \
           -public-headers ./head/include \
           -o ./head.dump
     - name: Download and setup abi-compliance-checker
