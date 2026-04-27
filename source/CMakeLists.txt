@@ -74,12 +74,16 @@ install(TARGETS ze_loader
     NAMELINK_COMPONENT ${SDK_COMPONENT_STRING}
 )
 
+# EXCLUDE_FROM_ALL: canonical libze1/libze-dev components are for CPack .deb packaging only.
+# 'make install' uses the level-zero/level-zero-devel components above to avoid duplicate
+# entries in install_manifest.txt which would cause 'xargs rm' uninstall to fail.
 if(CANONICAL_LIB_COMPONENT)
     install(TARGETS ze_loader
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${CANONICAL_SDK_COMPONENT}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${CANONICAL_LIB_COMPONENT}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${CANONICAL_LIB_COMPONENT}
         NAMELINK_COMPONENT ${CANONICAL_SDK_COMPONENT}
+        EXCLUDE_FROM_ALL
     )
 endif()
 
@@ -96,8 +100,10 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc"
         DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT ${SDK_COMPONENT_STRING})
 
 if(CANONICAL_SDK_COMPONENT)
+    # EXCLUDE_FROM_ALL: CPack-only; avoids duplicate install_manifest.txt entries.
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc"
                   "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc"
-            DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT ${CANONICAL_SDK_COMPONENT})
+            DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT ${CANONICAL_SDK_COMPONENT}
+            EXCLUDE_FROM_ALL)
 endif()
 endif()

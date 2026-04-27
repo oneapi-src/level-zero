@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2025 Intel Corporation
+# Copyright (C) 2020-2026 Intel Corporation
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR)
@@ -271,18 +271,26 @@ install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
+# Canonical Ubuntu/Debian package naming (libze1 / libze-dev) mirrors Canonical's own packaging.
+# EXCLUDE_FROM_ALL prevents these rules from running during 'make install' — the same files are
+# already installed by the level-zero / level-zero-devel components above. CPack ignores
+# EXCLUDE_FROM_ALL when building component packages, so 'cmake --build . --target package'
+# still produces all four .deb files without duplicating entries in install_manifest.txt.
 if(CANONICAL_SDK_COMPONENT)
     install(FILES ${LEVEL_ZERO_API_HEADERS}
         DESTINATION ./include/level_zero
         COMPONENT ${CANONICAL_SDK_COMPONENT}
+        EXCLUDE_FROM_ALL
     )
     install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
         DESTINATION ./include/level_zero/layers
         COMPONENT ${CANONICAL_SDK_COMPONENT}
+        EXCLUDE_FROM_ALL
     )
     install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
         DESTINATION ./include/level_zero/loader
         COMPONENT ${CANONICAL_SDK_COMPONENT}
+        EXCLUDE_FROM_ALL
     )
 endif()
 
