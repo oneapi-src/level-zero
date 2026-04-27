@@ -39,13 +39,13 @@ jobs:
       run: |
         mkdir base/build
         cd base/build
-        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
         make -j$(nproc)
     - name: Build debug head
       run: |
         mkdir head/build
         cd head/build
-        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
       run: |
@@ -107,13 +107,13 @@ jobs:
       run: |
         mkdir base/build
         cd base/build
-        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
         make -j$(nproc)
     - name: Build debug head
       run: |
         mkdir head/build
         cd head/build
-        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g" ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
       run: |
