@@ -76,10 +76,6 @@ public:
     void log_fatal(const std::string &msg)        { critical(msg); }
     void log_performance(const std::string &msg)  { warn("[performance] " + msg); }
 
-    // When true, callers may mirror certain messages to stdout/stderr.
-    // Defaulted to true so init code can read it before explicitly disabling.
-    bool log_to_console = true;
-
 private:
     void write(LogLevel msg_level, const std::string &msg);
     void formatLine(LogLevel msg_level, const std::string &msg, std::string &out);

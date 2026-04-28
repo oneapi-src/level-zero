@@ -35,8 +35,8 @@ static bool winEnableAnsiColor(int fd) {
     if (!_isatty(fd)) {
         return false;
     }
-    HANDLE h = (fd == 2) ? GetStdHandle(STD_ERROR_HANDLE)
-                         : GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE h = (fd == STDERR_FD) ? GetStdHandle(STD_ERROR_HANDLE)
+                               : GetStdHandle(STD_OUTPUT_HANDLE);
     if (h == INVALID_HANDLE_VALUE) {
         return false;
     }
