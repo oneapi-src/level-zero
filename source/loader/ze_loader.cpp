@@ -25,11 +25,6 @@ namespace loader
     context_t *context;
 
     void context_t::debug_trace_message(std::string message, std::string result) {
-        if (zel_logger->log_to_console){
-            std::string debugTracePrefix = "ZE_LOADER_DEBUG_TRACE:";
-            std::cerr << debugTracePrefix << message << result << std::endl;
-        }
-
         zel_logger->log_trace(message + result);
     };
 
@@ -637,7 +632,6 @@ namespace loader
 
         if ((getenv_string("ZEL_LOADER_LOGGING_LEVEL") == "trace") && !debugTraceEnabled) {
             debugTraceEnabled = true;
-            zel_logger->log_to_console = false;
         }
 
         if (zel_logger->getLevel() != loader::LogLevel::off) {
