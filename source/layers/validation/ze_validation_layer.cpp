@@ -25,7 +25,11 @@ namespace validation_layer
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
         verboseLogging = getenv_tobool( "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT" );
 
-        logger = loader::createLogger();
+        // Point at the process-lifetime no-op logger until the loader calls
+        // zelLoaderSetLogger().  This is never null, so call sites need no null check.
+        // Thread-safety: zelLoaderSetLogger() writes this field exactly once on the
+        // init thread before zeDdiTable.exchange() makes the layer reachable.
+        logger = loader::noopLogger();
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -52,6 +56,17 @@ zelLoaderGetVersion(zel_component_version_t *version)
     version->component_lib_version.patch = LOADER_VERSION_PATCH;
 
     return ZE_RESULT_SUCCESS;
+}
+
+/// @brief Called by the loader immediately after dlopen to share its logger.
+///        Replaces the no-op default so that validation-layer messages flow
+///        through the same sink as the loader.
+ZE_DLLEXPORT void ZE_APICALL
+zelLoaderSetLogger(loader::ZeLogger *loaderLogger)
+{
+    if (loaderLogger) {
+        validation_layer::context_t::getInstance().logger = loaderLogger;
+    }
 }
 
 #if defined(__cplusplus)

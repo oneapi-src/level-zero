@@ -38,17 +38,6 @@ else()
 endif()
 add_definitions(-DLOADER_VERSION_SHA="${VERSION_SHA}")
 
-if(SYSTEM_SPDLOG)
-	find_package(spdlog CONFIG)
-	if(spdlog_FOUND)
-		message(STATUS "System spdlog found.")
-	else()
-		message(FATAL_ERROR "SYSTEM_SPDLOG specified but spdlog wasn't found.")
-	endif()
-else()
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog_headers")
-endif()
-
 include(FetchContent)
 
 if(BUILD_L0_LOADER_TESTS)
