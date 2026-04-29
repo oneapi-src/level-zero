@@ -25,6 +25,9 @@ namespace loader
     context_t *context;
 
     void context_t::debug_trace_message(std::string message, std::string result) {
+        if (debugTraceEnabled) {
+            std::cerr << "ZE_LOADER_DEBUG_TRACE:" << message << result << std::endl;
+        }
         zel_logger->log_trace(message + result);
     };
 
@@ -609,6 +612,10 @@ namespace loader
         loader::loaderDispatch->pRuntime->version = ZE_API_VERSION_CURRENT;
         loader::loaderDispatch->pRuntime->isValidFlag = 1;
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
+        if (debugTraceEnabled) {
+            std::cerr << "ZE_LOADER_DEBUG_TRACE: WARNING: ZE_ENABLE_LOADER_DEBUG_TRACE is deprecated and will be removed in a future release." << std::endl;
+            std::cerr << "ZE_LOADER_DEBUG_TRACE: WARNING: Use ZEL_LOADER_LOG_CONSOLE=1 with ZEL_LOADER_LOGGING_LEVEL=trace instead." << std::endl;
+        }
         // DDI Driver Extension Path is enabled by default.
         // This can be overridden by the environment variable ZE_ENABLE_LOADER_DRIVER_DDI_PATH.
         std::string ddiPathConfig = getenv_string("ZE_ENABLE_LOADER_DRIVER_DDI_PATH");

@@ -46,6 +46,11 @@ When the `-DBUILD_STATIC=1` is executed, the dynamic loader and layers are not b
 Testing with the static loader requires a build of the dynamic loader or an installation of the dynamic loader to exist in the library path.
 
 # Debug Trace
+
+> **Deprecated:** `ZE_ENABLE_LOADER_DEBUG_TRACE` is deprecated and will be removed in a future release.
+> Use `ZEL_LOADER_LOG_CONSOLE=1` with `ZEL_LOADER_LOGGING_LEVEL=trace` instead, which provides
+> the same or enhanced information with structured timestamps, thread IDs, and log levels via the logging system.
+
 The Level Zero Loader has the ability to print warnings and errors which occur within the internals of the Level Zero Loader itself.
 
 To enable this debug tracing feature, set the environment variable `ZE_ENABLE_LOADER_DEBUG_TRACE=1`.
@@ -53,7 +58,7 @@ To enable this debug tracing feature, set the environment variable `ZE_ENABLE_LO
 This will enforce the Loader to print all errors whether fatal or non-fatal to stderr with the PREFIX `ZE_LOADER_DEBUG_TRACE:`.
 
 
-# Logging to File
+# Logging to File or Console
 The Level Zero Loader provides built-in logging controlled via environment variables:
 
 | Environment Variable | Default | Description |
