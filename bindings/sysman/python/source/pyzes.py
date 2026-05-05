@@ -70,8 +70,6 @@ def _LoadZeLibrary():
             libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
         else:
             # Try multiple common locations for Windows Intel GPU drivers
-            import os
-
             possible_paths = [
                 # Try system PATH first
                 libName + "64.dll",
@@ -84,33 +82,28 @@ def _LoadZeLibrary():
 
             library_loaded = False
             for path in possible_paths:
-                try:
-                    if "*" in path:
-                        # Handle wildcard paths for driver store
-                        import glob
-
-                        matching_paths = glob.glob(path)
-                        for match_path in matching_paths:
-                            try:
-                                gpuLib = CDLL(match_path)
-                                library_loaded = True
-                                break
-                            except Exception:
-                                continue
-                    else:
-                        if os.path.exists(path):
-                            gpuLib = CDLL(path)
-                            library_loaded = True
-                            break
-                        else:
-                            gpuLib = CDLL(path)
-                            library_loaded = True
-                            break
-                except Exception:
-                    continue
-
                 if library_loaded:
                     break
+
+                if "*" in path:
+                    # Handle wildcard paths for driver store
+                    import glob
+
+                    matching_paths = glob.glob(path)
+                    for match_path in matching_paths:
+                        try:
+                            gpuLib = CDLL(match_path)
+                            library_loaded = True
+                            break
+                        except OSError:
+                            pass  # Try next path
+                else:
+                    # Try loading the library directly
+                    try:
+                        gpuLib = CDLL(path)
+                        library_loaded = True
+                    except OSError:
+                        pass  # Try next path
 
             if not library_loaded:
                 raise Exception(
