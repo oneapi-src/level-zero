@@ -164,7 +164,8 @@ namespace loader
                 continue;
             if (!drv.handle || !drv.ddiInitialized) {
                 auto res = loader::context->init_driver( drv, flags, nullptr );
-                if (res != ZE_RESULT_SUCCESS) {
+                if (res != ZE_RESULT_SUCCESS || drv.zeddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
                     continue;
                 }
             }
@@ -352,7 +353,11 @@ namespace loader
         uint32_t total_driver_handle_count = 0;
         for( auto& drv : loader::context->zeDrivers ) {
             if (!drv.handle || !drv.ddiInitialized) {
-                loader::context->init_driver( drv, 0, desc);
+                auto res = loader::context->init_driver( drv, 0, desc);
+                if (res != ZE_RESULT_SUCCESS || drv.zeddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
+                    continue;
+                }
             }
         }
 

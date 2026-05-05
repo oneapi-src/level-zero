@@ -146,7 +146,8 @@ namespace loader
                 continue;
             if (!drv.handle || !drv.ddiInitialized) {
                 auto res = loader::context->init_driver( drv, flags, nullptr );
-                if (res != ZE_RESULT_SUCCESS) {
+                if (res != ZE_RESULT_SUCCESS || drv.zesddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
                     continue;
                 }
             }

@@ -106,9 +106,17 @@ namespace loader
             %endif
             if (!drv.handle || !drv.ddiInitialized) {
                 auto res = loader::context->init_driver( drv, flags, nullptr );
-                if (res != ZE_RESULT_SUCCESS) {
+                %if re.match(r"Init", obj['name']) and namespace == "zes":
+                if (res != ZE_RESULT_SUCCESS || drv.zesddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
                     continue;
                 }
+                %else:
+                if (res != ZE_RESULT_SUCCESS || drv.zeddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
+                    continue;
+                }
+                %endif
             }
         %if re.match(r"Init", obj['name']) and namespace == "zes":
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
@@ -138,7 +146,11 @@ namespace loader
         %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         for( auto& drv : loader::context->zeDrivers ) {
             if (!drv.handle || !drv.ddiInitialized) {
-                loader::context->init_driver( drv, 0, desc);
+                auto res = loader::context->init_driver( drv, 0, desc);
+                if (res != ZE_RESULT_SUCCESS || drv.zeddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
+                    continue;
+                }
             }
         }
         %endif
