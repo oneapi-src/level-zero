@@ -67,10 +67,8 @@ def _LoadZeLibrary():
         # load the library
         libName = "ze_loader"
         if sys.platform.startswith("linux"):
-            print("Loading Linux library")
             libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
         else:
-            print("Loading Windows library")
             # Try multiple common locations for Windows Intel GPU drivers
             import os
 
@@ -94,29 +92,21 @@ def _LoadZeLibrary():
                         matching_paths = glob.glob(path)
                         for match_path in matching_paths:
                             try:
-                                print(f"Trying: {match_path}")
                                 gpuLib = CDLL(match_path)
                                 library_loaded = True
-                                print(f"Successfully loaded: {match_path}")
                                 break
                             except Exception as e:
-                                print(f"Failed to load {match_path}: {e}")
                                 continue
                     else:
                         if os.path.exists(path):
-                            print(f"Trying: {path}")
                             gpuLib = CDLL(path)
                             library_loaded = True
-                            print(f"Successfully loaded: {path}")
                             break
                         else:
-                            print(f"Trying: {path}")
                             gpuLib = CDLL(path)
                             library_loaded = True
-                            print(f"Successfully loaded: {path}")
                             break
                 except Exception as e:
-                    print(f"Failed to load {path}: {e}")
                     continue
 
                 if library_loaded:
