@@ -118,13 +118,9 @@ class TestInitInfrastructure(unittest.TestCase):
 
         try:
             # This should return early without any library loading
-            with patch("builtins.print") as mock_print:
-                self.pyzes._LoadZeLibrary()
-                # Should not print "Loading Linux library" because it returns early
-                print_calls = [
-                    call.args[0] for call in mock_print.call_args_list if call.args
-                ]
-                self.assertNotIn("Loading Linux library", print_calls)
+            self.pyzes._LoadZeLibrary()
+            # Verify gpuLib remains unchanged (early return)
+            self.assertEqual(self.pyzes.gpuLib, mock_lib)
         finally:
             # Restore original state
             self.pyzes.gpuLib = original_gpuLib
@@ -201,11 +197,10 @@ class TestInitInfrastructure(unittest.TestCase):
 
     @patch("sys.platform", "win32")
     @patch("pyzes.gpuLib", None)
-    @patch("builtins.print")
     @patch("os.path.exists")
     @patch("pyzes.CDLL")
     def test_GivenWindowsPlatformWhenLoadingLibraryThenLibraryIsLoaded(
-        self, mock_cdll, mock_exists, mock_print
+        self, mock_cdll, mock_exists
     ):
         # Test Windows library loading path with deterministic mocking
         mock_exists.return_value = True
@@ -214,10 +209,9 @@ class TestInitInfrastructure(unittest.TestCase):
 
         self.pyzes._LoadZeLibrary()
 
-        # Verify Windows-specific print was called
-        mock_print.assert_any_call("Loading Windows library")
         # Verify successful library loading
         mock_cdll.assert_called()
+        self.assertIsNotNone(self.pyzes.gpuLib)
 
 
 if __name__ == "__main__":

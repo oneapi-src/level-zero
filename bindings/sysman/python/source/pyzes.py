@@ -95,7 +95,7 @@ def _LoadZeLibrary():
                                 gpuLib = CDLL(match_path)
                                 library_loaded = True
                                 break
-                            except Exception as e:
+                            except Exception:
                                 continue
                     else:
                         if os.path.exists(path):
@@ -106,7 +106,7 @@ def _LoadZeLibrary():
                             gpuLib = CDLL(path)
                             library_loaded = True
                             break
-                except Exception as e:
+                except Exception:
                     continue
 
                 if library_loaded:
