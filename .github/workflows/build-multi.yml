@@ -181,3 +181,66 @@ jobs:
         	ccache --show-stats
         	
         	EOF
+    - name: Test package install/uninstall (Linux)
+      if: matrix.os.name != 'windows' && matrix.target == 'package' && matrix.arch == ''
+      run: |
+        docker run \
+          --rm \
+          --interactive \
+          --platform linux/amd64 \
+          -v '${{ github.workspace }}':${MOUNT_TARGET} \
+          -w ${MOUNT_TARGET} \
+          ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
+          bash -e -x <<-EOF
+        	
+        	if [[ '${{ matrix.os.name }}' == 'ubuntu' ]]; then
+        	  echo "=== Package contents ==="
+        	  for pkg in ${MOUNT_TARGET}/level-zero-package/*.deb; do
+        	    echo "--- \$pkg ---"
+        	    dpkg -c "\$pkg"
+        	  done
+        	  echo "=== Installing level-zero (legacy) .deb packages ==="
+        	  dpkg -i ${MOUNT_TARGET}/level-zero-package/level-zero_*.deb \
+        	         ${MOUNT_TARGET}/level-zero-package/level-zero-devel_*.deb
+        	  echo "=== Installed level-zero packages ==="
+        	  dpkg -l 'level-zero*'
+        	  echo "=== Uninstalling legacy packages ==="
+        	  dpkg -r level-zero-devel level-zero
+        	  if ls ${MOUNT_TARGET}/level-zero-package/libze1_*.deb 2>/dev/null; then
+        	    echo "=== Installing libze (new) .deb packages ==="
+        	    dpkg -i ${MOUNT_TARGET}/level-zero-package/libze1_*.deb \
+        	           ${MOUNT_TARGET}/level-zero-package/libze-dev_*.deb
+        	    echo "=== Installed libze packages ==="
+        	    dpkg -l 'libze*'
+        	    echo "=== Uninstalling libze packages ==="
+        	    dpkg -r libze-dev libze1
+        	  fi
+        	elif [[ '${{ matrix.os.name }}' == 'sles' ]]; then
+        	  echo "=== Package contents ==="
+        	  for pkg in ${MOUNT_TARGET}/level-zero-package/*.rpm; do
+        	    echo "--- \$pkg ---"
+        	    rpm -qpl "\$pkg"
+        	  done
+        	  echo "=== Verifying filesystem package is installed (checks devel dir conflict) ==="
+        	  rpm -q filesystem
+        	  echo "=== Installing .rpm packages ==="
+        	  rpm -ivh ${MOUNT_TARGET}/level-zero-package/*.rpm
+        	  echo "=== Installed level-zero packages ==="
+        	  rpm -qa 'level-zero*'
+        	  echo "=== Uninstalling packages ==="
+        	  rpm -e \$(rpm -qa 'level-zero*')
+        	elif [[ '${{ matrix.os.name }}' == 'rhel' ]]; then
+        	  echo "=== Package contents ==="
+        	  for pkg in ${MOUNT_TARGET}/level-zero-package/*.rpm; do
+        	    echo "--- \$pkg ---"
+        	    rpm -qpl "\$pkg"
+        	  done
+        	  echo "=== Installing .rpm packages ==="
+        	  rpm -ivh ${MOUNT_TARGET}/level-zero-package/*.rpm
+        	  echo "=== Installed level-zero packages ==="
+        	  rpm -qa 'level-zero*'
+        	  echo "=== Uninstalling packages ==="
+        	  rpm -e \$(rpm -qa 'level-zero*')
+        	fi
+        	
+        	EOF
