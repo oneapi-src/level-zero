@@ -169,6 +169,10 @@ namespace loader
                     continue;
                 }
             }
+            if (!drv.dditable.ze.Global.pfnInit) {
+                drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
             drv.initStatus = drv.dditable.ze.Global.pfnInit( flags );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;

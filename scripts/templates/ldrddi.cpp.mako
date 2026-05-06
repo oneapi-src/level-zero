@@ -123,6 +123,11 @@ namespace loader
                 drv.initSysManStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;
             }
+        %else:
+            if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
+                drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
         %endif
             %if re.match(r"Init", obj['name']) and namespace == "zes":
             drv.initSysManStatus = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
