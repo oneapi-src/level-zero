@@ -565,6 +565,15 @@ namespace loader
             } else {
                 driver.zerddiInitResult = ZE_RESULT_SUCCESS;
             }
+
+            if (driver.zeddiInitResult != ZE_RESULT_SUCCESS && driver.zesddiInitResult != ZE_RESULT_SUCCESS) {
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " failed to initialize both core and sysman DDIs, skipping driver.";
+                    debug_trace_message(message, "");
+                }
+                return ZE_RESULT_ERROR_UNINITIALIZED;
+            }
+
             driver.ddiInitialized = true;
         }
 

@@ -164,9 +164,14 @@ namespace loader
                 continue;
             if (!drv.handle || !drv.ddiInitialized) {
                 auto res = loader::context->init_driver( drv, flags, nullptr );
-                if (res != ZE_RESULT_SUCCESS) {
+                if (res != ZE_RESULT_SUCCESS || drv.zeddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
                     continue;
                 }
+            }
+            if (!drv.dditable.ze.Global.pfnInit) {
+                drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
             }
             drv.initStatus = drv.dditable.ze.Global.pfnInit( flags );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
@@ -352,7 +357,11 @@ namespace loader
         uint32_t total_driver_handle_count = 0;
         for( auto& drv : loader::context->zeDrivers ) {
             if (!drv.handle || !drv.ddiInitialized) {
-                loader::context->init_driver( drv, 0, desc);
+                auto res = loader::context->init_driver( drv, 0, desc);
+                if (res != ZE_RESULT_SUCCESS || drv.zeddiInitResult != ZE_RESULT_SUCCESS) {
+                    drv.ddiInitialized = false;
+                    continue;
+                }
             }
         }
 
@@ -369,7 +378,7 @@ namespace loader
 
         for( auto& drv : loader::context->zeDrivers )
         {
-            if (!drv.dditable.ze.Global.pfnInitDrivers) {
+            if (!drv.ddiInitialized || !drv.dditable.ze.Global.pfnInitDrivers) {
                 drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 result = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;
