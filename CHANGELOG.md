@@ -1,4 +1,10 @@
 # Level zero loader changelog
+## v1.28.5
+* Add Canonical Specific packages in CPack (libze1*)
+* Add CONFLICTS, PROVIDES, REPLACES directives in packages
+* Fix: Potential bug when no L0 Drivers initialized the global DDI tables
+* Fix: Potential packaging conflict w/ -devel w/RPM against 'filesystem' package for SLES
+* Add Unit testing during CI to install/remove packages in OS specific docckers.
 ## v1.28.4
 * Add README.md and CONTRIBUTING.md changes for Unit Testing
 * Add CMakefile.txt check for PRODUCT_GUID.txt updates before release
