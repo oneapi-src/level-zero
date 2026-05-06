@@ -374,7 +374,7 @@ namespace loader
 
         for( auto& drv : loader::context->zeDrivers )
         {
-            if (!drv.dditable.ze.Global.pfnInitDrivers) {
+            if (!drv.ddiInitialized || !drv.dditable.ze.Global.pfnInitDrivers) {
                 drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 result = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;

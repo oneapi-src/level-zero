@@ -192,7 +192,7 @@ namespace loader
             if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
             %else:
-            if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
+            if (!drv.ddiInitialized || !drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
                 %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
                 drv.initDriversStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
                 result = ${X}_RESULT_ERROR_UNINITIALIZED;
