@@ -417,6 +417,8 @@ if(CPACK_GENERATOR MATCHES "RPM")
 
 	set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
 	  /etc/ld.so.conf.d
+	  /usr/lib64
+	  /usr/lib64/pkgconfig
 	  /usr/local
 	  /usr/local/lib64
 	  /usr/local/bin
