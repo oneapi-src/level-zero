@@ -19,7 +19,7 @@
 #include "zet_entry_points.h"
 #include "zes_entry_points.h"
 #include "zer_entry_points.h"
-#include "logging.h"
+#include "ze_logger.h"
 #include "ze_to_string.h"
 #include "zes_to_string.h"
 #include "zet_to_string.h"
@@ -57,7 +57,12 @@ namespace validation_layer
         std::vector<validationChecker *> validationHandlers;
         std::unique_ptr<HandleLifetimeValidation> handleLifetime;
         
-        std::shared_ptr<loader::Logger> logger;
+        // Raw pointer — the loader owns the ZeLogger and guarantees it outlives
+        // the validation layer during normal operation (dlclose happens before
+        // zel_logger is destroyed in context_t::~context_t()).  Using a raw pointer
+        // (rather than shared_ptr) avoids _Sp_counted_base::_M_release() being
+        // called during _dl_call_fini after the control block has been freed.
+        loader::ZeLogger *logger;
 
         static context_t& getInstance() {
             static context_t instance;
