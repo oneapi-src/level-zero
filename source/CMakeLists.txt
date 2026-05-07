@@ -87,7 +87,6 @@ if(CANONICAL_LIB_COMPONENT)
     )
 endif()
 
-if(NOT BUILD_INSTALLER)
 file(RELATIVE_PATH pkgconfig_prefix "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
 file(RELATIVE_PATH pkgconfig_include_dir "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 file(RELATIVE_PATH pkgconfig_lib_dir "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_FULL_LIBDIR}")
@@ -97,13 +96,12 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/level-zero.pc.in ${CMAKE_CURRENT_BINA
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc"
               "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc"
-        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT ${SDK_COMPONENT_STRING})
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig" COMPONENT ${SDK_COMPONENT_STRING})
 
 if(CANONICAL_SDK_COMPONENT)
     # EXCLUDE_FROM_ALL: CPack-only; avoids duplicate install_manifest.txt entries.
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc"
                   "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc"
-            DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT ${CANONICAL_SDK_COMPONENT}
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig" COMPONENT ${CANONICAL_SDK_COMPONENT}
             EXCLUDE_FROM_ALL)
-endif()
 endif()
