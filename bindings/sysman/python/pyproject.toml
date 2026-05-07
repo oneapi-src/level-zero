@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyzes"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python bindings for Intel Level-Zero Driver Library (Sysman API)"
 readme = "README.md"
 requires-python = ">=3.10"
