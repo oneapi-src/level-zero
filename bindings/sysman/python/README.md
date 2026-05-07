@@ -182,7 +182,7 @@ SUPPORTED APIs
 RELEASE NOTES
 -------------
 Version 0.1.1
-- Minor fixes: Removed debug print statements that polluted stdout during library loading
+- Minor fixes: Removed unnecessary debug print statements
 
 Version 0.1.0 (Initial Release)
 - Initial release of pyzes Python bindings for Intel Level-Zero Driver Library
