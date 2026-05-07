@@ -4,7 +4,7 @@
 
 The System Resource Tracker is a Level Zero validation layer checker that monitors both Level Zero API resources and system resources in real-time. It tracks resource allocation and deallocation across all Level Zero API calls that create or destroy resources, providing detailed insights into memory usage, resource lifecycles, and system-level metrics.
 
-**Platform Support:** Linux only. This checker uses `/proc/self/status` for system metrics and is not available on Windows or macOS.
+**Platform Support:** Linux and Windows. On Linux the checker reads `/proc/self/status` for system metrics; on Windows it uses the Win32 `GetProcessMemoryInfo`, `CreateToolhelp32Snapshot`, and `GetProcessHandleCount` APIs. macOS is not supported.
 
 ## Features
 
@@ -14,13 +14,13 @@ The System Resource Tracker is a Level Zero validation layer checker that monito
   - Logs warnings when memory increases during destroy operations
   - Reports cumulative leaks per resource type at program exit
   - Provides detailed per-handle leak information
-- **System Resource Monitoring**: Tracks real system metrics via `/proc/self/status` including:
-  - Virtual memory size (VmSize)
-  - Resident set size (VmRSS)
-  - Data segment size (VmData)
-  - Peak virtual memory (VmPeak)
+- **System Resource Monitoring**: Tracks real system metrics including:
+  - Virtual memory size (VmSize / PrivateUsage on Windows)
+  - Resident set size (VmRSS / WorkingSetSize on Windows)
+  - Data segment size (VmData / PrivateUsage on Windows)
+  - Peak virtual memory (VmPeak / PeakWorkingSetSize on Windows)
   - Thread count
-  - File descriptor count
+  - File descriptor / handle count
 - **Signed Delta Tracking**: Calculates both positive and negative resource changes (deltas) for each API call with proper signed arithmetic
 - **Cumulative Summaries**: Maintains running totals of all resource types and leak totals
 - **CSV Export**: Optionally exports timestamped data for graphing and analysis
@@ -34,6 +34,7 @@ The System Resource Tracker is a Level Zero validation layer checker that monito
 
 Enable the checker to log resource usage to the Level Zero debug log:
 
+**Linux:**
 ```bash
 export ZE_ENABLE_VALIDATION_LAYER=1
 export ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER=1
@@ -44,10 +45,22 @@ export ZEL_LOADER_LOGGING_LEVEL=debug
 ./my_level_zero_app
 ```
 
+**Windows (PowerShell):**
+```powershell
+$env:ZE_ENABLE_VALIDATION_LAYER=1
+$env:ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER=1
+$env:ZEL_ENABLE_LOADER_LOGGING=1
+$env:ZEL_LOADER_LOGGING_LEVEL="debug"
+
+# Run your Level Zero application
+.\my_level_zero_app.exe
+```
+
 ### CSV Output for Graphing
 
 Set the `ZEL_SYSTEM_RESOURCE_TRACKER_CSV` environment variable to specify the output CSV file path, this path will be relative to the current working directory of the application:
 
+**Linux:**
 ```bash
 export ZE_ENABLE_VALIDATION_LAYER=1
 export ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER=1
@@ -55,6 +68,16 @@ export ZEL_SYSTEM_RESOURCE_TRACKER_CSV=tracker_output.csv
 
 # Run your Level Zero application
 ./my_level_zero_app
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:ZE_ENABLE_VALIDATION_LAYER=1
+$env:ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER=1
+$env:ZEL_SYSTEM_RESOURCE_TRACKER_CSV="tracker_output.csv"
+
+# Run your Level Zero application
+.\my_level_zero_app.exe
 ```
 
 **Note:** The actual output file will include the process ID (e.g., `tracker_output_pid12345.csv`) to ensure each process creates a unique file. This prevents conflicts when multiple processes use the tracker simultaneously.
@@ -317,7 +340,7 @@ The System Resource Tracker is implemented as a validation layer checker that us
   - Per-resource-type leak counters
   - Thread-local pre-call metrics storage for append operations
 - `getResourceTracker()`: Function-local static singleton accessor ensuring proper initialization order
-- `getSystemResourceMetrics()`: Parses `/proc/self/status` to read current system metrics
+- `getSystemResourceMetrics()`: Reads current system metrics — parses `/proc/self/status` on Linux; uses `GetProcessMemoryInfo`, `CreateToolhelp32Snapshot`, and `GetProcessHandleCount` on Windows
 - `checkForLeak()`: Compares creation metrics to destruction metrics and logs warnings if memory increased
 - `writeCsvData()`: Atomic CSV line writer using ostringstream with signed delta support
 - `logResourceSummary()`: Formats and logs cumulative resource usage
@@ -335,13 +358,20 @@ The tracker uses multiple mechanisms to ensure thread safety:
 ### Performance Considerations
 
 - Tracking overhead is approximately < 1ms per API call
-- System metrics are read by parsing a small text file (`/proc/self/status` on Linux)
+- System metrics are read from `/proc/self/status` on Linux or via Win32 `PSAPI` / `Toolhelp32` on Windows
 - CSV writes are buffered and flushed after each call to ensure crash safety
 - The tracker only runs when explicitly enabled via environment variable
 
 ### Platform Support
 
-The System Resource Tracker is **Linux-only** and relies on `/proc/self/status` for system resource metrics. The checker is automatically excluded from builds on Windows and macOS.
+The System Resource Tracker supports **Linux and Windows**:
+
+| Platform | Metrics source | VmSize | VmRSS | VmData | VmPeak | Threads | FDs/Handles |
+|----------|---------------|--------|-------|--------|--------|---------|-------------|
+| Linux | `/proc/self/status` | VmSize | VmRSS | VmData | VmPeak | Threads field | `getrlimit(RLIMIT_NOFILE)` |
+| Windows | Win32 PSAPI / Toolhelp32 | `PrivateUsage` | `WorkingSetSize` | `PrivateUsage` | `PeakWorkingSetSize` | thread snapshot | `GetProcessHandleCount` |
+
+macOS is not supported.
 
 ## Troubleshooting
 

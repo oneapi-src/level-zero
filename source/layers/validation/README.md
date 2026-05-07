@@ -106,7 +106,7 @@ Currently checked things:
 - check whether created immediate command lists are using in order queues
 - check whether in order command lists are using copy offload
 
-### `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER` (Linux Only)
+### `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER`
 
 The System Resource Tracker monitors both Level Zero API resources and system resources in real-time. It tracks:
 
@@ -137,7 +137,7 @@ export ZEL_LOADER_LOGGING_LEVEL=debug
 - Debugging and benchmarking
 - CI/CD integration for automated resource monitoring
 
-**Platform Support:** This checker is Linux-only and uses `/proc/self/status` for system metrics. It is automatically excluded from Windows and macOS builds.
+**Platform Support:** This checker supports Linux and Windows. On Linux it reads `/proc/self/status`; on Windows it uses the Win32 `PSAPI` and `Toolhelp32` APIs. macOS is not supported.
 
 See [System Resource Tracker documentation](checkers/system_resource_tracker/system_resource_tracker.md) for detailed usage and CSV format.
 
