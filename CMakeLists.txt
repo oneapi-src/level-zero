@@ -224,7 +224,9 @@ set(TARGET_LOADER_NAME ze_loader)
 
 # Canonical Ubuntu/Debian package names (libze1 / libze-dev)
 # produced alongside the existing level-zero / level-zero-devel packages.
-if(NOT BUILD_INSTALLER)
+# Restricted to Debian/Ubuntu systems only; RPM-based distros (SLES, RHEL, …)
+# must not produce libze1/libze-dev packages.
+if(NOT BUILD_INSTALLER AND EXISTS "/etc/debian_version")
     set(CANONICAL_LIB_COMPONENT "libze1")
     set(CANONICAL_SDK_COMPONENT "libze-dev")
 endif()
