@@ -450,6 +450,15 @@ if(CPACK_GENERATOR MATCHES "DEB")
     set(CPACK_DEBIAN_LIBZE-DEV_FILE_NAME "libze-dev_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
     set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_DEPENDS "libze1 (= ${PROJECT_VERSION})")
 
+    # Mutual exclusion with the level-zero / level-zero-devel packages
+    # Allows seamless upgrade from old naming to new Canonical naming
+    set(CPACK_DEBIAN_LIBZE1_PACKAGE_CONFLICTS "level-zero")
+    set(CPACK_DEBIAN_LIBZE1_PACKAGE_PROVIDES "level-zero")
+    set(CPACK_DEBIAN_LIBZE1_PACKAGE_REPLACES "level-zero")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_CONFLICTS "level-zero-devel")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_PROVIDES "level-zero-devel")
+    set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_REPLACES "level-zero-devel")
+
     set(CPACK_DEB_COMPONENT_INSTALL ON)
     set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 endif()
