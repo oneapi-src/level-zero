@@ -1,4 +1,7 @@
 # Level zero loader changelog
+## v1.28.6
+* Remove level-zero* (non-Canonical) package names when building DEBs with CPack
+* Allow pkgconfig file isntallation with Window MSI Installer
 ## v1.28.5
 * Add Canonical Specific packages in CPack (libze1*)
 * Add CONFLICTS, PROVIDES, REPLACES directives in packages
