@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.28.5)
+project(level-zero VERSION 1.28.6)
 include(GNUInstallDirs)
 
 find_package(Git)
@@ -224,7 +224,9 @@ set(TARGET_LOADER_NAME ze_loader)
 
 # Canonical Ubuntu/Debian package names (libze1 / libze-dev)
 # produced alongside the existing level-zero / level-zero-devel packages.
-if(NOT BUILD_INSTALLER)
+# Restricted to Debian/Ubuntu systems only; RPM-based distros (SLES, RHEL, …)
+# must not produce libze1/libze-dev packages.
+if(NOT BUILD_INSTALLER AND EXISTS "/etc/debian_version")
     set(CANONICAL_LIB_COMPONENT "libze1")
     set(CANONICAL_SDK_COMPONENT "libze-dev")
 endif()
@@ -414,7 +416,6 @@ if(CPACK_GENERATOR MATCHES "RPM")
 	set(CPACK_RPM_LEVEL-ZERO-DEVEL_FILE_NAME "${PROJECT_NAME}-devel-${PROJECT_VERSION}-${os_name}${os_version}.${CPACK_RPM_PACKAGE_ARCHITECTURE}.rpm")
 	set(CPACK_RPM_LEVEL-ZERO-DEVEL_PACKAGE_REQUIRES "level-zero = ${PROJECT_VERSION}")
 
-
 	set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
 	  /etc/ld.so.conf.d
 	  /usr/lib64
@@ -435,26 +436,22 @@ if(CPACK_GENERATOR MATCHES "DEB")
 	endif()
 	set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/oneapi-src/level-zero")
 	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-	set(CPACK_DEBIAN_LEVEL-ZERO_PACKAGE_NAME "${PROJECT_NAME}")
-	set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_NAME "${PROJECT_NAME}-devel")
-    set(CPACK_DEBIAN_LEVEL-ZERO_FILE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
-    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_FILE_NAME "${PROJECT_NAME}-devel_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
-    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_DEPENDS "level-zero(=${PROJECT_VERSION})")
-    # Mutual exclusion with the canonical libze1 / libze-dev packages
-    set(CPACK_DEBIAN_LEVEL-ZERO_PACKAGE_CONFLICTS "libze1")
-    set(CPACK_DEBIAN_LEVEL-ZERO_PACKAGE_PROVIDES "libze1")
-    set(CPACK_DEBIAN_LEVEL-ZERO_PACKAGE_REPLACES "libze1")
-    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_CONFLICTS "libze-dev")
-    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_PROVIDES "libze-dev")
-    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_REPLACES "libze-dev")
+	set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "oneAPI Level Zero")
+	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "oneAPI Level Zero")
 
     # Canonical Ubuntu naming: libze1 (runtime) and libze-dev (development)
+    # For Debian/Ubuntu, only produce libze1 and libze-dev packages, not level-zero and level-zero-devel
+    get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
+    list(REMOVE_ITEM CPACK_COMPONENTS_ALL "level-zero" "level-zero-devel")
+
     set(CPACK_DEBIAN_LIBZE1_PACKAGE_NAME "libze1")
     set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_NAME "libze-dev")
     set(CPACK_DEBIAN_LIBZE1_FILE_NAME "libze1_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
     set(CPACK_DEBIAN_LIBZE-DEV_FILE_NAME "libze-dev_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
     set(CPACK_DEBIAN_LIBZE-DEV_PACKAGE_DEPENDS "libze1 (= ${PROJECT_VERSION})")
+
     # Mutual exclusion with the level-zero / level-zero-devel packages
+    # Allows seamless upgrade from old naming to new Canonical naming
     set(CPACK_DEBIAN_LIBZE1_PACKAGE_CONFLICTS "level-zero")
     set(CPACK_DEBIAN_LIBZE1_PACKAGE_PROVIDES "level-zero")
     set(CPACK_DEBIAN_LIBZE1_PACKAGE_REPLACES "level-zero")
