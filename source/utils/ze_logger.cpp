@@ -141,6 +141,10 @@ struct LogSink {
         if (file_stream.is_open()) {
             stream = &file_stream;
             is_good = true;
+        } else {
+            // Capture errno immediately — any subsequent syscall may clobber it.
+            std::cerr << "ze_logger: Unable to open log file '" << path
+                      << "': " << errnoToString(errno) << "\n";
         }
         // Files never get color output
     }
@@ -160,6 +164,15 @@ struct LogSink {
         std::lock_guard<std::mutex> lk(mtx);
         if (is_good) {
             *stream << line << '\n';
+            // stream->fail() is a single rdstate() bitmask read — negligible cost.
+            // Once a failure is detected, is_good=false so all future calls return
+            // immediately at the guard above, paying zero additional cost.
+            if (stream->fail()) {
+                is_good = false;
+                // Capture errno immediately; write failures (e.g. ENOSPC, EIO) set it.
+                std::cerr << "ze_logger: Log stream write failed: "
+                          << errnoToString(errno) << "\n";
+            }
         }
     }
 
@@ -194,11 +207,7 @@ ZeLogger::ZeLogger()
 
 ZeLogger::ZeLogger(const std::string &log_path, LogLevel level, const std::string &pattern)
     : _level(level), _pattern(pattern), _sink(new LogSink(log_path))
-{
-    if (!_sink->good()) {
-        std::cerr << "ze_logger: Unable to open log file: " << log_path << "\n";
-    }
-}
+{}
 
 ZeLogger::ZeLogger(bool use_stderr, LogLevel level, const std::string &pattern)
     : _level(level), _pattern(pattern), _sink(new LogSink(use_stderr))
@@ -505,7 +514,8 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
     std::string full_log_file_path = log_directory + "/" + loader_file;
 #endif
 
-    const bool logging_enabled = getenv_tobool("ZEL_ENABLE_LOADER_LOGGING");
+    const uint32_t logging_mode = getenv_tomode("ZEL_ENABLE_LOADER_LOGGING");
+    const bool logging_enabled = (logging_mode != 0);
     auto log_level = getenv_string("ZEL_LOADER_LOGGING_LEVEL");
     if (log_level.empty()) {
         log_level = "warn";
@@ -517,15 +527,17 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
         log_pattern = custom_pattern;
     }
 
-    const bool log_console = getenv_tobool("ZEL_LOADER_LOG_CONSOLE");
+    const uint32_t log_console_mode = getenv_tomode("ZEL_LOADER_LOG_CONSOLE");
+    const bool log_console = (log_console_mode != 0);
+    const bool advanced_mode = (logging_mode == 2) || (getenv_tomode("ZE_ENABLE_LOADER_DEBUG_TRACE") == 2);
 
     // Honour the matrix:
-    //   logging_enabled=0, log_console=0  → no-op (level off, no file I/O)
-    //   logging_enabled=0, log_console=1  → console (stderr), configured level
+    //   logging_enabled=0, log_console=*  → no-op (ZEL_ENABLE_LOADER_LOGGING is required)
     //   logging_enabled=1, log_console=0  → file sink, configured level
     //   logging_enabled=1, log_console=1  → console (stderr), configured level
-    if (!logging_enabled && !log_console) {
+    if (!logging_enabled) {
         // Pure no-op: no sink, no mutex, no isatty() syscall, no pattern string.
+        // ZEL_LOADER_LOG_CONSOLE alone does not activate the logger.
         return std::shared_ptr<ZeLogger>(new ZeLogger());
     }
 
@@ -584,18 +596,18 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
         output_dest = full_log_file_path;
     }
 
-    // Emit the active configuration as the first log message so the user can
-    // confirm what was enabled and where output is going.
-    std::string cfg;
-    cfg  = caller + " logging enabled:";
-    cfg += "\n  ZEL_LOADER_LOG_CONSOLE          : " + std::string(log_console ? "stderr" : "disabled");
-    cfg += "\n  ZEL_ENABLE_LOADER_LOGGING        : " + std::string(logging_enabled ? "enabled" : "disabled");
-    cfg += "\n  ZEL_LOADER_LOGGING_LEVEL         : " + log_level;
-    cfg += "\n  ZEL_LOADER_LOG_DIR               : " + log_directory;
-    cfg += "\n  ZEL_LOADER_LOG_FILE              : " + loader_file;
-    cfg += "\n  ZEL_LOADER_LOG_PATTERN           : " + log_pattern;
-    cfg += "\n  Output                           : " + output_dest;
-    logger->info(cfg);
+    if (advanced_mode) {
+        std::string cfg;
+        cfg  = caller + " logging enabled:";
+        cfg += "\n  ZEL_LOADER_LOG_CONSOLE          : " + std::string(log_console ? "stderr" : "disabled");
+        cfg += "\n  ZEL_ENABLE_LOADER_LOGGING        : " + std::string(logging_enabled ? "enabled" : "disabled");
+        cfg += "\n  ZEL_LOADER_LOGGING_LEVEL         : " + log_level;
+        cfg += "\n  ZEL_LOADER_LOG_DIR               : " + log_directory;
+        cfg += "\n  ZEL_LOADER_LOG_FILE              : " + loader_file;
+        cfg += "\n  ZEL_LOADER_LOG_PATTERN           : " + log_pattern;
+        cfg += "\n  Output                           : " + output_dest;
+        logger->info(cfg);
+    }
 
     return logger;
 }

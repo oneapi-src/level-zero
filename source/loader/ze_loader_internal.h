@@ -166,6 +166,7 @@ namespace loader
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;
+        bool debugTraceAdvanced = false;  // true when ZE_ENABLE_LOADER_DEBUG_TRACE=2 or ZEL_ENABLE_LOADER_LOGGING=2
         bool driverDDIPathDefault = false;
         bool tracingLayerEnabled = false;
         std::once_flag coreDriverSortOnce;

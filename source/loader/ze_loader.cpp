@@ -620,8 +620,13 @@ namespace loader
         loader::loaderDispatch->pRuntime = new zer_dditable_driver_t();
         loader::loaderDispatch->pRuntime->version = ZE_API_VERSION_CURRENT;
         loader::loaderDispatch->pRuntime->isValidFlag = 1;
-        debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
-        if (debugTraceEnabled) {
+        {
+            uint32_t dtMode = getenv_tomode( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
+            const uint32_t loggingMode = getenv_tomode("ZEL_ENABLE_LOADER_LOGGING");
+            debugTraceEnabled = (dtMode != 0);
+            debugTraceAdvanced = (dtMode == 2) || (loggingMode == 2);
+        }
+        if (debugTraceAdvanced) {
             std::cerr << "ZE_LOADER_DEBUG_TRACE: WARNING: ZE_ENABLE_LOADER_DEBUG_TRACE is deprecated and will be removed in a future release." << std::endl;
             std::cerr << "ZE_LOADER_DEBUG_TRACE: WARNING: Use ZEL_LOADER_LOG_CONSOLE=1 with ZEL_LOADER_LOGGING_LEVEL=trace instead." << std::endl;
         }
@@ -646,10 +651,6 @@ namespace loader
         zel_logger = createLogger("Dynamic Loader");
 #endif
 
-        if ((getenv_string("ZEL_LOADER_LOGGING_LEVEL") == "trace") && !debugTraceEnabled) {
-            debugTraceEnabled = true;
-        }
-
         if (zel_logger->getLevel() != loader::LogLevel::off) {
             std::string ver_msg = "Loader Version " +
                 std::to_string(LOADER_VERSION_MAJOR) + "." +
@@ -670,12 +671,9 @@ namespace loader
             loaderLibraryPath = readLevelZeroLoaderLibraryPath();
         }
 #endif
-        if (debugTraceEnabled) {
-            if (loaderLibraryPath.empty())
-                debug_trace_message("Using Loader Library Path: ", "Not set");
-            else
-                debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
-        }            
+        if (debugTraceEnabled)
+            debug_trace_message("Using Loader Library Path: ",
+                (debugTraceAdvanced && loaderLibraryPath.empty()) ? "Not set" : loaderLibraryPath);
 
         if (debugTraceEnabled && driverDDIPathDefault) {
             debug_trace_message("DDI Driver Extension Path is Enabled", "");
@@ -690,12 +688,16 @@ namespace loader
         {
             zel_logger->log_info("Enabling Null Driver");
             std::string nullDriverPath = create_library_path( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ), loaderLibraryPath.c_str());
-            if (debugTraceEnabled)
-                debug_trace_message("Null Driver Library Path (requested): ", nullDriverPath);
+            if (debugTraceEnabled) {
+                if (debugTraceAdvanced)
+                    debug_trace_message("Null Driver Library Path (requested): ", nullDriverPath);
+                else
+                    debug_trace_message("ze_null Driver Init", "");
+            }
             auto handle = LOAD_DRIVER_LIBRARY( nullDriverPath.c_str() );
             if( NULL != handle )
             {
-                if (debugTraceEnabled) {
+                if (debugTraceEnabled && debugTraceAdvanced) {
 #if !defined(_WIN32) && !defined(ANDROID)
                     struct link_map *dlinfo_map;
                     if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
@@ -770,12 +772,12 @@ namespace loader
         {
             zel_logger->log_info("Validation Layer Enabled");
             std::string validationLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_validation_layer" ), loaderLibraryPath.c_str());
-            if (debugTraceEnabled)
+            if (debugTraceEnabled && debugTraceAdvanced)
                 debug_trace_message("Validation Layer Library Path (requested): ", validationLayerLibraryPath);
             validationLayer = LOAD_DRIVER_LIBRARY( validationLayerLibraryPath.c_str() );
             if(validationLayer)
             {
-                if (debugTraceEnabled) {
+                if (debugTraceEnabled && debugTraceAdvanced) {
 #if !defined(_WIN32) && !defined(ANDROID)
                     struct link_map *dlinfo_map;
                     if (dlinfo(validationLayer, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
@@ -818,11 +820,11 @@ namespace loader
         }
         std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
         if (debugTraceEnabled)
-            debug_trace_message("Tracing Layer Library Path (requested): ", tracingLayerLibraryPath);
+            debug_trace_message(debugTraceAdvanced ? "Tracing Layer Library Path (requested): " : "Tracing Layer Library Path: ", tracingLayerLibraryPath);
         tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
         if(tracingLayer)
         {
-            if (debugTraceEnabled) {
+            if (debugTraceEnabled && debugTraceAdvanced) {
 #if !defined(_WIN32) && !defined(ANDROID)
                 struct link_map *dlinfo_map;
                 if (dlinfo(tracingLayer, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
