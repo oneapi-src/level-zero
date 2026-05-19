@@ -857,22 +857,22 @@ def zesDeviceEnumPowerDomains(hDevice, pCount, phPower):
 
 
 def zesPowerGetProperties(hPower, pProperties):
-        """Wraps API:
-        ze_result_t zesPowerGetProperties(
-                zes_pwr_handle_t hPower,
-                zes_power_properties_t* pProperties)
+    """Wraps API:
+    ze_result_t zesPowerGetProperties(
+            zes_pwr_handle_t hPower,
+            zes_power_properties_t* pProperties)
 
-        Parameters:
-            hPower: power handle
-            pProperties: POINTER(zes_power_properties_t) - properties structure to fill
-        Returns:
-            ze_result_t - return code only, properties are filled into pProperties
-        """
-        funcPtr = getFunctionPointerList("zesPowerGetProperties")
-        funcPtr.argtypes = [zes_pwr_handle_t, POINTER(zes_power_properties_t)]
-        funcPtr.restype = ze_result_t
-        retVal = funcPtr(hPower, pProperties)
-        return retVal
+    Parameters:
+        hPower: power handle
+        pProperties: POINTER(zes_power_properties_t) - properties structure to fill
+    Returns:
+        ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetProperties")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(zes_power_properties_t)]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hPower, pProperties)
+    return retVal
 
 
 def zesPowerGetEnergyCounter(hPower, pEnergy):
@@ -896,25 +896,25 @@ def zesPowerGetEnergyCounter(hPower, pEnergy):
 
 
 def zesPowerGetUsage(hPower, pInstantPower, pAveragePower):
-        """Wraps API:
-        ze_result_t zesPowerGetUsage(
-                zes_pwr_handle_t hPower,
-                uint32_t* pInstantPower,
-                uint32_t* pAveragePower)
+    """Wraps API:
+    ze_result_t zesPowerGetUsage(
+            zes_pwr_handle_t hPower,
+            uint32_t* pInstantPower,
+            uint32_t* pAveragePower)
 
-        Parameters:
-            hPower: power handle
-            pInstantPower: POINTER(c_uint32) - instant power in milliwatts
-            pAveragePower: POINTER(c_uint32) - average power in milliwatts
-        Returns:
-            ze_result_t - return code only, usage values are filled into the output pointers
-        """
-        funcPtr = getFunctionPointerList("zesPowerGetUsage")
-        funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32)]
-        funcPtr.restype = ze_result_t
+    Parameters:
+        hPower: power handle
+        pInstantPower: POINTER(c_uint32) - instant power in milliwatts
+        pAveragePower: POINTER(c_uint32) - average power in milliwatts
+    Returns:
+        ze_result_t - return code only, usage values are filled into the output pointers
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetUsage")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32)]
+    funcPtr.restype = ze_result_t
 
-        retVal = funcPtr(hPower, pInstantPower, pAveragePower)
-        return retVal
+    retVal = funcPtr(hPower, pInstantPower, pAveragePower)
+    return retVal
 
 
 ## Frequency module functions ##

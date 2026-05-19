@@ -103,9 +103,7 @@ class TestFrequencyFunctions(unittest.TestCase):
             properties_ptr._obj.onSubdevice = mock_on_subdevice
             properties_ptr._obj.subdeviceId = mock_subdevice_id
             properties_ptr._obj.canControl = mock_can_control
-            properties_ptr._obj.isThrottleEventSupported = (
-                mock_throttle_event_supported
-            )
+            properties_ptr._obj.isThrottleEventSupported = mock_throttle_event_supported
             properties_ptr._obj.min = mock_min
             properties_ptr._obj.max = mock_max
             return self.pyzes.ZE_RESULT_SUCCESS
@@ -124,9 +122,7 @@ class TestFrequencyFunctions(unittest.TestCase):
         self.assertEqual(freq_properties.onSubdevice, mock_on_subdevice)
         self.assertEqual(freq_properties.subdeviceId, mock_subdevice_id)
         self.assertEqual(freq_properties.canControl, mock_can_control)
-        self.assertEqual(
-            freq_properties.isThrottleEventSupported, mock_throttle_event_supported
-        )
+        self.assertEqual(freq_properties.isThrottleEventSupported, mock_throttle_event_supported)
         self.assertEqual(freq_properties.min, mock_min)
         self.assertEqual(freq_properties.max, mock_max)
         mock_get_func.assert_called_with("zesFrequencyGetProperties")
