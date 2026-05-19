@@ -638,7 +638,7 @@ def test_memory_modules(device_handle, device_index):
 
 
 def test_power_module(device_handle, device_index):
-    """Test power domain enumeration and energy counter operations"""
+    """Test power domain enumeration, usage, and energy counter operations"""
     print(f"\n---- Device {device_index} Power Domains Test ----")
 
     # Get power domain count
@@ -664,6 +664,36 @@ def test_power_module(device_handle, device_index):
     # Test each power domain
     for i in range(power_count.value):
         print_verbose(f"\n  Power Domain {i}:")
+
+        power_props = pz.zes_power_properties_t()
+        power_props.stype = pz.ZES_STRUCTURE_TYPE_POWER_PROPERTIES
+        power_props.pNext = None
+
+        rc = pz.zesPowerGetProperties(power_handles[i], byref(power_props))
+        if check_rc(f"zesPowerGetProperties(power {i})", rc):
+            print_verbose("    Properties:")
+            print_verbose(f"      On Subdevice: {bool(power_props.onSubdevice)}")
+            print_verbose(f"      Subdevice ID: {power_props.subdeviceId}")
+            print_verbose(f"      Can Control: {bool(power_props.canControl)}")
+            print_verbose(
+                "      Energy Threshold Supported: "
+                f"{bool(power_props.isEnergyThresholdSupported)}"
+            )
+            print_verbose(f"      Default Limit: {power_props.defaultLimit}")
+            print_verbose(f"      Min Limit: {power_props.minLimit}")
+            print_verbose(f"      Max Limit: {power_props.maxLimit}")
+
+        # Test power usage
+        instant_power = c_uint32(0)
+        average_power = c_uint32(0)
+
+        rc = pz.zesPowerGetUsage(
+            power_handles[i], byref(instant_power), byref(average_power)
+        )
+        if check_rc(f"zesPowerGetUsage(power {i})", rc):
+            print_verbose("    Usage:")
+            print_verbose(f"      Instant Power: {instant_power.value}")
+            print_verbose(f"      Average Power: {average_power.value}")
 
         # Test power energy counter
         energy_counter = pz.zes_power_energy_counter_t()
@@ -725,6 +755,37 @@ def test_frequency_domains(device_handle, device_index):
     # Test each frequency domain
     for i in range(freq_count.value):
         print_verbose(f"\n  Frequency Domain {i}:")
+
+        # Test frequency properties
+        freq_props = pz.zes_freq_properties_t()
+        freq_props.stype = pz.ZES_STRUCTURE_TYPE_FREQ_PROPERTIES
+        freq_props.pNext = None
+
+        rc = pz.zesFrequencyGetProperties(freq_handles[i], byref(freq_props))
+        if not check_rc(f"zesFrequencyGetProperties(frequency {i})", rc):
+            continue
+
+        print_verbose("    Frequency Properties:")
+        print_verbose(
+            f"      Domain Type: {get_frequency_domain_string(freq_props.type)}"
+        )
+        print_verbose(f"      On Subdevice: {bool(freq_props.onSubdevice)}")
+        print_verbose(f"      Subdevice ID: {freq_props.subdeviceId}")
+        print_verbose(f"      Can Control: {bool(freq_props.canControl)}")
+        print_verbose(
+            "      Throttle Event Supported: "
+            f"{bool(freq_props.isThrottleEventSupported)}"
+        )
+        print_verbose(
+            f"      Min Frequency: {freq_props.min:.1f}"
+            if freq_props.min >= 0
+            else "      Min Frequency: Unknown"
+        )
+        print_verbose(
+            f"      Max Frequency: {freq_props.max:.1f}"
+            if freq_props.max >= 0
+            else "      Max Frequency: Unknown"
+        )
 
         # Test frequency state
         freq_state = pz.zes_freq_state_t()

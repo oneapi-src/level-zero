@@ -478,6 +478,28 @@ class zes_mem_bandwidth_t(_PrintableStructure):
 
 
 ## Power structures ##
+class zes_power_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_POWER_PROPERTIES
+        ("pNext", c_void_p),
+        ("onSubdevice", ze_bool_t),  # is on subdevice
+        ("subdeviceId", c_uint32),  # subdevice ID
+        ("canControl", ze_bool_t),  # software-controllable power domain
+        (
+            "isEnergyThresholdSupported",
+            ze_bool_t,
+        ),  # supports energy threshold crossed event
+        ("defaultLimit", c_int32),  # default power limit in milliwatts
+        ("minLimit", c_int32),  # minimum power limit in milliwatts
+        ("maxLimit", c_int32),  # maximum power limit in milliwatts
+    ]
+    _fmt_ = {
+        "defaultLimit": "%d mW",
+        "minLimit": "%d mW",
+        "maxLimit": "%d mW",
+    }
+
+
 class zes_power_energy_counter_t(_PrintableStructure):
     _fields_ = [
         ("energy", c_uint64),  # monotonic energy counter in microjoules
@@ -487,6 +509,21 @@ class zes_power_energy_counter_t(_PrintableStructure):
 
 
 ## Frequency structures ##
+class zes_freq_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_FREQ_PROPERTIES
+        ("pNext", c_void_p),
+        ("type", zes_freq_domain_t),  # frequency domain type
+        ("onSubdevice", ze_bool_t),  # is on subdevice
+        ("subdeviceId", c_uint32),  # subdevice ID
+        ("canControl", ze_bool_t),  # software-controllable frequency domain
+        ("isThrottleEventSupported", ze_bool_t),  # supports throttled event
+        ("min", c_double),  # minimum hardware clock in MHz
+        ("max", c_double),  # maximum non-overclock hardware clock in MHz
+    ]
+    _fmt_ = {"min": "%.1f MHz", "max": "%.1f MHz"}
+
+
 class zes_freq_state_t(_PrintableStructure):
     _fields_ = [
         ("stype", c_int32),  # ZES_STRUCTURE_TYPE_FREQ_STATE
@@ -819,6 +856,25 @@ def zesDeviceEnumPowerDomains(hDevice, pCount, phPower):
     return retVal
 
 
+def zesPowerGetProperties(hPower, pProperties):
+        """Wraps API:
+        ze_result_t zesPowerGetProperties(
+                zes_pwr_handle_t hPower,
+                zes_power_properties_t* pProperties)
+
+        Parameters:
+            hPower: power handle
+            pProperties: POINTER(zes_power_properties_t) - properties structure to fill
+        Returns:
+            ze_result_t - return code only, properties are filled into pProperties
+        """
+        funcPtr = getFunctionPointerList("zesPowerGetProperties")
+        funcPtr.argtypes = [zes_pwr_handle_t, POINTER(zes_power_properties_t)]
+        funcPtr.restype = ze_result_t
+        retVal = funcPtr(hPower, pProperties)
+        return retVal
+
+
 def zesPowerGetEnergyCounter(hPower, pEnergy):
     """Wraps API:
     ze_result_t zesPowerGetEnergyCounter(
@@ -837,6 +893,28 @@ def zesPowerGetEnergyCounter(hPower, pEnergy):
 
     retVal = funcPtr(hPower, pEnergy)
     return retVal
+
+
+def zesPowerGetUsage(hPower, pInstantPower, pAveragePower):
+        """Wraps API:
+        ze_result_t zesPowerGetUsage(
+                zes_pwr_handle_t hPower,
+                uint32_t* pInstantPower,
+                uint32_t* pAveragePower)
+
+        Parameters:
+            hPower: power handle
+            pInstantPower: POINTER(c_uint32) - instant power in milliwatts
+            pAveragePower: POINTER(c_uint32) - average power in milliwatts
+        Returns:
+            ze_result_t - return code only, usage values are filled into the output pointers
+        """
+        funcPtr = getFunctionPointerList("zesPowerGetUsage")
+        funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32)]
+        funcPtr.restype = ze_result_t
+
+        retVal = funcPtr(hPower, pInstantPower, pAveragePower)
+        return retVal
 
 
 ## Frequency module functions ##
@@ -860,6 +938,26 @@ def zesDeviceEnumFrequencyDomains(hDevice, pCount, phFrequency):
     ]
     funcPtr.restype = ze_result_t
     retVal = funcPtr(hDevice, pCount, phFrequency)
+    return retVal
+
+
+def zesFrequencyGetProperties(hFrequency, pProperties):
+    """Wraps API:
+    ze_result_t zesFrequencyGetProperties(
+            zes_freq_handle_t hFrequency,
+            zes_freq_properties_t* pProperties)
+
+    Parameters:
+      hFrequency: frequency handle
+      pProperties: POINTER(zes_freq_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesFrequencyGetProperties")
+    funcPtr.argtypes = [zes_freq_handle_t, POINTER(zes_freq_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hFrequency, pProperties)
     return retVal
 
 
