@@ -153,7 +153,7 @@ class zes_engine_handle_t(c_void_p):
 
 ##
 
-ze_bool_t = c_uint32
+ze_bool_t = c_uint8
 ze_device_property_flags_t = c_uint32
 zes_engine_type_flags_t = c_uint32
 zes_device_property_flags_t = c_uint32
@@ -223,6 +223,29 @@ ZES_POWER_DOMAIN_STACK = 3
 ZES_POWER_DOMAIN_MEMORY = 4
 ZES_POWER_DOMAIN_GPU = 5
 ZES_POWER_DOMAIN_FORCE_UINT32 = 0x7FFFFFFF
+
+# Power limit level enumeration
+zes_power_level_t = c_int32
+ZES_POWER_LEVEL_UNKNOWN = 0
+ZES_POWER_LEVEL_SUSTAINED = 1
+ZES_POWER_LEVEL_BURST = 2
+ZES_POWER_LEVEL_PEAK = 3
+ZES_POWER_LEVEL_INSTANTANEOUS = 4
+ZES_POWER_LEVEL_FORCE_UINT32 = 0x7FFFFFFF
+
+# Power source enumeration
+zes_power_source_t = c_int32
+ZES_POWER_SOURCE_ANY = 0
+ZES_POWER_SOURCE_MAINS = 1
+ZES_POWER_SOURCE_BATTERY = 2
+ZES_POWER_SOURCE_FORCE_UINT32 = 0x7FFFFFFF
+
+# Power limit unit enumeration
+zes_limit_unit_t = c_int32
+ZES_LIMIT_UNIT_UNKNOWN = 0
+ZES_LIMIT_UNIT_CURRENT = 1
+ZES_LIMIT_UNIT_POWER = 2
+ZES_LIMIT_UNIT_FORCE_UINT32 = 0x7FFFFFFF
 
 ## Frequency domain enums ##
 zes_freq_domain_t = c_int32
@@ -340,6 +363,9 @@ ZES_STRUCTURE_TYPE_MEM_PROPERTIES = 0xB
 ZES_STRUCTURE_TYPE_MEM_STATE = 0x1E
 ZES_STRUCTURE_TYPE_FREQ_PROPERTIES = 0x9
 ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
+ZES_STRUCTURE_TYPE_POWER_PROPERTIES = 0xD
+ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27
+ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28
 ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0xA
 ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x1C
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
@@ -498,6 +524,32 @@ class zes_power_properties_t(_PrintableStructure):
         "minLimit": "%d mW",
         "maxLimit": "%d mW",
     }
+
+
+class zes_power_limit_ext_desc_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+        ("pNext", c_void_p),
+        ("level", zes_power_level_t),
+        ("source", zes_power_source_t),
+        ("limitUnit", zes_limit_unit_t),
+        ("enabledStateLocked", ze_bool_t),
+        ("enabled", ze_bool_t),
+        ("intervalValueLocked", ze_bool_t),
+        ("interval", c_int32),
+        ("limitValueLocked", ze_bool_t),
+        ("limit", c_int32),
+    ]
+    _fmt_ = {"interval": "%d ms", "limit": "%d"}
+
+
+class zes_power_ext_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
+        ("pNext", c_void_p),
+        ("domain", zes_power_domain_t),
+        ("defaultLimit", POINTER(zes_power_limit_ext_desc_t)),
+    ]
 
 
 class zes_power_energy_counter_t(_PrintableStructure):

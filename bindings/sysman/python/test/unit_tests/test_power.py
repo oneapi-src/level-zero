@@ -108,6 +108,8 @@ class TestPowerFunctions(unittest.TestCase):
         mock_default_limit = 150000
         mock_min_limit = 100000
         mock_max_limit = 225000
+        mock_domain = self.pyzes.ZES_POWER_DOMAIN_PACKAGE
+        mock_ext_default_limit = 175000
 
         def mock_get_properties(power_handle, properties_ptr):
             properties_ptr._obj.onSubdevice = True
@@ -117,6 +119,15 @@ class TestPowerFunctions(unittest.TestCase):
             properties_ptr._obj.defaultLimit = mock_default_limit
             properties_ptr._obj.minLimit = mock_min_limit
             properties_ptr._obj.maxLimit = mock_max_limit
+
+            ext_properties_ptr = cast(
+                properties_ptr._obj.pNext,
+                POINTER(self.pyzes.zes_power_ext_properties_t),
+            )
+            ext_properties_ptr.contents.domain = mock_domain
+            ext_properties_ptr.contents.defaultLimit.contents.limit = (
+                mock_ext_default_limit
+            )
             return self.pyzes.ZE_RESULT_SUCCESS
 
         mock_func = MagicMock(side_effect=mock_get_properties)
@@ -124,6 +135,13 @@ class TestPowerFunctions(unittest.TestCase):
 
         power_handle = self.pyzes.zes_pwr_handle_t()
         properties = self.pyzes.zes_power_properties_t()
+        ext_properties = self.pyzes.zes_power_ext_properties_t()
+        ext_default_limit = self.pyzes.zes_power_limit_ext_desc_t()
+
+        properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_POWER_PROPERTIES
+        properties.pNext = cast(byref(ext_properties), c_void_p)
+        ext_properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
+        ext_properties.defaultLimit = pointer(ext_default_limit)
 
         result = self.pyzes.zesPowerGetProperties(power_handle, byref(properties))
 
@@ -135,9 +153,11 @@ class TestPowerFunctions(unittest.TestCase):
         self.assertEqual(properties.defaultLimit, mock_default_limit)
         self.assertEqual(properties.minLimit, mock_min_limit)
         self.assertEqual(properties.maxLimit, mock_max_limit)
+        self.assertEqual(ext_properties.stype, self.pyzes.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES)
+        self.assertEqual(ext_properties.domain, mock_domain)
+        self.assertEqual(ext_properties.defaultLimit.contents.limit, mock_ext_default_limit)
         mock_get_func.assert_called_with("zesPowerGetProperties")
         mock_func.assert_called_once()
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -130,6 +130,5 @@ class TestFrequencyFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesFrequencyGetProperties")
         mock_func.assert_called_once()
 
-
 if __name__ == "__main__":
     unittest.main()

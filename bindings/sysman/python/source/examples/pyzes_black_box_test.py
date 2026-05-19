@@ -149,6 +149,19 @@ def get_frequency_domain_string(freq_domain):
     return domain_map.get(freq_domain, f"UNKNOWN_FREQ_DOMAIN_{freq_domain}")
 
 
+def get_power_domain_string(power_domain):
+    """Convert power domain enum to string"""
+    domain_map = {
+        pz.ZES_POWER_DOMAIN_UNKNOWN: "ZES_POWER_DOMAIN_UNKNOWN",
+        pz.ZES_POWER_DOMAIN_CARD: "ZES_POWER_DOMAIN_CARD",
+        pz.ZES_POWER_DOMAIN_PACKAGE: "ZES_POWER_DOMAIN_PACKAGE",
+        pz.ZES_POWER_DOMAIN_STACK: "ZES_POWER_DOMAIN_STACK",
+        pz.ZES_POWER_DOMAIN_MEMORY: "ZES_POWER_DOMAIN_MEMORY",
+        pz.ZES_POWER_DOMAIN_GPU: "ZES_POWER_DOMAIN_GPU",
+    }
+    return domain_map.get(power_domain, f"UNKNOWN_POWER_DOMAIN_{power_domain}")
+
+
 def get_throttle_reasons_string(throttle_reasons):
     """Convert throttle reason flags to human-readable string"""
     if throttle_reasons == 0:
@@ -666,8 +679,13 @@ def test_power_module(device_handle, device_index):
         print_verbose(f"\n  Power Domain {i}:")
 
         power_props = pz.zes_power_properties_t()
+        power_ext_props = pz.zes_power_ext_properties_t()
+        default_limit = pz.zes_power_limit_ext_desc_t()
         power_props.stype = pz.ZES_STRUCTURE_TYPE_POWER_PROPERTIES
-        power_props.pNext = None
+        power_props.pNext = cast(byref(power_ext_props), c_void_p)
+        power_ext_props.stype = pz.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
+        power_ext_props.pNext = None
+        power_ext_props.defaultLimit = pointer(default_limit)
 
         rc = pz.zesPowerGetProperties(power_handles[i], byref(power_props))
         if check_rc(f"zesPowerGetProperties(power {i})", rc):
@@ -682,6 +700,11 @@ def test_power_module(device_handle, device_index):
             print_verbose(f"      Default Limit: {power_props.defaultLimit}")
             print_verbose(f"      Min Limit: {power_props.minLimit}")
             print_verbose(f"      Max Limit: {power_props.maxLimit}")
+            print_verbose(
+                "      Extended Domain: "
+                f"{get_power_domain_string(power_ext_props.domain)}"
+            )
+            print_verbose(f"      Extended Default Limit: {default_limit.limit}")
 
         # Test power usage
         instant_power = c_uint32(0)
