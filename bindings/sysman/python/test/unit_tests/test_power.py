@@ -21,7 +21,6 @@ if source_dir not in sys.path:
 
 @patch("pyzes.getFunctionPointerList")
 class TestPowerFunctions(unittest.TestCase):
-
     def setUp(self):
         import pyzes
 
@@ -153,11 +152,16 @@ class TestPowerFunctions(unittest.TestCase):
         self.assertEqual(properties.defaultLimit, mock_default_limit)
         self.assertEqual(properties.minLimit, mock_min_limit)
         self.assertEqual(properties.maxLimit, mock_max_limit)
-        self.assertEqual(ext_properties.stype, self.pyzes.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES)
+        self.assertEqual(
+            ext_properties.stype, self.pyzes.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
+        )
         self.assertEqual(ext_properties.domain, mock_domain)
-        self.assertEqual(ext_properties.defaultLimit.contents.limit, mock_ext_default_limit)
+        self.assertEqual(
+            ext_properties.defaultLimit.contents.limit, mock_ext_default_limit
+        )
         mock_get_func.assert_called_with("zesPowerGetProperties")
         mock_func.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()

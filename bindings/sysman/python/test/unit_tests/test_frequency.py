@@ -21,7 +21,6 @@ if source_dir not in sys.path:
 
 @patch("pyzes.getFunctionPointerList")
 class TestFrequencyFunctions(unittest.TestCase):
-
     def setUp(self):
         import pyzes
 
@@ -129,6 +128,7 @@ class TestFrequencyFunctions(unittest.TestCase):
         self.assertEqual(freq_properties.max, mock_max)
         mock_get_func.assert_called_with("zesFrequencyGetProperties")
         mock_func.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
