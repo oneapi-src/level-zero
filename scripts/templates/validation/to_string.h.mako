@@ -59,6 +59,13 @@ inline std::string to_string(${th.make_type_name(n, tags, obj)} handle) {
 }
 
 %endfor
+// Callback to_string functions (function pointers)
+%for obj in th.extract_objs(specs, r"callback"):
+inline std::string to_string(${th.make_type_name(n, tags, obj)} ptr) {
+    return to_string(reinterpret_cast<const void*>(ptr));
+}
+
+%endfor
 %endif
 %if n == 'ze':
 // For primitive types and Level Zero typedef'd types
