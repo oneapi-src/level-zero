@@ -120,6 +120,15 @@ inline std::string to_string(ze_rtas_parallel_operation_exp_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
 
+// Callback to_string functions (function pointers)
+inline std::string to_string(ze_rtas_geometry_aabbs_cb_ext_t ptr) {
+    return to_string(reinterpret_cast<const void*>(ptr));
+}
+
+inline std::string to_string(ze_rtas_geometry_aabbs_cb_exp_t ptr) {
+    return to_string(reinterpret_cast<const void*>(ptr));
+}
+
 // For primitive types and Level Zero typedef'd types
 // Since most Level Zero types are typedef'd to uint32_t, we can't distinguish them by type
 inline std::string to_string(uint32_t value) { return std::to_string(value); }
