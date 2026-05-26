@@ -5690,11 +5690,17 @@ zesGetPowerProcAddrTable(
     pDdiTable->pfnSetLimitsExt                           = driver::zesPowerSetLimitsExt;
     }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnGetUsage                               = driver::zesPowerGetUsage;
+    }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnGetLimitsExt2                          = driver::zesPowerGetLimitsExt2;
+    }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnSetLimitsExt2                          = driver::zesPowerSetLimitsExt2;
+    }
 
     return result;
 }
@@ -5803,13 +5809,21 @@ zesGetRasExpProcAddrTable(
     pDdiTable->pfnClearStateExp                          = driver::zesRasClearStateExp;
     }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnGetSupportedCategoriesExp              = driver::zesRasGetSupportedCategoriesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnGetStateExp2                           = driver::zesRasGetStateExp2;
+    }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnGetConfigExp                           = driver::zesRasGetConfigExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnSetConfigExp                           = driver::zesRasSetConfigExp;
+    }
 
     return result;
 }

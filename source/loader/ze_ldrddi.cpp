@@ -10123,6 +10123,15 @@ zeGetDeviceProcAddrTable(
             if (version >= ZE_API_VERSION_1_15) {
                 pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue   = firstDriver->dditable.ze.Device.pfnGetAggregatedCopyOffloadIncrementValue;
             }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetRuntimeRequirements                   = firstDriver->dditable.ze.Device.pfnGetRuntimeRequirements;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetRuntimeRequirementsKey                = firstDriver->dditable.ze.Device.pfnGetRuntimeRequirementsKey;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnValidateRuntimeRequirements              = firstDriver->dditable.ze.Device.pfnValidateRuntimeRequirements;
+            }
             if (version >= ZE_API_VERSION_1_2) {
                 pDdiTable->pfnReserveCacheExt                          = firstDriver->dditable.ze.Device.pfnReserveCacheExt;
             }
@@ -10983,6 +10992,15 @@ zeGetCommandListProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_14) {
                 pDdiTable->pfnAppendLaunchKernelWithArguments          = firstDriver->dditable.ze.CommandList.pfnAppendLaunchKernelWithArguments;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnAppendMemoryCopyWithParameters           = firstDriver->dditable.ze.CommandList.pfnAppendMemoryCopyWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnAppendMemoryFillWithParameters           = firstDriver->dditable.ze.CommandList.pfnAppendMemoryFillWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnImmediateAppendCommandListsWithParameters    = firstDriver->dditable.ze.CommandList.pfnImmediateAppendCommandListsWithParameters;
             }
             if (version >= ZE_API_VERSION_1_3) {
                 pDdiTable->pfnAppendImageCopyToMemoryExt               = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyToMemoryExt;

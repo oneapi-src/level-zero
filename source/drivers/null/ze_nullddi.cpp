@@ -7154,6 +7154,17 @@ zeGetDeviceProcAddrTable(
     pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue = driver::zeDeviceGetAggregatedCopyOffloadIncrementValue;
     }
 
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnGetRuntimeRequirements                 = driver::zeDeviceGetRuntimeRequirements;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnGetRuntimeRequirementsKey              = driver::zeDeviceGetRuntimeRequirementsKey;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnValidateRuntimeRequirements            = driver::zeDeviceValidateRuntimeRequirements;
+    }
 
     if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
@@ -7455,16 +7466,19 @@ zeGetCommandListProcAddrTable(
     pDdiTable->pfnAppendLaunchKernelWithArguments        = driver::zeCommandListAppendLaunchKernelWithArguments;
     }
 
-<<<<<<< HEAD
-    if (version >= ZE_API_VERSION_1_3) {
-=======
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnAppendMemoryCopyWithParameters         = driver::zeCommandListAppendMemoryCopyWithParameters;
+    }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnAppendMemoryFillWithParameters         = driver::zeCommandListAppendMemoryFillWithParameters;
+    }
 
+    if (version >= ZE_API_VERSION_1_16) {
     pDdiTable->pfnImmediateAppendCommandListsWithParameters  = driver::zeCommandListImmediateAppendCommandListsWithParameters;
+    }
 
->>>>>>> e75544f (Release v1.29.0)
+    if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnAppendImageCopyToMemoryExt             = driver::zeCommandListAppendImageCopyToMemoryExt;
     }
 

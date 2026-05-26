@@ -8108,6 +8108,15 @@ zesGetPowerProcAddrTable(
             if (version >= ZE_API_VERSION_1_0) {
                 pDdiTable->pfnSetLimitsExt                             = firstDriver->dditable.zes.Power.pfnSetLimitsExt;
             }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetUsage                                 = firstDriver->dditable.zes.Power.pfnGetUsage;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetLimitsExt2                            = firstDriver->dditable.zes.Power.pfnGetLimitsExt2;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnSetLimitsExt2                            = firstDriver->dditable.zes.Power.pfnSetLimitsExt2;
+            }
         }
     }
 
@@ -8401,6 +8410,18 @@ zesGetRasExpProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_0) {
                 pDdiTable->pfnClearStateExp                            = firstDriver->dditable.zes.RasExp.pfnClearStateExp;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetSupportedCategoriesExp                = firstDriver->dditable.zes.RasExp.pfnGetSupportedCategoriesExp;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetStateExp2                             = firstDriver->dditable.zes.RasExp.pfnGetStateExp2;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetConfigExp                             = firstDriver->dditable.zes.RasExp.pfnGetConfigExp;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnSetConfigExp                             = firstDriver->dditable.zes.RasExp.pfnSetConfigExp;
             }
         }
     }
