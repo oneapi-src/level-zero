@@ -46,6 +46,15 @@ static std::vector<std::string> getLibrarySearchPaths() {
     auto split = splitPaths(ldLibPath);
     paths.insert(paths.end(), split.begin(), split.end());
   }
+#ifdef ZE_LOADER_EXTRA_DRIVER_DIR
+  // A driver directory configured at build time (e.g. the install prefix's lib
+  // dir, baked in at compile time and relocated on install).  Searched right
+  // after LD_LIBRARY_PATH -- so a user's LD_LIBRARY_PATH still takes precedence
+  // -- but before the system locations.  This lets a driver co-installed in the
+  // same prefix (e.g. a conda environment) be discovered by default, without
+  // having to set ZE_ENABLE_ALT_DRIVERS.
+  paths.push_back(ZE_LOADER_EXTRA_DRIVER_DIR);
+#endif
 #if defined(ANDROID)
   paths.push_back("/vendor/lib64");
 #else
