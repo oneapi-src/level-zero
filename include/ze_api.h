@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.15-r1.15.31
+ * @version v1.16-r1.16.24
  *
  */
 #ifndef _ZE_API_H
@@ -133,6 +133,10 @@ typedef struct _ze_image_handle_t *ze_image_handle_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Handle of driver's module object
 typedef struct _ze_module_handle_t *ze_module_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of driver's graph object
+typedef struct _ze_graph_handle_t *ze_graph_handle_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Handle of module's build log object
@@ -381,6 +385,10 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_PHYSICAL_MEM_PROPERTIES = 0x00020040,                 ///< ::ze_physical_mem_properties_t
     ZE_STRUCTURE_TYPE_DEVICE_USABLEMEM_SIZE_EXT_PROPERTIES = 0x00020041,    ///< ::ze_device_usablemem_size_ext_properties_t
     ZE_STRUCTURE_TYPE_CUSTOM_PITCH_EXP_DESC = 0x00020042,                   ///< ::ze_custom_pitch_exp_desc_t
+    ZE_STRUCTURE_TYPE_DEVICE_COMPUTE_DOTPRODUCT_EXT_PROPERTIES = 0x00020043,///< ::ze_device_compute_dotproduct_ext_properties_t
+    ZE_STRUCTURE_TYPE_RUNTIME_REQUIREMENTS_MODULE_DESC = 0x00020044,        ///< ::ze_runtime_requirements_module_desc_t
+    ZE_STRUCTURE_TYPE_RUNTIME_REQUIREMENTS_GRAPH_DESC = 0x00020045,         ///< ::ze_runtime_requirements_graph_desc_t
+    ZE_STRUCTURE_TYPE_RUNTIME_REQUIREMENTS_OUTPUT = 0x00020046,             ///< ::ze_validate_runtime_requirements_output_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_STRUCTURE_TYPE_* ENUMs
 
 } ze_structure_type_t;
@@ -561,6 +569,10 @@ typedef struct _ze_device_thread_t ze_device_thread_t;
 typedef struct _ze_device_compute_properties_t ze_device_compute_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_device_compute_dotproduct_ext_properties_t
+typedef struct _ze_device_compute_dotproduct_ext_properties_t ze_device_compute_dotproduct_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_native_kernel_uuid_t
 typedef struct _ze_native_kernel_uuid_t ze_native_kernel_uuid_t;
 
@@ -599,6 +611,18 @@ typedef struct _ze_device_p2p_properties_t ze_device_p2p_properties_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_device_event_properties_t
 typedef struct _ze_device_event_properties_t ze_device_event_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_runtime_requirements_module_desc_t
+typedef struct _ze_runtime_requirements_module_desc_t ze_runtime_requirements_module_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_runtime_requirements_graph_desc_t
+typedef struct _ze_runtime_requirements_graph_desc_t ze_runtime_requirements_graph_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_validate_runtime_requirements_output_t
+typedef struct _ze_validate_runtime_requirements_output_t ze_validate_runtime_requirements_output_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_context_desc_t
@@ -1400,7 +1424,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_13 = ZE_MAKE_VERSION( 1, 13 ),                         ///< version 1.13
     ZE_API_VERSION_1_14 = ZE_MAKE_VERSION( 1, 14 ),                         ///< version 1.14
     ZE_API_VERSION_1_15 = ZE_MAKE_VERSION( 1, 15 ),                         ///< version 1.15
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 15 ),                      ///< latest known version
+    ZE_API_VERSION_1_16 = ZE_MAKE_VERSION( 1, 16 ),                         ///< version 1.16
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 16 ),                      ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_API_VERSION_* ENUMs
 
 } ze_api_version_t;
@@ -1408,7 +1433,7 @@ typedef enum _ze_api_version_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 15 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 16 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1514,6 +1539,9 @@ typedef enum _ze_ipc_property_flag_t
                                                                             ///< ::zeMemGetIpcHandle.
     ZE_IPC_PROPERTY_FLAG_EVENT_POOL = ZE_BIT(1),                            ///< Supports passing event pools between processes. See
                                                                             ///< ::zeEventPoolGetIpcHandle.
+    ZE_IPC_PROPERTY_FLAG_FABRIC_ACCESSIBLE = ZE_BIT(2),                     ///< Supports creating a handle type for memory allocations and event pools
+                                                                            ///< between processes on different physical devices connected through a
+                                                                            ///< fabric interconnect. See ::ze_ipc_mem_handle_type_ext_desc_t.
     ZE_IPC_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IPC_PROPERTY_FLAG_* ENUMs
 
 } ze_ipc_property_flag_t;
@@ -2012,6 +2040,102 @@ typedef struct _ze_device_compute_properties_t
     uint32_t subGroupSizes[ZE_SUBGROUPSIZE_COUNT];                          ///< [out] Size group sizes supported.
 
 } ze_device_compute_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported device compute dot product(dp) capability flags
+typedef uint32_t ze_device_dp_capability_flags_t;
+typedef enum _ze_device_dp_capability_flag_t
+{
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL = ZE_BIT(0), ///< Supports vector dot product instruction.
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_SIMD8 = ZE_BIT(1),    ///< Supports sytolic dot product with 8 SIMD lanes.
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_SIMD16 = ZE_BIT(2),   ///< Supports sytolic dot product with 16 SIMD lanes.
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_BDPAS_SIMD16 = ZE_BIT(3),  ///< Supports sytolic dot product with block scaling support with 16 SIMD
+                                                                            ///< lanes.
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_DEPTH4 = ZE_BIT(4),   ///< Supports 4 deep systolic for DPAS dot product
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_DEPTH8 = ZE_BIT(5),   ///< Supports 8 deep systolic for DPAS dot product
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_BDPAS_DEPTH8 = ZE_BIT(6),  ///< Supports 8 deep systolic for BDPAS dot product
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_UPTO8 = ZE_BIT(7),  ///< Supports output matrix row count upto 8
+    ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_FIXED8 = ZE_BIT(8), ///< Restricts output matrix row count to 8
+    ZE_DEVICE_DP_CAPABILITY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_DP_CAPABILITY_FLAG_* ENUMs
+
+} ze_device_dp_capability_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported device dot product(dp) input data types flags
+typedef uint32_t ze_device_input_data_type_flags_t;
+typedef enum _ze_device_input_data_type_flag_t
+{
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_TYPE_NONE = ZE_BIT(0), ///< No data types available for the supported dot product operation
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(1),   ///< Supports int8 data type with 4 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT4_PACK8_PER_SIMD_LANE = ZE_BIT(2),  ///< Supports int4 data type with 8 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT2_PACK8_PER_SIMD_LANE = ZE_BIT(3),  ///< Supports int2 data type with 8 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_TF32_PACK1_PER_SIMD_LANE = ZE_BIT(4),  ///< Supports tf32 data type with 1 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_FP16_PACK2_PER_SIMD_LANE = ZE_BIT(5),  ///< Supports fp16 data type with 2 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_BF16_PACK2_PER_SIMD_LANE = ZE_BIT(6),  ///< Supports bf16 data type with 2 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_FP8_PACK4_PER_SIMD_LANE = ZE_BIT(7),   ///< Supports fp8 data type with 4 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_BF8_PACK4_PER_SIMD_LANE = ZE_BIT(8),   ///< Supports bf8 data type with 4 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_E2M1_PACK8_PER_SIMD_LANE = ZE_BIT(9),  ///< Supports e2m1 data type with 8 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(10), ///< Supports 8bit integer data type with 4 packed data elements per SIMD
+                                                                            ///< lane.This is exclusively for DP4V dot product support
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(11),///< Supports uint8 data type support for scaling, exclusive to BDPAS dot
+                                                                            ///< product support.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_INPUT_DATA_TYPE_FLAG_* ENUMs
+
+} ze_device_input_data_type_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported device  dot product(dp) output data types or accumulator
+///        data types flags
+typedef uint32_t ze_device_output_data_type_flags_t;
+typedef enum _ze_device_output_data_type_flag_t
+{
+    ZE_DEVICE_OUTPUT_DATA_TYPE_FLAG_DEVICE_OUTPUT_DATA_INT32 = ZE_BIT(0),   ///< Supports signed and unsigned 32bit integer data type for output
+    ZE_DEVICE_OUTPUT_DATA_TYPE_FLAG_DEVICE_OUTPUT_DATA_FP32 = ZE_BIT(1),    ///< Supports fp32 data type for output.
+    ZE_DEVICE_OUTPUT_DATA_TYPE_FLAG_DEVICE_OUTPUT_DATA_FP16 = ZE_BIT(2),    ///< Supports fp16 data type for output.
+    ZE_DEVICE_OUTPUT_DATA_TYPE_FLAG_DEVICE_OUTPUT_DATA_BF16 = ZE_BIT(3),    ///< Supports bf16 data type for output.
+    ZE_DEVICE_OUTPUT_DATA_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_OUTPUT_DATA_TYPE_FLAG_* ENUMs
+
+} ze_device_output_data_type_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_NAME
+/// @brief Device Compute DotProduct Property Extension Name
+#define ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_NAME  "ZE_extension_device_compute_dotproduct_ext_properties"
+#endif // ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device Compute Dot product Property Extension Version(s)
+typedef enum _ze_device_compute_dotproduct_properties_ext_version_t
+{
+    ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_VERSION_* ENUMs
+
+} ze_device_compute_dotproduct_properties_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device compute dot product capability queried using
+///        ::zeDeviceGetComputeProperties
+typedef struct _ze_device_compute_dotproduct_ext_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_device_dp_capability_flags_t dp_caps;                                ///< [out] indicates dot product capability of the device
+    ze_device_input_data_type_flags_t dpv4_input_types;                     ///< [out] Supported input data types when dp4v dot product capability is
+                                                                            ///< supported.
+    ze_device_output_data_type_flags_t dpv4_output_types;                   ///< [out] Supported output data types when dp4v dot product capability is
+                                                                            ///< supported.
+    ze_device_input_data_type_flags_t dpas_input_types;                     ///< [out] Supported input data types when dpas dot product capability is
+                                                                            ///< supported.
+    ze_device_output_data_type_flags_t dpas_output_types;                   ///< [out] Supported output data types when dpas dot product capability is
+                                                                            ///< supported.
+    ze_device_input_data_type_flags_t bdpas_input_types;                    ///< [out] Supported input data types when bdpas dot product capability is
+                                                                            ///< supported.
+    ze_device_output_data_type_flags_t bdpas_output_types;                  ///< [out] Supported output data types when bdpas dot product capability is
+                                                                            ///< supported.
+
+} ze_device_compute_dotproduct_ext_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves compute properties of the device.
@@ -2829,6 +2953,180 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zeDeviceGetAggregatedCopyOffloadIncrementValue(
     ze_device_handle_t hDevice,                                             ///< [in] handle of the device
     uint32_t* incrementValue                                                ///< [out] increment value that can be used for Event creation
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Describes the module for which runtime requirements are being
+///        gathered. This structure is accepted as pObjDesc to
+///        ::zeDeviceGetRuntimeRequirements. This structure requires
+///        ZE_extension_driver_ddi_handles to be supported by the driver.
+typedef struct _ze_runtime_requirements_module_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_module_handle_t requirementsSrc;                                     ///< [in] Module for which the requirements are being gathered
+
+} ze_runtime_requirements_module_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Describes the graph for which runtime requirements are being gathered.
+///        This structure is accepted as pObjDesc to
+///        ::zeDeviceGetRuntimeRequirements. This structure requires
+///        ZE_extension_driver_ddi_handles to be supported by the driver.
+typedef struct _ze_runtime_requirements_graph_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_graph_handle_t requirementsSrc;                                      ///< [in] Graph for which the requirements are being gathered
+
+} ze_runtime_requirements_graph_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gathers null-terminated plain text representation of runtime
+///        requirements for provided object.
+/// 
+/// @details
+///     - To gather requirements for a given object (e.g. an L0 module or
+///       graph), pObjDesc must point to a structure (e.g.
+///       ::ze_runtime_requirements_module_desc_t or
+///       ::ze_runtime_requirements_graph_desc_t) describing object for which
+///       the requirements are being retrieved.
+///     - Requirements are copied to user-provided memory pointed to by
+///       pRequirements and pSize is set to represent the actual written length
+///       of the requirements string in bytes.
+///     - The caller can pass nullptr for pRequirements when querying only for
+///       size.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pObjDesc`
+///         + `nullptr == pSize`
+///         + (nullptr != pRequirements) && (nullptr == pSize).
+///         + (nullptr != pRequirements) && (*pSize < requiredSize).
+///     - ::ZE_RESULT_SUCCESS
+///         + Successfully gathered requirements for provided source (e.g. module).
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Provided hDevice handle is invalid
+///         + pObjDesc doesn't point to a structure that describes a supported object for which the requirements can be gathered.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceGetRuntimeRequirements(
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device
+    const void* pObjDesc,                                                   ///< [in] describes the object for which the requirements are to be
+                                                                            ///< gathered
+    size_t* pSize,                                                          ///< [in,out] size of requirements string in bytes.
+    char* pRequirements                                                     ///< [in,out][optional] holds results of the query.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves requirements producer key.
+/// 
+/// @details
+///     - Retrieves null-terminated plain text that represents the producer of
+///       requirements (Example string: 'INTEL.L0.GPU').
+///     - Useful for bookkeeping of the requirements on user side.
+/// 
+/// @returns
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pKey`
+///         + (nullptr == pKey).
+///     - ::ZE_RESULT_SUCCESS
+///         + Successfully retrieved the key.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceGetRuntimeRequirementsKey(
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device
+    const char** pKey                                                       ///< [out] returned key
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Result of runtime requirements validation
+typedef enum _ze_validate_runtime_requirements_result_t
+{
+    ZE_VALIDATE_RUNTIME_REQUIREMENTS_RESULT_NOT_APPLICABLE = 0,             ///< Provided requirements are not applicable to underlying device
+    ZE_VALIDATE_RUNTIME_REQUIREMENTS_RESULT_REQUIREMENTS_MET = 1,           ///< Provided requirements are met and optimal
+    ZE_VALIDATE_RUNTIME_REQUIREMENTS_RESULT_REQUIREMENTS_MET_RECOMPILATION_ADVISABLE = 2,   ///< Provided requirements are met, but recompilation is advisable
+    ZE_VALIDATE_RUNTIME_REQUIREMENTS_RESULT_REQUIREMENTS_NOT_MET = 3,       ///< Requirements are not met
+    ZE_VALIDATE_RUNTIME_REQUIREMENTS_RESULT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_VALIDATE_RUNTIME_REQUIREMENTS_RESULT_* ENUMs
+
+} ze_validate_runtime_requirements_result_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Output of ::zeDeviceValidateRuntimeRequirements
+typedef struct _ze_validate_runtime_requirements_output_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_validate_runtime_requirements_result_t result;                       ///< [out] Result of the validation call.
+
+} ze_validate_runtime_requirements_output_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Validates runtime requirements.
+/// 
+/// @details
+///     - To validate existing requirements (e.g. cached from previous runs),
+///       requirements string should be passed as pRequirements.
+/// 
+/// @returns
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pRequirements`
+///         + `nullptr == pOut`
+///         + (nullptr == pRequirements).
+///         + (nullptr == pOut).
+///     - ::ZE_RESULT_SUCCESS
+///         + Validation call succeeded and result of the validation is available in pOut.
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Provided hDevice handle is invalid
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceValidateRuntimeRequirements(
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device
+    const char* pRequirements,                                              ///< [in] requirements to be validated. Requirements should be
+                                                                            ///< null-terminated plain text representation of runtime requirements
+                                                                            ///< previously retrieved from the device.
+    ze_validate_runtime_requirements_output_t* pOut                         ///< [in][out] Output of the validation call.
     );
 
 #if !defined(__GNUC__)
@@ -4061,6 +4359,67 @@ zeCommandListAppendMemoryCopy(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Copies host, device, or shared memory with additional parameters.
+/// 
+/// @details
+///     - The application must ensure the memory pointed to by dstptr and srcptr
+///       is accessible by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by dstptr and
+///       srcptr as they are free to be modified by either the Host or device up
+///       until execution.
+///     - The application must ensure the events are accessible by the device on
+///       which the command list was created.
+///     - The application must ensure the command list and events were created,
+///       and the memory was allocated, on the same context.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @remarks
+///   _Analogues_
+///     - **clEnqueueCopyBuffer**
+///     - **clEnqueueReadBuffer**
+///     - **clEnqueueWriteBuffer**
+///     - **clEnqueueSVMMemcpy**
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == dstptr`
+///         + `nullptr == srcptr`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendMemoryCopyWithParameters(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of command list
+    void* dstptr,                                                           ///< [in] pointer to destination memory to copy to
+    const void* srcptr,                                                     ///< [in] pointer to source memory to copy from
+    size_t size,                                                            ///< [in] size in bytes to copy
+    const void* pNext,                                                      ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Initializes host, device, or shared memory.
 /// 
 /// @details
@@ -4118,6 +4477,73 @@ zeCommandListAppendMemoryFill(
     const void* pattern,                                                    ///< [in] pointer to value to initialize memory to
     size_t pattern_size,                                                    ///< [in] size in bytes of the value to initialize memory to
     size_t size,                                                            ///< [in] size in bytes to initialize
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Initializes host, device, or shared memory with additional parameters.
+/// 
+/// @details
+///     - The application must ensure the memory pointed to by ptr is accessible
+///       by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by ptr as it
+///       is free to be modified by either the Host or device up until
+///       execution.
+///     - The ptr must be aligned to pattern_size.
+///     - The value to initialize memory to is described by the pattern and the
+///       pattern size.
+///     - The pattern size must be a power-of-two and less than or equal to the
+///       `maxMemoryFillPatternSize` member of
+///       ::ze_command_queue_group_properties_t.
+///     - The application must ensure the events are accessible by the device on
+///       which the command list was created.
+///     - The application must ensure the command list and events were created,
+///       and the memory was allocated, on the same context.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @remarks
+///   _Analogues_
+///     - **clEnqueueFillBuffer**
+///     - **clEnqueueSVMMemFill**
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == ptr`
+///         + `nullptr == pattern`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendMemoryFillWithParameters(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of command list
+    void* ptr,                                                              ///< [in] pointer to memory to initialize
+    const void* pattern,                                                    ///< [in] pointer to value to initialize memory to
+    size_t pattern_size,                                                    ///< [in] size in bytes of the value to initialize memory to
+    size_t size,                                                            ///< [in] size in bytes to initialize
+    const void* pNext,                                                      ///< [in][optional] additional extensions passed to the function
     ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
     uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
                                                                             ///< if `nullptr == phWaitEvents`
@@ -6400,6 +6826,8 @@ typedef enum _ze_host_mem_alloc_flag_t
     ZE_HOST_MEM_ALLOC_FLAG_BIAS_UNCACHED = ZE_BIT(1),                       ///< host should not cache allocation (UC)
     ZE_HOST_MEM_ALLOC_FLAG_BIAS_WRITE_COMBINED = ZE_BIT(2),                 ///< host memory should be allocated write-combined (WC)
     ZE_HOST_MEM_ALLOC_FLAG_BIAS_INITIAL_PLACEMENT = ZE_BIT(3),              ///< optimize shared allocation for first access on the host
+    ZE_HOST_MEM_ALLOC_FLAG_MEM_READ_ONLY = ZE_BIT(4),                       ///< device access will be read-only, mutually exclusive with
+                                                                            ///< ::ZE_HOST_MEM_ALLOC_FLAG_BIAS_WRITE_COMBINED
     ZE_HOST_MEM_ALLOC_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_HOST_MEM_ALLOC_FLAG_* ENUMs
 
 } ze_host_mem_alloc_flag_t;
@@ -6461,7 +6889,7 @@ typedef struct _ze_host_mem_alloc_desc_t
 ///         + `nullptr == pptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
 ///         + `0x7 < device_desc->flags`
-///         + `0xf < host_desc->flags`
+///         + `0x1f < host_desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == size`
@@ -6567,7 +6995,7 @@ zeMemAllocDevice(
 ///         + `nullptr == host_desc`
 ///         + `nullptr == pptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0xf < host_desc->flags`
+///         + `0x1f < host_desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == size`
@@ -7537,10 +7965,10 @@ zeModuleGetNativeBinary(
 /// @brief Retrieve global variable pointer from Module.
 /// 
 /// @details
-///     - The application may query global pointer from any module that either
-///       exports or imports it.
-///     - The application must dynamically link a module that imports a global
-///       before the global pointer can be queried from it.
+///     - For modules created from SPIR-V the interpretation of `pGlobalName` is
+///       described in the SPIR-V programming guide.
+///     - For native modules not created from SPIR-V the interpretation of
+///       `pGlobalName` is implementation defined.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -11231,7 +11659,7 @@ typedef struct _ze_external_memmap_sysmem_ext_desc_t
     ze_structure_type_t stype;                                              ///< [in] type of this structure
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
-    const void* pSystemMemory;                                              ///< [in] system memory pointer to map; must be page-aligned.
+    void* pSystemMemory;                                                    ///< [in] system memory pointer to map; must be page-aligned.
     uint64_t size;                                                          ///< [in] size of the system memory to map; must be page-aligned.
 
 } ze_external_memmap_sysmem_ext_desc_t;
@@ -11432,9 +11860,11 @@ typedef enum _ze_ipc_mem_handle_type_ext_version_t
 typedef uint32_t ze_ipc_mem_handle_type_flags_t;
 typedef enum _ze_ipc_mem_handle_type_flag_t
 {
-    ZE_IPC_MEM_HANDLE_TYPE_FLAG_DEFAULT = ZE_BIT(0),                        ///< Local IPC memory handle type for use within the same machine.
-    ZE_IPC_MEM_HANDLE_TYPE_FLAG_FABRIC_ACCESSIBLE = ZE_BIT(1),              ///< Fabric accessible IPC memory handle type for use across machines via a
-                                                                            ///< supported fabric.
+    ZE_IPC_MEM_HANDLE_TYPE_FLAG_DEFAULT = ZE_BIT(0),                        ///< Local IPC memory handle type for use within the same device. This is
+                                                                            ///< the default if no flags are specified and does not indicate if the
+                                                                            ///< handle is shareable across devices or machines.
+    ZE_IPC_MEM_HANDLE_TYPE_FLAG_FABRIC_ACCESSIBLE = ZE_BIT(1),              ///< Fabric accessible IPC memory handle type for use across devices or
+                                                                            ///< machines via a supported fabric.
     ZE_IPC_MEM_HANDLE_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IPC_MEM_HANDLE_TYPE_FLAG_* ENUMs
 
 } ze_ipc_mem_handle_type_flag_t;
@@ -12824,7 +13254,7 @@ typedef struct _ze_memory_free_ext_desc_t
 /// 
 /// @details
 ///     - Similar to zeMemFree, with added parameter to choose the free policy.
-///     - Does not guarantee memory is freed upon return. See free policy
+///     - Does not gaurantee memory is freed upon return. See free policy
 ///       descriptions for details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same pointer.
@@ -15068,6 +15498,8 @@ typedef enum _ze_immediate_command_list_append_exp_version_t
 /// @brief Appends command lists to dispatch from an immediate command list.
 /// 
 /// @details
+///     - @deprecated since 1.16. Please use
+///       ::zeCommandListImmediateAppendCommandListsWithParameters.
 ///     - The application must call this function only with command lists
 ///       created with ::zeCommandListCreateImmediate.
 ///     - The command lists passed to this function in the `phCommandLists`
@@ -15099,6 +15531,55 @@ zeCommandListImmediateAppendCommandListsExp(
     ze_command_list_handle_t hCommandListImmediate,                         ///< [in] handle of the immediate command list
     uint32_t numCommandLists,                                               ///< [in] number of command lists
     ze_command_list_handle_t* phCommandLists,                               ///< [in][range(0, numCommandLists)] handles of command lists
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+                                                                            ///<    - if not null, this event is signaled after the completion of all
+                                                                            ///< appended command lists
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before executing appended
+                                                                            ///< command lists; must be 0 if nullptr == phWaitEvents
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before executing appended command lists.
+                                                                            ///<    - if not null, all wait events must be satisfied prior to the start
+                                                                            ///< of any appended command list(s)
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Appends command lists to dispatch from an immediate command list with
+///        additional parameters.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The command lists passed to this function in the `phCommandLists`
+///       argument must be regular command lists (i.e. not immediate command
+///       lists).
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandListImmediate`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phCommandLists`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListImmediateAppendCommandListsWithParameters(
+    ze_command_list_handle_t hCommandListImmediate,                         ///< [in] handle of the immediate command list
+    uint32_t numCommandLists,                                               ///< [in] number of command lists
+    ze_command_list_handle_t* phCommandLists,                               ///< [in][range(0, numCommandLists)] handles of command lists
+    const void* pNext,                                                      ///< [in][optional] additional extensions passed to the function
     ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
                                                                             ///<    - if not null, this event is signaled after the completion of all
                                                                             ///< appended command lists

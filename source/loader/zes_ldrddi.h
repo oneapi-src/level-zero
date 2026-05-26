@@ -860,6 +860,12 @@ namespace loader_driver_ddi
         double threshold                                ///< [in] The energy threshold to be set in joules.
         );
     __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetUsage(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumPsus(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
@@ -1079,6 +1085,16 @@ namespace loader_driver_ddi
         zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
         );
     __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
     zesEngineGetActivityExt(
         zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
         uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
@@ -1113,6 +1129,40 @@ namespace loader_driver_ddi
     zesRasClearStateExp(
         zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
         zes_ras_error_category_exp_t category           ///< [in] category for which error counter is to be cleared.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of categories supported.
+                                                        ///< if count is non-zero, then driver shall only retrieve that number of categories.
+        zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                        ///< if count is less than the number of categories supported, then driver
+                                                        ///< shall only retrieve that number of categories.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp2(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+        const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+        zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                        ///< initialize stype and pNext for each element.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                        ///< The caller should set the category field for each entry to specify
+                                                        ///< which categories to query.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasSetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                        ///< thresholds for different error categories.
         );
     __zedlllocal ze_result_t ZE_APICALL
     zesFirmwareGetSecurityVersionExp(

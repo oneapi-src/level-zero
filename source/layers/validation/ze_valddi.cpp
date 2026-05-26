@@ -837,6 +837,106 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceGetRuntimeRequirements(
+        ze_result_t result,
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const void* pObjDesc,                           ///< [in] describes the object for which the requirements are to be
+                                                        ///< gathered
+        size_t* pSize,                                  ///< [in,out] size of requirements string in bytes.
+        char* pRequirements                             ///< [in,out][optional] holds results of the query.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetRuntimeRequirements(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "pObjDesc=";
+        oss << loader::to_string(pObjDesc);
+        
+        oss << ", ";
+        oss << "pSize=";
+        oss << loader::to_string(pSize);
+        
+        oss << ", ";
+        oss << "pRequirements=";
+        oss << loader::to_string(pRequirements);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceGetRuntimeRequirementsKey(
+        ze_result_t result,
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char** pKey                               ///< [out] returned key
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetRuntimeRequirementsKey(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "pKey=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pKey != nullptr) {
+            oss << loader::to_string(*pKey);
+        } else {
+            oss << loader::to_string(pKey);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceValidateRuntimeRequirements(
+        ze_result_t result,
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char* pRequirements,                      ///< [in] requirements to be validated. Requirements should be
+                                                        ///< null-terminated plain text representation of runtime requirements
+                                                        ///< previously retrieved from the device.
+        ze_validate_runtime_requirements_output_t* pOut ///< [in][out] Output of the validation call.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDeviceValidateRuntimeRequirements(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "pRequirements=";
+        oss << loader::to_string(pRequirements);
+        
+        oss << ", ";
+        oss << "pOut=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pOut != nullptr) {
+            oss << loader::to_string(*pOut);
+        } else {
+            oss << loader::to_string(pOut);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeContextCreate(
         ze_result_t result,
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
@@ -1658,6 +1758,62 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendMemoryCopyWithParameters(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryCopyWithParameters(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "dstptr=";
+        oss << loader::to_string(dstptr);
+        
+        oss << ", ";
+        oss << "srcptr=";
+        oss << loader::to_string(srcptr);
+        
+        oss << ", ";
+        oss << "size=";
+        oss << loader::to_string(size);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendMemoryFill(
         ze_result_t result,
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
@@ -1698,6 +1854,67 @@ namespace validation_layer
         oss << ", ";
         oss << "size=";
         oss << loader::to_string(size);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendMemoryFillWithParameters(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* ptr,                                      ///< [in] pointer to memory to initialize
+        const void* pattern,                            ///< [in] pointer to value to initialize memory to
+        size_t pattern_size,                            ///< [in] size in bytes of the value to initialize memory to
+        size_t size,                                    ///< [in] size in bytes to initialize
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendMemoryFillWithParameters(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "ptr=";
+        oss << loader::to_string(ptr);
+        
+        oss << ", ";
+        oss << "pattern=";
+        oss << loader::to_string(pattern);
+        
+        oss << ", ";
+        oss << "pattern_size=";
+        oss << loader::to_string(pattern_size);
+        
+        oss << ", ";
+        oss << "size=";
+        oss << loader::to_string(size);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
         
         oss << ", ";
         oss << "hSignalEvent=";
@@ -7090,6 +7307,61 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListImmediateAppendCommandListsWithParameters(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListImmediateAppendCommandListsWithParameters(";
+        
+        
+        oss << "hCommandListImmediate=";
+        oss << loader::to_string(hCommandListImmediate);
+        
+        oss << ", ";
+        oss << "numCommandLists=";
+        oss << loader::to_string(numCommandLists);
+        
+        oss << ", ";
+        oss << "phCommandLists=";
+        oss << loader::to_string(phCommandLists);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListGetNextCommandIdExp(
         ze_result_t result,
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
@@ -8617,6 +8889,138 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRuntimeRequirements
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRuntimeRequirements(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const void* pObjDesc,                           ///< [in] describes the object for which the requirements are to be
+                                                        ///< gathered
+        size_t* pSize,                                  ///< [in,out] size of requirements string in bytes.
+        char* pRequirements                             ///< [in,out][optional] holds results of the query.
+        )
+    {
+        context.logger->log_trace("zeDeviceGetRuntimeRequirements(hDevice, pObjDesc, pSize, pRequirements)");
+
+        auto pfnGetRuntimeRequirements = context.zeDdiTable.Device.pfnGetRuntimeRequirements;
+
+        if( nullptr == pfnGetRuntimeRequirements )
+            return logAndPropagateResult_zeDeviceGetRuntimeRequirements(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, pObjDesc, pSize, pRequirements);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRuntimeRequirementsPrologue( hDevice, pObjDesc, pSize, pRequirements );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetRuntimeRequirements(result, hDevice, pObjDesc, pSize, pRequirements);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetRuntimeRequirementsPrologue( hDevice, pObjDesc, pSize, pRequirements );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetRuntimeRequirements(result, hDevice, pObjDesc, pSize, pRequirements);
+        }
+
+        auto driver_result = pfnGetRuntimeRequirements( hDevice, pObjDesc, pSize, pRequirements );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRuntimeRequirementsEpilogue( hDevice, pObjDesc, pSize, pRequirements ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetRuntimeRequirements(result, hDevice, pObjDesc, pSize, pRequirements);
+        }
+
+        return logAndPropagateResult_zeDeviceGetRuntimeRequirements(driver_result, hDevice, pObjDesc, pSize, pRequirements);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRuntimeRequirementsKey
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRuntimeRequirementsKey(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char** pKey                               ///< [out] returned key
+        )
+    {
+        context.logger->log_trace("zeDeviceGetRuntimeRequirementsKey(hDevice, pKey)");
+
+        auto pfnGetRuntimeRequirementsKey = context.zeDdiTable.Device.pfnGetRuntimeRequirementsKey;
+
+        if( nullptr == pfnGetRuntimeRequirementsKey )
+            return logAndPropagateResult_zeDeviceGetRuntimeRequirementsKey(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, pKey);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRuntimeRequirementsKeyPrologue( hDevice, pKey );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetRuntimeRequirementsKey(result, hDevice, pKey);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetRuntimeRequirementsKeyPrologue( hDevice, pKey );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetRuntimeRequirementsKey(result, hDevice, pKey);
+        }
+
+        auto driver_result = pfnGetRuntimeRequirementsKey( hDevice, pKey );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRuntimeRequirementsKeyEpilogue( hDevice, pKey ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetRuntimeRequirementsKey(result, hDevice, pKey);
+        }
+
+        return logAndPropagateResult_zeDeviceGetRuntimeRequirementsKey(driver_result, hDevice, pKey);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceValidateRuntimeRequirements
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceValidateRuntimeRequirements(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char* pRequirements,                      ///< [in] requirements to be validated. Requirements should be
+                                                        ///< null-terminated plain text representation of runtime requirements
+                                                        ///< previously retrieved from the device.
+        ze_validate_runtime_requirements_output_t* pOut ///< [in][out] Output of the validation call.
+        )
+    {
+        context.logger->log_trace("zeDeviceValidateRuntimeRequirements(hDevice, pRequirements, pOut)");
+
+        auto pfnValidateRuntimeRequirements = context.zeDdiTable.Device.pfnValidateRuntimeRequirements;
+
+        if( nullptr == pfnValidateRuntimeRequirements )
+            return logAndPropagateResult_zeDeviceValidateRuntimeRequirements(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, pRequirements, pOut);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceValidateRuntimeRequirementsPrologue( hDevice, pRequirements, pOut );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceValidateRuntimeRequirements(result, hDevice, pRequirements, pOut);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceValidateRuntimeRequirementsPrologue( hDevice, pRequirements, pOut );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceValidateRuntimeRequirements(result, hDevice, pRequirements, pOut);
+        }
+
+        auto driver_result = pfnValidateRuntimeRequirements( hDevice, pRequirements, pOut );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceValidateRuntimeRequirementsEpilogue( hDevice, pRequirements, pOut ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceValidateRuntimeRequirements(result, hDevice, pRequirements, pOut);
+        }
+
+        return logAndPropagateResult_zeDeviceValidateRuntimeRequirements(driver_result, hDevice, pRequirements, pOut);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeContextCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -9805,6 +10209,56 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendMemoryCopyWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendMemoryCopyWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendMemoryCopyWithParameters(hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendMemoryCopyWithParameters = context.zeDdiTable.CommandList.pfnAppendMemoryCopyWithParameters;
+
+        if( nullptr == pfnAppendMemoryCopyWithParameters )
+            return logAndPropagateResult_zeCommandListAppendMemoryCopyWithParameters(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyWithParametersPrologue( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendMemoryCopyWithParameters(result, hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyWithParametersPrologue( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendMemoryCopyWithParameters(result, hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnAppendMemoryCopyWithParameters( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyWithParametersEpilogue( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendMemoryCopyWithParameters(result, hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListAppendMemoryCopyWithParameters(driver_result, hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendMemoryFill
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendMemoryFill(
@@ -9852,6 +10306,57 @@ namespace validation_layer
         }
 
         return logAndPropagateResult_zeCommandListAppendMemoryFill(driver_result, hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendMemoryFillWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendMemoryFillWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* ptr,                                      ///< [in] pointer to memory to initialize
+        const void* pattern,                            ///< [in] pointer to value to initialize memory to
+        size_t pattern_size,                            ///< [in] size in bytes of the value to initialize memory to
+        size_t size,                                    ///< [in] size in bytes to initialize
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendMemoryFillWithParameters(hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendMemoryFillWithParameters = context.zeDdiTable.CommandList.pfnAppendMemoryFillWithParameters;
+
+        if( nullptr == pfnAppendMemoryFillWithParameters )
+            return logAndPropagateResult_zeCommandListAppendMemoryFillWithParameters(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryFillWithParametersPrologue( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendMemoryFillWithParameters(result, hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryFillWithParametersPrologue( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendMemoryFillWithParameters(result, hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnAppendMemoryFillWithParameters( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryFillWithParametersEpilogue( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendMemoryFillWithParameters(result, hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListAppendMemoryFillWithParameters(driver_result, hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -17056,6 +17561,59 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateAppendCommandListsWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateAppendCommandListsWithParameters(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+        )
+    {
+        context.logger->log_trace("zeCommandListImmediateAppendCommandListsWithParameters(hCommandListImmediate, numCommandLists, phCommandListsLocal, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnImmediateAppendCommandListsWithParameters = context.zeDdiTable.CommandList.pfnImmediateAppendCommandListsWithParameters;
+
+        if( nullptr == pfnImmediateAppendCommandListsWithParameters )
+            return logAndPropagateResult_zeCommandListImmediateAppendCommandListsWithParameters(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateAppendCommandListsWithParametersPrologue( hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListImmediateAppendCommandListsWithParameters(result, hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateAppendCommandListsWithParametersPrologue( hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListImmediateAppendCommandListsWithParameters(result, hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnImmediateAppendCommandListsWithParameters( hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateAppendCommandListsWithParametersEpilogue( hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListImmediateAppendCommandListsWithParameters(result, hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListImmediateAppendCommandListsWithParameters(driver_result, hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListGetNextCommandIdExp
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListGetNextCommandIdExp(
@@ -17825,6 +18383,18 @@ zeGetDeviceProcAddrTable(
         dditable.pfnGetAggregatedCopyOffloadIncrementValue   = pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue;
         pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue = validation_layer::zeDeviceGetAggregatedCopyOffloadIncrementValue;
     }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnGetRuntimeRequirements                   = pDdiTable->pfnGetRuntimeRequirements;
+        pDdiTable->pfnGetRuntimeRequirements                 = validation_layer::zeDeviceGetRuntimeRequirements;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnGetRuntimeRequirementsKey                = pDdiTable->pfnGetRuntimeRequirementsKey;
+        pDdiTable->pfnGetRuntimeRequirementsKey              = validation_layer::zeDeviceGetRuntimeRequirementsKey;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnValidateRuntimeRequirements              = pDdiTable->pfnValidateRuntimeRequirements;
+        pDdiTable->pfnValidateRuntimeRequirements            = validation_layer::zeDeviceValidateRuntimeRequirements;
+    }
     if (version >= ZE_API_VERSION_1_2) {
         dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
         pDdiTable->pfnReserveCacheExt                        = validation_layer::zeDeviceReserveCacheExt;
@@ -18132,6 +18702,18 @@ zeGetCommandListProcAddrTable(
     if (version >= ZE_API_VERSION_1_14) {
         dditable.pfnAppendLaunchKernelWithArguments          = pDdiTable->pfnAppendLaunchKernelWithArguments;
         pDdiTable->pfnAppendLaunchKernelWithArguments        = validation_layer::zeCommandListAppendLaunchKernelWithArguments;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnAppendMemoryCopyWithParameters           = pDdiTable->pfnAppendMemoryCopyWithParameters;
+        pDdiTable->pfnAppendMemoryCopyWithParameters         = validation_layer::zeCommandListAppendMemoryCopyWithParameters;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnAppendMemoryFillWithParameters           = pDdiTable->pfnAppendMemoryFillWithParameters;
+        pDdiTable->pfnAppendMemoryFillWithParameters         = validation_layer::zeCommandListAppendMemoryFillWithParameters;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnImmediateAppendCommandListsWithParameters    = pDdiTable->pfnImmediateAppendCommandListsWithParameters;
+        pDdiTable->pfnImmediateAppendCommandListsWithParameters  = validation_layer::zeCommandListImmediateAppendCommandListsWithParameters;
     }
     if (version >= ZE_API_VERSION_1_3) {
         dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;

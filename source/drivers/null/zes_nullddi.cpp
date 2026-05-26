@@ -3120,6 +3120,34 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetUsage
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetUsage(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetUsage = context.zesDdiTable.Power.pfnGetUsage;
+        if( nullptr != pfnGetUsage )
+        {
+            result = pfnGetUsage( hPower, pInstantPower, pAveragePower );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesPowerGetUsage", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumPsus
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumPsus(
@@ -3992,6 +4020,60 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetLimitsExt2 = context.zesDdiTable.Power.pfnGetLimitsExt2;
+        if( nullptr != pfnGetLimitsExt2 )
+        {
+            result = pfnGetLimitsExt2( hPower, pLimit );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesPowerGetLimitsExt2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerSetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetLimitsExt2 = context.zesDdiTable.Power.pfnSetLimitsExt2;
+        if( nullptr != pfnSetLimitsExt2 )
+        {
+            result = pfnSetLimitsExt2( hPower, limit );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesPowerSetLimitsExt2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesEngineGetActivityExt
     __zedlllocal ze_result_t ZE_APICALL
     zesEngineGetActivityExt(
@@ -4088,6 +4170,128 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zesRasClearStateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetSupportedCategoriesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of categories supported.
+                                                        ///< if count is non-zero, then driver shall only retrieve that number of categories.
+        zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                        ///< if count is less than the number of categories supported, then driver
+                                                        ///< shall only retrieve that number of categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetSupportedCategoriesExp = context.zesDdiTable.RasExp.pfnGetSupportedCategoriesExp;
+        if( nullptr != pfnGetSupportedCategoriesExp )
+        {
+            result = pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasGetSupportedCategoriesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetStateExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp2(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+        const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+        zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                        ///< initialize stype and pNext for each element.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetStateExp2 = context.zesDdiTable.RasExp.pfnGetStateExp2;
+        if( nullptr != pfnGetStateExp2 )
+        {
+            result = pfnGetStateExp2( hRas, count, pCategories, pState );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasGetStateExp2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                        ///< The caller should set the category field for each entry to specify
+                                                        ///< which categories to query.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetConfigExp = context.zesDdiTable.RasExp.pfnGetConfigExp;
+        if( nullptr != pfnGetConfigExp )
+        {
+            result = pfnGetConfigExp( hRas, count, pConfig );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasGetConfigExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasSetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasSetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                        ///< thresholds for different error categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetConfigExp = context.zesDdiTable.RasExp.pfnSetConfigExp;
+        if( nullptr != pfnSetConfigExp )
+        {
+            result = pfnSetConfigExp( hRas, count, pConfig );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasSetConfigExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -5486,6 +5690,12 @@ zesGetPowerProcAddrTable(
     pDdiTable->pfnSetLimitsExt                           = driver::zesPowerSetLimitsExt;
     }
 
+    pDdiTable->pfnGetUsage                               = driver::zesPowerGetUsage;
+
+    pDdiTable->pfnGetLimitsExt2                          = driver::zesPowerGetLimitsExt2;
+
+    pDdiTable->pfnSetLimitsExt2                          = driver::zesPowerSetLimitsExt2;
+
     return result;
 }
 
@@ -5592,6 +5802,14 @@ zesGetRasExpProcAddrTable(
     if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnClearStateExp                          = driver::zesRasClearStateExp;
     }
+
+    pDdiTable->pfnGetSupportedCategoriesExp              = driver::zesRasGetSupportedCategoriesExp;
+
+    pDdiTable->pfnGetStateExp2                           = driver::zesRasGetStateExp2;
+
+    pDdiTable->pfnGetConfigExp                           = driver::zesRasGetConfigExp;
+
+    pDdiTable->pfnSetConfigExp                           = driver::zesRasSetConfigExp;
 
     return result;
 }

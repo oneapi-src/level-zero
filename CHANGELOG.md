@@ -1,4 +1,8 @@
 # Level zero loader changelog
+## v1.29.0
+* Update to L0 Zero Spec v1.16.24: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-16-24
+* fix: CONTRIBUTING.md to correct command line for updating spec 
+* Add to_string support support for callbacks (#463)
 ## v1.28.6
 * Remove level-zero* (non-Canonical) package names when building DEBs with CPack
 * Allow pkgconfig file isntallation with Window MSI Installer

@@ -3261,6 +3261,32 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetUsage
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetUsage(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetUsage = dditable->zes.Power.pfnGetUsage;
+        if( nullptr == pfnGetUsage )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
+        // forward to device-driver
+        result = pfnGetUsage( hPower, pInstantPower, pAveragePower );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumPsus
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumPsus(
@@ -4135,6 +4161,56 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetLimitsExt2 = dditable->zes.Power.pfnGetLimitsExt2;
+        if( nullptr == pfnGetLimitsExt2 )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
+        // forward to device-driver
+        result = pfnGetLimitsExt2( hPower, pLimit );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerSetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnSetLimitsExt2 = dditable->zes.Power.pfnSetLimitsExt2;
+        if( nullptr == pfnSetLimitsExt2 )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
+        // forward to device-driver
+        result = pfnSetLimitsExt2( hPower, limit );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesEngineGetActivityExt
     __zedlllocal ze_result_t ZE_APICALL
     zesEngineGetActivityExt(
@@ -4226,6 +4302,120 @@ namespace loader
 
         // forward to device-driver
         result = pfnClearStateExp( hRas, category );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetSupportedCategoriesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of categories supported.
+                                                        ///< if count is non-zero, then driver shall only retrieve that number of categories.
+        zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                        ///< if count is less than the number of categories supported, then driver
+                                                        ///< shall only retrieve that number of categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetSupportedCategoriesExp = dditable->zes.RasExp.pfnGetSupportedCategoriesExp;
+        if( nullptr == pfnGetSupportedCategoriesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
+        // forward to device-driver
+        result = pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetStateExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp2(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+        const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+        zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                        ///< initialize stype and pNext for each element.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetStateExp2 = dditable->zes.RasExp.pfnGetStateExp2;
+        if( nullptr == pfnGetStateExp2 )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
+        // forward to device-driver
+        result = pfnGetStateExp2( hRas, count, pCategories, pState );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                        ///< The caller should set the category field for each entry to specify
+                                                        ///< which categories to query.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetConfigExp = dditable->zes.RasExp.pfnGetConfigExp;
+        if( nullptr == pfnGetConfigExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
+        // forward to device-driver
+        result = pfnGetConfigExp( hRas, count, pConfig );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasSetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasSetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                        ///< thresholds for different error categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnSetConfigExp = dditable->zes.RasExp.pfnSetConfigExp;
+        if( nullptr == pfnSetConfigExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
+        // forward to device-driver
+        result = pfnSetConfigExp( hRas, count, pConfig );
 
         return result;
     }
@@ -4987,6 +5177,9 @@ zesGetPowerProcAddrTableLegacy()
     loader::loaderDispatch->pSysman->Power->pfnSetEnergyThreshold                       = loader::zesPowerSetEnergyThreshold;
     loader::loaderDispatch->pSysman->Power->pfnGetLimitsExt                             = loader::zesPowerGetLimitsExt;
     loader::loaderDispatch->pSysman->Power->pfnSetLimitsExt                             = loader::zesPowerSetLimitsExt;
+    loader::loaderDispatch->pSysman->Power->pfnGetUsage                                 = loader::zesPowerGetUsage;
+    loader::loaderDispatch->pSysman->Power->pfnGetLimitsExt2                            = loader::zesPowerGetLimitsExt2;
+    loader::loaderDispatch->pSysman->Power->pfnSetLimitsExt2                            = loader::zesPowerSetLimitsExt2;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5019,6 +5212,10 @@ zesGetRasExpProcAddrTableLegacy()
     // return pointers to the Loader's Functions.
     loader::loaderDispatch->pSysman->RasExp->pfnGetStateExp                              = loader::zesRasGetStateExp;
     loader::loaderDispatch->pSysman->RasExp->pfnClearStateExp                            = loader::zesRasClearStateExp;
+    loader::loaderDispatch->pSysman->RasExp->pfnGetSupportedCategoriesExp                = loader::zesRasGetSupportedCategoriesExp;
+    loader::loaderDispatch->pSysman->RasExp->pfnGetStateExp2                             = loader::zesRasGetStateExp2;
+    loader::loaderDispatch->pSysman->RasExp->pfnGetConfigExp                             = loader::zesRasGetConfigExp;
+    loader::loaderDispatch->pSysman->RasExp->pfnSetConfigExp                             = loader::zesRasSetConfigExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -7861,6 +8058,27 @@ zesGetPowerProcAddrTable(
                 pDdiTable->pfnSetLimitsExt                             = loader::zesPowerSetLimitsExt;
             }
             }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetUsage                                 = loader_driver_ddi::zesPowerGetUsage;
+            } else {
+                pDdiTable->pfnGetUsage                                 = loader::zesPowerGetUsage;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetLimitsExt2                            = loader_driver_ddi::zesPowerGetLimitsExt2;
+            } else {
+                pDdiTable->pfnGetLimitsExt2                            = loader::zesPowerGetLimitsExt2;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetLimitsExt2                            = loader_driver_ddi::zesPowerSetLimitsExt2;
+            } else {
+                pDdiTable->pfnSetLimitsExt2                            = loader::zesPowerSetLimitsExt2;
+            }
+            }
             zesGetPowerProcAddrTableLegacy();
         }
         else
@@ -8143,6 +8361,34 @@ zesGetRasExpProcAddrTable(
                 pDdiTable->pfnClearStateExp                            = loader_driver_ddi::zesRasClearStateExp;
             } else {
                 pDdiTable->pfnClearStateExp                            = loader::zesRasClearStateExp;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetSupportedCategoriesExp                = loader_driver_ddi::zesRasGetSupportedCategoriesExp;
+            } else {
+                pDdiTable->pfnGetSupportedCategoriesExp                = loader::zesRasGetSupportedCategoriesExp;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetStateExp2                             = loader_driver_ddi::zesRasGetStateExp2;
+            } else {
+                pDdiTable->pfnGetStateExp2                             = loader::zesRasGetStateExp2;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetConfigExp                             = loader_driver_ddi::zesRasGetConfigExp;
+            } else {
+                pDdiTable->pfnGetConfigExp                             = loader::zesRasGetConfigExp;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetConfigExp                             = loader_driver_ddi::zesRasSetConfigExp;
+            } else {
+                pDdiTable->pfnSetConfigExp                             = loader::zesRasSetConfigExp;
             }
             }
             zesGetRasExpProcAddrTableLegacy();
