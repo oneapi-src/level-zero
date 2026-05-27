@@ -21,7 +21,6 @@ if source_dir not in sys.path:
 
 @patch("pyzes.getFunctionPointerList")
 class TestGlobalOperations(unittest.TestCase):
-
     def setUp(self):
         import pyzes
 
@@ -100,6 +99,100 @@ class TestGlobalOperations(unittest.TestCase):
         self.assertEqual(device_props.core.numThreadsPerEU, mock_num_threads_per_eu)
 
         mock_get_func.assert_called_with("zesDeviceGetProperties")
+        mock_func.assert_called_once()
+
+    def test_GivenValidDeviceHandleWhenCallingZesDevicePciGetPropertiesThenCallSucceedsWithValidProperties(
+        self, mock_get_func
+    ):
+        mock_domain = 0
+        mock_bus = 3
+        mock_device = 0x1F
+        mock_function = 0
+        mock_gen = 5
+        mock_width = 16
+        mock_max_bandwidth = 63_015_384_000
+        mock_have_bandwidth_counters = 1
+        mock_have_packet_counters = 1
+        mock_have_replay_counters = 0
+
+        def mock_get_pci_properties(device_handle, properties_ptr):
+            properties_ptr._obj.address.domain = mock_domain
+            properties_ptr._obj.address.bus = mock_bus
+            properties_ptr._obj.address.device = mock_device
+            properties_ptr._obj.address.function = mock_function
+            properties_ptr._obj.maxSpeed.gen = mock_gen
+            properties_ptr._obj.maxSpeed.width = mock_width
+            properties_ptr._obj.maxSpeed.maxBandwidth = mock_max_bandwidth
+            properties_ptr._obj.haveBandwidthCounters = mock_have_bandwidth_counters
+            properties_ptr._obj.havePacketCounters = mock_have_packet_counters
+            properties_ptr._obj.haveReplayCounters = mock_have_replay_counters
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_pci_properties)
+        mock_get_func.return_value = mock_func
+
+        device_handle = self.pyzes.zes_device_handle_t()
+        pci_props = self.pyzes.zes_pci_properties_t()
+
+        result = self.pyzes.zesDevicePciGetProperties(device_handle, byref(pci_props))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(pci_props.address.domain, mock_domain)
+        self.assertEqual(pci_props.address.bus, mock_bus)
+        self.assertEqual(pci_props.address.device, mock_device)
+        self.assertEqual(pci_props.address.function, mock_function)
+        self.assertEqual(pci_props.maxSpeed.gen, mock_gen)
+        self.assertEqual(pci_props.maxSpeed.width, mock_width)
+        self.assertEqual(pci_props.maxSpeed.maxBandwidth, mock_max_bandwidth)
+        self.assertEqual(pci_props.haveBandwidthCounters, mock_have_bandwidth_counters)
+        self.assertEqual(pci_props.havePacketCounters, mock_have_packet_counters)
+        self.assertEqual(pci_props.haveReplayCounters, mock_have_replay_counters)
+
+        mock_get_func.assert_called_with("zesDevicePciGetProperties")
+        mock_func.assert_called_once()
+
+    def test_GivenValidDeviceHandleWhenCallingZesDevicePciGetStatsThenCallSucceedsWithValidStats(
+        self, mock_get_func
+    ):
+        mock_timestamp = 123456789
+        mock_replay_counter = 7
+        mock_packet_counter = 19
+        mock_rx_counter = 4096
+        mock_tx_counter = 8192
+        mock_gen = 4
+        mock_width = 8
+        mock_max_bandwidth = 16_000_000_000
+
+        def mock_get_pci_stats(device_handle, stats_ptr):
+            stats_ptr._obj.timestamp = mock_timestamp
+            stats_ptr._obj.replayCounter = mock_replay_counter
+            stats_ptr._obj.packetCounter = mock_packet_counter
+            stats_ptr._obj.rxCounter = mock_rx_counter
+            stats_ptr._obj.txCounter = mock_tx_counter
+            stats_ptr._obj.speed.gen = mock_gen
+            stats_ptr._obj.speed.width = mock_width
+            stats_ptr._obj.speed.maxBandwidth = mock_max_bandwidth
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_pci_stats)
+        mock_get_func.return_value = mock_func
+
+        device_handle = self.pyzes.zes_device_handle_t()
+        pci_stats = self.pyzes.zes_pci_stats_t()
+
+        result = self.pyzes.zesDevicePciGetStats(device_handle, byref(pci_stats))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(pci_stats.timestamp, mock_timestamp)
+        self.assertEqual(pci_stats.replayCounter, mock_replay_counter)
+        self.assertEqual(pci_stats.packetCounter, mock_packet_counter)
+        self.assertEqual(pci_stats.rxCounter, mock_rx_counter)
+        self.assertEqual(pci_stats.txCounter, mock_tx_counter)
+        self.assertEqual(pci_stats.speed.gen, mock_gen)
+        self.assertEqual(pci_stats.speed.width, mock_width)
+        self.assertEqual(pci_stats.speed.maxBandwidth, mock_max_bandwidth)
+
+        mock_get_func.assert_called_with("zesDevicePciGetStats")
         mock_func.assert_called_once()
 
     def test_GivenValidDeviceHandleWhenCallingZesDeviceProcessesGetStateThenCallSucceedsWithProcessCount(

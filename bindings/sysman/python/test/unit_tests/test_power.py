@@ -73,93 +73,78 @@ class TestPowerFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesPowerGetEnergyCounter")
         mock_func.assert_called_once()
 
-    def test_GivenValidPowerHandleWhenCallingZesPowerGetUsageThenCallSucceedsWithUsageData(
+    def test_GivenValidPowerHandleWhenCallingZesPowerGetLimitsExtThenCallSucceedsWithDescriptors(
         self, mock_get_func
     ):
-        mock_instant_power = 42000
-        mock_average_power = 38000
+        mock_count = 2
 
-        def mock_get_usage(power_handle, instant_ptr, average_ptr):
-            instant_ptr._obj.value = mock_instant_power
-            average_ptr._obj.value = mock_average_power
+        def mock_get_limits_ext(power_handle, count_ptr, limits_ptr):
+            count_ptr._obj.value = mock_count
+            limits_ptr[0].level = self.pyzes.ZES_POWER_LEVEL_SUSTAINED
+            limits_ptr[0].source = self.pyzes.ZES_POWER_SOURCE_MAINS
+            limits_ptr[0].limitUnit = self.pyzes.ZES_LIMIT_UNIT_POWER
+            limits_ptr[0].enabled = 1
+            limits_ptr[0].interval = 1000
+            limits_ptr[0].limit = 250000
+            limits_ptr[1].level = self.pyzes.ZES_POWER_LEVEL_BURST
+            limits_ptr[1].source = self.pyzes.ZES_POWER_SOURCE_ANY
+            limits_ptr[1].limitUnit = self.pyzes.ZES_LIMIT_UNIT_POWER
+            limits_ptr[1].enabled = 0
+            limits_ptr[1].interval = 0
+            limits_ptr[1].limit = 300000
             return self.pyzes.ZE_RESULT_SUCCESS
 
-        mock_func = MagicMock(side_effect=mock_get_usage)
+        mock_func = MagicMock(side_effect=mock_get_limits_ext)
         mock_get_func.return_value = mock_func
 
         power_handle = self.pyzes.zes_pwr_handle_t()
-        instant_power = c_uint32(0)
-        average_power = c_uint32(0)
+        count = c_uint32(mock_count)
+        limits = (self.pyzes.zes_power_limit_ext_desc_t * mock_count)()
 
-        result = self.pyzes.zesPowerGetUsage(
-            power_handle, byref(instant_power), byref(average_power)
-        )
+        result = self.pyzes.zesPowerGetLimitsExt(power_handle, byref(count), limits)
 
         self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
-        self.assertEqual(instant_power.value, mock_instant_power)
-        self.assertEqual(average_power.value, mock_average_power)
-        mock_get_func.assert_called_with("zesPowerGetUsage")
+        self.assertEqual(count.value, mock_count)
+        self.assertEqual(limits[0].level, self.pyzes.ZES_POWER_LEVEL_SUSTAINED)
+        self.assertEqual(limits[0].source, self.pyzes.ZES_POWER_SOURCE_MAINS)
+        self.assertEqual(limits[0].limit, 250000)
+        self.assertEqual(limits[1].level, self.pyzes.ZES_POWER_LEVEL_BURST)
+        self.assertEqual(limits[1].enabled, 0)
+        self.assertEqual(limits[1].limit, 300000)
+        mock_get_func.assert_called_with("zesPowerGetLimitsExt")
         mock_func.assert_called_once()
 
-    def test_GivenValidPowerHandleWhenCallingZesPowerGetPropertiesThenCallSucceedsWithProperties(
+    def test_GivenValidPowerHandleWhenCallingZesPowerSetLimitsExtThenCallSucceeds(
         self, mock_get_func
     ):
-        mock_default_limit = 150000
-        mock_min_limit = 100000
-        mock_max_limit = 225000
-        mock_domain = self.pyzes.ZES_POWER_DOMAIN_PACKAGE
-        mock_ext_default_limit = 175000
-
-        def mock_get_properties(power_handle, properties_ptr):
-            properties_ptr._obj.onSubdevice = True
-            properties_ptr._obj.subdeviceId = 1
-            properties_ptr._obj.canControl = True
-            properties_ptr._obj.isEnergyThresholdSupported = True
-            properties_ptr._obj.defaultLimit = mock_default_limit
-            properties_ptr._obj.minLimit = mock_min_limit
-            properties_ptr._obj.maxLimit = mock_max_limit
-
-            ext_properties_ptr = cast(
-                properties_ptr._obj.pNext,
-                POINTER(self.pyzes.zes_power_ext_properties_t),
-            )
-            ext_properties_ptr.contents.domain = mock_domain
-            ext_properties_ptr.contents.defaultLimit.contents.limit = (
-                mock_ext_default_limit
-            )
+        def mock_set_limits_ext(power_handle, count_ptr, limits_ptr):
+            self.assertEqual(count_ptr._obj.value, 1)
+            self.assertEqual(limits_ptr[0].level, self.pyzes.ZES_POWER_LEVEL_SUSTAINED)
+            self.assertEqual(limits_ptr[0].source, self.pyzes.ZES_POWER_SOURCE_MAINS)
+            self.assertEqual(limits_ptr[0].limitUnit, self.pyzes.ZES_LIMIT_UNIT_POWER)
+            self.assertEqual(limits_ptr[0].enabled, 1)
+            self.assertEqual(limits_ptr[0].interval, 2000)
+            self.assertEqual(limits_ptr[0].limit, 275000)
             return self.pyzes.ZE_RESULT_SUCCESS
 
-        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_func = MagicMock(side_effect=mock_set_limits_ext)
         mock_get_func.return_value = mock_func
 
         power_handle = self.pyzes.zes_pwr_handle_t()
-        properties = self.pyzes.zes_power_properties_t()
-        ext_properties = self.pyzes.zes_power_ext_properties_t()
-        ext_default_limit = self.pyzes.zes_power_limit_ext_desc_t()
+        count = c_uint32(1)
+        limits = (self.pyzes.zes_power_limit_ext_desc_t * 1)()
+        limits[0].stype = self.pyzes.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+        limits[0].level = self.pyzes.ZES_POWER_LEVEL_SUSTAINED
+        limits[0].source = self.pyzes.ZES_POWER_SOURCE_MAINS
+        limits[0].limitUnit = self.pyzes.ZES_LIMIT_UNIT_POWER
+        limits[0].enabled = 1
+        limits[0].interval = 2000
+        limits[0].limit = 275000
 
-        properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_POWER_PROPERTIES
-        properties.pNext = cast(byref(ext_properties), c_void_p)
-        ext_properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
-        ext_properties.defaultLimit = pointer(ext_default_limit)
-
-        result = self.pyzes.zesPowerGetProperties(power_handle, byref(properties))
+        result = self.pyzes.zesPowerSetLimitsExt(power_handle, byref(count), limits)
 
         self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
-        self.assertEqual(properties.onSubdevice, True)
-        self.assertEqual(properties.subdeviceId, 1)
-        self.assertEqual(properties.canControl, True)
-        self.assertEqual(properties.isEnergyThresholdSupported, True)
-        self.assertEqual(properties.defaultLimit, mock_default_limit)
-        self.assertEqual(properties.minLimit, mock_min_limit)
-        self.assertEqual(properties.maxLimit, mock_max_limit)
-        self.assertEqual(
-            ext_properties.stype, self.pyzes.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
-        )
-        self.assertEqual(ext_properties.domain, mock_domain)
-        self.assertEqual(
-            ext_properties.defaultLimit.contents.limit, mock_ext_default_limit
-        )
-        mock_get_func.assert_called_with("zesPowerGetProperties")
+        mock_get_func.assert_called_with("zesPowerSetLimitsExt")
         mock_func.assert_called_once()
 
 

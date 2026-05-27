@@ -86,47 +86,107 @@ class TestFrequencyFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesFrequencyGetState")
         mock_func.assert_called_once()
 
-    def test_GivenValidFrequencyHandleWhenCallingZesFrequencyGetPropertiesThenCallSucceedsWithProperties(
+    def test_GivenValidFrequencyHandleWhenCallingZesFrequencyGetAvailableClocksThenCallSucceedsWithClockList(
         self, mock_get_func
     ):
-        mock_type = self.pyzes.ZES_FREQ_DOMAIN_GPU
-        mock_on_subdevice = 1
-        mock_subdevice_id = 0
-        mock_can_control = 1
-        mock_throttle_event_supported = 1
-        mock_min = 300.0
-        mock_max = 2100.0
+        mock_clocks = [300.0, 600.0, 1200.0]
 
-        def mock_get_properties(frequency_handle, properties_ptr):
-            properties_ptr._obj.type = mock_type
-            properties_ptr._obj.onSubdevice = mock_on_subdevice
-            properties_ptr._obj.subdeviceId = mock_subdevice_id
-            properties_ptr._obj.canControl = mock_can_control
-            properties_ptr._obj.isThrottleEventSupported = mock_throttle_event_supported
-            properties_ptr._obj.min = mock_min
-            properties_ptr._obj.max = mock_max
+        def mock_get_available_clocks(frequency_handle, count_ptr, clocks_ptr):
+            count_ptr._obj.value = len(mock_clocks)
+            if clocks_ptr:
+                for index, clock in enumerate(mock_clocks):
+                    clocks_ptr[index] = clock
             return self.pyzes.ZE_RESULT_SUCCESS
 
-        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_func = MagicMock(side_effect=mock_get_available_clocks)
         mock_get_func.return_value = mock_func
 
         frequency_handle = self.pyzes.zes_freq_handle_t()
-        freq_properties = self.pyzes.zes_freq_properties_t()
-        result = self.pyzes.zesFrequencyGetProperties(
-            frequency_handle, byref(freq_properties)
+        count = c_uint32(len(mock_clocks))
+        clock_array = (c_double * len(mock_clocks))()
+
+        result = self.pyzes.zesFrequencyGetAvailableClocks(
+            frequency_handle, byref(count), clock_array
         )
 
         self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
-        self.assertEqual(freq_properties.type, mock_type)
-        self.assertEqual(freq_properties.onSubdevice, mock_on_subdevice)
-        self.assertEqual(freq_properties.subdeviceId, mock_subdevice_id)
-        self.assertEqual(freq_properties.canControl, mock_can_control)
-        self.assertEqual(
-            freq_properties.isThrottleEventSupported, mock_throttle_event_supported
+        self.assertEqual(count.value, len(mock_clocks))
+        self.assertEqual(list(clock_array), mock_clocks)
+        mock_get_func.assert_called_with("zesFrequencyGetAvailableClocks")
+        mock_func.assert_called_once()
+
+    def test_GivenValidFrequencyHandleWhenCallingZesFrequencyGetRangeThenCallSucceedsWithRange(
+        self, mock_get_func
+    ):
+        mock_min = 400.0
+        mock_max = 1700.0
+
+        def mock_get_range(frequency_handle, range_ptr):
+            range_ptr._obj.min = mock_min
+            range_ptr._obj.max = mock_max
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_range)
+        mock_get_func.return_value = mock_func
+
+        frequency_handle = self.pyzes.zes_freq_handle_t()
+        freq_range = self.pyzes.zes_freq_range_t()
+
+        result = self.pyzes.zesFrequencyGetRange(frequency_handle, byref(freq_range))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(freq_range.min, mock_min)
+        self.assertEqual(freq_range.max, mock_max)
+        mock_get_func.assert_called_with("zesFrequencyGetRange")
+        mock_func.assert_called_once()
+
+    def test_GivenValidFrequencyHandleWhenCallingZesFrequencySetRangeThenCallSucceeds(
+        self, mock_get_func
+    ):
+        def mock_set_range(frequency_handle, range_ptr):
+            self.assertEqual(range_ptr._obj.min, 500.0)
+            self.assertEqual(range_ptr._obj.max, 1500.0)
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_set_range)
+        mock_get_func.return_value = mock_func
+
+        frequency_handle = self.pyzes.zes_freq_handle_t()
+        freq_range = self.pyzes.zes_freq_range_t()
+        freq_range.min = 500.0
+        freq_range.max = 1500.0
+
+        result = self.pyzes.zesFrequencySetRange(frequency_handle, byref(freq_range))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        mock_get_func.assert_called_with("zesFrequencySetRange")
+        mock_func.assert_called_once()
+
+    def test_GivenValidFrequencyHandleWhenCallingZesFrequencyGetThrottleTimeThenCallSucceedsWithThrottleTime(
+        self, mock_get_func
+    ):
+        mock_throttle_time = 12345
+        mock_timestamp = 67890
+
+        def mock_get_throttle_time(frequency_handle, throttle_time_ptr):
+            throttle_time_ptr._obj.throttleTime = mock_throttle_time
+            throttle_time_ptr._obj.timestamp = mock_timestamp
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_throttle_time)
+        mock_get_func.return_value = mock_func
+
+        frequency_handle = self.pyzes.zes_freq_handle_t()
+        throttle_time = self.pyzes.zes_freq_throttle_time_t()
+
+        result = self.pyzes.zesFrequencyGetThrottleTime(
+            frequency_handle, byref(throttle_time)
         )
-        self.assertEqual(freq_properties.min, mock_min)
-        self.assertEqual(freq_properties.max, mock_max)
-        mock_get_func.assert_called_with("zesFrequencyGetProperties")
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(throttle_time.throttleTime, mock_throttle_time)
+        self.assertEqual(throttle_time.timestamp, mock_timestamp)
+        mock_get_func.assert_called_with("zesFrequencyGetThrottleTime")
         mock_func.assert_called_once()
 
 

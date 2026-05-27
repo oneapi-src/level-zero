@@ -151,9 +151,13 @@ class zes_engine_handle_t(c_void_p):
     pass
 
 
+class zes_ras_handle_t(c_void_p):
+    pass
+
+
 ##
 
-ze_bool_t = c_uint8
+ze_bool_t = c_uint32
 ze_device_property_flags_t = c_uint32
 zes_engine_type_flags_t = c_uint32
 zes_device_property_flags_t = c_uint32
@@ -224,7 +228,6 @@ ZES_POWER_DOMAIN_MEMORY = 4
 ZES_POWER_DOMAIN_GPU = 5
 ZES_POWER_DOMAIN_FORCE_UINT32 = 0x7FFFFFFF
 
-# Power limit level enumeration
 zes_power_level_t = c_int32
 ZES_POWER_LEVEL_UNKNOWN = 0
 ZES_POWER_LEVEL_SUSTAINED = 1
@@ -233,14 +236,12 @@ ZES_POWER_LEVEL_PEAK = 3
 ZES_POWER_LEVEL_INSTANTANEOUS = 4
 ZES_POWER_LEVEL_FORCE_UINT32 = 0x7FFFFFFF
 
-# Power source enumeration
 zes_power_source_t = c_int32
 ZES_POWER_SOURCE_ANY = 0
 ZES_POWER_SOURCE_MAINS = 1
 ZES_POWER_SOURCE_BATTERY = 2
 ZES_POWER_SOURCE_FORCE_UINT32 = 0x7FFFFFFF
 
-# Power limit unit enumeration
 zes_limit_unit_t = c_int32
 ZES_LIMIT_UNIT_UNKNOWN = 0
 ZES_LIMIT_UNIT_CURRENT = 1
@@ -293,6 +294,20 @@ ZES_ENGINE_GROUP_RENDER_ALL = 12
 ZES_ENGINE_GROUP_3D_ALL = 13
 ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14
 ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7FFFFFFF
+
+## RAS error category enums ##
+zes_ras_error_category_exp_t = c_int32
+ZES_RAS_ERROR_CATEGORY_EXP_RESET = 0
+ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS = 1
+ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS = 2
+ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS = 3
+ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS = 4
+ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS = 5
+ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS = 6
+ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS = 7
+ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS = 8
+ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS = 9
+ZES_RAS_ERROR_CATEGORY_EXP_FORCE_UINT32 = 0x7FFFFFFF
 
 ze_result_t = c_int32
 ZE_RESULT_SUCCESS = 0
@@ -357,17 +372,19 @@ ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
 
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
+ZES_STRUCTURE_TYPE_PCI_PROPERTIES = 0x2
+ZES_STRUCTURE_TYPE_DEVICE_ECC_DESC = 0x25
+ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES = 0x26
+ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27
+ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28
 ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES = 0x2D  # from zes_structure_type_t
 ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES = 0x2E  # Experimental subdevice properties
 ZES_STRUCTURE_TYPE_MEM_PROPERTIES = 0xB
 ZES_STRUCTURE_TYPE_MEM_STATE = 0x1E
 ZES_STRUCTURE_TYPE_FREQ_PROPERTIES = 0x9
 ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
-ZES_STRUCTURE_TYPE_POWER_PROPERTIES = 0xD
-ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27
-ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28
-ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0xA
-ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x1C
+ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
+ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
 
 
@@ -430,6 +447,96 @@ class zes_process_state_t(_PrintableStructure):
         ("subdeviceId", c_uint32),
     ]
     _fmt_ = {"memSize": "%d bytes", "sharedMemSize": "%d bytes"}
+
+
+## PCI structures ##
+class zes_pci_address_t(_PrintableStructure):
+    _fields_ = [
+        ("domain", c_uint32),
+        ("bus", c_uint32),
+        ("device", c_uint32),
+        ("function", c_uint32),
+    ]
+
+
+class zes_pci_speed_t(_PrintableStructure):
+    _fields_ = [
+        ("gen", c_int32),
+        ("width", c_int32),
+        ("maxBandwidth", c_int64),
+    ]
+    _fmt_ = {"maxBandwidth": "%d"}
+
+
+class zes_pci_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("address", zes_pci_address_t),
+        ("maxSpeed", zes_pci_speed_t),
+        ("haveBandwidthCounters", ze_bool_t),
+        ("havePacketCounters", ze_bool_t),
+        ("haveReplayCounters", ze_bool_t),
+    ]
+
+
+class zes_pci_stats_t(_PrintableStructure):
+    _fields_ = [
+        ("timestamp", c_uint64),
+        ("replayCounter", c_uint64),
+        ("packetCounter", c_uint64),
+        ("rxCounter", c_uint64),
+        ("txCounter", c_uint64),
+        ("speed", zes_pci_speed_t),
+    ]
+    _fmt_ = {
+        "timestamp": "%d",
+        "replayCounter": "%d",
+        "packetCounter": "%d",
+        "rxCounter": "%d",
+        "txCounter": "%d",
+    }
+
+
+## RAS structures ##
+class zes_ras_state_exp_t(_PrintableStructure):
+    _fields_ = [
+        ("category", zes_ras_error_category_exp_t),
+        ("errorCounter", c_uint64),
+    ]
+
+
+## ECC enums and structures ##
+zes_device_ecc_state_t = c_int32
+ZES_DEVICE_ECC_STATE_UNAVAILABLE = 0
+ZES_DEVICE_ECC_STATE_ENABLED = 1
+ZES_DEVICE_ECC_STATE_DISABLED = 2
+ZES_DEVICE_ECC_STATE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_device_action_t = c_int32
+ZES_DEVICE_ACTION_NONE = 0
+ZES_DEVICE_ACTION_WARM_CARD_RESET = 1
+ZES_DEVICE_ACTION_COLD_CARD_RESET = 2
+ZES_DEVICE_ACTION_COLD_SYSTEM_REBOOT = 3
+ZES_DEVICE_ACTION_FORCE_UINT32 = 0x7FFFFFFF
+
+
+class zes_device_ecc_desc_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("state", zes_device_ecc_state_t),
+    ]
+
+
+class zes_device_ecc_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("currentState", zes_device_ecc_state_t),
+        ("pendingState", zes_device_ecc_state_t),
+        ("pendingAction", zes_device_action_t),
+    ]
 
 
 ## Sysman zes_uuid_t ##
@@ -504,31 +611,9 @@ class zes_mem_bandwidth_t(_PrintableStructure):
 
 
 ## Power structures ##
-class zes_power_properties_t(_PrintableStructure):
-    _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_POWER_PROPERTIES
-        ("pNext", c_void_p),
-        ("onSubdevice", ze_bool_t),  # is on subdevice
-        ("subdeviceId", c_uint32),  # subdevice ID
-        ("canControl", ze_bool_t),  # software-controllable power domain
-        (
-            "isEnergyThresholdSupported",
-            ze_bool_t,
-        ),  # supports energy threshold crossed event
-        ("defaultLimit", c_int32),  # default power limit in milliwatts
-        ("minLimit", c_int32),  # minimum power limit in milliwatts
-        ("maxLimit", c_int32),  # maximum power limit in milliwatts
-    ]
-    _fmt_ = {
-        "defaultLimit": "%d mW",
-        "minLimit": "%d mW",
-        "maxLimit": "%d mW",
-    }
-
-
 class zes_power_limit_ext_desc_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+        ("stype", c_int32),
         ("pNext", c_void_p),
         ("level", zes_power_level_t),
         ("source", zes_power_source_t),
@@ -540,12 +625,11 @@ class zes_power_limit_ext_desc_t(_PrintableStructure):
         ("limitValueLocked", ze_bool_t),
         ("limit", c_int32),
     ]
-    _fmt_ = {"interval": "%d ms", "limit": "%d"}
 
 
 class zes_power_ext_properties_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
+        ("stype", c_int32),
         ("pNext", c_void_p),
         ("domain", zes_power_domain_t),
         ("defaultLimit", POINTER(zes_power_limit_ext_desc_t)),
@@ -561,17 +645,10 @@ class zes_power_energy_counter_t(_PrintableStructure):
 
 
 ## Frequency structures ##
-class zes_freq_properties_t(_PrintableStructure):
+class zes_freq_range_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_FREQ_PROPERTIES
-        ("pNext", c_void_p),
-        ("type", zes_freq_domain_t),  # frequency domain type
-        ("onSubdevice", ze_bool_t),  # is on subdevice
-        ("subdeviceId", c_uint32),  # subdevice ID
-        ("canControl", ze_bool_t),  # software-controllable frequency domain
-        ("isThrottleEventSupported", ze_bool_t),  # supports throttled event
-        ("min", c_double),  # minimum hardware clock in MHz
-        ("max", c_double),  # maximum non-overclock hardware clock in MHz
+        ("min", c_double),
+        ("max", c_double),
     ]
     _fmt_ = {"min": "%.1f MHz", "max": "%.1f MHz"}
 
@@ -595,6 +672,14 @@ class zes_freq_state_t(_PrintableStructure):
         "actual": "%.1f MHz",
         "throttleReasons": "0x%08X",
     }
+
+
+class zes_freq_throttle_time_t(_PrintableStructure):
+    _fields_ = [
+        ("throttleTime", c_uint64),
+        ("timestamp", c_uint64),
+    ]
+    _fmt_ = {"throttleTime": "%d", "timestamp": "%d microseconds"}
 
 
 ## Temperature structures ##
@@ -724,6 +809,118 @@ def zesDeviceGetProperties(hDevice, pProperties):
     return retVal
 
 
+## PCI management functions ##
+def zesDevicePciGetProperties(hDevice, pProperties):
+    """Wraps API:
+    ze_result_t zesDevicePciGetProperties(zes_device_handle_t hDevice, zes_pci_properties_t* pProperties)
+
+    Parameters:
+        hDevice: device handle
+        pProperties: POINTER(zes_pci_properties_t) - PCI properties structure to fill
+    Returns:
+        ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesDevicePciGetProperties")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_pci_properties_t)]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pProperties)
+    return retVal
+
+
+def zesDevicePciGetStats(hDevice, pStats):
+    """Wraps API:
+    ze_result_t zesDevicePciGetStats(zes_device_handle_t hDevice, zes_pci_stats_t* pStats)
+
+    Parameters:
+        hDevice: device handle
+        pStats: POINTER(zes_pci_stats_t) - PCI stats structure to fill
+    Returns:
+        ze_result_t - return code only, stats are filled into pStats
+    """
+    funcPtr = getFunctionPointerList("zesDevicePciGetStats")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_pci_stats_t)]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pStats)
+    return retVal
+
+
+## ECC management functions ##
+def zesDeviceEccAvailable(hDevice, pAvailable):
+    """Wraps API:
+    ze_result_t zesDeviceEccAvailable(zes_device_handle_t hDevice, ze_bool_t* pAvailable)
+
+    Parameters:
+        hDevice: device handle
+        pAvailable: POINTER(ze_bool_t) - ECC availability flag to fill
+    Returns:
+        ze_result_t - return code only, availability is filled into pAvailable
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEccAvailable")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(ze_bool_t)]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pAvailable)
+    return retVal
+
+
+def zesDeviceEccConfigurable(hDevice, pConfigurable):
+    """Wraps API:
+    ze_result_t zesDeviceEccConfigurable(zes_device_handle_t hDevice, ze_bool_t* pConfigurable)
+
+    Parameters:
+        hDevice: device handle
+        pConfigurable: POINTER(ze_bool_t) - ECC configurability flag to fill
+    Returns:
+        ze_result_t - return code only, configurability is filled into pConfigurable
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEccConfigurable")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(ze_bool_t)]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pConfigurable)
+    return retVal
+
+
+def zesDeviceGetEccState(hDevice, pState):
+    """Wraps API:
+    ze_result_t zesDeviceGetEccState(zes_device_handle_t hDevice, zes_device_ecc_properties_t* pState)
+
+    Parameters:
+        hDevice: device handle
+        pState: POINTER(zes_device_ecc_properties_t) - ECC state structure to fill
+    Returns:
+        ze_result_t - return code only, ECC state is filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesDeviceGetEccState")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_device_ecc_properties_t)]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pState)
+    return retVal
+
+
+def zesDeviceSetEccState(hDevice, newState, pState):
+    """Wraps API:
+    ze_result_t zesDeviceSetEccState(
+            zes_device_handle_t hDevice,
+            const zes_device_ecc_desc_t* newState,
+            zes_device_ecc_properties_t* pState)
+
+    Parameters:
+        hDevice: device handle
+        newState: POINTER(zes_device_ecc_desc_t) - desired ECC state descriptor
+        pState: POINTER(zes_device_ecc_properties_t) - resulting ECC state structure to fill
+    Returns:
+        ze_result_t - return code only, ECC state is filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesDeviceSetEccState")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(zes_device_ecc_desc_t),
+        POINTER(zes_device_ecc_properties_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, newState, pState)
+    return retVal
+
+
 def zesDeviceGetSubDevicePropertiesExp(hDevice, pCount, pSubdeviceProps):
     """Wraps API:
     ze_result_t zesDeviceGetSubDevicePropertiesExp(
@@ -800,6 +997,76 @@ def zesDeviceProcessesGetState(hDevice, pCount, pProcesses):
     ]
     funcPtr.restype = ze_result_t
     retVal = funcPtr(hDevice, pCount, pProcesses)
+    return retVal
+
+
+## RAS management functions ##
+def zesDeviceEnumRasErrorSets(hDevice, pCount, phRas):
+    """Wraps API:
+    ze_result_t zesDeviceEnumRasErrorSets(
+            zes_device_handle_t hDevice,
+            uint32_t* pCount,
+            zes_ras_handle_t* phRas)
+
+    Parameters:
+        hDevice: device handle
+        pCount: POINTER(c_uint32)
+        phRas: POINTER(zes_ras_handle_t) or None
+    Returns:
+        ze_result_t - return code only, RAS handles are filled into phRas
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumRasErrorSets")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_ras_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phRas)
+    return retVal
+
+
+def zesRasGetStateExp(hRas, pCount, pState):
+    """Wraps API:
+    ze_result_t zesRasGetStateExp(
+            zes_ras_handle_t hRas,
+            uint32_t* pCount,
+            zes_ras_state_exp_t* pState)
+
+    Parameters:
+        hRas: RAS handle
+        pCount: POINTER(c_uint32)
+        pState: POINTER(zes_ras_state_exp_t) or None
+    Returns:
+        ze_result_t - return code only, RAS states are filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesRasGetStateExp")
+    funcPtr.argtypes = [
+        zes_ras_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_ras_state_exp_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hRas, pCount, pState)
+    return retVal
+
+
+def zesRasClearStateExp(hRas, category):
+    """Wraps API:
+    ze_result_t zesRasClearStateExp(
+            zes_ras_handle_t hRas,
+            zes_ras_error_category_exp_t category)
+
+    Parameters:
+        hRas: RAS handle
+        category: RAS error category to clear
+    Returns:
+        ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesRasClearStateExp")
+    funcPtr.argtypes = [zes_ras_handle_t, zes_ras_error_category_exp_t]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hRas, category)
     return retVal
 
 
@@ -908,25 +1175,6 @@ def zesDeviceEnumPowerDomains(hDevice, pCount, phPower):
     return retVal
 
 
-def zesPowerGetProperties(hPower, pProperties):
-    """Wraps API:
-    ze_result_t zesPowerGetProperties(
-            zes_pwr_handle_t hPower,
-            zes_power_properties_t* pProperties)
-
-    Parameters:
-        hPower: power handle
-        pProperties: POINTER(zes_power_properties_t) - properties structure to fill
-    Returns:
-        ze_result_t - return code only, properties are filled into pProperties
-    """
-    funcPtr = getFunctionPointerList("zesPowerGetProperties")
-    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(zes_power_properties_t)]
-    funcPtr.restype = ze_result_t
-    retVal = funcPtr(hPower, pProperties)
-    return retVal
-
-
 def zesPowerGetEnergyCounter(hPower, pEnergy):
     """Wraps API:
     ze_result_t zesPowerGetEnergyCounter(
@@ -947,25 +1195,55 @@ def zesPowerGetEnergyCounter(hPower, pEnergy):
     return retVal
 
 
-def zesPowerGetUsage(hPower, pInstantPower, pAveragePower):
+def zesPowerGetLimitsExt(hPower, pCount, pSustained):
     """Wraps API:
-    ze_result_t zesPowerGetUsage(
+    ze_result_t zesPowerGetLimitsExt(
             zes_pwr_handle_t hPower,
-            uint32_t* pInstantPower,
-            uint32_t* pAveragePower)
+            uint32_t* pCount,
+            zes_power_limit_ext_desc_t* pSustained)
 
     Parameters:
         hPower: power handle
-        pInstantPower: POINTER(c_uint32) - instant power in milliwatts
-        pAveragePower: POINTER(c_uint32) - average power in milliwatts
+        pCount: POINTER(c_uint32)
+        pSustained: POINTER(zes_power_limit_ext_desc_t) or None
     Returns:
-        ze_result_t - return code only, usage values are filled into the output pointers
+        ze_result_t - return code only, power limit descriptors are filled into pSustained
     """
-    funcPtr = getFunctionPointerList("zesPowerGetUsage")
-    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32)]
+    funcPtr = getFunctionPointerList("zesPowerGetLimitsExt")
+    funcPtr.argtypes = [
+        zes_pwr_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_power_limit_ext_desc_t),
+    ]
     funcPtr.restype = ze_result_t
 
-    retVal = funcPtr(hPower, pInstantPower, pAveragePower)
+    retVal = funcPtr(hPower, pCount, pSustained)
+    return retVal
+
+
+def zesPowerSetLimitsExt(hPower, pCount, pSustained):
+    """Wraps API:
+    ze_result_t zesPowerSetLimitsExt(
+            zes_pwr_handle_t hPower,
+            uint32_t* pCount,
+            zes_power_limit_ext_desc_t* pSustained)
+
+    Parameters:
+        hPower: power handle
+        pCount: POINTER(c_uint32)
+        pSustained: POINTER(zes_power_limit_ext_desc_t) or None
+    Returns:
+        ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesPowerSetLimitsExt")
+    funcPtr.argtypes = [
+        zes_pwr_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_power_limit_ext_desc_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pCount, pSustained)
     return retVal
 
 
@@ -993,26 +1271,6 @@ def zesDeviceEnumFrequencyDomains(hDevice, pCount, phFrequency):
     return retVal
 
 
-def zesFrequencyGetProperties(hFrequency, pProperties):
-    """Wraps API:
-    ze_result_t zesFrequencyGetProperties(
-            zes_freq_handle_t hFrequency,
-            zes_freq_properties_t* pProperties)
-
-    Parameters:
-      hFrequency: frequency handle
-      pProperties: POINTER(zes_freq_properties_t) - properties structure to fill
-    Returns:
-      ze_result_t - return code only, properties are filled into pProperties
-    """
-    funcPtr = getFunctionPointerList("zesFrequencyGetProperties")
-    funcPtr.argtypes = [zes_freq_handle_t, POINTER(zes_freq_properties_t)]
-    funcPtr.restype = ze_result_t
-
-    retVal = funcPtr(hFrequency, pProperties)
-    return retVal
-
-
 def zesFrequencyGetState(hFrequency, pState):
     """Wraps API:
     ze_result_t zesFrequencyGetState(
@@ -1030,6 +1288,88 @@ def zesFrequencyGetState(hFrequency, pState):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hFrequency, pState)
+    return retVal
+
+
+def zesFrequencyGetAvailableClocks(hFrequency, pCount, phFrequency):
+    """Wraps API:
+    ze_result_t zesFrequencyGetAvailableClocks(
+            zes_freq_handle_t hFrequency,
+            uint32_t* pCount,
+            double* phFrequency)
+
+    Parameters:
+        hFrequency: frequency handle
+        pCount: POINTER(c_uint32)
+        phFrequency: POINTER(c_double) or None
+    Returns:
+        ze_result_t - return code only, available clocks are filled into phFrequency
+    """
+    funcPtr = getFunctionPointerList("zesFrequencyGetAvailableClocks")
+    funcPtr.argtypes = [zes_freq_handle_t, POINTER(c_uint32), POINTER(c_double)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hFrequency, pCount, phFrequency)
+    return retVal
+
+
+def zesFrequencyGetRange(hFrequency, pLimits):
+    """Wraps API:
+    ze_result_t zesFrequencyGetRange(
+            zes_freq_handle_t hFrequency,
+            zes_freq_range_t* pLimits)
+
+    Parameters:
+        hFrequency: frequency handle
+        pLimits: POINTER(zes_freq_range_t)
+    Returns:
+        ze_result_t - return code only, frequency range is filled into pLimits
+    """
+    funcPtr = getFunctionPointerList("zesFrequencyGetRange")
+    funcPtr.argtypes = [zes_freq_handle_t, POINTER(zes_freq_range_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hFrequency, pLimits)
+    return retVal
+
+
+def zesFrequencySetRange(hFrequency, pLimits):
+    """Wraps API:
+    ze_result_t zesFrequencySetRange(
+            zes_freq_handle_t hFrequency,
+            const zes_freq_range_t* pLimits)
+
+    Parameters:
+        hFrequency: frequency handle
+        pLimits: POINTER(zes_freq_range_t)
+    Returns:
+        ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesFrequencySetRange")
+    funcPtr.argtypes = [zes_freq_handle_t, POINTER(zes_freq_range_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hFrequency, pLimits)
+    return retVal
+
+
+def zesFrequencyGetThrottleTime(hFrequency, pThrottleTime):
+    """Wraps API:
+    ze_result_t zesFrequencyGetThrottleTime(
+            zes_freq_handle_t hFrequency,
+            zes_freq_throttle_time_t* pThrottleTime)
+
+    Parameters:
+        hFrequency: frequency handle
+        pThrottleTime: POINTER(zes_freq_throttle_time_t)
+    Returns:
+        ze_result_t - return code only, throttle time is filled into pThrottleTime
+    """
+    funcPtr = getFunctionPointerList("zesFrequencyGetThrottleTime")
+    funcPtr.argtypes = [zes_freq_handle_t, POINTER(zes_freq_throttle_time_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hFrequency, pThrottleTime)
     return retVal
 
 
