@@ -334,6 +334,7 @@ ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
 
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
+ZES_STRUCTURE_TYPE_PROCESS_STATE = 0x16
 ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES = 0x2D  # from zes_structure_type_t
 ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES = 0x2E  # Experimental subdevice properties
 ZES_STRUCTURE_TYPE_MEM_PROPERTIES = 0xB
@@ -396,14 +397,14 @@ class zes_device_properties_t(_PrintableStructure):
 ## Sysman zes_process_state_t ##
 class zes_process_state_t(_PrintableStructure):
     _fields_ = [
-        ("pid", c_uint32),
-        ("command", c_char * ZES_STRING_PROPERTY_SIZE),
-        ("memSize", c_uint64),  # in bytes
-        ("sharedMemSize", c_uint64),  # in bytes
-        ("engineType", zes_engine_type_flags_t),
-        ("subdeviceId", c_uint32),
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("processId", c_uint32),
+        ("memSize", c_uint64),
+        ("sharedSize", c_uint64),
+        ("engines", zes_engine_type_flags_t),
     ]
-    _fmt_ = {"memSize": "%d bytes", "sharedMemSize": "%d bytes"}
+    _fmt_ = {"memSize": "%d bytes", "sharedSize": "%d bytes"}
 
 
 ## Sysman zes_uuid_t ##
@@ -524,15 +525,23 @@ class zes_temp_properties_t(_PrintableStructure):
     _fmt_ = {"maxTemperature": "%.1f °C"}
 
 
+class zes_temp_threshold_t(_PrintableStructure):
+    _fields_ = [
+        ("enableLowToHigh", ze_bool_t),
+        ("enableHighToLow", ze_bool_t),
+        ("threshold", c_double),
+    ]
+    _fmt_ = {"threshold": "%.1f °C"}
+
+
 class zes_temp_config_t(_PrintableStructure):
     _fields_ = [
         ("stype", c_int32),  # ZES_STRUCTURE_TYPE_TEMP_CONFIG
         ("pNext", c_void_p),
         ("enableCritical", ze_bool_t),  # enable critical temperature event
-        ("threshold1", c_double),  # threshold 1 in degrees Celsius
-        ("threshold2", c_double),  # threshold 2 in degrees Celsius
+        ("threshold1", zes_temp_threshold_t),
+        ("threshold2", zes_temp_threshold_t),
     ]
-    _fmt_ = {"threshold1": "%.1f °C", "threshold2": "%.1f °C"}
 
 
 ## Engine structures ##
