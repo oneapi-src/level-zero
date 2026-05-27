@@ -95,6 +95,9 @@ typedef struct _zel_ze_device_callbacks_t
     ze_pfnDeviceGetVectorWidthPropertiesExtCb_t                     pfnGetVectorWidthPropertiesExtCb;
     ze_pfnDeviceSynchronizeCb_t                                     pfnSynchronizeCb;
     ze_pfnDeviceGetAggregatedCopyOffloadIncrementValueCb_t          pfnGetAggregatedCopyOffloadIncrementValueCb;
+    ze_pfnDeviceGetRuntimeRequirementsCb_t                          pfnGetRuntimeRequirementsCb;
+    ze_pfnDeviceGetRuntimeRequirementsKeyCb_t                       pfnGetRuntimeRequirementsKeyCb;
+    ze_pfnDeviceValidateRuntimeRequirementsCb_t                     pfnValidateRuntimeRequirementsCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
@@ -165,6 +168,9 @@ typedef struct _zel_ze_command_list_callbacks_t
     ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t             pfnAppendWaitExternalSemaphoreExtCb;
     ze_pfnCommandListAppendLaunchKernelWithParametersCb_t           pfnAppendLaunchKernelWithParametersCb;
     ze_pfnCommandListAppendLaunchKernelWithArgumentsCb_t            pfnAppendLaunchKernelWithArgumentsCb;
+    ze_pfnCommandListAppendMemoryCopyWithParametersCb_t             pfnAppendMemoryCopyWithParametersCb;
+    ze_pfnCommandListAppendMemoryFillWithParametersCb_t             pfnAppendMemoryFillWithParametersCb;
+    ze_pfnCommandListImmediateAppendCommandListsWithParametersCb_t  pfnImmediateAppendCommandListsWithParametersCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
     ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;

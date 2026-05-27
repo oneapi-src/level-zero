@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.15-r1.15.31
+ @version v1.16-r1.16.24
 
  """
 import platform
@@ -669,6 +669,21 @@ class zet_metric_entry_exp_t(Structure):
                                                                         ## sub-devices.
         ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device.
     ]
+
+###############################################################################
+## @brief Metric Export Memory Experimental Extension Name
+ZET_METRIC_EXPORT_MEMORY_EXP_NAME = "ZET_experimental_metric_export_memory"
+
+###############################################################################
+## @brief Metric Export Memory Experimental Extension Version(s)
+class zet_metric_export_memory_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_export_memory_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_export_memory_exp_version_v(self.value))
+
 
 ###############################################################################
 ## @brief Metric group type

@@ -809,6 +809,87 @@ typedef void (ZE_APICALL *ze_pfnDeviceGetAggregatedCopyOffloadIncrementValueCb_t
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeDeviceGetRuntimeRequirements
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_device_get_runtime_requirements_params_t
+{
+    ze_device_handle_t* phDevice;
+    const void** ppObjDesc;
+    size_t** ppSize;
+    char** ppRequirements;
+} ze_device_get_runtime_requirements_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeDeviceGetRuntimeRequirements
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnDeviceGetRuntimeRequirementsCb_t)(
+    ze_device_get_runtime_requirements_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeDeviceGetRuntimeRequirementsKey
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_device_get_runtime_requirements_key_params_t
+{
+    ze_device_handle_t* phDevice;
+    const char*** ppKey;
+} ze_device_get_runtime_requirements_key_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeDeviceGetRuntimeRequirementsKey
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnDeviceGetRuntimeRequirementsKeyCb_t)(
+    ze_device_get_runtime_requirements_key_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeDeviceValidateRuntimeRequirements
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_device_validate_runtime_requirements_params_t
+{
+    ze_device_handle_t* phDevice;
+    const char** ppRequirements;
+    ze_validate_runtime_requirements_output_t** ppOut;
+} ze_device_validate_runtime_requirements_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeDeviceValidateRuntimeRequirements
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnDeviceValidateRuntimeRequirementsCb_t)(
+    ze_device_validate_runtime_requirements_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeDeviceReserveCacheExt
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -1200,6 +1281,102 @@ typedef struct _ze_command_list_append_launch_kernel_with_arguments_params_t
 
 typedef void (ZE_APICALL *ze_pfnCommandListAppendLaunchKernelWithArgumentsCb_t)(
     ze_command_list_append_launch_kernel_with_arguments_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListAppendMemoryCopyWithParameters
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_append_memory_copy_with_parameters_params_t
+{
+    ze_command_list_handle_t* phCommandList;
+    void** pdstptr;
+    const void** psrcptr;
+    size_t* psize;
+    const void** ppNext;
+    ze_event_handle_t* phSignalEvent;
+    uint32_t* pnumWaitEvents;
+    ze_event_handle_t** pphWaitEvents;
+} ze_command_list_append_memory_copy_with_parameters_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListAppendMemoryCopyWithParameters
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListAppendMemoryCopyWithParametersCb_t)(
+    ze_command_list_append_memory_copy_with_parameters_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListAppendMemoryFillWithParameters
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_append_memory_fill_with_parameters_params_t
+{
+    ze_command_list_handle_t* phCommandList;
+    void** pptr;
+    const void** ppattern;
+    size_t* ppattern_size;
+    size_t* psize;
+    const void** ppNext;
+    ze_event_handle_t* phSignalEvent;
+    uint32_t* pnumWaitEvents;
+    ze_event_handle_t** pphWaitEvents;
+} ze_command_list_append_memory_fill_with_parameters_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListAppendMemoryFillWithParameters
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListAppendMemoryFillWithParametersCb_t)(
+    ze_command_list_append_memory_fill_with_parameters_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListImmediateAppendCommandListsWithParameters
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_immediate_append_command_lists_with_parameters_params_t
+{
+    ze_command_list_handle_t* phCommandListImmediate;
+    uint32_t* pnumCommandLists;
+    ze_command_list_handle_t** pphCommandLists;
+    const void** ppNext;
+    ze_event_handle_t* phSignalEvent;
+    uint32_t* pnumWaitEvents;
+    ze_event_handle_t** pphWaitEvents;
+} ze_command_list_immediate_append_command_lists_with_parameters_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListImmediateAppendCommandListsWithParameters
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsWithParametersCb_t)(
+    ze_command_list_immediate_append_command_lists_with_parameters_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -2993,6 +3170,30 @@ zelTracerDeviceGetAggregatedCopyOffloadIncrementValueRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetRuntimeRequirementsRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetRuntimeRequirementsCb_t pfnGetRuntimeRequirementsCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetRuntimeRequirementsKeyRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetRuntimeRequirementsKeyCb_t pfnGetRuntimeRequirementsKeyCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceValidateRuntimeRequirementsRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceValidateRuntimeRequirementsCb_t pfnValidateRuntimeRequirementsCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerContextCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -3201,10 +3402,26 @@ zelTracerCommandListAppendMemoryCopyRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendMemoryCopyWithParametersRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendMemoryCopyWithParametersCb_t pfnAppendMemoryCopyWithParametersCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerCommandListAppendMemoryFillRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnCommandListAppendMemoryFillCb_t pfnAppendMemoryFillCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendMemoryFillWithParametersRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendMemoryFillWithParametersCb_t pfnAppendMemoryFillWithParametersCb
     );
 
 
@@ -4445,6 +4662,14 @@ zelTracerCommandListImmediateAppendCommandListsExpRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnCommandListImmediateAppendCommandListsExpCb_t pfnImmediateAppendCommandListsExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListImmediateAppendCommandListsWithParametersRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListImmediateAppendCommandListsWithParametersCb_t pfnImmediateAppendCommandListsWithParametersCb
     );
 
 

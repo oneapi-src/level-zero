@@ -89,6 +89,7 @@ namespace loader
         ze_fabric_edge_factory_t            ze_fabric_edge_factory;
         ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;
         ze_fence_factory_t                  ze_fence_factory;
+        ze_graph_factory_t                  ze_graph_factory;
         ze_image_factory_t                  ze_image_factory;
         ze_kernel_factory_t                 ze_kernel_factory;
         ze_module_build_log_factory_t       ze_module_build_log_factory;

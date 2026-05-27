@@ -223,6 +223,8 @@ public:
     virtual ze_result_t zesPowerGetEnergyThresholdEpilogue( zes_pwr_handle_t hPower, zes_energy_threshold_t* pThreshold , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetEnergyThresholdPrologue( zes_pwr_handle_t hPower, double threshold ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetEnergyThresholdEpilogue( zes_pwr_handle_t hPower, double threshold , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesPowerGetUsagePrologue( zes_pwr_handle_t hPower, uint32_t* pInstantPower, uint32_t* pAveragePower ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesPowerGetUsageEpilogue( zes_pwr_handle_t hPower, uint32_t* pInstantPower, uint32_t* pAveragePower , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumPsusPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_psu_handle_t* phPsu ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumPsusEpilogue( zes_device_handle_t hDevice, uint32_t* pCount, zes_psu_handle_t* phPsu , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPsuGetPropertiesPrologue( zes_psu_handle_t hPsu, zes_psu_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
@@ -281,12 +283,24 @@ public:
     virtual ze_result_t zesPowerGetLimitsExtEpilogue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetLimitsExtEpilogue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesPowerGetLimitsExt2Prologue( zes_pwr_handle_t hPower, uint32_t* pLimit ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesPowerGetLimitsExt2Epilogue( zes_pwr_handle_t hPower, uint32_t* pLimit , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesPowerSetLimitsExt2Prologue( zes_pwr_handle_t hPower, const uint32_t limit ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesPowerSetLimitsExt2Epilogue( zes_pwr_handle_t hPower, const uint32_t limit , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesEngineGetActivityExtPrologue( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesEngineGetActivityExtEpilogue( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesRasGetStateExpPrologue( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_state_exp_t* pState ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesRasGetStateExpEpilogue( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_state_exp_t* pState , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesRasClearStateExpPrologue( zes_ras_handle_t hRas, zes_ras_error_category_exp_t category ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesRasClearStateExpEpilogue( zes_ras_handle_t hRas, zes_ras_error_category_exp_t category , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetSupportedCategoriesExpPrologue( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_error_category_exp_t* pCategories ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetSupportedCategoriesExpEpilogue( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_error_category_exp_t* pCategories , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetStateExp2Prologue( zes_ras_handle_t hRas, const uint32_t count, const zes_ras_error_category_exp_t* pCategories, zes_ras_state_exp2_t* pState ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetStateExp2Epilogue( zes_ras_handle_t hRas, const uint32_t count, const zes_ras_error_category_exp_t* pCategories, zes_ras_state_exp2_t* pState , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetConfigExpPrologue( zes_ras_handle_t hRas, const uint32_t count, zes_ras_config_exp_t* pConfig ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetConfigExpEpilogue( zes_ras_handle_t hRas, const uint32_t count, zes_ras_config_exp_t* pConfig , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasSetConfigExpPrologue( zes_ras_handle_t hRas, const uint32_t count, const zes_ras_config_exp_t* pConfig ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasSetConfigExpEpilogue( zes_ras_handle_t hRas, const uint32_t count, const zes_ras_config_exp_t* pConfig , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFirmwareGetSecurityVersionExpPrologue( zes_firmware_handle_t hFirmware, char* pVersion ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFirmwareGetSecurityVersionExpEpilogue( zes_firmware_handle_t hFirmware, char* pVersion , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFirmwareSetSecurityVersionExpPrologue( zes_firmware_handle_t hFirmware ) {return ZE_RESULT_SUCCESS;}

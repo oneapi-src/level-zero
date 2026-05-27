@@ -1235,6 +1235,87 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRuntimeRequirements
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRuntimeRequirements(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const void* pObjDesc,                           ///< [in] describes the object for which the requirements are to be
+                                                        ///< gathered
+        size_t* pSize,                                  ///< [in,out] size of requirements string in bytes.
+        char* pRequirements                             ///< [in,out][optional] holds results of the query.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetRuntimeRequirements = dditable->ze.Device.pfnGetRuntimeRequirements;
+        if( nullptr == pfnGetRuntimeRequirements )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetRuntimeRequirements( hDevice, pObjDesc, pSize, pRequirements );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRuntimeRequirementsKey
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRuntimeRequirementsKey(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char** pKey                               ///< [out] returned key
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetRuntimeRequirementsKey = dditable->ze.Device.pfnGetRuntimeRequirementsKey;
+        if( nullptr == pfnGetRuntimeRequirementsKey )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetRuntimeRequirementsKey( hDevice, pKey );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceValidateRuntimeRequirements
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceValidateRuntimeRequirements(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char* pRequirements,                      ///< [in] requirements to be validated. Requirements should be
+                                                        ///< null-terminated plain text representation of runtime requirements
+                                                        ///< previously retrieved from the device.
+        ze_validate_runtime_requirements_output_t* pOut ///< [in][out] Output of the validation call.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnValidateRuntimeRequirements = dditable->ze.Device.pfnValidateRuntimeRequirements;
+        if( nullptr == pfnValidateRuntimeRequirements )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnValidateRuntimeRequirements( hDevice, pRequirements, pOut );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeContextCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -2117,6 +2198,48 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendMemoryCopyWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendMemoryCopyWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendMemoryCopyWithParameters = dditable->ze.CommandList.pfnAppendMemoryCopyWithParameters;
+        if( nullptr == pfnAppendMemoryCopyWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendMemoryCopyWithParameters( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendMemoryFill
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendMemoryFill(
@@ -2153,6 +2276,49 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendMemoryFillWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendMemoryFillWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* ptr,                                      ///< [in] pointer to memory to initialize
+        const void* pattern,                            ///< [in] pointer to value to initialize memory to
+        size_t pattern_size,                            ///< [in] size in bytes of the value to initialize memory to
+        size_t size,                                    ///< [in] size in bytes to initialize
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendMemoryFillWithParameters = dditable->ze.CommandList.pfnAppendMemoryFillWithParameters;
+        if( nullptr == pfnAppendMemoryFillWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendMemoryFillWithParameters( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
         delete []phWaitEventsLocal;
 
         return result;
@@ -7403,6 +7569,57 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateAppendCommandListsWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateAppendCommandListsWithParameters(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->dditable;
+        auto pfnImmediateAppendCommandListsWithParameters = dditable->ze.CommandList.pfnImmediateAppendCommandListsWithParameters;
+        if( nullptr == pfnImmediateAppendCommandListsWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandListImmediate = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->handle;
+
+        // convert loader handles to driver handles
+        auto phCommandListsLocal = new ze_command_list_handle_t [numCommandLists];
+        for( size_t i = 0; ( nullptr != phCommandLists ) && ( i < numCommandLists ); ++i )
+            phCommandListsLocal[ i ] = reinterpret_cast<ze_command_list_object_t*>( phCommandLists[ i ] )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnImmediateAppendCommandListsWithParameters( hCommandListImmediate, numCommandLists, phCommandListsLocal, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phCommandListsLocal;
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListGetNextCommandIdExp
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListGetNextCommandIdExp(
@@ -7704,6 +7921,9 @@ zeGetDeviceProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Device->pfnGetVectorWidthPropertiesExt              = loader::zeDeviceGetVectorWidthPropertiesExt;
     loader::loaderDispatch->pCore->Device->pfnSynchronize                              = loader::zeDeviceSynchronize;
     loader::loaderDispatch->pCore->Device->pfnGetAggregatedCopyOffloadIncrementValue   = loader::zeDeviceGetAggregatedCopyOffloadIncrementValue;
+    loader::loaderDispatch->pCore->Device->pfnGetRuntimeRequirements                   = loader::zeDeviceGetRuntimeRequirements;
+    loader::loaderDispatch->pCore->Device->pfnGetRuntimeRequirementsKey                = loader::zeDeviceGetRuntimeRequirementsKey;
+    loader::loaderDispatch->pCore->Device->pfnValidateRuntimeRequirements              = loader::zeDeviceValidateRuntimeRequirements;
     loader::loaderDispatch->pCore->Device->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
     loader::loaderDispatch->pCore->Device->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
     loader::loaderDispatch->pCore->Device->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
@@ -7786,6 +8006,9 @@ zeGetCommandListProcAddrTableLegacy()
     loader::loaderDispatch->pCore->CommandList->pfnAppendWaitExternalSemaphoreExt           = loader::zeCommandListAppendWaitExternalSemaphoreExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelWithParameters         = loader::zeCommandListAppendLaunchKernelWithParameters;
     loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelWithArguments          = loader::zeCommandListAppendLaunchKernelWithArguments;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopyWithParameters           = loader::zeCommandListAppendMemoryCopyWithParameters;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryFillWithParameters           = loader::zeCommandListAppendMemoryFillWithParameters;
+    loader::loaderDispatch->pCore->CommandList->pfnImmediateAppendCommandListsWithParameters    = loader::zeCommandListImmediateAppendCommandListsWithParameters;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
@@ -9786,6 +10009,27 @@ zeGetDeviceProcAddrTable(
                 pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue   = loader::zeDeviceGetAggregatedCopyOffloadIncrementValue;
             }
             }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetRuntimeRequirements                   = loader_driver_ddi::zeDeviceGetRuntimeRequirements;
+            } else {
+                pDdiTable->pfnGetRuntimeRequirements                   = loader::zeDeviceGetRuntimeRequirements;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetRuntimeRequirementsKey                = loader_driver_ddi::zeDeviceGetRuntimeRequirementsKey;
+            } else {
+                pDdiTable->pfnGetRuntimeRequirementsKey                = loader::zeDeviceGetRuntimeRequirementsKey;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnValidateRuntimeRequirements              = loader_driver_ddi::zeDeviceValidateRuntimeRequirements;
+            } else {
+                pDdiTable->pfnValidateRuntimeRequirements              = loader::zeDeviceValidateRuntimeRequirements;
+            }
+            }
             if (version >= ZE_API_VERSION_1_2) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnReserveCacheExt                          = loader_driver_ddi::zeDeviceReserveCacheExt;
@@ -9878,6 +10122,15 @@ zeGetDeviceProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_15) {
                 pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue   = firstDriver->dditable.ze.Device.pfnGetAggregatedCopyOffloadIncrementValue;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetRuntimeRequirements                   = firstDriver->dditable.ze.Device.pfnGetRuntimeRequirements;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetRuntimeRequirementsKey                = firstDriver->dditable.ze.Device.pfnGetRuntimeRequirementsKey;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnValidateRuntimeRequirements              = firstDriver->dditable.ze.Device.pfnValidateRuntimeRequirements;
             }
             if (version >= ZE_API_VERSION_1_2) {
                 pDdiTable->pfnReserveCacheExt                          = firstDriver->dditable.ze.Device.pfnReserveCacheExt;
@@ -10568,6 +10821,27 @@ zeGetCommandListProcAddrTable(
                 pDdiTable->pfnAppendLaunchKernelWithArguments          = loader::zeCommandListAppendLaunchKernelWithArguments;
             }
             }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryCopyWithParameters           = loader_driver_ddi::zeCommandListAppendMemoryCopyWithParameters;
+            } else {
+                pDdiTable->pfnAppendMemoryCopyWithParameters           = loader::zeCommandListAppendMemoryCopyWithParameters;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryFillWithParameters           = loader_driver_ddi::zeCommandListAppendMemoryFillWithParameters;
+            } else {
+                pDdiTable->pfnAppendMemoryFillWithParameters           = loader::zeCommandListAppendMemoryFillWithParameters;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnImmediateAppendCommandListsWithParameters    = loader_driver_ddi::zeCommandListImmediateAppendCommandListsWithParameters;
+            } else {
+                pDdiTable->pfnImmediateAppendCommandListsWithParameters    = loader::zeCommandListImmediateAppendCommandListsWithParameters;
+            }
+            }
             if (version >= ZE_API_VERSION_1_3) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnAppendImageCopyToMemoryExt               = loader_driver_ddi::zeCommandListAppendImageCopyToMemoryExt;
@@ -10718,6 +10992,15 @@ zeGetCommandListProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_14) {
                 pDdiTable->pfnAppendLaunchKernelWithArguments          = firstDriver->dditable.ze.CommandList.pfnAppendLaunchKernelWithArguments;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnAppendMemoryCopyWithParameters           = firstDriver->dditable.ze.CommandList.pfnAppendMemoryCopyWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnAppendMemoryFillWithParameters           = firstDriver->dditable.ze.CommandList.pfnAppendMemoryFillWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnImmediateAppendCommandListsWithParameters    = firstDriver->dditable.ze.CommandList.pfnImmediateAppendCommandListsWithParameters;
             }
             if (version >= ZE_API_VERSION_1_3) {
                 pDdiTable->pfnAppendImageCopyToMemoryExt               = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyToMemoryExt;

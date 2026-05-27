@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.15-r1.15.31
+ * @version v1.16-r1.16.24
  *
  */
 #ifndef _ZE_DDI_H
@@ -648,6 +648,30 @@ typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetAggregatedCopyOffloadIncrementVa
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceGetRuntimeRequirements 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetRuntimeRequirements_t)(
+    ze_device_handle_t,
+    const void*,
+    size_t*,
+    char*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceGetRuntimeRequirementsKey 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetRuntimeRequirementsKey_t)(
+    ze_device_handle_t,
+    const char**
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceValidateRuntimeRequirements 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceValidateRuntimeRequirements_t)(
+    ze_device_handle_t,
+    const char*,
+    ze_validate_runtime_requirements_output_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _ze_device_dditable_t
 {
@@ -675,6 +699,9 @@ typedef struct _ze_device_dditable_t
     ze_pfnDeviceGetVectorWidthPropertiesExt_t                   pfnGetVectorWidthPropertiesExt;
     ze_pfnDeviceSynchronize_t                                   pfnSynchronize;
     ze_pfnDeviceGetAggregatedCopyOffloadIncrementValue_t        pfnGetAggregatedCopyOffloadIncrementValue;
+    ze_pfnDeviceGetRuntimeRequirements_t                        pfnGetRuntimeRequirements;
+    ze_pfnDeviceGetRuntimeRequirementsKey_t                     pfnGetRuntimeRequirementsKey;
+    ze_pfnDeviceValidateRuntimeRequirements_t                   pfnValidateRuntimeRequirements;
 } ze_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1312,6 +1339,45 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendLaunchKernelWithArgument
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListAppendMemoryCopyWithParameters 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendMemoryCopyWithParameters_t)(
+    ze_command_list_handle_t,
+    void*,
+    const void*,
+    size_t,
+    const void*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListAppendMemoryFillWithParameters 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendMemoryFillWithParameters_t)(
+    ze_command_list_handle_t,
+    void*,
+    const void*,
+    size_t,
+    size_t,
+    const void*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListImmediateAppendCommandListsWithParameters 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsWithParameters_t)(
+    ze_command_list_handle_t,
+    uint32_t,
+    ze_command_list_handle_t*,
+    const void*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandList functions pointers
 typedef struct _ze_command_list_dditable_t
 {
@@ -1353,6 +1419,9 @@ typedef struct _ze_command_list_dditable_t
     ze_pfnCommandListAppendWaitExternalSemaphoreExt_t           pfnAppendWaitExternalSemaphoreExt;
     ze_pfnCommandListAppendLaunchKernelWithParameters_t         pfnAppendLaunchKernelWithParameters;
     ze_pfnCommandListAppendLaunchKernelWithArguments_t          pfnAppendLaunchKernelWithArguments;
+    ze_pfnCommandListAppendMemoryCopyWithParameters_t           pfnAppendMemoryCopyWithParameters;
+    ze_pfnCommandListAppendMemoryFillWithParameters_t           pfnAppendMemoryFillWithParameters;
+    ze_pfnCommandListImmediateAppendCommandListsWithParameters_t    pfnImmediateAppendCommandListsWithParameters;
 } ze_command_list_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

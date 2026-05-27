@@ -3094,6 +3094,45 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesPowerGetUsage(
+        ze_result_t result,
+        zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesPowerGetUsage(";
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
+        oss << ", ";
+        oss << "pInstantPower=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pInstantPower != nullptr) {
+            oss << loader::to_string(*pInstantPower);
+        } else {
+            oss << loader::to_string(pInstantPower);
+        }
+        
+        oss << ", ";
+        oss << "pAveragePower=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pAveragePower != nullptr) {
+            oss << loader::to_string(*pAveragePower);
+        } else {
+            oss << loader::to_string(pAveragePower);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDeviceEnumPsus(
         ze_result_t result,
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
@@ -3921,6 +3960,59 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesPowerGetLimitsExt2(
+        ze_result_t result,
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesPowerGetLimitsExt2(";
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
+        oss << ", ";
+        oss << "pLimit=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pLimit != nullptr) {
+            oss << loader::to_string(*pLimit);
+        } else {
+            oss << loader::to_string(pLimit);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesPowerSetLimitsExt2(
+        ze_result_t result,
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesPowerSetLimitsExt2(";
+        
+        
+        oss << "hPower=";
+        oss << loader::to_string(hPower);
+        
+        oss << ", ";
+        oss << "limit=";
+        oss << loader::to_string(limit);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesEngineGetActivityExt(
         ze_result_t result,
         zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
@@ -4018,6 +4110,141 @@ namespace validation_layer
         oss << ", ";
         oss << "category=";
         oss << loader::to_string(category);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesRasGetSupportedCategoriesExp(
+        ze_result_t result,
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of categories supported.
+                                                        ///< if count is non-zero, then driver shall only retrieve that number of categories.
+        zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                        ///< if count is less than the number of categories supported, then driver
+                                                        ///< shall only retrieve that number of categories.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesRasGetSupportedCategoriesExp(";
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
+        oss << ", ";
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
+        oss << ", ";
+        oss << "pCategories=";
+        oss << loader::to_string(pCategories);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesRasGetStateExp2(
+        ze_result_t result,
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+        const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+        zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                        ///< initialize stype and pNext for each element.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesRasGetStateExp2(";
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
+        oss << ", ";
+        oss << "count=";
+        oss << loader::to_string(count);
+        
+        oss << ", ";
+        oss << "pCategories=";
+        oss << loader::to_string(pCategories);
+        
+        oss << ", ";
+        oss << "pState=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pState != nullptr) {
+            oss << loader::to_string(*pState);
+        } else {
+            oss << loader::to_string(pState);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesRasGetConfigExp(
+        ze_result_t result,
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                        ///< The caller should set the category field for each entry to specify
+                                                        ///< which categories to query.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesRasGetConfigExp(";
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
+        oss << ", ";
+        oss << "count=";
+        oss << loader::to_string(count);
+        
+        oss << ", ";
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesRasSetConfigExp(
+        ze_result_t result,
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                        ///< thresholds for different error categories.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesRasSetConfigExp(";
+        
+        
+        oss << "hRas=";
+        oss << loader::to_string(hRas);
+        
+        oss << ", ";
+        oss << "count=";
+        oss << loader::to_string(count);
+        
+        oss << ", ";
+        oss << "pConfig=";
+        oss << loader::to_string(pConfig);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -9149,6 +9376,49 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetUsage
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetUsage(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        )
+    {
+        context.logger->log_trace("zesPowerGetUsage(hPower, pInstantPower, pAveragePower)");
+
+        auto pfnGetUsage = context.zesDdiTable.Power.pfnGetUsage;
+
+        if( nullptr == pfnGetUsage )
+            return logAndPropagateResult_zesPowerGetUsage(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hPower, pInstantPower, pAveragePower);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesPowerGetUsagePrologue( hPower, pInstantPower, pAveragePower );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerGetUsage(result, hPower, pInstantPower, pAveragePower);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerGetUsagePrologue( hPower, pInstantPower, pAveragePower );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerGetUsage(result, hPower, pInstantPower, pAveragePower);
+        }
+
+        auto driver_result = pfnGetUsage( hPower, pInstantPower, pAveragePower );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesPowerGetUsageEpilogue( hPower, pInstantPower, pAveragePower ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerGetUsage(result, hPower, pInstantPower, pAveragePower);
+        }
+
+        return logAndPropagateResult_zesPowerGetUsage(driver_result, hPower, pInstantPower, pAveragePower);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumPsus
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumPsus(
@@ -10441,6 +10711,90 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+        )
+    {
+        context.logger->log_trace("zesPowerGetLimitsExt2(hPower, pLimit)");
+
+        auto pfnGetLimitsExt2 = context.zesDdiTable.Power.pfnGetLimitsExt2;
+
+        if( nullptr == pfnGetLimitsExt2 )
+            return logAndPropagateResult_zesPowerGetLimitsExt2(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hPower, pLimit);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesPowerGetLimitsExt2Prologue( hPower, pLimit );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerGetLimitsExt2(result, hPower, pLimit);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerGetLimitsExt2Prologue( hPower, pLimit );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerGetLimitsExt2(result, hPower, pLimit);
+        }
+
+        auto driver_result = pfnGetLimitsExt2( hPower, pLimit );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesPowerGetLimitsExt2Epilogue( hPower, pLimit ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerGetLimitsExt2(result, hPower, pLimit);
+        }
+
+        return logAndPropagateResult_zesPowerGetLimitsExt2(driver_result, hPower, pLimit);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerSetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+        )
+    {
+        context.logger->log_trace("zesPowerSetLimitsExt2(hPower, limit)");
+
+        auto pfnSetLimitsExt2 = context.zesDdiTable.Power.pfnSetLimitsExt2;
+
+        if( nullptr == pfnSetLimitsExt2 )
+            return logAndPropagateResult_zesPowerSetLimitsExt2(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hPower, limit);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesPowerSetLimitsExt2Prologue( hPower, limit );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerSetLimitsExt2(result, hPower, limit);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerSetLimitsExt2Prologue( hPower, limit );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerSetLimitsExt2(result, hPower, limit);
+        }
+
+        auto driver_result = pfnSetLimitsExt2( hPower, limit );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesPowerSetLimitsExt2Epilogue( hPower, limit ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesPowerSetLimitsExt2(result, hPower, limit);
+        }
+
+        return logAndPropagateResult_zesPowerSetLimitsExt2(driver_result, hPower, limit);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesEngineGetActivityExt
     __zedlllocal ze_result_t ZE_APICALL
     zesEngineGetActivityExt(
@@ -10589,6 +10943,196 @@ namespace validation_layer
         }
 
         return logAndPropagateResult_zesRasClearStateExp(driver_result, hRas, category);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetSupportedCategoriesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of categories supported.
+                                                        ///< if count is non-zero, then driver shall only retrieve that number of categories.
+        zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                        ///< if count is less than the number of categories supported, then driver
+                                                        ///< shall only retrieve that number of categories.
+        )
+    {
+        context.logger->log_trace("zesRasGetSupportedCategoriesExp(hRas, pCount, pCategories)");
+
+        auto pfnGetSupportedCategoriesExp = context.zesDdiTable.RasExp.pfnGetSupportedCategoriesExp;
+
+        if( nullptr == pfnGetSupportedCategoriesExp )
+            return logAndPropagateResult_zesRasGetSupportedCategoriesExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hRas, pCount, pCategories);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasGetSupportedCategoriesExpPrologue( hRas, pCount, pCategories );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetSupportedCategoriesExp(result, hRas, pCount, pCategories);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasGetSupportedCategoriesExpPrologue( hRas, pCount, pCategories );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetSupportedCategoriesExp(result, hRas, pCount, pCategories);
+        }
+
+        auto driver_result = pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasGetSupportedCategoriesExpEpilogue( hRas, pCount, pCategories ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetSupportedCategoriesExp(result, hRas, pCount, pCategories);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult_zesRasGetSupportedCategoriesExp(driver_result, hRas, pCount, pCategories);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetStateExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp2(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+        const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+        zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                        ///< initialize stype and pNext for each element.
+        )
+    {
+        context.logger->log_trace("zesRasGetStateExp2(hRas, count, pCategories, pState)");
+
+        auto pfnGetStateExp2 = context.zesDdiTable.RasExp.pfnGetStateExp2;
+
+        if( nullptr == pfnGetStateExp2 )
+            return logAndPropagateResult_zesRasGetStateExp2(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hRas, count, pCategories, pState);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasGetStateExp2Prologue( hRas, count, pCategories, pState );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetStateExp2(result, hRas, count, pCategories, pState);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasGetStateExp2Prologue( hRas, count, pCategories, pState );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetStateExp2(result, hRas, count, pCategories, pState);
+        }
+
+        auto driver_result = pfnGetStateExp2( hRas, count, pCategories, pState );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasGetStateExp2Epilogue( hRas, count, pCategories, pState ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetStateExp2(result, hRas, count, pCategories, pState);
+        }
+
+        return logAndPropagateResult_zesRasGetStateExp2(driver_result, hRas, count, pCategories, pState);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                        ///< The caller should set the category field for each entry to specify
+                                                        ///< which categories to query.
+        )
+    {
+        context.logger->log_trace("zesRasGetConfigExp(hRas, count, pConfig)");
+
+        auto pfnGetConfigExp = context.zesDdiTable.RasExp.pfnGetConfigExp;
+
+        if( nullptr == pfnGetConfigExp )
+            return logAndPropagateResult_zesRasGetConfigExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hRas, count, pConfig);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasGetConfigExpPrologue( hRas, count, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetConfigExp(result, hRas, count, pConfig);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasGetConfigExpPrologue( hRas, count, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetConfigExp(result, hRas, count, pConfig);
+        }
+
+        auto driver_result = pfnGetConfigExp( hRas, count, pConfig );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasGetConfigExpEpilogue( hRas, count, pConfig ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasGetConfigExp(result, hRas, count, pConfig);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult_zesRasGetConfigExp(driver_result, hRas, count, pConfig);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasSetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasSetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                        ///< thresholds for different error categories.
+        )
+    {
+        context.logger->log_trace("zesRasSetConfigExp(hRas, count, pConfig)");
+
+        auto pfnSetConfigExp = context.zesDdiTable.RasExp.pfnSetConfigExp;
+
+        if( nullptr == pfnSetConfigExp )
+            return logAndPropagateResult_zesRasSetConfigExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hRas, count, pConfig);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasSetConfigExpPrologue( hRas, count, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasSetConfigExp(result, hRas, count, pConfig);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasSetConfigExpPrologue( hRas, count, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasSetConfigExp(result, hRas, count, pConfig);
+        }
+
+        auto driver_result = pfnSetConfigExp( hRas, count, pConfig );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesRasSetConfigExpEpilogue( hRas, count, pConfig ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesRasSetConfigExp(result, hRas, count, pConfig);
+        }
+
+        return logAndPropagateResult_zesRasSetConfigExp(driver_result, hRas, count, pConfig);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -12268,6 +12812,18 @@ zesGetPowerProcAddrTable(
         dditable.pfnSetLimitsExt                             = pDdiTable->pfnSetLimitsExt;
         pDdiTable->pfnSetLimitsExt                           = validation_layer::zesPowerSetLimitsExt;
     }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnGetUsage                                 = pDdiTable->pfnGetUsage;
+        pDdiTable->pfnGetUsage                               = validation_layer::zesPowerGetUsage;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnGetLimitsExt2                            = pDdiTable->pfnGetLimitsExt2;
+        pDdiTable->pfnGetLimitsExt2                          = validation_layer::zesPowerGetLimitsExt2;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnSetLimitsExt2                            = pDdiTable->pfnSetLimitsExt2;
+        pDdiTable->pfnSetLimitsExt2                          = validation_layer::zesPowerSetLimitsExt2;
+    }
     return result;
 }
 
@@ -12380,6 +12936,22 @@ zesGetRasExpProcAddrTable(
     if (version >= ZE_API_VERSION_1_0) {
         dditable.pfnClearStateExp                            = pDdiTable->pfnClearStateExp;
         pDdiTable->pfnClearStateExp                          = validation_layer::zesRasClearStateExp;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnGetSupportedCategoriesExp                = pDdiTable->pfnGetSupportedCategoriesExp;
+        pDdiTable->pfnGetSupportedCategoriesExp              = validation_layer::zesRasGetSupportedCategoriesExp;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnGetStateExp2                             = pDdiTable->pfnGetStateExp2;
+        pDdiTable->pfnGetStateExp2                           = validation_layer::zesRasGetStateExp2;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnGetConfigExp                             = pDdiTable->pfnGetConfigExp;
+        pDdiTable->pfnGetConfigExp                           = validation_layer::zesRasGetConfigExp;
+    }
+    if (version >= ZE_API_VERSION_1_16) {
+        dditable.pfnSetConfigExp                             = pDdiTable->pfnSetConfigExp;
+        pDdiTable->pfnSetConfigExp                           = validation_layer::zesRasSetConfigExp;
     }
     return result;
 }

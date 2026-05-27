@@ -2040,6 +2040,228 @@ zeDeviceGetAggregatedCopyOffloadIncrementValue(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Gathers null-terminated plain text representation of runtime
+///        requirements for provided object.
+/// 
+/// @details
+///     - To gather requirements for a given object (e.g. an L0 module or
+///       graph), pObjDesc must point to a structure (e.g.
+///       ::ze_runtime_requirements_module_desc_t or
+///       ::ze_runtime_requirements_graph_desc_t) describing object for which
+///       the requirements are being retrieved.
+///     - Requirements are copied to user-provided memory pointed to by
+///       pRequirements and pSize is set to represent the actual written length
+///       of the requirements string in bytes.
+///     - The caller can pass nullptr for pRequirements when querying only for
+///       size.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pObjDesc`
+///         + `nullptr == pSize`
+///         + (nullptr != pRequirements) && (nullptr == pSize).
+///         + (nullptr != pRequirements) && (*pSize < requiredSize).
+///     - ::ZE_RESULT_SUCCESS
+///         + Successfully gathered requirements for provided source (e.g. module).
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Provided hDevice handle is invalid
+///         + pObjDesc doesn't point to a structure that describes a supported object for which the requirements can be gathered.
+ze_result_t ZE_APICALL
+zeDeviceGetRuntimeRequirements(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    const void* pObjDesc,                           ///< [in] describes the object for which the requirements are to be
+                                                    ///< gathered
+    size_t* pSize,                                  ///< [in,out] size of requirements string in bytes.
+    char* pRequirements                             ///< [in,out][optional] holds results of the query.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnDeviceGetRuntimeRequirements_t pfnGetRuntimeRequirements = [&result] {
+        auto pfnGetRuntimeRequirements = ze_lib::context->zeDdiTable.load()->Device.pfnGetRuntimeRequirements;
+        if( nullptr == pfnGetRuntimeRequirements ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetRuntimeRequirements;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetRuntimeRequirements( hDevice, pObjDesc, pSize, pRequirements );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetRuntimeRequirements = ze_lib::context->zeDdiTable.load()->Device.pfnGetRuntimeRequirements;
+    if( nullptr == pfnGetRuntimeRequirements ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetRuntimeRequirements( hDevice, pObjDesc, pSize, pRequirements );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves requirements producer key.
+/// 
+/// @details
+///     - Retrieves null-terminated plain text that represents the producer of
+///       requirements (Example string: 'INTEL.L0.GPU').
+///     - Useful for bookkeeping of the requirements on user side.
+/// 
+/// @returns
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pKey`
+///         + (nullptr == pKey).
+///     - ::ZE_RESULT_SUCCESS
+///         + Successfully retrieved the key.
+ze_result_t ZE_APICALL
+zeDeviceGetRuntimeRequirementsKey(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    const char** pKey                               ///< [out] returned key
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnDeviceGetRuntimeRequirementsKey_t pfnGetRuntimeRequirementsKey = [&result] {
+        auto pfnGetRuntimeRequirementsKey = ze_lib::context->zeDdiTable.load()->Device.pfnGetRuntimeRequirementsKey;
+        if( nullptr == pfnGetRuntimeRequirementsKey ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetRuntimeRequirementsKey;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetRuntimeRequirementsKey( hDevice, pKey );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetRuntimeRequirementsKey = ze_lib::context->zeDdiTable.load()->Device.pfnGetRuntimeRequirementsKey;
+    if( nullptr == pfnGetRuntimeRequirementsKey ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetRuntimeRequirementsKey( hDevice, pKey );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Validates runtime requirements.
+/// 
+/// @details
+///     - To validate existing requirements (e.g. cached from previous runs),
+///       requirements string should be passed as pRequirements.
+/// 
+/// @returns
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pRequirements`
+///         + `nullptr == pOut`
+///         + (nullptr == pRequirements).
+///         + (nullptr == pOut).
+///     - ::ZE_RESULT_SUCCESS
+///         + Validation call succeeded and result of the validation is available in pOut.
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Provided hDevice handle is invalid
+ze_result_t ZE_APICALL
+zeDeviceValidateRuntimeRequirements(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    const char* pRequirements,                      ///< [in] requirements to be validated. Requirements should be
+                                                    ///< null-terminated plain text representation of runtime requirements
+                                                    ///< previously retrieved from the device.
+    ze_validate_runtime_requirements_output_t* pOut ///< [in][out] Output of the validation call.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnDeviceValidateRuntimeRequirements_t pfnValidateRuntimeRequirements = [&result] {
+        auto pfnValidateRuntimeRequirements = ze_lib::context->zeDdiTable.load()->Device.pfnValidateRuntimeRequirements;
+        if( nullptr == pfnValidateRuntimeRequirements ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnValidateRuntimeRequirements;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnValidateRuntimeRequirements( hDevice, pRequirements, pOut );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnValidateRuntimeRequirements = ze_lib::context->zeDdiTable.load()->Device.pfnValidateRuntimeRequirements;
+    if( nullptr == pfnValidateRuntimeRequirements ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnValidateRuntimeRequirements( hDevice, pRequirements, pOut );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Creates a context for the driver.
 /// 
 /// @details
@@ -3940,6 +4162,100 @@ zeCommandListAppendMemoryCopy(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Copies host, device, or shared memory with additional parameters.
+/// 
+/// @details
+///     - The application must ensure the memory pointed to by dstptr and srcptr
+///       is accessible by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by dstptr and
+///       srcptr as they are free to be modified by either the Host or device up
+///       until execution.
+///     - The application must ensure the events are accessible by the device on
+///       which the command list was created.
+///     - The application must ensure the command list and events were created,
+///       and the memory was allocated, on the same context.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @remarks
+///   _Analogues_
+///     - **clEnqueueCopyBuffer**
+///     - **clEnqueueReadBuffer**
+///     - **clEnqueueWriteBuffer**
+///     - **clEnqueueSVMMemcpy**
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == dstptr`
+///         + `nullptr == srcptr`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ze_result_t ZE_APICALL
+zeCommandListAppendMemoryCopyWithParameters(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+    void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+    const void* srcptr,                             ///< [in] pointer to source memory to copy from
+    size_t size,                                    ///< [in] size in bytes to copy
+    const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListAppendMemoryCopyWithParameters_t pfnAppendMemoryCopyWithParameters = [&result] {
+        auto pfnAppendMemoryCopyWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryCopyWithParameters;
+        if( nullptr == pfnAppendMemoryCopyWithParameters ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendMemoryCopyWithParameters;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendMemoryCopyWithParameters( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendMemoryCopyWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryCopyWithParameters;
+    if( nullptr == pfnAppendMemoryCopyWithParameters ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendMemoryCopyWithParameters( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Initializes host, device, or shared memory.
 /// 
 /// @details
@@ -4034,6 +4350,106 @@ zeCommandListAppendMemoryFill(
     }
 
     return pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Initializes host, device, or shared memory with additional parameters.
+/// 
+/// @details
+///     - The application must ensure the memory pointed to by ptr is accessible
+///       by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by ptr as it
+///       is free to be modified by either the Host or device up until
+///       execution.
+///     - The ptr must be aligned to pattern_size.
+///     - The value to initialize memory to is described by the pattern and the
+///       pattern size.
+///     - The pattern size must be a power-of-two and less than or equal to the
+///       `maxMemoryFillPatternSize` member of
+///       ::ze_command_queue_group_properties_t.
+///     - The application must ensure the events are accessible by the device on
+///       which the command list was created.
+///     - The application must ensure the command list and events were created,
+///       and the memory was allocated, on the same context.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @remarks
+///   _Analogues_
+///     - **clEnqueueFillBuffer**
+///     - **clEnqueueSVMMemFill**
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == ptr`
+///         + `nullptr == pattern`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ze_result_t ZE_APICALL
+zeCommandListAppendMemoryFillWithParameters(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+    void* ptr,                                      ///< [in] pointer to memory to initialize
+    const void* pattern,                            ///< [in] pointer to value to initialize memory to
+    size_t pattern_size,                            ///< [in] size in bytes of the value to initialize memory to
+    size_t size,                                    ///< [in] size in bytes to initialize
+    const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListAppendMemoryFillWithParameters_t pfnAppendMemoryFillWithParameters = [&result] {
+        auto pfnAppendMemoryFillWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryFillWithParameters;
+        if( nullptr == pfnAppendMemoryFillWithParameters ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendMemoryFillWithParameters;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendMemoryFillWithParameters( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendMemoryFillWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryFillWithParameters;
+    if( nullptr == pfnAppendMemoryFillWithParameters ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendMemoryFillWithParameters( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
     #endif
 }
 
@@ -7263,7 +7679,7 @@ zeImageDestroy(
 ///         + `nullptr == pptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
 ///         + `0x7 < device_desc->flags`
-///         + `0xf < host_desc->flags`
+///         + `0x1f < host_desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == size`
@@ -7435,7 +7851,7 @@ zeMemAllocDevice(
 ///         + `nullptr == host_desc`
 ///         + `nullptr == pptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0xf < host_desc->flags`
+///         + `0x1f < host_desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == size`
@@ -8738,10 +9154,10 @@ zeModuleGetNativeBinary(
 /// @brief Retrieve global variable pointer from Module.
 /// 
 /// @details
-///     - The application may query global pointer from any module that either
-///       exports or imports it.
-///     - The application must dynamically link a module that imports a global
-///       before the global pointer can be queried from it.
+///     - For modules created from SPIR-V the interpretation of `pGlobalName` is
+///       described in the SPIR-V programming guide.
+///     - For native modules not created from SPIR-V the interpretation of
+///       `pGlobalName` is implementation defined.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -15557,6 +15973,8 @@ zeCommandListCreateCloneExp(
 /// @brief Appends command lists to dispatch from an immediate command list.
 /// 
 /// @details
+///     - @deprecated since 1.16. Please use
+///       ::zeCommandListImmediateAppendCommandListsWithParameters.
 ///     - The application must call this function only with command lists
 ///       created with ::zeCommandListCreateImmediate.
 ///     - The command lists passed to this function in the `phCommandLists`
@@ -15629,6 +16047,88 @@ zeCommandListImmediateAppendCommandListsExp(
     }
 
     return pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Appends command lists to dispatch from an immediate command list with
+///        additional parameters.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The command lists passed to this function in the `phCommandLists`
+///       argument must be regular command lists (i.e. not immediate command
+///       lists).
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandListImmediate`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phCommandLists`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ze_result_t ZE_APICALL
+zeCommandListImmediateAppendCommandListsWithParameters(
+    ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+    uint32_t numCommandLists,                       ///< [in] number of command lists
+    ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+    const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                    ///<    - if not null, this event is signaled after the completion of all
+                                                    ///< appended command lists
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                    ///< command lists; must be 0 if nullptr == phWaitEvents
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before executing appended command lists.
+                                                    ///<    - if not null, all wait events must be satisfied prior to the start
+                                                    ///< of any appended command list(s)
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListImmediateAppendCommandListsWithParameters_t pfnImmediateAppendCommandListsWithParameters = [&result] {
+        auto pfnImmediateAppendCommandListsWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateAppendCommandListsWithParameters;
+        if( nullptr == pfnImmediateAppendCommandListsWithParameters ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnImmediateAppendCommandListsWithParameters;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnImmediateAppendCommandListsWithParameters( hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnImmediateAppendCommandListsWithParameters = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateAppendCommandListsWithParameters;
+    if( nullptr == pfnImmediateAppendCommandListsWithParameters ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnImmediateAppendCommandListsWithParameters( hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
     #endif
 }
 
