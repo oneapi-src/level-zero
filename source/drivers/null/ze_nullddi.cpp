@@ -6620,15 +6620,25 @@ zeGetRTASBuilderProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnCreateExt                              = driver::zeRTASBuilderCreateExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnGetBuildPropertiesExt                  = driver::zeRTASBuilderGetBuildPropertiesExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnBuildExt                               = driver::zeRTASBuilderBuildExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnCommandListAppendCopyExt               = driver::zeRTASBuilderCommandListAppendCopyExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnDestroyExt                             = driver::zeRTASBuilderDestroyExt;
+    }
 
     return result;
 }
@@ -6655,13 +6665,21 @@ zeGetRTASBuilderExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnCreateExp                              = driver::zeRTASBuilderCreateExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetBuildPropertiesExp                  = driver::zeRTASBuilderGetBuildPropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnBuildExp                               = driver::zeRTASBuilderBuildExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnDestroyExp                             = driver::zeRTASBuilderDestroyExp;
+    }
 
     return result;
 }
@@ -6688,13 +6706,21 @@ zeGetRTASParallelOperationProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnCreateExt                              = driver::zeRTASParallelOperationCreateExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnGetPropertiesExt                       = driver::zeRTASParallelOperationGetPropertiesExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnJoinExt                                = driver::zeRTASParallelOperationJoinExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnDestroyExt                             = driver::zeRTASParallelOperationDestroyExt;
+    }
 
     return result;
 }
@@ -6721,13 +6747,21 @@ zeGetRTASParallelOperationExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnCreateExp                              = driver::zeRTASParallelOperationCreateExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetPropertiesExp                       = driver::zeRTASParallelOperationGetPropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnJoinExp                                = driver::zeRTASParallelOperationJoinExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnDestroyExp                             = driver::zeRTASParallelOperationDestroyExp;
+    }
 
     return result;
 }
@@ -6754,23 +6788,41 @@ zeGetDriverProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGet                                    = driver::zeDriverGet;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetApiVersion                          = driver::zeDriverGetApiVersion;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zeDriverGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetIpcProperties                       = driver::zeDriverGetIpcProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetExtensionProperties                 = driver::zeDriverGetExtensionProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_1) {
     pDdiTable->pfnGetExtensionFunctionAddress            = driver::zeDriverGetExtensionFunctionAddress;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnRTASFormatCompatibilityCheckExt        = driver::zeDriverRTASFormatCompatibilityCheckExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnGetDefaultContext                      = driver::zeDriverGetDefaultContext;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnGetLastErrorDescription                = driver::zeDriverGetLastErrorDescription;
+    }
 
     return result;
 }
@@ -6797,7 +6849,9 @@ zeGetDriverExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnRTASFormatCompatibilityCheckExp        = driver::zeDriverRTASFormatCompatibilityCheckExp;
+    }
 
     return result;
 }
@@ -6824,53 +6878,101 @@ zeGetDeviceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGet                                    = driver::zeDeviceGet;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetSubDevices                          = driver::zeDeviceGetSubDevices;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zeDeviceGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetComputeProperties                   = driver::zeDeviceGetComputeProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetModuleProperties                    = driver::zeDeviceGetModuleProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetCommandQueueGroupProperties         = driver::zeDeviceGetCommandQueueGroupProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetMemoryProperties                    = driver::zeDeviceGetMemoryProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetMemoryAccessProperties              = driver::zeDeviceGetMemoryAccessProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetCacheProperties                     = driver::zeDeviceGetCacheProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetImageProperties                     = driver::zeDeviceGetImageProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetExternalMemoryProperties            = driver::zeDeviceGetExternalMemoryProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetP2PProperties                       = driver::zeDeviceGetP2PProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCanAccessPeer                          = driver::zeDeviceCanAccessPeer;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetStatus                              = driver::zeDeviceGetStatus;
+    }
 
+    if (version >= ZE_API_VERSION_1_1) {
     pDdiTable->pfnGetGlobalTimestamps                    = driver::zeDeviceGetGlobalTimestamps;
+    }
 
+    if (version >= ZE_API_VERSION_1_12) {
     pDdiTable->pfnImportExternalSemaphoreExt             = driver::zeDeviceImportExternalSemaphoreExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_12) {
     pDdiTable->pfnReleaseExternalSemaphoreExt            = driver::zeDeviceReleaseExternalSemaphoreExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnGetVectorWidthPropertiesExt            = driver::zeDeviceGetVectorWidthPropertiesExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnSynchronize                            = driver::zeDeviceSynchronize;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue = driver::zeDeviceGetAggregatedCopyOffloadIncrementValue;
+    }
 
+    if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnSetCacheAdviceExt                      = driver::zeDeviceSetCacheAdviceExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnPciGetPropertiesExt                    = driver::zeDevicePciGetPropertiesExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetRootDevice                          = driver::zeDeviceGetRootDevice;
+    }
 
     return result;
 }
@@ -6897,7 +6999,9 @@ zeGetDeviceExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetFabricVertexExp                     = driver::zeDeviceGetFabricVertexExp;
+    }
 
     return result;
 }
@@ -6924,23 +7028,41 @@ zeGetContextProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeContextCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeContextDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetStatus                              = driver::zeContextGetStatus;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSystemBarrier                          = driver::zeContextSystemBarrier;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnMakeMemoryResident                     = driver::zeContextMakeMemoryResident;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEvictMemory                            = driver::zeContextEvictMemory;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnMakeImageResident                      = driver::zeContextMakeImageResident;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEvictImage                             = driver::zeContextEvictImage;
+    }
 
+    if (version >= ZE_API_VERSION_1_1) {
     pDdiTable->pfnCreateEx                               = driver::zeContextCreateEx;
+    }
 
     return result;
 }
@@ -6967,17 +7089,29 @@ zeGetCommandQueueProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeCommandQueueCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeCommandQueueDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnExecuteCommandLists                    = driver::zeCommandQueueExecuteCommandLists;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSynchronize                            = driver::zeCommandQueueSynchronize;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetOrdinal                             = driver::zeCommandQueueGetOrdinal;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetIndex                               = driver::zeCommandQueueGetIndex;
+    }
 
     return result;
 }
@@ -7004,81 +7138,157 @@ zeGetCommandListProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeCommandListCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreateImmediate                        = driver::zeCommandListCreateImmediate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeCommandListDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnClose                                  = driver::zeCommandListClose;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReset                                  = driver::zeCommandListReset;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendWriteGlobalTimestamp             = driver::zeCommandListAppendWriteGlobalTimestamp;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendBarrier                          = driver::zeCommandListAppendBarrier;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMemoryRangesBarrier              = driver::zeCommandListAppendMemoryRangesBarrier;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMemoryCopy                       = driver::zeCommandListAppendMemoryCopy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMemoryFill                       = driver::zeCommandListAppendMemoryFill;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMemoryCopyRegion                 = driver::zeCommandListAppendMemoryCopyRegion;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMemoryCopyFromContext            = driver::zeCommandListAppendMemoryCopyFromContext;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendImageCopy                        = driver::zeCommandListAppendImageCopy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendImageCopyRegion                  = driver::zeCommandListAppendImageCopyRegion;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendImageCopyToMemory                = driver::zeCommandListAppendImageCopyToMemory;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendImageCopyFromMemory              = driver::zeCommandListAppendImageCopyFromMemory;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMemoryPrefetch                   = driver::zeCommandListAppendMemoryPrefetch;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMemAdvise                        = driver::zeCommandListAppendMemAdvise;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendSignalEvent                      = driver::zeCommandListAppendSignalEvent;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendWaitOnEvents                     = driver::zeCommandListAppendWaitOnEvents;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendEventReset                       = driver::zeCommandListAppendEventReset;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendQueryKernelTimestamps            = driver::zeCommandListAppendQueryKernelTimestamps;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendLaunchKernel                     = driver::zeCommandListAppendLaunchKernel;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendLaunchCooperativeKernel          = driver::zeCommandListAppendLaunchCooperativeKernel;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendLaunchKernelIndirect             = driver::zeCommandListAppendLaunchKernelIndirect;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = driver::zeCommandListAppendLaunchMultipleKernelsIndirect;
+    }
 
+    if (version >= ZE_API_VERSION_1_12) {
     pDdiTable->pfnAppendSignalExternalSemaphoreExt       = driver::zeCommandListAppendSignalExternalSemaphoreExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_12) {
     pDdiTable->pfnAppendWaitExternalSemaphoreExt         = driver::zeCommandListAppendWaitExternalSemaphoreExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnAppendLaunchKernelWithParameters       = driver::zeCommandListAppendLaunchKernelWithParameters;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnAppendLaunchKernelWithArguments        = driver::zeCommandListAppendLaunchKernelWithArguments;
+    }
 
+    if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnAppendImageCopyToMemoryExt             = driver::zeCommandListAppendImageCopyToMemoryExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnAppendImageCopyFromMemoryExt           = driver::zeCommandListAppendImageCopyFromMemoryExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnHostSynchronize                        = driver::zeCommandListHostSynchronize;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetDeviceHandle                        = driver::zeCommandListGetDeviceHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetContextHandle                       = driver::zeCommandListGetContextHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetOrdinal                             = driver::zeCommandListGetOrdinal;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnImmediateGetIndex                      = driver::zeCommandListImmediateGetIndex;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnIsImmediate                            = driver::zeCommandListIsImmediate;
+    }
 
     return result;
 }
@@ -7105,21 +7315,37 @@ zeGetCommandListExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnGetNextCommandIdWithKernelsExp         = driver::zeCommandListGetNextCommandIdWithKernelsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnUpdateMutableCommandKernelsExp         = driver::zeCommandListUpdateMutableCommandKernelsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnCreateCloneExp                         = driver::zeCommandListCreateCloneExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnImmediateAppendCommandListsExp         = driver::zeCommandListImmediateAppendCommandListsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetNextCommandIdExp                    = driver::zeCommandListGetNextCommandIdExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnUpdateMutableCommandsExp               = driver::zeCommandListUpdateMutableCommandsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnUpdateMutableCommandSignalEventExp     = driver::zeCommandListUpdateMutableCommandSignalEventExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = driver::zeCommandListUpdateMutableCommandWaitEventsExp;
+    }
 
     return result;
 }
@@ -7146,37 +7372,69 @@ zeGetEventProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeEventCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeEventDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnHostSignal                             = driver::zeEventHostSignal;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnHostSynchronize                        = driver::zeEventHostSynchronize;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnQueryStatus                            = driver::zeEventQueryStatus;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnHostReset                              = driver::zeEventHostReset;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnQueryKernelTimestamp                   = driver::zeEventQueryKernelTimestamp;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnCounterBasedCreate                     = driver::zeEventCounterBasedCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnCounterBasedGetIpcHandle               = driver::zeEventCounterBasedGetIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnCounterBasedOpenIpcHandle              = driver::zeEventCounterBasedOpenIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnCounterBasedCloseIpcHandle             = driver::zeEventCounterBasedCloseIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnCounterBasedGetDeviceAddress           = driver::zeEventCounterBasedGetDeviceAddress;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnQueryKernelTimestampsExt               = driver::zeEventQueryKernelTimestampsExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetEventPool                           = driver::zeEventGetEventPool;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetSignalScope                         = driver::zeEventGetSignalScope;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetWaitScope                           = driver::zeEventGetWaitScope;
+    }
 
     return result;
 }
@@ -7203,7 +7461,9 @@ zeGetEventExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnQueryTimestampsExp                     = driver::zeEventQueryTimestampsExp;
+    }
 
     return result;
 }
@@ -7230,21 +7490,37 @@ zeGetEventPoolProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeEventPoolCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeEventPoolDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetIpcHandle                           = driver::zeEventPoolGetIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOpenIpcHandle                          = driver::zeEventPoolOpenIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCloseIpcHandle                         = driver::zeEventPoolCloseIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnPutIpcHandle                           = driver::zeEventPoolPutIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetContextHandle                       = driver::zeEventPoolGetContextHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetFlags                               = driver::zeEventPoolGetFlags;
+    }
 
     return result;
 }
@@ -7271,15 +7547,25 @@ zeGetFenceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeFenceCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeFenceDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnHostSynchronize                        = driver::zeFenceHostSynchronize;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnQueryStatus                            = driver::zeFenceQueryStatus;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReset                                  = driver::zeFenceReset;
+    }
 
     return result;
 }
@@ -7306,15 +7592,25 @@ zeGetImageProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zeImageGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeImageCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeImageDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnGetAllocPropertiesExt                  = driver::zeImageGetAllocPropertiesExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnViewCreateExt                          = driver::zeImageViewCreateExt;
+    }
 
     return result;
 }
@@ -7341,11 +7637,17 @@ zeGetImageExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnGetMemoryPropertiesExp                 = driver::zeImageGetMemoryPropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnViewCreateExp                          = driver::zeImageViewCreateExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetDeviceOffsetExp                     = driver::zeImageGetDeviceOffsetExp;
+    }
 
     return result;
 }
@@ -7372,29 +7674,53 @@ zeGetKernelProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeKernelCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeKernelDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetCacheConfig                         = driver::zeKernelSetCacheConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetGroupSize                           = driver::zeKernelSetGroupSize;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSuggestGroupSize                       = driver::zeKernelSuggestGroupSize;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSuggestMaxCooperativeGroupCount        = driver::zeKernelSuggestMaxCooperativeGroupCount;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetArgumentValue                       = driver::zeKernelSetArgumentValue;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetIndirectAccess                      = driver::zeKernelSetIndirectAccess;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetIndirectAccess                      = driver::zeKernelGetIndirectAccess;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetSourceAttributes                    = driver::zeKernelGetSourceAttributes;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zeKernelGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetName                                = driver::zeKernelGetName;
+    }
 
     return result;
 }
@@ -7421,13 +7747,21 @@ zeGetKernelExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_1) {
     pDdiTable->pfnSetGlobalOffsetExp                     = driver::zeKernelSetGlobalOffsetExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_11) {
     pDdiTable->pfnGetBinaryExp                           = driver::zeKernelGetBinaryExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnGetAllocationPropertiesExp             = driver::zeKernelGetAllocationPropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnSchedulingHintExp                      = driver::zeKernelSchedulingHintExp;
+    }
 
     return result;
 }
@@ -7454,31 +7788,57 @@ zeGetMemProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAllocShared                            = driver::zeMemAllocShared;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAllocDevice                            = driver::zeMemAllocDevice;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAllocHost                              = driver::zeMemAllocHost;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnFree                                   = driver::zeMemFree;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetAllocProperties                     = driver::zeMemGetAllocProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetAddressRange                        = driver::zeMemGetAddressRange;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetIpcHandle                           = driver::zeMemGetIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOpenIpcHandle                          = driver::zeMemOpenIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCloseIpcHandle                         = driver::zeMemCloseIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnGetIpcHandleWithProperties             = driver::zeMemGetIpcHandleWithProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnFreeExt                                = driver::zeMemFreeExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnPutIpcHandle                           = driver::zeMemPutIpcHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetPitchFor2dImage                     = driver::zeMemGetPitchFor2dImage;
+    }
 
     return result;
 }
@@ -7505,13 +7865,21 @@ zeGetMemExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = driver::zeMemGetIpcHandleFromFileDescriptorExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = driver::zeMemGetFileDescriptorFromIpcHandleExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnSetAtomicAccessAttributeExp            = driver::zeMemSetAtomicAccessAttributeExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetAtomicAccessAttributeExp            = driver::zeMemGetAtomicAccessAttributeExp;
+    }
 
     return result;
 }
@@ -7538,23 +7906,41 @@ zeGetModuleProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeModuleCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeModuleDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDynamicLink                            = driver::zeModuleDynamicLink;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetNativeBinary                        = driver::zeModuleGetNativeBinary;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetGlobalPointer                       = driver::zeModuleGetGlobalPointer;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetKernelNames                         = driver::zeModuleGetKernelNames;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zeModuleGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetFunctionPointer                     = driver::zeModuleGetFunctionPointer;
+    }
 
+    if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnInspectLinkageExt                      = driver::zeModuleInspectLinkageExt;
+    }
 
     return result;
 }
@@ -7581,9 +7967,13 @@ zeGetModuleBuildLogProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeModuleBuildLogDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetString                              = driver::zeModuleBuildLogGetString;
+    }
 
     return result;
 }
@@ -7610,11 +8000,17 @@ zeGetPhysicalMemProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zePhysicalMemCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zePhysicalMemDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnGetProperties                          = driver::zePhysicalMemGetProperties;
+    }
 
     return result;
 }
@@ -7641,9 +8037,13 @@ zeGetSamplerProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zeSamplerCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zeSamplerDestroy;
+    }
 
     return result;
 }
@@ -7670,19 +8070,33 @@ zeGetVirtualMemProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReserve                                = driver::zeVirtualMemReserve;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnFree                                   = driver::zeVirtualMemFree;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnQueryPageSize                          = driver::zeVirtualMemQueryPageSize;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnMap                                    = driver::zeVirtualMemMap;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnUnmap                                  = driver::zeVirtualMemUnmap;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetAccessAttribute                     = driver::zeVirtualMemSetAccessAttribute;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetAccessAttribute                     = driver::zeVirtualMemGetAccessAttribute;
+    }
 
     return result;
 }
@@ -7709,11 +8123,17 @@ zeGetFabricEdgeExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetExp                                 = driver::zeFabricEdgeGetExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetVerticesExp                         = driver::zeFabricEdgeGetVerticesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetPropertiesExp                       = driver::zeFabricEdgeGetPropertiesExp;
+    }
 
     return result;
 }
@@ -7740,13 +8160,21 @@ zeGetFabricVertexExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetExp                                 = driver::zeFabricVertexGetExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetSubVerticesExp                      = driver::zeFabricVertexGetSubVerticesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetPropertiesExp                       = driver::zeFabricVertexGetPropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetDeviceExp                           = driver::zeFabricVertexGetDeviceExp;
+    }
 
     return result;
 }
