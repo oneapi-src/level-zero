@@ -5729,7 +5729,9 @@ zesGetGlobalProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Global;
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnInit                                     = firstDriver->dditable.zes.Global.pfnInit;
+            }
         }
     }
 
@@ -6058,7 +6060,120 @@ zesGetDeviceProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Device;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Device.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Device.pfnGetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnReset                                    = firstDriver->dditable.zes.Device.pfnReset;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnProcessesGetState                        = firstDriver->dditable.zes.Device.pfnProcessesGetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnPciGetProperties                         = firstDriver->dditable.zes.Device.pfnPciGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnPciGetState                              = firstDriver->dditable.zes.Device.pfnPciGetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnPciGetBars                               = firstDriver->dditable.zes.Device.pfnPciGetBars;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnPciGetStats                              = firstDriver->dditable.zes.Device.pfnPciGetStats;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumDiagnosticTestSuites                 = firstDriver->dditable.zes.Device.pfnEnumDiagnosticTestSuites;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumEngineGroups                         = firstDriver->dditable.zes.Device.pfnEnumEngineGroups;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEventRegister                            = firstDriver->dditable.zes.Device.pfnEventRegister;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumFabricPorts                          = firstDriver->dditable.zes.Device.pfnEnumFabricPorts;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumFans                                 = firstDriver->dditable.zes.Device.pfnEnumFans;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumFirmwares                            = firstDriver->dditable.zes.Device.pfnEnumFirmwares;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumFrequencyDomains                     = firstDriver->dditable.zes.Device.pfnEnumFrequencyDomains;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumLeds                                 = firstDriver->dditable.zes.Device.pfnEnumLeds;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumMemoryModules                        = firstDriver->dditable.zes.Device.pfnEnumMemoryModules;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumPerformanceFactorDomains             = firstDriver->dditable.zes.Device.pfnEnumPerformanceFactorDomains;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumPowerDomains                         = firstDriver->dditable.zes.Device.pfnEnumPowerDomains;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetCardPowerDomain                       = firstDriver->dditable.zes.Device.pfnGetCardPowerDomain;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumPsus                                 = firstDriver->dditable.zes.Device.pfnEnumPsus;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumRasErrorSets                         = firstDriver->dditable.zes.Device.pfnEnumRasErrorSets;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumSchedulers                           = firstDriver->dditable.zes.Device.pfnEnumSchedulers;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumStandbyDomains                       = firstDriver->dditable.zes.Device.pfnEnumStandbyDomains;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEnumTemperatureSensors                   = firstDriver->dditable.zes.Device.pfnEnumTemperatureSensors;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnPciLinkSpeedUpdateExt                    = firstDriver->dditable.zes.Device.pfnPciLinkSpeedUpdateExt;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnEccAvailable                             = firstDriver->dditable.zes.Device.pfnEccAvailable;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnEccConfigurable                          = firstDriver->dditable.zes.Device.pfnEccConfigurable;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetEccState                              = firstDriver->dditable.zes.Device.pfnGetEccState;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnSetEccState                              = firstDriver->dditable.zes.Device.pfnSetEccState;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGet                                      = firstDriver->dditable.zes.Device.pfnGet;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnSetOverclockWaiver                       = firstDriver->dditable.zes.Device.pfnSetOverclockWaiver;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetOverclockDomains                      = firstDriver->dditable.zes.Device.pfnGetOverclockDomains;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetOverclockControls                     = firstDriver->dditable.zes.Device.pfnGetOverclockControls;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnResetOverclockSettings                   = firstDriver->dditable.zes.Device.pfnResetOverclockSettings;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnReadOverclockState                       = firstDriver->dditable.zes.Device.pfnReadOverclockState;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnEnumOverclockDomains                     = firstDriver->dditable.zes.Device.pfnEnumOverclockDomains;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnResetExt                                 = firstDriver->dditable.zes.Device.pfnResetExt;
+            }
         }
     }
 
@@ -6142,7 +6257,15 @@ zesGetDeviceExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.DeviceExp;
+            if (version >= ZE_API_VERSION_1_10) {
+                pDdiTable->pfnEnumEnabledVFExp                         = firstDriver->dditable.zes.DeviceExp.pfnEnumEnabledVFExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetSubDevicePropertiesExp                = firstDriver->dditable.zes.DeviceExp.pfnGetSubDevicePropertiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnEnumActiveVFExp                          = firstDriver->dditable.zes.DeviceExp.pfnEnumActiveVFExp;
+            }
         }
     }
 
@@ -6236,7 +6359,21 @@ zesGetDriverProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Driver;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEventListen                              = firstDriver->dditable.zes.Driver.pfnEventListen;
+            }
+            if (version >= ZE_API_VERSION_1_1) {
+                pDdiTable->pfnEventListenEx                            = firstDriver->dditable.zes.Driver.pfnEventListenEx;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGet                                      = firstDriver->dditable.zes.Driver.pfnGet;
+            }
+            if (version >= ZE_API_VERSION_1_8) {
+                pDdiTable->pfnGetExtensionProperties                   = firstDriver->dditable.zes.Driver.pfnGetExtensionProperties;
+            }
+            if (version >= ZE_API_VERSION_1_8) {
+                pDdiTable->pfnGetExtensionFunctionAddress              = firstDriver->dditable.zes.Driver.pfnGetExtensionFunctionAddress;
+            }
         }
     }
 
@@ -6306,7 +6443,9 @@ zesGetDriverExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.DriverExp;
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetDeviceByUuidExp                       = firstDriver->dditable.zes.DriverExp.pfnGetDeviceByUuidExp;
+            }
         }
     }
 
@@ -6390,7 +6529,15 @@ zesGetDiagnosticsProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Diagnostics;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Diagnostics.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetTests                                 = firstDriver->dditable.zes.Diagnostics.pfnGetTests;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnRunTests                                 = firstDriver->dditable.zes.Diagnostics.pfnRunTests;
+            }
         }
     }
 
@@ -6474,7 +6621,15 @@ zesGetEngineProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Engine;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Engine.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetActivity                              = firstDriver->dditable.zes.Engine.pfnGetActivity;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetActivityExt                           = firstDriver->dditable.zes.Engine.pfnGetActivityExt;
+            }
         }
     }
 
@@ -6593,7 +6748,30 @@ zesGetFabricPortProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.FabricPort;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.FabricPort.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetLinkType                              = firstDriver->dditable.zes.FabricPort.pfnGetLinkType;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetConfig                                = firstDriver->dditable.zes.FabricPort.pfnGetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetConfig                                = firstDriver->dditable.zes.FabricPort.pfnSetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.FabricPort.pfnGetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetThroughput                            = firstDriver->dditable.zes.FabricPort.pfnGetThroughput;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetFabricErrorCounters                   = firstDriver->dditable.zes.FabricPort.pfnGetFabricErrorCounters;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetMultiPortThroughput                   = firstDriver->dditable.zes.FabricPort.pfnGetMultiPortThroughput;
+            }
         }
     }
 
@@ -6698,7 +6876,24 @@ zesGetFanProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Fan;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Fan.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetConfig                                = firstDriver->dditable.zes.Fan.pfnGetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetDefaultMode                           = firstDriver->dditable.zes.Fan.pfnSetDefaultMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetFixedSpeedMode                        = firstDriver->dditable.zes.Fan.pfnSetFixedSpeedMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetSpeedTableMode                        = firstDriver->dditable.zes.Fan.pfnSetSpeedTableMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Fan.pfnGetState;
+            }
         }
     }
 
@@ -6789,7 +6984,18 @@ zesGetFirmwareProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Firmware;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Firmware.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnFlash                                    = firstDriver->dditable.zes.Firmware.pfnFlash;
+            }
+            if (version >= ZE_API_VERSION_1_8) {
+                pDdiTable->pfnGetFlashProgress                         = firstDriver->dditable.zes.Firmware.pfnGetFlashProgress;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetConsoleLogs                           = firstDriver->dditable.zes.Firmware.pfnGetConsoleLogs;
+            }
         }
     }
 
@@ -6866,7 +7072,12 @@ zesGetFirmwareExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.FirmwareExp;
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetSecurityVersionExp                    = firstDriver->dditable.zes.FirmwareExp.pfnGetSecurityVersionExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnSetSecurityVersionExp                    = firstDriver->dditable.zes.FirmwareExp.pfnSetSecurityVersionExp;
+            }
         }
     }
 
@@ -7048,7 +7259,57 @@ zesGetFrequencyProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Frequency;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Frequency.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetAvailableClocks                       = firstDriver->dditable.zes.Frequency.pfnGetAvailableClocks;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetRange                                 = firstDriver->dditable.zes.Frequency.pfnGetRange;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetRange                                 = firstDriver->dditable.zes.Frequency.pfnSetRange;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Frequency.pfnGetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetThrottleTime                          = firstDriver->dditable.zes.Frequency.pfnGetThrottleTime;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcGetCapabilities                        = firstDriver->dditable.zes.Frequency.pfnOcGetCapabilities;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcGetFrequencyTarget                     = firstDriver->dditable.zes.Frequency.pfnOcGetFrequencyTarget;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcSetFrequencyTarget                     = firstDriver->dditable.zes.Frequency.pfnOcSetFrequencyTarget;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcGetVoltageTarget                       = firstDriver->dditable.zes.Frequency.pfnOcGetVoltageTarget;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcSetVoltageTarget                       = firstDriver->dditable.zes.Frequency.pfnOcSetVoltageTarget;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcSetMode                                = firstDriver->dditable.zes.Frequency.pfnOcSetMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcGetMode                                = firstDriver->dditable.zes.Frequency.pfnOcGetMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcGetIccMax                              = firstDriver->dditable.zes.Frequency.pfnOcGetIccMax;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcSetIccMax                              = firstDriver->dditable.zes.Frequency.pfnOcSetIccMax;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcGetTjMax                               = firstDriver->dditable.zes.Frequency.pfnOcGetTjMax;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOcSetTjMax                               = firstDriver->dditable.zes.Frequency.pfnOcSetTjMax;
+            }
         }
     }
 
@@ -7139,7 +7400,18 @@ zesGetLedProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Led;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Led.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Led.pfnGetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetState                                 = firstDriver->dditable.zes.Led.pfnSetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetColor                                 = firstDriver->dditable.zes.Led.pfnSetColor;
+            }
         }
     }
 
@@ -7223,7 +7495,15 @@ zesGetMemoryProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Memory;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Memory.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Memory.pfnGetState;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetBandwidth                             = firstDriver->dditable.zes.Memory.pfnGetBandwidth;
+            }
         }
     }
 
@@ -7349,7 +7629,33 @@ zesGetOverclockProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Overclock;
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetDomainProperties                      = firstDriver->dditable.zes.Overclock.pfnGetDomainProperties;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetDomainVFProperties                    = firstDriver->dditable.zes.Overclock.pfnGetDomainVFProperties;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetDomainControlProperties               = firstDriver->dditable.zes.Overclock.pfnGetDomainControlProperties;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetControlCurrentValue                   = firstDriver->dditable.zes.Overclock.pfnGetControlCurrentValue;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetControlPendingValue                   = firstDriver->dditable.zes.Overclock.pfnGetControlPendingValue;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnSetControlUserValue                      = firstDriver->dditable.zes.Overclock.pfnSetControlUserValue;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetControlState                          = firstDriver->dditable.zes.Overclock.pfnGetControlState;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnGetVFPointValues                         = firstDriver->dditable.zes.Overclock.pfnGetVFPointValues;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnSetVFPointValues                         = firstDriver->dditable.zes.Overclock.pfnSetVFPointValues;
+            }
         }
     }
 
@@ -7433,7 +7739,15 @@ zesGetPerformanceFactorProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.PerformanceFactor;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.PerformanceFactor.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetConfig                                = firstDriver->dditable.zes.PerformanceFactor.pfnGetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetConfig                                = firstDriver->dditable.zes.PerformanceFactor.pfnSetConfig;
+            }
         }
     }
 
@@ -7552,7 +7866,30 @@ zesGetPowerProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Power;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Power.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetEnergyCounter                         = firstDriver->dditable.zes.Power.pfnGetEnergyCounter;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetLimits                                = firstDriver->dditable.zes.Power.pfnGetLimits;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetLimits                                = firstDriver->dditable.zes.Power.pfnSetLimits;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetEnergyThreshold                       = firstDriver->dditable.zes.Power.pfnGetEnergyThreshold;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetEnergyThreshold                       = firstDriver->dditable.zes.Power.pfnSetEnergyThreshold;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetLimitsExt                             = firstDriver->dditable.zes.Power.pfnGetLimitsExt;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetLimitsExt                             = firstDriver->dditable.zes.Power.pfnSetLimitsExt;
+            }
         }
     }
 
@@ -7629,7 +7966,12 @@ zesGetPsuProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Psu;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Psu.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Psu.pfnGetState;
+            }
         }
     }
 
@@ -7720,7 +8062,18 @@ zesGetRasProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Ras;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Ras.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetConfig                                = firstDriver->dditable.zes.Ras.pfnGetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetConfig                                = firstDriver->dditable.zes.Ras.pfnSetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Ras.pfnGetState;
+            }
         }
     }
 
@@ -7797,7 +8150,12 @@ zesGetRasExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.RasExp;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetStateExp                              = firstDriver->dditable.zes.RasExp.pfnGetStateExp;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnClearStateExp                            = firstDriver->dditable.zes.RasExp.pfnClearStateExp;
+            }
         }
     }
 
@@ -7916,7 +8274,30 @@ zesGetSchedulerProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Scheduler;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Scheduler.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetCurrentMode                           = firstDriver->dditable.zes.Scheduler.pfnGetCurrentMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetTimeoutModeProperties                 = firstDriver->dditable.zes.Scheduler.pfnGetTimeoutModeProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetTimesliceModeProperties               = firstDriver->dditable.zes.Scheduler.pfnGetTimesliceModeProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetTimeoutMode                           = firstDriver->dditable.zes.Scheduler.pfnSetTimeoutMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetTimesliceMode                         = firstDriver->dditable.zes.Scheduler.pfnSetTimesliceMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetExclusiveMode                         = firstDriver->dditable.zes.Scheduler.pfnSetExclusiveMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetComputeUnitDebugMode                  = firstDriver->dditable.zes.Scheduler.pfnSetComputeUnitDebugMode;
+            }
         }
     }
 
@@ -8000,7 +8381,15 @@ zesGetStandbyProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Standby;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Standby.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetMode                                  = firstDriver->dditable.zes.Standby.pfnGetMode;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetMode                                  = firstDriver->dditable.zes.Standby.pfnSetMode;
+            }
         }
     }
 
@@ -8091,7 +8480,18 @@ zesGetTemperatureProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Temperature;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.zes.Temperature.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetConfig                                = firstDriver->dditable.zes.Temperature.pfnGetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetConfig                                = firstDriver->dditable.zes.Temperature.pfnSetConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetState                                 = firstDriver->dditable.zes.Temperature.pfnGetState;
+            }
         }
     }
 
@@ -8217,7 +8617,33 @@ zesGetVFManagementExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.VFManagementExp;
+            if (version >= ZE_API_VERSION_1_10) {
+                pDdiTable->pfnGetVFCapabilitiesExp                     = firstDriver->dditable.zes.VFManagementExp.pfnGetVFCapabilitiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_10) {
+                pDdiTable->pfnGetVFMemoryUtilizationExp2               = firstDriver->dditable.zes.VFManagementExp.pfnGetVFMemoryUtilizationExp2;
+            }
+            if (version >= ZE_API_VERSION_1_10) {
+                pDdiTable->pfnGetVFEngineUtilizationExp2               = firstDriver->dditable.zes.VFManagementExp.pfnGetVFEngineUtilizationExp2;
+            }
+            if (version >= ZE_API_VERSION_1_12) {
+                pDdiTable->pfnGetVFCapabilitiesExp2                    = firstDriver->dditable.zes.VFManagementExp.pfnGetVFCapabilitiesExp2;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetVFPropertiesExp                       = firstDriver->dditable.zes.VFManagementExp.pfnGetVFPropertiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetVFMemoryUtilizationExp                = firstDriver->dditable.zes.VFManagementExp.pfnGetVFMemoryUtilizationExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetVFEngineUtilizationExp                = firstDriver->dditable.zes.VFManagementExp.pfnGetVFEngineUtilizationExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnSetVFTelemetryModeExp                    = firstDriver->dditable.zes.VFManagementExp.pfnSetVFTelemetryModeExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnSetVFTelemetrySamplingIntervalExp        = firstDriver->dditable.zes.VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
+            }
         }
     }
 
