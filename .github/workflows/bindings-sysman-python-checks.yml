@@ -44,6 +44,21 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install dependencies for Level-Zero loader build
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      - name: Build and install Level-Zero loader
+        working-directory: ${{ github.workspace }}
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr
+          cmake --build . --parallel $(nproc)
+          sudo cmake --build . --target install
+          sudo ldconfig
+
       - name: Create virtual environment and install
         run: |
           python -m venv .venv
