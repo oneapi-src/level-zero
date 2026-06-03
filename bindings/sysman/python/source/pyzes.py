@@ -355,6 +355,7 @@ ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
 ZES_STRUCTURE_TYPE_PCI_PROPERTIES = 0x2
+ZES_STRUCTURE_TYPE_PCI_STATE = 0x17
 ZES_STRUCTURE_TYPE_DEVICE_ECC_DESC = 0x25
 ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES = 0x26
 ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27
@@ -460,6 +461,35 @@ class zes_pci_properties_t(_PrintableStructure):
         ("havePacketCounters", ze_bool_t),
         ("haveReplayCounters", ze_bool_t),
     ]
+
+
+zes_pci_link_status_t = c_int32
+ZES_PCI_LINK_STATUS_UNKNOWN = 0
+ZES_PCI_LINK_STATUS_GOOD = 1
+ZES_PCI_LINK_STATUS_QUALITY_ISSUES = 2
+ZES_PCI_LINK_STATUS_STABILITY_ISSUES = 3
+ZES_PCI_LINK_STATUS_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_pci_link_qual_issue_flags_t = c_uint32
+ZES_PCI_LINK_QUAL_ISSUE_FLAG_REPLAYS = 1 << 0
+ZES_PCI_LINK_QUAL_ISSUE_FLAG_SPEED = 1 << 1
+ZES_PCI_LINK_QUAL_ISSUE_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_pci_link_stab_issue_flags_t = c_uint32
+ZES_PCI_LINK_STAB_ISSUE_FLAG_RETRAINING = 1 << 0
+ZES_PCI_LINK_STAB_ISSUE_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
+
+class zes_pci_state_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("status", zes_pci_link_status_t),
+        ("qualityIssues", zes_pci_link_qual_issue_flags_t),
+        ("stabilityIssues", zes_pci_link_stab_issue_flags_t),
+        ("speed", zes_pci_speed_t),
+    ]
+    _fmt_ = {"qualityIssues": "0x%08X", "stabilityIssues": "0x%08X"}
 
 
 class zes_pci_stats_t(_PrintableStructure):
@@ -798,6 +828,23 @@ def zesDevicePciGetProperties(hDevice, pProperties):
     funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_pci_properties_t)]
     funcPtr.restype = ze_result_t
     retVal = funcPtr(hDevice, pProperties)
+    return retVal
+
+
+def zesDevicePciGetState(hDevice, pState):
+    """Wraps API:
+    ze_result_t zesDevicePciGetState(zes_device_handle_t hDevice, zes_pci_state_t* pState)
+
+    Parameters:
+        hDevice: device handle
+        pState: POINTER(zes_pci_state_t) - PCI state structure to fill
+    Returns:
+        ze_result_t - return code only, state is filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesDevicePciGetState")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_pci_state_t)]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pState)
     return retVal
 
 

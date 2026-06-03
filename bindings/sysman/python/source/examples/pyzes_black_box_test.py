@@ -139,6 +139,41 @@ def get_device_type_string(device_type):
     return type_map.get(device_type, f"UNKNOWN_DEVICE_TYPE_{device_type}")
 
 
+def get_pci_link_status_string(link_status):
+    """Convert PCI link status enum to string"""
+    status_map = {
+        pz.ZES_PCI_LINK_STATUS_UNKNOWN: "ZES_PCI_LINK_STATUS_UNKNOWN",
+        pz.ZES_PCI_LINK_STATUS_GOOD: "ZES_PCI_LINK_STATUS_GOOD",
+        pz.ZES_PCI_LINK_STATUS_QUALITY_ISSUES: "ZES_PCI_LINK_STATUS_QUALITY_ISSUES",
+        pz.ZES_PCI_LINK_STATUS_STABILITY_ISSUES: "ZES_PCI_LINK_STATUS_STABILITY_ISSUES",
+    }
+    return status_map.get(link_status, f"UNKNOWN_PCI_LINK_STATUS_{link_status}")
+
+
+def get_pci_quality_issues_string(quality_issues):
+    """Convert PCI quality issue flags to string"""
+    if quality_issues == 0:
+        return "None"
+
+    issues = []
+    if quality_issues & pz.ZES_PCI_LINK_QUAL_ISSUE_FLAG_REPLAYS:
+        issues.append("REPLAYS")
+    if quality_issues & pz.ZES_PCI_LINK_QUAL_ISSUE_FLAG_SPEED:
+        issues.append("SPEED")
+    return " | ".join(issues)
+
+
+def get_pci_stability_issues_string(stability_issues):
+    """Convert PCI stability issue flags to string"""
+    if stability_issues == 0:
+        return "None"
+
+    issues = []
+    if stability_issues & pz.ZES_PCI_LINK_STAB_ISSUE_FLAG_RETRAINING:
+        issues.append("RETRAINING")
+    return " | ".join(issues)
+
+
 def get_frequency_domain_string(freq_domain):
     """Convert frequency domain enum to string"""
     domain_map = {
@@ -440,9 +475,9 @@ def test_global_operation(driver_handle, device_handle, device_index):
 
                 # Initialize each structure
                 for i in range(subdevice_count.value):
-                    subdevice_props[i].stype = (
-                        pz.ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES
-                    )
+                    subdevice_props[
+                        i
+                    ].stype = pz.ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES
                     subdevice_props[i].pNext = None
 
                 # Second call to get properties
@@ -537,7 +572,7 @@ def test_global_operation(driver_handle, device_handle, device_index):
 
 
 def test_pci_module(device_handle, device_index):
-    """Test PCI properties and stats operations"""
+    """Test PCI properties, state, and stats operations"""
     print(f"\n---- Device {device_index} PCI Test ----")
 
     properties = pz.zes_pci_properties_t()
@@ -561,6 +596,26 @@ def test_pci_module(device_handle, device_index):
     )
     print_verbose(f"  Have Packet Counters: {bool(properties.havePacketCounters)}")
     print_verbose(f"  Have Replay Counters: {bool(properties.haveReplayCounters)}")
+
+    state = pz.zes_pci_state_t()
+    state.stype = pz.ZES_STRUCTURE_TYPE_PCI_STATE
+    state.pNext = None
+
+    rc = pz.zesDevicePciGetState(device_handle, byref(state))
+    if not check_rc(f"zesDevicePciGetState(device {device_index})", rc):
+        return False
+
+    print_verbose("PCI State:")
+    print_verbose(f"  Link Status: {get_pci_link_status_string(state.status)}")
+    print_verbose(
+        f"  Quality Issues: {get_pci_quality_issues_string(state.qualityIssues)}"
+    )
+    print_verbose(
+        f"  Stability Issues: {get_pci_stability_issues_string(state.stabilityIssues)}"
+    )
+    print_verbose(f"  Current Gen: {state.speed.gen}")
+    print_verbose(f"  Current Width: {state.speed.width}")
+    print_verbose(f"  Current Max Bandwidth: {state.speed.maxBandwidth}")
 
     stats = pz.zes_pci_stats_t()
     rc = pz.zesDevicePciGetStats(device_handle, byref(stats))
@@ -897,9 +952,9 @@ def test_power_module(device_handle, device_index):
             limit_descs = PowerLimitArray()
 
             for limit_index in range(limit_count.value):
-                limit_descs[limit_index].stype = (
-                    pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
-                )
+                limit_descs[
+                    limit_index
+                ].stype = pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
                 limit_descs[limit_index].pNext = None
 
             rc = pz.zesPowerGetLimitsExt(

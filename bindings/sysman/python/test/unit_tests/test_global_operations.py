@@ -195,6 +195,47 @@ class TestGlobalOperations(unittest.TestCase):
         mock_get_func.assert_called_with("zesDevicePciGetStats")
         mock_func.assert_called_once()
 
+    def test_GivenValidDeviceHandleWhenCallingZesDevicePciGetStateThenCallSucceedsWithValidState(
+        self, mock_get_func
+    ):
+        mock_status = self.pyzes.ZES_PCI_LINK_STATUS_QUALITY_ISSUES
+        mock_quality_issues = (
+            self.pyzes.ZES_PCI_LINK_QUAL_ISSUE_FLAG_REPLAYS
+            | self.pyzes.ZES_PCI_LINK_QUAL_ISSUE_FLAG_SPEED
+        )
+        mock_stability_issues = self.pyzes.ZES_PCI_LINK_STAB_ISSUE_FLAG_RETRAINING
+        mock_gen = 4
+        mock_width = 8
+        mock_max_bandwidth = 16_000_000_000
+
+        def mock_get_pci_state(device_handle, state_ptr):
+            state_ptr._obj.status = mock_status
+            state_ptr._obj.qualityIssues = mock_quality_issues
+            state_ptr._obj.stabilityIssues = mock_stability_issues
+            state_ptr._obj.speed.gen = mock_gen
+            state_ptr._obj.speed.width = mock_width
+            state_ptr._obj.speed.maxBandwidth = mock_max_bandwidth
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_pci_state)
+        mock_get_func.return_value = mock_func
+
+        device_handle = self.pyzes.zes_device_handle_t()
+        pci_state = self.pyzes.zes_pci_state_t()
+
+        result = self.pyzes.zesDevicePciGetState(device_handle, byref(pci_state))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(pci_state.status, mock_status)
+        self.assertEqual(pci_state.qualityIssues, mock_quality_issues)
+        self.assertEqual(pci_state.stabilityIssues, mock_stability_issues)
+        self.assertEqual(pci_state.speed.gen, mock_gen)
+        self.assertEqual(pci_state.speed.width, mock_width)
+        self.assertEqual(pci_state.speed.maxBandwidth, mock_max_bandwidth)
+
+        mock_get_func.assert_called_with("zesDevicePciGetState")
+        mock_func.assert_called_once()
+
     def test_GivenValidDeviceHandleWhenCallingZesDeviceProcessesGetStateThenCallSucceedsWithProcessCount(
         self, mock_get_func
     ):
