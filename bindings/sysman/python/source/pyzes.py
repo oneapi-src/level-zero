@@ -151,10 +151,6 @@ class zes_engine_handle_t(c_void_p):
     pass
 
 
-class zes_ras_handle_t(c_void_p):
-    pass
-
-
 ##
 
 ze_bool_t = c_uint32
@@ -294,20 +290,6 @@ ZES_ENGINE_GROUP_RENDER_ALL = 12
 ZES_ENGINE_GROUP_3D_ALL = 13
 ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14
 ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7FFFFFFF
-
-## RAS error category enums ##
-zes_ras_error_category_exp_t = c_int32
-ZES_RAS_ERROR_CATEGORY_EXP_RESET = 0
-ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS = 1
-ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS = 2
-ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS = 3
-ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS = 4
-ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS = 5
-ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS = 6
-ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS = 7
-ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS = 8
-ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS = 9
-ZES_RAS_ERROR_CATEGORY_EXP_FORCE_UINT32 = 0x7FFFFFFF
 
 ze_result_t = c_int32
 ZE_RESULT_SUCCESS = 0
@@ -496,14 +478,6 @@ class zes_pci_stats_t(_PrintableStructure):
         "rxCounter": "%d",
         "txCounter": "%d",
     }
-
-
-## RAS structures ##
-class zes_ras_state_exp_t(_PrintableStructure):
-    _fields_ = [
-        ("category", zes_ras_error_category_exp_t),
-        ("errorCounter", c_uint64),
-    ]
 
 
 ## ECC enums and structures ##
@@ -997,76 +971,6 @@ def zesDeviceProcessesGetState(hDevice, pCount, pProcesses):
     ]
     funcPtr.restype = ze_result_t
     retVal = funcPtr(hDevice, pCount, pProcesses)
-    return retVal
-
-
-## RAS management functions ##
-def zesDeviceEnumRasErrorSets(hDevice, pCount, phRas):
-    """Wraps API:
-    ze_result_t zesDeviceEnumRasErrorSets(
-            zes_device_handle_t hDevice,
-            uint32_t* pCount,
-            zes_ras_handle_t* phRas)
-
-    Parameters:
-        hDevice: device handle
-        pCount: POINTER(c_uint32)
-        phRas: POINTER(zes_ras_handle_t) or None
-    Returns:
-        ze_result_t - return code only, RAS handles are filled into phRas
-    """
-    funcPtr = getFunctionPointerList("zesDeviceEnumRasErrorSets")
-    funcPtr.argtypes = [
-        zes_device_handle_t,
-        POINTER(c_uint32),
-        POINTER(zes_ras_handle_t),
-    ]
-    funcPtr.restype = ze_result_t
-    retVal = funcPtr(hDevice, pCount, phRas)
-    return retVal
-
-
-def zesRasGetStateExp(hRas, pCount, pState):
-    """Wraps API:
-    ze_result_t zesRasGetStateExp(
-            zes_ras_handle_t hRas,
-            uint32_t* pCount,
-            zes_ras_state_exp_t* pState)
-
-    Parameters:
-        hRas: RAS handle
-        pCount: POINTER(c_uint32)
-        pState: POINTER(zes_ras_state_exp_t) or None
-    Returns:
-        ze_result_t - return code only, RAS states are filled into pState
-    """
-    funcPtr = getFunctionPointerList("zesRasGetStateExp")
-    funcPtr.argtypes = [
-        zes_ras_handle_t,
-        POINTER(c_uint32),
-        POINTER(zes_ras_state_exp_t),
-    ]
-    funcPtr.restype = ze_result_t
-    retVal = funcPtr(hRas, pCount, pState)
-    return retVal
-
-
-def zesRasClearStateExp(hRas, category):
-    """Wraps API:
-    ze_result_t zesRasClearStateExp(
-            zes_ras_handle_t hRas,
-            zes_ras_error_category_exp_t category)
-
-    Parameters:
-        hRas: RAS handle
-        category: RAS error category to clear
-    Returns:
-        ze_result_t - return code only
-    """
-    funcPtr = getFunctionPointerList("zesRasClearStateExp")
-    funcPtr.argtypes = [zes_ras_handle_t, zes_ras_error_category_exp_t]
-    funcPtr.restype = ze_result_t
-    retVal = funcPtr(hRas, category)
     return retVal
 
 

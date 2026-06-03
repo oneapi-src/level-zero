@@ -274,23 +274,6 @@ def get_device_action_string(action):
     return action_map.get(action, f"UNKNOWN_DEVICE_ACTION_{action}")
 
 
-def get_ras_error_category_string(category):
-    """Convert RAS error category enum to string"""
-    category_map = {
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_RESET: "ZES_RAS_ERROR_CATEGORY_EXP_RESET",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS",
-        pz.ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS",
-    }
-    return category_map.get(category, f"UNKNOWN_RAS_CATEGORY_{category}")
-
-
 def is_root_user():
     """Return whether the current user has root privileges on platforms that support it"""
     geteuid = getattr(os, "geteuid", None)
@@ -688,80 +671,6 @@ def test_ecc_module(device_handle, device_index):
         ):
             return False
         print_verbose("ECC configuration restored to original state")
-
-    return True
-
-
-def test_ras_module(device_handle, device_index):
-    """Test RAS handle enumeration, state retrieval, and clear-state operations"""
-    print(f"\n---- Device {device_index} RAS Test ----")
-
-    ras_count = c_uint32(0)
-    rc = pz.zesDeviceEnumRasErrorSets(device_handle, byref(ras_count), None)
-    if not check_rc(f"zesDeviceEnumRasErrorSets(device {device_index}, count)", rc):
-        return False
-
-    if ras_count.value == 0:
-        print_verbose("No RAS error sets found on this device")
-        return True
-
-    print_verbose(f"Found {ras_count.value} RAS error set(s)")
-
-    RasArray = pz.zes_ras_handle_t * ras_count.value
-    ras_handles = RasArray()
-
-    rc = pz.zesDeviceEnumRasErrorSets(device_handle, byref(ras_count), ras_handles)
-    if not check_rc(f"zesDeviceEnumRasErrorSets(device {device_index}, handles)", rc):
-        return False
-
-    for i in range(ras_count.value):
-        print_verbose(f"\n  RAS Handle {i}:")
-
-        state_count = c_uint32(0)
-        rc = pz.zesRasGetStateExp(ras_handles[i], byref(state_count), None)
-        if not check_rc(f"zesRasGetStateExp(handle {i}, count)", rc):
-            continue
-
-        if state_count.value == 0:
-            print_verbose("    No RAS categories reported for this handle")
-            continue
-
-        RasStateArray = pz.zes_ras_state_exp_t * state_count.value
-        ras_states = RasStateArray()
-
-        rc = pz.zesRasGetStateExp(ras_handles[i], byref(state_count), ras_states)
-        if not check_rc(f"zesRasGetStateExp(handle {i}, states)", rc):
-            continue
-
-        print_verbose("    RAS States:")
-        for ras_state in ras_states:
-            print_verbose(
-                f"      {get_ras_error_category_string(ras_state.category)}: {ras_state.errorCounter}"
-            )
-
-        if not is_root_user():
-            print_verbose(
-                "    Skipping zesRasClearStateExp due to insufficient permissions"
-            )
-            continue
-
-        for ras_state in ras_states:
-            rc = pz.zesRasClearStateExp(ras_handles[i], ras_state.category)
-            if not check_rc(
-                f"zesRasClearStateExp(handle {i}, {get_ras_error_category_string(ras_state.category)})",
-                rc,
-            ):
-                return False
-
-        rc = pz.zesRasGetStateExp(ras_handles[i], byref(state_count), ras_states)
-        if not check_rc(f"zesRasGetStateExp(handle {i}, verify)", rc):
-            continue
-
-        print_verbose("    RAS States After Clear:")
-        for ras_state in ras_states:
-            print_verbose(
-                f"      {get_ras_error_category_string(ras_state.category)}: {ras_state.errorCounter}"
-            )
 
     return True
 
@@ -1362,9 +1271,6 @@ def run_all_tests():
             # Test ECC module
             test_ecc_module(devices[device_idx], device_idx)
 
-            # Test RAS module
-            test_ras_module(devices[device_idx], device_idx)
-
             # Test memory modules
             test_memory_modules(devices[device_idx], device_idx)
 
@@ -1394,7 +1300,6 @@ def main():
   %(prog)s -g                 # Global operations (device properties and processes) only
   %(prog)s -p                 # PCI tests only
   %(prog)s -C                 # ECC tests only
-  %(prog)s -R                 # RAS tests only
   %(prog)s -o                 # Power tests only
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
@@ -1418,7 +1323,6 @@ def main():
     )
     parser.add_argument("-p", "--pci", action="store_true", help="Run only PCI tests")
     parser.add_argument("-C", "--ecc", action="store_true", help="Run only ECC tests")
-    parser.add_argument("-R", "--ras", action="store_true", help="Run only RAS tests")
     parser.add_argument(
         "-f",
         "--frequency",
@@ -1446,7 +1350,6 @@ def main():
         or getattr(args, "global", False)
         or args.pci
         or args.ecc
-        or args.ras
         or args.power
         or args.frequency
         or args.temperature
@@ -1487,9 +1390,6 @@ def main():
 
                 if args.ecc:
                     test_ecc_module(devices[device_idx], device_idx)
-
-                if args.ras:
-                    test_ras_module(devices[device_idx], device_idx)
 
                 if args.memory:
                     test_memory_modules(devices[device_idx], device_idx)
