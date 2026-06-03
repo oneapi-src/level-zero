@@ -183,6 +183,24 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeDeviceGetRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const void* pObjDesc, size_t* pSize, char* pRequirements ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceGetRuntimeRequirementsKeyPrologue( ze_device_handle_t hDevice, const char** pKey ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceValidateRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const char* pRequirements, ze_validate_runtime_requirements_output_t* pOut ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeContextCreatePrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, ze_context_handle_t* phContext ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -339,8 +357,20 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandListAppendMemoryCopyWithParametersPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandListAppendMemoryFillPrologue( ze_command_list_handle_t hCommandList, void* ptr, const void* pattern, size_t pattern_size, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendMemoryFillWithParametersPrologue( ze_command_list_handle_t hCommandList, void* ptr, const void* pattern, size_t pattern_size, size_t size, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;
@@ -1271,6 +1301,12 @@ public:
     }
     virtual ze_result_t zeCommandListImmediateAppendCommandListsExpPrologue( ze_command_list_handle_t hCommandListImmediate, uint32_t numCommandLists, ze_command_list_handle_t* phCommandLists, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListImmediateAppendCommandListsWithParametersPrologue( ze_command_list_handle_t hCommandListImmediate, uint32_t numCommandLists, ze_command_list_handle_t* phCommandLists, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

@@ -633,6 +633,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zesPowerGetUsagePrologue( zes_pwr_handle_t hPower, uint32_t* pInstantPower, uint32_t* pAveragePower ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zesDeviceEnumPsusPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_psu_handle_t* phPsu ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -807,6 +813,18 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zesPowerGetLimitsExt2Prologue( zes_pwr_handle_t hPower, uint32_t* pLimit ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesPowerSetLimitsExt2Prologue( zes_pwr_handle_t hPower, const uint32_t limit ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zesEngineGetActivityExtPrologue( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_7) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -821,6 +839,30 @@ public:
     }
     virtual ze_result_t zesRasClearStateExpPrologue( zes_ras_handle_t hRas, zes_ras_error_category_exp_t category ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesRasGetSupportedCategoriesExpPrologue( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_error_category_exp_t* pCategories ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesRasGetStateExp2Prologue( zes_ras_handle_t hRas, const uint32_t count, const zes_ras_error_category_exp_t* pCategories, zes_ras_state_exp2_t* pState ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesRasGetConfigExpPrologue( zes_ras_handle_t hRas, const uint32_t count, zes_ras_config_exp_t* pConfig ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesRasSetConfigExpPrologue( zes_ras_handle_t hRas, const uint32_t count, const zes_ras_config_exp_t* pConfig ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_16) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

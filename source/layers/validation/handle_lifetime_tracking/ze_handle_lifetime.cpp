@@ -379,6 +379,48 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetRuntimeRequirementsPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const void* pObjDesc,                           ///< [in] describes the object for which the requirements are to be
+                                                        ///< gathered
+        size_t* pSize,                                  ///< [in,out] size of requirements string in bytes.
+        char* pRequirements                             ///< [in,out][optional] holds results of the query.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetRuntimeRequirementsKeyPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char** pKey                               ///< [out] returned key
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceValidateRuntimeRequirementsPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char* pRequirements,                      ///< [in] requirements to be validated. Requirements should be
+                                                        ///< null-terminated plain text representation of runtime requirements
+                                                        ///< previously retrieved from the device.
+        ze_validate_runtime_requirements_output_t* pOut ///< [in][out] Output of the validation call.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeContextCreatePrologue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
         const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
@@ -838,12 +880,75 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryCopyWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandListAppendMemoryFillPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         void* ptr,                                      ///< [in] pointer to memory to initialize
         const void* pattern,                            ///< [in] pointer to value to initialize memory to
         size_t pattern_size,                            ///< [in] size in bytes of the value to initialize memory to
         size_t size,                                    ///< [in] size in bytes to initialize
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryFillWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* ptr,                                      ///< [in] pointer to memory to initialize
+        const void* pattern,                            ///< [in] pointer to value to initialize memory to
+        size_t pattern_size,                            ///< [in] size in bytes of the value to initialize memory to
+        size_t size,                                    ///< [in] size in bytes to initialize
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
                                                         ///< if `nullptr == phWaitEvents`
@@ -3586,6 +3691,42 @@ namespace validation_layer
         ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
         uint32_t numCommandLists,                       ///< [in] number of command lists
         ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandListImmediate )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phCommandLists) && (i < numCommandLists); ++i){
+            if (!context.handleLifetime->isHandleValid( phCommandLists[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListImmediateAppendCommandListsWithParametersPrologue(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
                                                         ///<    - if not null, this event is signaled after the completion of all
                                                         ///< appended command lists

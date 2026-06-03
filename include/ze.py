@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.15-r1.15.31
+ @version v1.16-r1.16.24
 
  """
 import platform
@@ -102,6 +102,11 @@ class ze_image_handle_t(c_void_p):
 ###############################################################################
 ## @brief Handle of driver's module object
 class ze_module_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Handle of driver's graph object
+class ze_graph_handle_t(c_void_p):
     pass
 
 ###############################################################################
@@ -352,6 +357,10 @@ class ze_structure_type_v(IntEnum):
     PHYSICAL_MEM_PROPERTIES = 0x00020040                                    ## ::ze_physical_mem_properties_t
     DEVICE_USABLEMEM_SIZE_EXT_PROPERTIES = 0x00020041                       ## ::ze_device_usablemem_size_ext_properties_t
     CUSTOM_PITCH_EXP_DESC = 0x00020042                                      ## ::ze_custom_pitch_exp_desc_t
+    DEVICE_COMPUTE_DOTPRODUCT_EXT_PROPERTIES = 0x00020043                   ## ::ze_device_compute_dotproduct_ext_properties_t
+    RUNTIME_REQUIREMENTS_MODULE_DESC = 0x00020044                           ## ::ze_runtime_requirements_module_desc_t
+    RUNTIME_REQUIREMENTS_GRAPH_DESC = 0x00020045                            ## ::ze_runtime_requirements_graph_desc_t
+    RUNTIME_REQUIREMENTS_OUTPUT = 0x00020046                                ## ::ze_validate_runtime_requirements_output_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -535,7 +544,8 @@ class ze_api_version_v(IntEnum):
     _1_13 = ZE_MAKE_VERSION( 1, 13 )                                        ## version 1.13
     _1_14 = ZE_MAKE_VERSION( 1, 14 )                                        ## version 1.14
     _1_15 = ZE_MAKE_VERSION( 1, 15 )                                        ## version 1.15
-    CURRENT = ZE_MAKE_VERSION( 1, 15 )                                      ## latest known version
+    _1_16 = ZE_MAKE_VERSION( 1, 16 )                                        ## version 1.16
+    CURRENT = ZE_MAKE_VERSION( 1, 16 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -544,7 +554,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 15 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 16 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -577,6 +587,9 @@ class ze_ipc_property_flags_v(IntEnum):
                                                                             ## ::zeMemGetIpcHandle.
     EVENT_POOL = ZE_BIT(1)                                                  ## Supports passing event pools between processes. See
                                                                             ## ::zeEventPoolGetIpcHandle.
+    FABRIC_ACCESSIBLE = ZE_BIT(2)                                           ## Supports creating a handle type for memory allocations and event pools
+                                                                            ## between processes on different physical devices connected through a
+                                                                            ## fabric interconnect. See ::ze_ipc_mem_handle_type_ext_desc_t.
 
 class ze_ipc_property_flags_t(c_int):
     def __str__(self):
@@ -723,6 +736,100 @@ class ze_device_compute_properties_t(Structure):
         ("numSubGroupSizes", c_ulong),                                  ## [out] Number of subgroup sizes supported. This indicates number of
                                                                         ## entries in subGroupSizes.
         ("subGroupSizes", c_ulong * ZE_SUBGROUPSIZE_COUNT)              ## [out] Size group sizes supported.
+    ]
+
+###############################################################################
+## @brief Supported device compute dot product(dp) capability flags
+class ze_device_dp_capability_flags_v(IntEnum):
+    DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL = ZE_BIT(0)                           ## Supports vector dot product instruction.
+    DEVICE_SYSTOLIC_DPAS_SIMD8 = ZE_BIT(1)                                  ## Supports sytolic dot product with 8 SIMD lanes.
+    DEVICE_SYSTOLIC_DPAS_SIMD16 = ZE_BIT(2)                                 ## Supports sytolic dot product with 16 SIMD lanes.
+    DEVICE_SYSTOLIC_BDPAS_SIMD16 = ZE_BIT(3)                                ## Supports sytolic dot product with block scaling support with 16 SIMD
+                                                                            ## lanes.
+    DEVICE_SYSTOLIC_DPAS_DEPTH4 = ZE_BIT(4)                                 ## Supports 4 deep systolic for DPAS dot product
+    DEVICE_SYSTOLIC_DPAS_DEPTH8 = ZE_BIT(5)                                 ## Supports 8 deep systolic for DPAS dot product
+    DEVICE_SYSTOLIC_BDPAS_DEPTH8 = ZE_BIT(6)                                ## Supports 8 deep systolic for BDPAS dot product
+    DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_UPTO8 = ZE_BIT(7)                ## Supports output matrix row count upto 8
+    DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_FIXED8 = ZE_BIT(8)               ## Restricts output matrix row count to 8
+
+class ze_device_dp_capability_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Supported device dot product(dp) input data types flags
+class ze_device_input_data_type_flags_v(IntEnum):
+    DEVICE_INPUT_DATA_TYPE_NONE = ZE_BIT(0)                                 ## No data types available for the supported dot product operation
+    ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(1)               ## Supports int8 data type with 4 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_INT4_PACK8_PER_SIMD_LANE = ZE_BIT(2)                  ## Supports int4 data type with 8 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_INT2_PACK8_PER_SIMD_LANE = ZE_BIT(3)                  ## Supports int2 data type with 8 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_TF32_PACK1_PER_SIMD_LANE = ZE_BIT(4)                  ## Supports tf32 data type with 1 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_FP16_PACK2_PER_SIMD_LANE = ZE_BIT(5)                  ## Supports fp16 data type with 2 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_BF16_PACK2_PER_SIMD_LANE = ZE_BIT(6)                  ## Supports bf16 data type with 2 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_FP8_PACK4_PER_SIMD_LANE = ZE_BIT(7)                   ## Supports fp8 data type with 4 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_BF8_PACK4_PER_SIMD_LANE = ZE_BIT(8)                   ## Supports bf8 data type with 4 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_E2M1_PACK8_PER_SIMD_LANE = ZE_BIT(9)                  ## Supports e2m1 data type with 8 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(10)                 ## Supports 8bit integer data type with 4 packed data elements per SIMD
+                                                                            ## lane.This is exclusively for DP4V dot product support
+    DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(11)                            ## Supports uint8 data type support for scaling, exclusive to BDPAS dot
+                                                                            ## product support.
+
+class ze_device_input_data_type_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Supported device  dot product(dp) output data types or accumulator
+##        data types flags
+class ze_device_output_data_type_flags_v(IntEnum):
+    DEVICE_OUTPUT_DATA_INT32 = ZE_BIT(0)                                    ## Supports signed and unsigned 32bit integer data type for output
+    DEVICE_OUTPUT_DATA_FP32 = ZE_BIT(1)                                     ## Supports fp32 data type for output.
+    DEVICE_OUTPUT_DATA_FP16 = ZE_BIT(2)                                     ## Supports fp16 data type for output.
+    DEVICE_OUTPUT_DATA_BF16 = ZE_BIT(3)                                     ## Supports bf16 data type for output.
+
+class ze_device_output_data_type_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Device Compute DotProduct Property Extension Name
+ZE_DEVICE_COMPUTE_DOTPRODUCT_PROPERTIES_EXT_NAME = "ZE_extension_device_compute_dotproduct_ext_properties"
+
+###############################################################################
+## @brief Device Compute Dot product Property Extension Version(s)
+class ze_device_compute_dotproduct_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_device_compute_dotproduct_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_device_compute_dotproduct_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Device compute dot product capability queried using
+##        ::zeDeviceGetComputeProperties
+class ze_device_compute_dotproduct_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("dp_caps", ze_device_dp_capability_flags_t),                   ## [out] indicates dot product capability of the device
+        ("dpv4_input_types", ze_device_input_data_type_flags_t),        ## [out] Supported input data types when dp4v dot product capability is
+                                                                        ## supported.
+        ("dpv4_output_types", ze_device_output_data_type_flags_t),      ## [out] Supported output data types when dp4v dot product capability is
+                                                                        ## supported.
+        ("dpas_input_types", ze_device_input_data_type_flags_t),        ## [out] Supported input data types when dpas dot product capability is
+                                                                        ## supported.
+        ("dpas_output_types", ze_device_output_data_type_flags_t),      ## [out] Supported output data types when dpas dot product capability is
+                                                                        ## supported.
+        ("bdpas_input_types", ze_device_input_data_type_flags_t),       ## [out] Supported input data types when bdpas dot product capability is
+                                                                        ## supported.
+        ("bdpas_output_types", ze_device_output_data_type_flags_t)      ## [out] Supported output data types when bdpas dot product capability is
+                                                                        ## supported.
     ]
 
 ###############################################################################
@@ -997,6 +1104,55 @@ class ze_device_event_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_event_properties_flags_t)                   ## [out] Supported Event properties. Valid combination of
                                                                         ## ::ze_device_event_properties_flag_t.
+    ]
+
+###############################################################################
+## @brief Describes the module for which runtime requirements are being
+##        gathered. This structure is accepted as pObjDesc to
+##        ::zeDeviceGetRuntimeRequirements. This structure requires
+##        ZE_extension_driver_ddi_handles to be supported by the driver.
+class ze_runtime_requirements_module_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("requirementsSrc", ze_module_handle_t)                         ## [in] Module for which the requirements are being gathered
+    ]
+
+###############################################################################
+## @brief Describes the graph for which runtime requirements are being gathered.
+##        This structure is accepted as pObjDesc to
+##        ::zeDeviceGetRuntimeRequirements. This structure requires
+##        ZE_extension_driver_ddi_handles to be supported by the driver.
+class ze_runtime_requirements_graph_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("requirementsSrc", ze_graph_handle_t)                          ## [in] Graph for which the requirements are being gathered
+    ]
+
+###############################################################################
+## @brief Result of runtime requirements validation
+class ze_validate_runtime_requirements_result_v(IntEnum):
+    NOT_APPLICABLE = 0                                                      ## Provided requirements are not applicable to underlying device
+    REQUIREMENTS_MET = 1                                                    ## Provided requirements are met and optimal
+    REQUIREMENTS_MET_RECOMPILATION_ADVISABLE = 2                            ## Provided requirements are met, but recompilation is advisable
+    REQUIREMENTS_NOT_MET = 3                                                ## Requirements are not met
+
+class ze_validate_runtime_requirements_result_t(c_int):
+    def __str__(self):
+        return str(ze_validate_runtime_requirements_result_v(self.value))
+
+
+###############################################################################
+## @brief Output of ::zeDeviceValidateRuntimeRequirements
+class ze_validate_runtime_requirements_output_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("result", ze_validate_runtime_requirements_result_t)           ## [out] Result of the validation call.
     ]
 
 ###############################################################################
@@ -1622,6 +1778,8 @@ class ze_host_mem_alloc_flags_v(IntEnum):
     BIAS_UNCACHED = ZE_BIT(1)                                               ## host should not cache allocation (UC)
     BIAS_WRITE_COMBINED = ZE_BIT(2)                                         ## host memory should be allocated write-combined (WC)
     BIAS_INITIAL_PLACEMENT = ZE_BIT(3)                                      ## optimize shared allocation for first access on the host
+    MEM_READ_ONLY = ZE_BIT(4)                                               ## device access will be read-only, mutually exclusive with
+                                                                            ## ::ZE_HOST_MEM_ALLOC_FLAG_BIAS_WRITE_COMBINED
 
 class ze_host_mem_alloc_flags_t(c_int):
     def __str__(self):
@@ -3277,9 +3435,11 @@ class ze_ipc_mem_handle_type_ext_version_t(c_int):
 ###############################################################################
 ## @brief Supported IPC memory handle type flags
 class ze_ipc_mem_handle_type_flags_v(IntEnum):
-    DEFAULT = ZE_BIT(0)                                                     ## Local IPC memory handle type for use within the same machine.
-    FABRIC_ACCESSIBLE = ZE_BIT(1)                                           ## Fabric accessible IPC memory handle type for use across machines via a
-                                                                            ## supported fabric.
+    DEFAULT = ZE_BIT(0)                                                     ## Local IPC memory handle type for use within the same device. This is
+                                                                            ## the default if no flags are specified and does not indicate if the
+                                                                            ## handle is shareable across devices or machines.
+    FABRIC_ACCESSIBLE = ZE_BIT(1)                                           ## Fabric accessible IPC memory handle type for use across devices or
+                                                                            ## machines via a supported fabric.
 
 class ze_ipc_mem_handle_type_flags_t(c_int):
     def __str__(self):
@@ -5719,6 +5879,27 @@ if __use_win_types:
 else:
     _zeDeviceGetAggregatedCopyOffloadIncrementValue_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong) )
 
+###############################################################################
+## @brief Function-pointer for zeDeviceGetRuntimeRequirements
+if __use_win_types:
+    _zeDeviceGetRuntimeRequirements_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, c_void_p, POINTER(c_size_t), c_char_p )
+else:
+    _zeDeviceGetRuntimeRequirements_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, c_void_p, POINTER(c_size_t), c_char_p )
+
+###############################################################################
+## @brief Function-pointer for zeDeviceGetRuntimeRequirementsKey
+if __use_win_types:
+    _zeDeviceGetRuntimeRequirementsKey_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_char_p) )
+else:
+    _zeDeviceGetRuntimeRequirementsKey_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_char_p) )
+
+###############################################################################
+## @brief Function-pointer for zeDeviceValidateRuntimeRequirements
+if __use_win_types:
+    _zeDeviceValidateRuntimeRequirements_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, c_char_p, POINTER(ze_validate_runtime_requirements_output_t) )
+else:
+    _zeDeviceValidateRuntimeRequirements_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, c_char_p, POINTER(ze_validate_runtime_requirements_output_t) )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -5747,7 +5928,10 @@ class _ze_device_dditable_t(Structure):
         ("pfnReleaseExternalSemaphoreExt", c_void_p),                   ## _zeDeviceReleaseExternalSemaphoreExt_t
         ("pfnGetVectorWidthPropertiesExt", c_void_p),                   ## _zeDeviceGetVectorWidthPropertiesExt_t
         ("pfnSynchronize", c_void_p),                                   ## _zeDeviceSynchronize_t
-        ("pfnGetAggregatedCopyOffloadIncrementValue", c_void_p)         ## _zeDeviceGetAggregatedCopyOffloadIncrementValue_t
+        ("pfnGetAggregatedCopyOffloadIncrementValue", c_void_p),        ## _zeDeviceGetAggregatedCopyOffloadIncrementValue_t
+        ("pfnGetRuntimeRequirements", c_void_p),                        ## _zeDeviceGetRuntimeRequirements_t
+        ("pfnGetRuntimeRequirementsKey", c_void_p),                     ## _zeDeviceGetRuntimeRequirementsKey_t
+        ("pfnValidateRuntimeRequirements", c_void_p)                    ## _zeDeviceValidateRuntimeRequirements_t
     ]
 
 ###############################################################################
@@ -6165,6 +6349,27 @@ if __use_win_types:
 else:
     _zeCommandListAppendLaunchKernelWithArguments_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, ze_group_count_t, ze_group_c_size_t, **, *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendMemoryCopyWithParameters
+if __use_win_types:
+    _zeCommandListAppendMemoryCopyWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendMemoryCopyWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendMemoryFillWithParameters
+if __use_win_types:
+    _zeCommandListAppendMemoryFillWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendMemoryFillWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListImmediateAppendCommandListsWithParameters
+if __use_win_types:
+    _zeCommandListImmediateAppendCommandListsWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListImmediateAppendCommandListsWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandList functions pointers
@@ -6207,7 +6412,10 @@ class _ze_command_list_dditable_t(Structure):
         ("pfnAppendSignalExternalSemaphoreExt", c_void_p),              ## _zeCommandListAppendSignalExternalSemaphoreExt_t
         ("pfnAppendWaitExternalSemaphoreExt", c_void_p),                ## _zeCommandListAppendWaitExternalSemaphoreExt_t
         ("pfnAppendLaunchKernelWithParameters", c_void_p),              ## _zeCommandListAppendLaunchKernelWithParameters_t
-        ("pfnAppendLaunchKernelWithArguments", c_void_p)                ## _zeCommandListAppendLaunchKernelWithArguments_t
+        ("pfnAppendLaunchKernelWithArguments", c_void_p),               ## _zeCommandListAppendLaunchKernelWithArguments_t
+        ("pfnAppendMemoryCopyWithParameters", c_void_p),                ## _zeCommandListAppendMemoryCopyWithParameters_t
+        ("pfnAppendMemoryFillWithParameters", c_void_p),                ## _zeCommandListAppendMemoryFillWithParameters_t
+        ("pfnImmediateAppendCommandListsWithParameters", c_void_p)      ## _zeCommandListImmediateAppendCommandListsWithParameters_t
     ]
 
 ###############################################################################
@@ -7380,6 +7588,9 @@ class ZE_DDI:
         self.zeDeviceGetVectorWidthPropertiesExt = _zeDeviceGetVectorWidthPropertiesExt_t(self.__dditable.Device.pfnGetVectorWidthPropertiesExt)
         self.zeDeviceSynchronize = _zeDeviceSynchronize_t(self.__dditable.Device.pfnSynchronize)
         self.zeDeviceGetAggregatedCopyOffloadIncrementValue = _zeDeviceGetAggregatedCopyOffloadIncrementValue_t(self.__dditable.Device.pfnGetAggregatedCopyOffloadIncrementValue)
+        self.zeDeviceGetRuntimeRequirements = _zeDeviceGetRuntimeRequirements_t(self.__dditable.Device.pfnGetRuntimeRequirements)
+        self.zeDeviceGetRuntimeRequirementsKey = _zeDeviceGetRuntimeRequirementsKey_t(self.__dditable.Device.pfnGetRuntimeRequirementsKey)
+        self.zeDeviceValidateRuntimeRequirements = _zeDeviceValidateRuntimeRequirements_t(self.__dditable.Device.pfnValidateRuntimeRequirements)
 
         # call driver to get function pointers
         _DeviceExp = _ze_device_exp_dditable_t()
@@ -7470,6 +7681,9 @@ class ZE_DDI:
         self.zeCommandListAppendWaitExternalSemaphoreExt = _zeCommandListAppendWaitExternalSemaphoreExt_t(self.__dditable.CommandList.pfnAppendWaitExternalSemaphoreExt)
         self.zeCommandListAppendLaunchKernelWithParameters = _zeCommandListAppendLaunchKernelWithParameters_t(self.__dditable.CommandList.pfnAppendLaunchKernelWithParameters)
         self.zeCommandListAppendLaunchKernelWithArguments = _zeCommandListAppendLaunchKernelWithArguments_t(self.__dditable.CommandList.pfnAppendLaunchKernelWithArguments)
+        self.zeCommandListAppendMemoryCopyWithParameters = _zeCommandListAppendMemoryCopyWithParameters_t(self.__dditable.CommandList.pfnAppendMemoryCopyWithParameters)
+        self.zeCommandListAppendMemoryFillWithParameters = _zeCommandListAppendMemoryFillWithParameters_t(self.__dditable.CommandList.pfnAppendMemoryFillWithParameters)
+        self.zeCommandListImmediateAppendCommandListsWithParameters = _zeCommandListImmediateAppendCommandListsWithParameters_t(self.__dditable.CommandList.pfnImmediateAppendCommandListsWithParameters)
 
         # call driver to get function pointers
         _CommandListExp = _ze_command_list_exp_dditable_t()

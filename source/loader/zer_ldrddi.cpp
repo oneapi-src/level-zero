@@ -241,7 +241,18 @@ zerGetGlobalProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.zer.Global;
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnGetLastErrorDescription                  = firstDriver->dditable.zer.Global.pfnGetLastErrorDescription;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnTranslateDeviceHandleToIdentifier        = firstDriver->dditable.zer.Global.pfnTranslateDeviceHandleToIdentifier;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnTranslateIdentifierToDeviceHandle        = firstDriver->dditable.zer.Global.pfnTranslateIdentifierToDeviceHandle;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnGetDefaultContext                        = firstDriver->dditable.zer.Global.pfnGetDefaultContext;
+            }
         }
     }
 

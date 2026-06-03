@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.15-r1.15.31
+ * @version v1.16-r1.16.24
  *
  */
 #ifndef _ZET_API_H
@@ -1521,13 +1521,17 @@ zetMetricStreamerReadData(
     zet_metric_streamer_handle_t hMetricStreamer,                           ///< [in] handle of the metric streamer
     uint32_t maxReportCount,                                                ///< [in] the maximum number of reports the application wants to receive.
                                                                             ///< if `UINT32_MAX`, then function will retrieve all reports available
-    size_t* pRawDataSize,                                                   ///< [in,out] pointer to size in bytes of raw data requested to read.
-                                                                            ///< if size is zero, then the driver will update the value with the total
-                                                                            ///< size in bytes needed for all reports available.
-                                                                            ///< if size is non-zero, then driver will only retrieve the number of
-                                                                            ///< reports that fit into the buffer.
-                                                                            ///< if size is larger than size needed for all reports, then driver will
-                                                                            ///< update the value with the actual size needed.
+    size_t* pRawDataSize,                                                   ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                                            ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                                            ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                                            ///< number of bytes written into the buffer.
+                                                                            ///< If the size returns the full size requested, the application may need
+                                                                            ///< to issue additional reads to
+                                                                            ///< retrieve any remaining reports that did not fit into the buffer.
+                                                                            ///< @deprecated: The behavior of passing in zero size and the function
+                                                                            ///< returning the required size is deprecated,
+                                                                            ///<             for now it returns only the maximum buffer size regardless
+                                                                            ///< of how much data there is available to be read.
     uint8_t* pRawData                                                       ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing streamer
                                                                             ///< reports in raw format
     );
@@ -2505,13 +2509,13 @@ zetMetricTracerDisableExp(
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetMetricTracerReadDataExp(
     zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
-    size_t* pRawDataSize,                                                   ///< [in,out] pointer to size in bytes of raw data requested to read.
-                                                                            ///< if size is zero, then the driver will update the value with the total
-                                                                            ///< size in bytes needed for all data available.
-                                                                            ///< if size is non-zero, then driver will only retrieve that amount of
-                                                                            ///< data. 
-                                                                            ///< if size is larger than size needed for all data, then driver will
-                                                                            ///< update the value with the actual size needed.
+    size_t* pRawDataSize,                                                   ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                                            ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                                            ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                                            ///< number of bytes written into the buffer.
+                                                                            ///< If the size returns the full size requested, the application may need
+                                                                            ///< to issue additional reads to
+                                                                            ///< retrieve any remaining reports that did not fit into the buffer.
     uint8_t* pRawData                                                       ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
                                                                             ///< data in raw format
     );
@@ -2688,6 +2692,22 @@ zetMetricTracerDecodeExp(
 #if !defined(__GNUC__)
 #pragma region metricExportMemory
 #endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_METRIC_EXPORT_MEMORY_EXP_NAME
+/// @brief Metric Export Memory Experimental Extension Name
+#define ZET_METRIC_EXPORT_MEMORY_EXP_NAME  "ZET_experimental_metric_export_memory"
+#endif // ZET_METRIC_EXPORT_MEMORY_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Export Memory Experimental Extension Version(s)
+typedef enum _zet_metric_export_memory_exp_version_t
+{
+    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),     ///< version 1.0
+    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_* ENUMs
+
+} zet_metric_export_memory_exp_version_t;
+
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Metric group type
 typedef uint32_t zet_metric_group_type_exp_flags_t;

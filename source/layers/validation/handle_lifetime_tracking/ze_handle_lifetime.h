@@ -44,6 +44,9 @@ namespace validation_layer
         ze_result_t zeDeviceGetGlobalTimestampsPrologue( ze_device_handle_t hDevice, uint64_t* hostTimestamp, uint64_t* deviceTimestamp ) override;
         ze_result_t zeDeviceSynchronizePrologue( ze_device_handle_t hDevice ) override;
         ze_result_t zeDeviceGetAggregatedCopyOffloadIncrementValuePrologue( ze_device_handle_t hDevice, uint32_t* incrementValue ) override;
+        ze_result_t zeDeviceGetRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const void* pObjDesc, size_t* pSize, char* pRequirements ) override;
+        ze_result_t zeDeviceGetRuntimeRequirementsKeyPrologue( ze_device_handle_t hDevice, const char** pKey ) override;
+        ze_result_t zeDeviceValidateRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const char* pRequirements, ze_validate_runtime_requirements_output_t* pOut ) override;
         ze_result_t zeContextCreatePrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, ze_context_handle_t* phContext ) override;
         ze_result_t zeContextCreateExPrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, uint32_t numDevices, ze_device_handle_t* phDevices, ze_context_handle_t* phContext ) override;
         ze_result_t zeContextDestroyPrologue( ze_context_handle_t hContext ) override;
@@ -70,7 +73,9 @@ namespace validation_layer
         ze_result_t zeCommandListAppendMemoryRangesBarrierPrologue( ze_command_list_handle_t hCommandList, uint32_t numRanges, const size_t* pRangeSizes, const void** pRanges, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeContextSystemBarrierPrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice ) override;
         ze_result_t zeCommandListAppendMemoryCopyPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListAppendMemoryCopyWithParametersPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendMemoryFillPrologue( ze_command_list_handle_t hCommandList, void* ptr, const void* pattern, size_t pattern_size, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListAppendMemoryFillWithParametersPrologue( ze_command_list_handle_t hCommandList, void* ptr, const void* pattern, size_t pattern_size, size_t size, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendMemoryCopyRegionPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const ze_copy_region_t* dstRegion, uint32_t dstPitch, uint32_t dstSlicePitch, const void* srcptr, const ze_copy_region_t* srcRegion, uint32_t srcPitch, uint32_t srcSlicePitch, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendMemoryCopyFromContextPrologue( ze_command_list_handle_t hCommandList, void* dstptr, ze_context_handle_t hContextSrc, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendImageCopyPrologue( ze_command_list_handle_t hCommandList, ze_image_handle_t hDstImage, ze_image_handle_t hSrcImage, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
@@ -226,6 +231,7 @@ namespace validation_layer
         ze_result_t zeImageGetDeviceOffsetExpPrologue( ze_image_handle_t hImage, uint64_t* pDeviceOffset ) override;
         ze_result_t zeCommandListCreateCloneExpPrologue( ze_command_list_handle_t hCommandList, ze_command_list_handle_t* phClonedCommandList ) override;
         ze_result_t zeCommandListImmediateAppendCommandListsExpPrologue( ze_command_list_handle_t hCommandListImmediate, uint32_t numCommandLists, ze_command_list_handle_t* phCommandLists, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListImmediateAppendCommandListsWithParametersPrologue( ze_command_list_handle_t hCommandListImmediate, uint32_t numCommandLists, ze_command_list_handle_t* phCommandLists, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListGetNextCommandIdExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint64_t* pCommandId ) override;
         ze_result_t zeCommandListGetNextCommandIdWithKernelsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint32_t numKernels, ze_kernel_handle_t* phKernels, uint64_t* pCommandId ) override;
         ze_result_t zeCommandListUpdateMutableCommandsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_exp_desc_t* desc ) override;

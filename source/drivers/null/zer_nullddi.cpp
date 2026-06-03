@@ -154,13 +154,21 @@ zerGetGlobalProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnGetLastErrorDescription                = driver::zerGetLastErrorDescription;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnTranslateDeviceHandleToIdentifier      = driver::zerTranslateDeviceHandleToIdentifier;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnTranslateIdentifierToDeviceHandle      = driver::zerTranslateIdentifierToDeviceHandle;
+    }
 
+    if (version >= ZE_API_VERSION_1_14) {
     pDdiTable->pfnGetDefaultContext                      = driver::zerGetDefaultContext;
+    }
 
     return result;
 }

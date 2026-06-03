@@ -76,6 +76,10 @@ inline std::string to_string(ze_module_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
 
+inline std::string to_string(ze_graph_handle_t handle) {
+    return to_string(reinterpret_cast<const void*>(handle));
+}
+
 inline std::string to_string(ze_module_build_log_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
@@ -428,6 +432,26 @@ inline std::string to_string(const ze_device_compute_properties_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const ze_device_compute_dotproduct_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", dp_caps=" << to_string(&desc->dp_caps);
+    oss << ", dpv4_input_types=" << to_string(&desc->dpv4_input_types);
+    oss << ", dpv4_output_types=" << to_string(&desc->dpv4_output_types);
+    oss << ", dpas_input_types=" << to_string(&desc->dpas_input_types);
+    oss << ", dpas_output_types=" << to_string(&desc->dpas_output_types);
+    oss << ", bdpas_input_types=" << to_string(&desc->bdpas_input_types);
+    oss << ", bdpas_output_types=" << to_string(&desc->bdpas_output_types);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_device_compute_dotproduct_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const ze_native_kernel_uuid_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -592,6 +616,48 @@ inline std::string to_string(const ze_device_event_properties_t* desc) {
 }
 
 inline std::string to_string(const ze_device_event_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_runtime_requirements_module_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", requirementsSrc=" << to_string(&desc->requirementsSrc);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_runtime_requirements_module_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_runtime_requirements_graph_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", requirementsSrc=" << to_string(&desc->requirementsSrc);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_runtime_requirements_graph_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_validate_runtime_requirements_output_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", result=" << to_string(&desc->result);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_validate_runtime_requirements_output_t& desc) {
     return to_string(&desc);
 }
 

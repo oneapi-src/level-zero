@@ -379,6 +379,12 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zesPowerGetLimitsExt") );
             initialzesDdiTable.Power.pfnSetLimitsExt = reinterpret_cast<zes_pfnPowerSetLimitsExt_t>(
                 GET_FUNCTION_PTR(loader, "zesPowerSetLimitsExt") );
+            initialzesDdiTable.Power.pfnGetUsage = reinterpret_cast<zes_pfnPowerGetUsage_t>(
+                GET_FUNCTION_PTR(loader, "zesPowerGetUsage") );
+            initialzesDdiTable.Power.pfnGetLimitsExt2 = reinterpret_cast<zes_pfnPowerGetLimitsExt2_t>(
+                GET_FUNCTION_PTR(loader, "zesPowerGetLimitsExt2") );
+            initialzesDdiTable.Power.pfnSetLimitsExt2 = reinterpret_cast<zes_pfnPowerSetLimitsExt2_t>(
+                GET_FUNCTION_PTR(loader, "zesPowerSetLimitsExt2") );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -417,6 +423,14 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zesRasGetStateExp") );
             initialzesDdiTable.RasExp.pfnClearStateExp = reinterpret_cast<zes_pfnRasClearStateExp_t>(
                 GET_FUNCTION_PTR(loader, "zesRasClearStateExp") );
+            initialzesDdiTable.RasExp.pfnGetSupportedCategoriesExp = reinterpret_cast<zes_pfnRasGetSupportedCategoriesExp_t>(
+                GET_FUNCTION_PTR(loader, "zesRasGetSupportedCategoriesExp") );
+            initialzesDdiTable.RasExp.pfnGetStateExp2 = reinterpret_cast<zes_pfnRasGetStateExp2_t>(
+                GET_FUNCTION_PTR(loader, "zesRasGetStateExp2") );
+            initialzesDdiTable.RasExp.pfnGetConfigExp = reinterpret_cast<zes_pfnRasGetConfigExp_t>(
+                GET_FUNCTION_PTR(loader, "zesRasGetConfigExp") );
+            initialzesDdiTable.RasExp.pfnSetConfigExp = reinterpret_cast<zes_pfnRasSetConfigExp_t>(
+                GET_FUNCTION_PTR(loader, "zesRasSetConfigExp") );
         }
 
         if( ZE_RESULT_SUCCESS == result )

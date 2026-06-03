@@ -17,9 +17,10 @@ extern "C" {
 /// @brief Initialize 'oneAPI' System Resource Management (sysman)
 /// 
 /// @details
-///     - The application must call this function or ::zeInit with the
-///       `ZES_ENABLE_SYSMAN` environment variable set before calling any other
-///       sysman function.
+///     - The application must call zesInit() before calling any other sysman
+///       function.
+///     - The `ZES_ENABLE_SYSMAN` environment variable method of initialization
+///       is deprecated. Applications should use zesInit() instead.
 ///     - If this function is not called then all other sysman functions will
 ///       return ::ZE_RESULT_ERROR_UNINITIALIZED.
 ///     - This function will only initialize sysman. To initialize other
@@ -7132,6 +7133,74 @@ zesPowerSetEnergyThreshold(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Get power usage
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - This function returns the different power usage values associated with
+///       the power domain.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPower`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pInstantPower`
+///         + `nullptr == pAveragePower`
+ze_result_t ZE_APICALL
+zesPowerGetUsage(
+    zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+    uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+    uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnPowerGetUsage_t pfnGetUsage = [&result] {
+        auto pfnGetUsage = ze_lib::context->zesDdiTable.load()->Power.pfnGetUsage;
+        if( nullptr == pfnGetUsage ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetUsage;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetUsage( hPower, pInstantPower, pAveragePower );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetUsage = ze_lib::context->zesDdiTable.load()->Power.pfnGetUsage;
+    if( nullptr == pfnGetUsage ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetUsage( hPower, pInstantPower, pAveragePower );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Get handle of power supplies
 /// 
 /// @details
@@ -7487,6 +7556,8 @@ zesRasGetProperties(
 /// @brief Get RAS error thresholds that control when RAS events are generated
 /// 
 /// @details
+///     - @deprecated since 1.16: This function is deprecated. Please use
+///       ::zesRasGetConfigExp() instead.
 ///     - The driver maintains counters for all RAS error sets and error
 ///       categories. Events are generated when errors occur. The configuration
 ///       enables setting thresholds to limit when events are sent.
@@ -7561,6 +7632,8 @@ zesRasGetConfig(
 /// @brief Set RAS error thresholds that control when RAS events are generated
 /// 
 /// @details
+///     - @deprecated since 1.16: This function is deprecated. Please use
+///       ::zesRasSetConfigExp() instead.
 ///     - The driver maintains counters for all RAS error sets and error
 ///       categories. Events are generated when errors occur. The configuration
 ///       enables setting thresholds to limit when events are sent.
@@ -9177,6 +9250,137 @@ zesPowerSetLimitsExt(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Get power limits
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - This function returns the power limit associated with the power domain
+///       of the handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPower`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pLimit`
+ze_result_t ZE_APICALL
+zesPowerGetLimitsExt2(
+    zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+    uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnPowerGetLimitsExt2_t pfnGetLimitsExt2 = [&result] {
+        auto pfnGetLimitsExt2 = ze_lib::context->zesDdiTable.load()->Power.pfnGetLimitsExt2;
+        if( nullptr == pfnGetLimitsExt2 ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetLimitsExt2;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetLimitsExt2( hPower, pLimit );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetLimitsExt2 = ze_lib::context->zesDdiTable.load()->Power.pfnGetLimitsExt2;
+    if( nullptr == pfnGetLimitsExt2 ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetLimitsExt2( hPower, pLimit );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set power limits
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - This function sets the power limit associated with the power domain of
+///       the handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPower`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to make these modifications.
+ze_result_t ZE_APICALL
+zesPowerSetLimitsExt2(
+    zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+    const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnPowerSetLimitsExt2_t pfnSetLimitsExt2 = [&result] {
+        auto pfnSetLimitsExt2 = ze_lib::context->zesDdiTable.load()->Power.pfnSetLimitsExt2;
+        if( nullptr == pfnSetLimitsExt2 ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetLimitsExt2;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetLimitsExt2( hPower, limit );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetLimitsExt2 = ze_lib::context->zesDdiTable.load()->Power.pfnSetLimitsExt2;
+    if( nullptr == pfnSetLimitsExt2 ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetLimitsExt2( hPower, limit );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Get activity stats for Physical Function (PF) and each Virtual
 ///        Function (VF) associated with engine group.
 /// 
@@ -9357,7 +9561,7 @@ zesRasGetStateExp(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hRas`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS < category`
+///         + `::ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS < category`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + Don't have permissions to clear error counters.
@@ -9397,6 +9601,300 @@ zesRasClearStateExp(
     }
 
     return pfnClearStateExp( hRas, category );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get supported RAS error categories
+/// 
+/// @details
+///     - This function retrieves the supported RAS error categories for the
+///       given RAS handle.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hRas`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesRasGetSupportedCategoriesExp(
+    zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of categories supported.
+                                                    ///< if count is non-zero, then driver shall only retrieve that number of categories.
+    zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                    ///< if count is less than the number of categories supported, then driver
+                                                    ///< shall only retrieve that number of categories.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnRasGetSupportedCategoriesExp_t pfnGetSupportedCategoriesExp = [&result] {
+        auto pfnGetSupportedCategoriesExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetSupportedCategoriesExp;
+        if( nullptr == pfnGetSupportedCategoriesExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetSupportedCategoriesExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetSupportedCategoriesExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetSupportedCategoriesExp;
+    if( nullptr == pfnGetSupportedCategoriesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get RAS error counters for different categories
+/// 
+/// @details
+///     - This function retrieves error counters for different RAS error
+///       categories.
+///     - The categories and states arrays have 1:1 correspondence - pState[i]
+///       contains the error counter for pCategories[i].
+///     - The caller must initialize stype and pNext fields in each element of
+///       the pState array.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hRas`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCategories`
+///         + `nullptr == pState`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Invalid category value in pCategories array.
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + One or more categories in pCategories array not supported by this RAS handle.
+ze_result_t ZE_APICALL
+zesRasGetStateExp2(
+    zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+    const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+    const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+    zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                    ///< initialize stype and pNext for each element.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnRasGetStateExp2_t pfnGetStateExp2 = [&result] {
+        auto pfnGetStateExp2 = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetStateExp2;
+        if( nullptr == pfnGetStateExp2 ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetStateExp2;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetStateExp2( hRas, count, pCategories, pState );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetStateExp2 = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetStateExp2;
+    if( nullptr == pfnGetStateExp2 ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetStateExp2( hRas, count, pCategories, pState );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get RAS error thresholds that control when RAS events are generated
+/// 
+/// @details
+///     - This function retrieves the RAS error thresholds for the specified RAS
+///       error categories.
+///     - When a particular RAS error counter for a given category exceeds the
+///       configured threshold, the corresponding RAS event will be triggered.
+///     - For correctable errors: ::ZES_EVENT_TYPE_FLAG_RAS_CORRECTABLE_ERRORS
+///     - For uncorrectable errors:
+///       ::ZES_EVENT_TYPE_FLAG_RAS_UNCORRECTABLE_ERRORS
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hRas`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pConfig`
+ze_result_t ZE_APICALL
+zesRasGetConfigExp(
+    zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+    const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+    zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                    ///< The caller should set the category field for each entry to specify
+                                                    ///< which categories to query.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnRasGetConfigExp_t pfnGetConfigExp = [&result] {
+        auto pfnGetConfigExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetConfigExp;
+        if( nullptr == pfnGetConfigExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetConfigExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetConfigExp( hRas, count, pConfig );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetConfigExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetConfigExp;
+    if( nullptr == pfnGetConfigExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetConfigExp( hRas, count, pConfig );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set RAS error thresholds that control when RAS events are generated
+/// 
+/// @details
+///     - This function sets the RAS error thresholds for the specified RAS
+///       error categories.
+///     - When a particular RAS error counter for a given category exceeds the
+///       specified threshold, the corresponding RAS event will be generated.
+///     - Setting a threshold of 0 disables event generation for that category.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hRas`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pConfig`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + Don't have permissions to set thresholds.
+ze_result_t ZE_APICALL
+zesRasSetConfigExp(
+    zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+    const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+    const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                    ///< thresholds for different error categories.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnRasSetConfigExp_t pfnSetConfigExp = [&result] {
+        auto pfnSetConfigExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnSetConfigExp;
+        if( nullptr == pfnSetConfigExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetConfigExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetConfigExp( hRas, count, pConfig );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetConfigExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnSetConfigExp;
+    if( nullptr == pfnSetConfigExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetConfigExp( hRas, count, pConfig );
     #endif
 }
 

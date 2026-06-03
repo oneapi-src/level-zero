@@ -176,6 +176,7 @@ ${tbl['export']['name']}(
     }
 %else:
     %for obj in tbl['functions']:
+    if (version >= ${th.get_version(obj)}) {
     %if 'condition' in obj:
 #if ${th.subt(n, tags, obj['condition'])}
     %endif
@@ -185,6 +186,7 @@ ${tbl['export']['name']}(
     pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = nullptr;
 #endif
     %endif
+    }
 
     %endfor
 %endif
