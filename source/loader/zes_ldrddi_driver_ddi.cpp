@@ -3416,6 +3416,38 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetUsage
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetUsage(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Power == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetUsage = dditable->Power->pfnGetUsage;
+        if( nullptr == pfnGetUsage ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetUsage( hPower, pInstantPower, pAveragePower );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumPsus
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumPsus(
@@ -4389,6 +4421,68 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Power == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetLimitsExt2 = dditable->Power->pfnGetLimitsExt2;
+        if( nullptr == pfnGetLimitsExt2 ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetLimitsExt2( hPower, pLimit );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerSetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Power == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnSetLimitsExt2 = dditable->Power->pfnSetLimitsExt2;
+        if( nullptr == pfnSetLimitsExt2 ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnSetLimitsExt2( hPower, limit );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesEngineGetActivityExt
     __zedlllocal ze_result_t ZE_APICALL
     zesEngineGetActivityExt(
@@ -4499,6 +4593,144 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnClearStateExp( hRas, category );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetSupportedCategoriesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of categories supported.
+                                                        ///< if count is non-zero, then driver shall only retrieve that number of categories.
+        zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                        ///< if count is less than the number of categories supported, then driver
+                                                        ///< shall only retrieve that number of categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->RasExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetSupportedCategoriesExp = dditable->RasExp->pfnGetSupportedCategoriesExp;
+        if( nullptr == pfnGetSupportedCategoriesExp ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetStateExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp2(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+        const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+        zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                        ///< initialize stype and pNext for each element.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->RasExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetStateExp2 = dditable->RasExp->pfnGetStateExp2;
+        if( nullptr == pfnGetStateExp2 ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetStateExp2( hRas, count, pCategories, pState );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                        ///< The caller should set the category field for each entry to specify
+                                                        ///< which categories to query.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->RasExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetConfigExp = dditable->RasExp->pfnGetConfigExp;
+        if( nullptr == pfnGetConfigExp ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetConfigExp( hRas, count, pConfig );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasSetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasSetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                        ///< thresholds for different error categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_16) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->RasExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnSetConfigExp = dditable->RasExp->pfnSetConfigExp;
+        if( nullptr == pfnSetConfigExp ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnSetConfigExp( hRas, count, pConfig );
         return result;
     }
 

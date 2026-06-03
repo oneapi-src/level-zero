@@ -1300,6 +1300,35 @@ inline std::string to_string(const zes_ras_state_exp_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const zes_ras_state_exp2_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", errorCounter=" << to_string(desc->errorCounter);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_ras_state_exp2_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_ras_config_exp_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", category=" << to_string(&desc->category);
+    oss << ", threshold=" << to_string(desc->threshold);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_ras_config_exp_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const zes_mem_page_offline_state_exp_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;

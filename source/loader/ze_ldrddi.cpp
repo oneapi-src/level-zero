@@ -1235,6 +1235,87 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRuntimeRequirements
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRuntimeRequirements(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const void* pObjDesc,                           ///< [in] describes the object for which the requirements are to be
+                                                        ///< gathered
+        size_t* pSize,                                  ///< [in,out] size of requirements string in bytes.
+        char* pRequirements                             ///< [in,out][optional] holds results of the query.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetRuntimeRequirements = dditable->ze.Device.pfnGetRuntimeRequirements;
+        if( nullptr == pfnGetRuntimeRequirements )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetRuntimeRequirements( hDevice, pObjDesc, pSize, pRequirements );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRuntimeRequirementsKey
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRuntimeRequirementsKey(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char** pKey                               ///< [out] returned key
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetRuntimeRequirementsKey = dditable->ze.Device.pfnGetRuntimeRequirementsKey;
+        if( nullptr == pfnGetRuntimeRequirementsKey )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetRuntimeRequirementsKey( hDevice, pKey );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceValidateRuntimeRequirements
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceValidateRuntimeRequirements(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const char* pRequirements,                      ///< [in] requirements to be validated. Requirements should be
+                                                        ///< null-terminated plain text representation of runtime requirements
+                                                        ///< previously retrieved from the device.
+        ze_validate_runtime_requirements_output_t* pOut ///< [in][out] Output of the validation call.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnValidateRuntimeRequirements = dditable->ze.Device.pfnValidateRuntimeRequirements;
+        if( nullptr == pfnValidateRuntimeRequirements )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnValidateRuntimeRequirements( hDevice, pRequirements, pOut );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeContextCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -2117,6 +2198,48 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendMemoryCopyWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendMemoryCopyWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendMemoryCopyWithParameters = dditable->ze.CommandList.pfnAppendMemoryCopyWithParameters;
+        if( nullptr == pfnAppendMemoryCopyWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendMemoryCopyWithParameters( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendMemoryFill
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendMemoryFill(
@@ -2153,6 +2276,49 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendMemoryFillWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendMemoryFillWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* ptr,                                      ///< [in] pointer to memory to initialize
+        const void* pattern,                            ///< [in] pointer to value to initialize memory to
+        size_t pattern_size,                            ///< [in] size in bytes of the value to initialize memory to
+        size_t size,                                    ///< [in] size in bytes to initialize
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendMemoryFillWithParameters = dditable->ze.CommandList.pfnAppendMemoryFillWithParameters;
+        if( nullptr == pfnAppendMemoryFillWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendMemoryFillWithParameters( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
         delete []phWaitEventsLocal;
 
         return result;
@@ -7403,6 +7569,57 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateAppendCommandListsWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateAppendCommandListsWithParameters(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->dditable;
+        auto pfnImmediateAppendCommandListsWithParameters = dditable->ze.CommandList.pfnImmediateAppendCommandListsWithParameters;
+        if( nullptr == pfnImmediateAppendCommandListsWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandListImmediate = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->handle;
+
+        // convert loader handles to driver handles
+        auto phCommandListsLocal = new ze_command_list_handle_t [numCommandLists];
+        for( size_t i = 0; ( nullptr != phCommandLists ) && ( i < numCommandLists ); ++i )
+            phCommandListsLocal[ i ] = reinterpret_cast<ze_command_list_object_t*>( phCommandLists[ i ] )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnImmediateAppendCommandListsWithParameters( hCommandListImmediate, numCommandLists, phCommandListsLocal, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phCommandListsLocal;
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListGetNextCommandIdExp
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListGetNextCommandIdExp(
@@ -7704,6 +7921,9 @@ zeGetDeviceProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Device->pfnGetVectorWidthPropertiesExt              = loader::zeDeviceGetVectorWidthPropertiesExt;
     loader::loaderDispatch->pCore->Device->pfnSynchronize                              = loader::zeDeviceSynchronize;
     loader::loaderDispatch->pCore->Device->pfnGetAggregatedCopyOffloadIncrementValue   = loader::zeDeviceGetAggregatedCopyOffloadIncrementValue;
+    loader::loaderDispatch->pCore->Device->pfnGetRuntimeRequirements                   = loader::zeDeviceGetRuntimeRequirements;
+    loader::loaderDispatch->pCore->Device->pfnGetRuntimeRequirementsKey                = loader::zeDeviceGetRuntimeRequirementsKey;
+    loader::loaderDispatch->pCore->Device->pfnValidateRuntimeRequirements              = loader::zeDeviceValidateRuntimeRequirements;
     loader::loaderDispatch->pCore->Device->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
     loader::loaderDispatch->pCore->Device->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
     loader::loaderDispatch->pCore->Device->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
@@ -7786,6 +8006,9 @@ zeGetCommandListProcAddrTableLegacy()
     loader::loaderDispatch->pCore->CommandList->pfnAppendWaitExternalSemaphoreExt           = loader::zeCommandListAppendWaitExternalSemaphoreExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelWithParameters         = loader::zeCommandListAppendLaunchKernelWithParameters;
     loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelWithArguments          = loader::zeCommandListAppendLaunchKernelWithArguments;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopyWithParameters           = loader::zeCommandListAppendMemoryCopyWithParameters;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryFillWithParameters           = loader::zeCommandListAppendMemoryFillWithParameters;
+    loader::loaderDispatch->pCore->CommandList->pfnImmediateAppendCommandListsWithParameters    = loader::zeCommandListImmediateAppendCommandListsWithParameters;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
@@ -8833,7 +9056,12 @@ zeGetGlobalProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Global;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnInit                                     = firstDriver->dditable.ze.Global.pfnInit;
+            }
+            if (version >= ZE_API_VERSION_1_10) {
+                pDdiTable->pfnInitDrivers                              = firstDriver->dditable.ze.Global.pfnInitDrivers;
+            }
         }
     }
 
@@ -8947,7 +9175,21 @@ zeGetRTASBuilderProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.RTASBuilder;
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnCreateExt                                = firstDriver->dditable.ze.RTASBuilder.pfnCreateExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnGetBuildPropertiesExt                    = firstDriver->dditable.ze.RTASBuilder.pfnGetBuildPropertiesExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnBuildExt                                 = firstDriver->dditable.ze.RTASBuilder.pfnBuildExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnCommandListAppendCopyExt                 = firstDriver->dditable.ze.RTASBuilder.pfnCommandListAppendCopyExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnDestroyExt                               = firstDriver->dditable.ze.RTASBuilder.pfnDestroyExt;
+            }
         }
     }
 
@@ -9054,7 +9296,18 @@ zeGetRTASBuilderExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.RTASBuilderExp;
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnCreateExp                                = firstDriver->dditable.ze.RTASBuilderExp.pfnCreateExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetBuildPropertiesExp                    = firstDriver->dditable.ze.RTASBuilderExp.pfnGetBuildPropertiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnBuildExp                                 = firstDriver->dditable.ze.RTASBuilderExp.pfnBuildExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnDestroyExp                               = firstDriver->dditable.ze.RTASBuilderExp.pfnDestroyExp;
+            }
         }
     }
 
@@ -9161,7 +9414,18 @@ zeGetRTASParallelOperationProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.RTASParallelOperation;
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnCreateExt                                = firstDriver->dditable.ze.RTASParallelOperation.pfnCreateExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnGetPropertiesExt                         = firstDriver->dditable.ze.RTASParallelOperation.pfnGetPropertiesExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnJoinExt                                  = firstDriver->dditable.ze.RTASParallelOperation.pfnJoinExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnDestroyExt                               = firstDriver->dditable.ze.RTASParallelOperation.pfnDestroyExt;
+            }
         }
     }
 
@@ -9268,7 +9532,18 @@ zeGetRTASParallelOperationExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.RTASParallelOperationExp;
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnCreateExp                                = firstDriver->dditable.ze.RTASParallelOperationExp.pfnCreateExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetPropertiesExp                         = firstDriver->dditable.ze.RTASParallelOperationExp.pfnGetPropertiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnJoinExp                                  = firstDriver->dditable.ze.RTASParallelOperationExp.pfnJoinExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnDestroyExp                               = firstDriver->dditable.ze.RTASParallelOperationExp.pfnDestroyExp;
+            }
         }
     }
 
@@ -9406,7 +9681,33 @@ zeGetDriverProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Driver;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGet                                      = firstDriver->dditable.ze.Driver.pfnGet;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetApiVersion                            = firstDriver->dditable.ze.Driver.pfnGetApiVersion;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.ze.Driver.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetIpcProperties                         = firstDriver->dditable.ze.Driver.pfnGetIpcProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetExtensionProperties                   = firstDriver->dditable.ze.Driver.pfnGetExtensionProperties;
+            }
+            if (version >= ZE_API_VERSION_1_1) {
+                pDdiTable->pfnGetExtensionFunctionAddress              = firstDriver->dditable.ze.Driver.pfnGetExtensionFunctionAddress;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnRTASFormatCompatibilityCheckExt          = firstDriver->dditable.ze.Driver.pfnRTASFormatCompatibilityCheckExt;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnGetDefaultContext                        = firstDriver->dditable.ze.Driver.pfnGetDefaultContext;
+            }
+            if (version >= ZE_API_VERSION_1_6) {
+                pDdiTable->pfnGetLastErrorDescription                  = firstDriver->dditable.ze.Driver.pfnGetLastErrorDescription;
+            }
         }
     }
 
@@ -9492,7 +9793,9 @@ zeGetDriverExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.DriverExp;
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnRTASFormatCompatibilityCheckExp          = firstDriver->dditable.ze.DriverExp.pfnRTASFormatCompatibilityCheckExp;
+            }
         }
     }
 
@@ -9706,6 +10009,27 @@ zeGetDeviceProcAddrTable(
                 pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue   = loader::zeDeviceGetAggregatedCopyOffloadIncrementValue;
             }
             }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetRuntimeRequirements                   = loader_driver_ddi::zeDeviceGetRuntimeRequirements;
+            } else {
+                pDdiTable->pfnGetRuntimeRequirements                   = loader::zeDeviceGetRuntimeRequirements;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetRuntimeRequirementsKey                = loader_driver_ddi::zeDeviceGetRuntimeRequirementsKey;
+            } else {
+                pDdiTable->pfnGetRuntimeRequirementsKey                = loader::zeDeviceGetRuntimeRequirementsKey;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnValidateRuntimeRequirements              = loader_driver_ddi::zeDeviceValidateRuntimeRequirements;
+            } else {
+                pDdiTable->pfnValidateRuntimeRequirements              = loader::zeDeviceValidateRuntimeRequirements;
+            }
+            }
             if (version >= ZE_API_VERSION_1_2) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnReserveCacheExt                          = loader_driver_ddi::zeDeviceReserveCacheExt;
@@ -9739,7 +10063,87 @@ zeGetDeviceProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Device;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGet                                      = firstDriver->dditable.ze.Device.pfnGet;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetSubDevices                            = firstDriver->dditable.ze.Device.pfnGetSubDevices;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.ze.Device.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetComputeProperties                     = firstDriver->dditable.ze.Device.pfnGetComputeProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetModuleProperties                      = firstDriver->dditable.ze.Device.pfnGetModuleProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetCommandQueueGroupProperties           = firstDriver->dditable.ze.Device.pfnGetCommandQueueGroupProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetMemoryProperties                      = firstDriver->dditable.ze.Device.pfnGetMemoryProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetMemoryAccessProperties                = firstDriver->dditable.ze.Device.pfnGetMemoryAccessProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetCacheProperties                       = firstDriver->dditable.ze.Device.pfnGetCacheProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetImageProperties                       = firstDriver->dditable.ze.Device.pfnGetImageProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetExternalMemoryProperties              = firstDriver->dditable.ze.Device.pfnGetExternalMemoryProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetP2PProperties                         = firstDriver->dditable.ze.Device.pfnGetP2PProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCanAccessPeer                            = firstDriver->dditable.ze.Device.pfnCanAccessPeer;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetStatus                                = firstDriver->dditable.ze.Device.pfnGetStatus;
+            }
+            if (version >= ZE_API_VERSION_1_1) {
+                pDdiTable->pfnGetGlobalTimestamps                      = firstDriver->dditable.ze.Device.pfnGetGlobalTimestamps;
+            }
+            if (version >= ZE_API_VERSION_1_12) {
+                pDdiTable->pfnImportExternalSemaphoreExt               = firstDriver->dditable.ze.Device.pfnImportExternalSemaphoreExt;
+            }
+            if (version >= ZE_API_VERSION_1_12) {
+                pDdiTable->pfnReleaseExternalSemaphoreExt              = firstDriver->dditable.ze.Device.pfnReleaseExternalSemaphoreExt;
+            }
+            if (version >= ZE_API_VERSION_1_13) {
+                pDdiTable->pfnGetVectorWidthPropertiesExt              = firstDriver->dditable.ze.Device.pfnGetVectorWidthPropertiesExt;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnSynchronize                              = firstDriver->dditable.ze.Device.pfnSynchronize;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnGetAggregatedCopyOffloadIncrementValue   = firstDriver->dditable.ze.Device.pfnGetAggregatedCopyOffloadIncrementValue;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetRuntimeRequirements                   = firstDriver->dditable.ze.Device.pfnGetRuntimeRequirements;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnGetRuntimeRequirementsKey                = firstDriver->dditable.ze.Device.pfnGetRuntimeRequirementsKey;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnValidateRuntimeRequirements              = firstDriver->dditable.ze.Device.pfnValidateRuntimeRequirements;
+            }
+            if (version >= ZE_API_VERSION_1_2) {
+                pDdiTable->pfnReserveCacheExt                          = firstDriver->dditable.ze.Device.pfnReserveCacheExt;
+            }
+            if (version >= ZE_API_VERSION_1_2) {
+                pDdiTable->pfnSetCacheAdviceExt                        = firstDriver->dditable.ze.Device.pfnSetCacheAdviceExt;
+            }
+            if (version >= ZE_API_VERSION_1_3) {
+                pDdiTable->pfnPciGetPropertiesExt                      = firstDriver->dditable.ze.Device.pfnPciGetPropertiesExt;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetRootDevice                            = firstDriver->dditable.ze.Device.pfnGetRootDevice;
+            }
         }
     }
 
@@ -9825,7 +10229,9 @@ zeGetDeviceExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.DeviceExp;
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetFabricVertexExp                       = firstDriver->dditable.ze.DeviceExp.pfnGetFabricVertexExp;
+            }
         }
     }
 
@@ -9967,7 +10373,33 @@ zeGetContextProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Context;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.Context.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.Context.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetStatus                                = firstDriver->dditable.ze.Context.pfnGetStatus;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSystemBarrier                            = firstDriver->dditable.ze.Context.pfnSystemBarrier;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnMakeMemoryResident                       = firstDriver->dditable.ze.Context.pfnMakeMemoryResident;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEvictMemory                              = firstDriver->dditable.ze.Context.pfnEvictMemory;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnMakeImageResident                        = firstDriver->dditable.ze.Context.pfnMakeImageResident;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnEvictImage                               = firstDriver->dditable.ze.Context.pfnEvictImage;
+            }
+            if (version >= ZE_API_VERSION_1_1) {
+                pDdiTable->pfnCreateEx                                 = firstDriver->dditable.ze.Context.pfnCreateEx;
+            }
         }
     }
 
@@ -10088,7 +10520,24 @@ zeGetCommandQueueProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.CommandQueue;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.CommandQueue.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.CommandQueue.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnExecuteCommandLists                      = firstDriver->dditable.ze.CommandQueue.pfnExecuteCommandLists;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSynchronize                              = firstDriver->dditable.ze.CommandQueue.pfnSynchronize;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetOrdinal                               = firstDriver->dditable.ze.CommandQueue.pfnGetOrdinal;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetIndex                                 = firstDriver->dditable.ze.CommandQueue.pfnGetIndex;
+            }
         }
     }
 
@@ -10372,6 +10821,27 @@ zeGetCommandListProcAddrTable(
                 pDdiTable->pfnAppendLaunchKernelWithArguments          = loader::zeCommandListAppendLaunchKernelWithArguments;
             }
             }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryCopyWithParameters           = loader_driver_ddi::zeCommandListAppendMemoryCopyWithParameters;
+            } else {
+                pDdiTable->pfnAppendMemoryCopyWithParameters           = loader::zeCommandListAppendMemoryCopyWithParameters;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryFillWithParameters           = loader_driver_ddi::zeCommandListAppendMemoryFillWithParameters;
+            } else {
+                pDdiTable->pfnAppendMemoryFillWithParameters           = loader::zeCommandListAppendMemoryFillWithParameters;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnImmediateAppendCommandListsWithParameters    = loader_driver_ddi::zeCommandListImmediateAppendCommandListsWithParameters;
+            } else {
+                pDdiTable->pfnImmediateAppendCommandListsWithParameters    = loader::zeCommandListImmediateAppendCommandListsWithParameters;
+            }
+            }
             if (version >= ZE_API_VERSION_1_3) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnAppendImageCopyToMemoryExt               = loader_driver_ddi::zeCommandListAppendImageCopyToMemoryExt;
@@ -10433,7 +10903,129 @@ zeGetCommandListProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.CommandList;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.CommandList.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreateImmediate                          = firstDriver->dditable.ze.CommandList.pfnCreateImmediate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.CommandList.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnClose                                    = firstDriver->dditable.ze.CommandList.pfnClose;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnReset                                    = firstDriver->dditable.ze.CommandList.pfnReset;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendWriteGlobalTimestamp               = firstDriver->dditable.ze.CommandList.pfnAppendWriteGlobalTimestamp;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendBarrier                            = firstDriver->dditable.ze.CommandList.pfnAppendBarrier;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendMemoryRangesBarrier                = firstDriver->dditable.ze.CommandList.pfnAppendMemoryRangesBarrier;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendMemoryCopy                         = firstDriver->dditable.ze.CommandList.pfnAppendMemoryCopy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendMemoryFill                         = firstDriver->dditable.ze.CommandList.pfnAppendMemoryFill;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendMemoryCopyRegion                   = firstDriver->dditable.ze.CommandList.pfnAppendMemoryCopyRegion;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendMemoryCopyFromContext              = firstDriver->dditable.ze.CommandList.pfnAppendMemoryCopyFromContext;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendImageCopy                          = firstDriver->dditable.ze.CommandList.pfnAppendImageCopy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendImageCopyRegion                    = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyRegion;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendImageCopyToMemory                  = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyToMemory;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendImageCopyFromMemory                = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyFromMemory;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendMemoryPrefetch                     = firstDriver->dditable.ze.CommandList.pfnAppendMemoryPrefetch;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendMemAdvise                          = firstDriver->dditable.ze.CommandList.pfnAppendMemAdvise;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendSignalEvent                        = firstDriver->dditable.ze.CommandList.pfnAppendSignalEvent;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendWaitOnEvents                       = firstDriver->dditable.ze.CommandList.pfnAppendWaitOnEvents;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendEventReset                         = firstDriver->dditable.ze.CommandList.pfnAppendEventReset;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendQueryKernelTimestamps              = firstDriver->dditable.ze.CommandList.pfnAppendQueryKernelTimestamps;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendLaunchKernel                       = firstDriver->dditable.ze.CommandList.pfnAppendLaunchKernel;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendLaunchCooperativeKernel            = firstDriver->dditable.ze.CommandList.pfnAppendLaunchCooperativeKernel;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendLaunchKernelIndirect               = firstDriver->dditable.ze.CommandList.pfnAppendLaunchKernelIndirect;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAppendLaunchMultipleKernelsIndirect      = firstDriver->dditable.ze.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
+            }
+            if (version >= ZE_API_VERSION_1_12) {
+                pDdiTable->pfnAppendSignalExternalSemaphoreExt         = firstDriver->dditable.ze.CommandList.pfnAppendSignalExternalSemaphoreExt;
+            }
+            if (version >= ZE_API_VERSION_1_12) {
+                pDdiTable->pfnAppendWaitExternalSemaphoreExt           = firstDriver->dditable.ze.CommandList.pfnAppendWaitExternalSemaphoreExt;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnAppendLaunchKernelWithParameters         = firstDriver->dditable.ze.CommandList.pfnAppendLaunchKernelWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnAppendLaunchKernelWithArguments          = firstDriver->dditable.ze.CommandList.pfnAppendLaunchKernelWithArguments;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnAppendMemoryCopyWithParameters           = firstDriver->dditable.ze.CommandList.pfnAppendMemoryCopyWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnAppendMemoryFillWithParameters           = firstDriver->dditable.ze.CommandList.pfnAppendMemoryFillWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_16) {
+                pDdiTable->pfnImmediateAppendCommandListsWithParameters    = firstDriver->dditable.ze.CommandList.pfnImmediateAppendCommandListsWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_3) {
+                pDdiTable->pfnAppendImageCopyToMemoryExt               = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyToMemoryExt;
+            }
+            if (version >= ZE_API_VERSION_1_3) {
+                pDdiTable->pfnAppendImageCopyFromMemoryExt             = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyFromMemoryExt;
+            }
+            if (version >= ZE_API_VERSION_1_6) {
+                pDdiTable->pfnHostSynchronize                          = firstDriver->dditable.ze.CommandList.pfnHostSynchronize;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetDeviceHandle                          = firstDriver->dditable.ze.CommandList.pfnGetDeviceHandle;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetContextHandle                         = firstDriver->dditable.ze.CommandList.pfnGetContextHandle;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetOrdinal                               = firstDriver->dditable.ze.CommandList.pfnGetOrdinal;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnImmediateGetIndex                        = firstDriver->dditable.ze.CommandList.pfnImmediateGetIndex;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnIsImmediate                              = firstDriver->dditable.ze.CommandList.pfnIsImmediate;
+            }
         }
     }
 
@@ -10568,7 +11160,30 @@ zeGetCommandListExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.CommandListExp;
+            if (version >= ZE_API_VERSION_1_10) {
+                pDdiTable->pfnGetNextCommandIdWithKernelsExp           = firstDriver->dditable.ze.CommandListExp.pfnGetNextCommandIdWithKernelsExp;
+            }
+            if (version >= ZE_API_VERSION_1_10) {
+                pDdiTable->pfnUpdateMutableCommandKernelsExp           = firstDriver->dditable.ze.CommandListExp.pfnUpdateMutableCommandKernelsExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnCreateCloneExp                           = firstDriver->dditable.ze.CommandListExp.pfnCreateCloneExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnImmediateAppendCommandListsExp           = firstDriver->dditable.ze.CommandListExp.pfnImmediateAppendCommandListsExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetNextCommandIdExp                      = firstDriver->dditable.ze.CommandListExp.pfnGetNextCommandIdExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnUpdateMutableCommandsExp                 = firstDriver->dditable.ze.CommandListExp.pfnUpdateMutableCommandsExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnUpdateMutableCommandSignalEventExp       = firstDriver->dditable.ze.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnUpdateMutableCommandWaitEventsExp        = firstDriver->dditable.ze.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
+            }
         }
     }
 
@@ -10759,7 +11374,54 @@ zeGetEventProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Event;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.Event.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.Event.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnHostSignal                               = firstDriver->dditable.ze.Event.pfnHostSignal;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnHostSynchronize                          = firstDriver->dditable.ze.Event.pfnHostSynchronize;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnQueryStatus                              = firstDriver->dditable.ze.Event.pfnQueryStatus;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnHostReset                                = firstDriver->dditable.ze.Event.pfnHostReset;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnQueryKernelTimestamp                     = firstDriver->dditable.ze.Event.pfnQueryKernelTimestamp;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnCounterBasedCreate                       = firstDriver->dditable.ze.Event.pfnCounterBasedCreate;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnCounterBasedGetIpcHandle                 = firstDriver->dditable.ze.Event.pfnCounterBasedGetIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnCounterBasedOpenIpcHandle                = firstDriver->dditable.ze.Event.pfnCounterBasedOpenIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnCounterBasedCloseIpcHandle               = firstDriver->dditable.ze.Event.pfnCounterBasedCloseIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnCounterBasedGetDeviceAddress             = firstDriver->dditable.ze.Event.pfnCounterBasedGetDeviceAddress;
+            }
+            if (version >= ZE_API_VERSION_1_6) {
+                pDdiTable->pfnQueryKernelTimestampsExt                 = firstDriver->dditable.ze.Event.pfnQueryKernelTimestampsExt;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetEventPool                             = firstDriver->dditable.ze.Event.pfnGetEventPool;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetSignalScope                           = firstDriver->dditable.ze.Event.pfnGetSignalScope;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetWaitScope                             = firstDriver->dditable.ze.Event.pfnGetWaitScope;
+            }
         }
     }
 
@@ -10845,7 +11507,9 @@ zeGetEventExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.EventExp;
+            if (version >= ZE_API_VERSION_1_2) {
+                pDdiTable->pfnQueryTimestampsExp                       = firstDriver->dditable.ze.EventExp.pfnQueryTimestampsExp;
+            }
         }
     }
 
@@ -10980,7 +11644,30 @@ zeGetEventPoolProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.EventPool;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.EventPool.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.EventPool.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetIpcHandle                             = firstDriver->dditable.ze.EventPool.pfnGetIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOpenIpcHandle                            = firstDriver->dditable.ze.EventPool.pfnOpenIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCloseIpcHandle                           = firstDriver->dditable.ze.EventPool.pfnCloseIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_6) {
+                pDdiTable->pfnPutIpcHandle                             = firstDriver->dditable.ze.EventPool.pfnPutIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetContextHandle                         = firstDriver->dditable.ze.EventPool.pfnGetContextHandle;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetFlags                                 = firstDriver->dditable.ze.EventPool.pfnGetFlags;
+            }
         }
     }
 
@@ -11094,7 +11781,21 @@ zeGetFenceProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Fence;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.Fence.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.Fence.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnHostSynchronize                          = firstDriver->dditable.ze.Fence.pfnHostSynchronize;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnQueryStatus                              = firstDriver->dditable.ze.Fence.pfnQueryStatus;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnReset                                    = firstDriver->dditable.ze.Fence.pfnReset;
+            }
         }
     }
 
@@ -11208,7 +11909,21 @@ zeGetImageProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Image;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.ze.Image.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.Image.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.Image.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_3) {
+                pDdiTable->pfnGetAllocPropertiesExt                    = firstDriver->dditable.ze.Image.pfnGetAllocPropertiesExt;
+            }
+            if (version >= ZE_API_VERSION_1_5) {
+                pDdiTable->pfnViewCreateExt                            = firstDriver->dditable.ze.Image.pfnViewCreateExt;
+            }
         }
     }
 
@@ -11308,7 +12023,15 @@ zeGetImageExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.ImageExp;
+            if (version >= ZE_API_VERSION_1_2) {
+                pDdiTable->pfnGetMemoryPropertiesExp                   = firstDriver->dditable.ze.ImageExp.pfnGetMemoryPropertiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_2) {
+                pDdiTable->pfnViewCreateExp                            = firstDriver->dditable.ze.ImageExp.pfnViewCreateExp;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetDeviceOffsetExp                       = firstDriver->dditable.ze.ImageExp.pfnGetDeviceOffsetExp;
+            }
         }
     }
 
@@ -11471,7 +12194,42 @@ zeGetKernelProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Kernel;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.Kernel.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.Kernel.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetCacheConfig                           = firstDriver->dditable.ze.Kernel.pfnSetCacheConfig;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetGroupSize                             = firstDriver->dditable.ze.Kernel.pfnSetGroupSize;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSuggestGroupSize                         = firstDriver->dditable.ze.Kernel.pfnSuggestGroupSize;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSuggestMaxCooperativeGroupCount          = firstDriver->dditable.ze.Kernel.pfnSuggestMaxCooperativeGroupCount;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetArgumentValue                         = firstDriver->dditable.ze.Kernel.pfnSetArgumentValue;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetIndirectAccess                        = firstDriver->dditable.ze.Kernel.pfnSetIndirectAccess;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetIndirectAccess                        = firstDriver->dditable.ze.Kernel.pfnGetIndirectAccess;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetSourceAttributes                      = firstDriver->dditable.ze.Kernel.pfnGetSourceAttributes;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.ze.Kernel.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetName                                  = firstDriver->dditable.ze.Kernel.pfnGetName;
+            }
         }
     }
 
@@ -11578,7 +12336,18 @@ zeGetKernelExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.KernelExp;
+            if (version >= ZE_API_VERSION_1_1) {
+                pDdiTable->pfnSetGlobalOffsetExp                       = firstDriver->dditable.ze.KernelExp.pfnSetGlobalOffsetExp;
+            }
+            if (version >= ZE_API_VERSION_1_11) {
+                pDdiTable->pfnGetBinaryExp                             = firstDriver->dditable.ze.KernelExp.pfnGetBinaryExp;
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+                pDdiTable->pfnGetAllocationPropertiesExp               = firstDriver->dditable.ze.KernelExp.pfnGetAllocationPropertiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_2) {
+                pDdiTable->pfnSchedulingHintExp                        = firstDriver->dditable.ze.KernelExp.pfnSchedulingHintExp;
+            }
         }
     }
 
@@ -11748,7 +12517,45 @@ zeGetMemProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Mem;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAllocShared                              = firstDriver->dditable.ze.Mem.pfnAllocShared;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAllocDevice                              = firstDriver->dditable.ze.Mem.pfnAllocDevice;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnAllocHost                                = firstDriver->dditable.ze.Mem.pfnAllocHost;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnFree                                     = firstDriver->dditable.ze.Mem.pfnFree;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetAllocProperties                       = firstDriver->dditable.ze.Mem.pfnGetAllocProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetAddressRange                          = firstDriver->dditable.ze.Mem.pfnGetAddressRange;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetIpcHandle                             = firstDriver->dditable.ze.Mem.pfnGetIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnOpenIpcHandle                            = firstDriver->dditable.ze.Mem.pfnOpenIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCloseIpcHandle                           = firstDriver->dditable.ze.Mem.pfnCloseIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnGetIpcHandleWithProperties               = firstDriver->dditable.ze.Mem.pfnGetIpcHandleWithProperties;
+            }
+            if (version >= ZE_API_VERSION_1_3) {
+                pDdiTable->pfnFreeExt                                  = firstDriver->dditable.ze.Mem.pfnFreeExt;
+            }
+            if (version >= ZE_API_VERSION_1_6) {
+                pDdiTable->pfnPutIpcHandle                             = firstDriver->dditable.ze.Mem.pfnPutIpcHandle;
+            }
+            if (version >= ZE_API_VERSION_1_9) {
+                pDdiTable->pfnGetPitchFor2dImage                       = firstDriver->dditable.ze.Mem.pfnGetPitchFor2dImage;
+            }
         }
     }
 
@@ -11855,7 +12662,18 @@ zeGetMemExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.MemExp;
+            if (version >= ZE_API_VERSION_1_6) {
+                pDdiTable->pfnGetIpcHandleFromFileDescriptorExp        = firstDriver->dditable.ze.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+            }
+            if (version >= ZE_API_VERSION_1_6) {
+                pDdiTable->pfnGetFileDescriptorFromIpcHandleExp        = firstDriver->dditable.ze.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnSetAtomicAccessAttributeExp              = firstDriver->dditable.ze.MemExp.pfnSetAtomicAccessAttributeExp;
+            }
+            if (version >= ZE_API_VERSION_1_7) {
+                pDdiTable->pfnGetAtomicAccessAttributeExp              = firstDriver->dditable.ze.MemExp.pfnGetAtomicAccessAttributeExp;
+            }
         }
     }
 
@@ -11997,7 +12815,33 @@ zeGetModuleProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Module;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.Module.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.Module.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDynamicLink                              = firstDriver->dditable.ze.Module.pfnDynamicLink;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetNativeBinary                          = firstDriver->dditable.ze.Module.pfnGetNativeBinary;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetGlobalPointer                         = firstDriver->dditable.ze.Module.pfnGetGlobalPointer;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetKernelNames                           = firstDriver->dditable.ze.Module.pfnGetKernelNames;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.ze.Module.pfnGetProperties;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetFunctionPointer                       = firstDriver->dditable.ze.Module.pfnGetFunctionPointer;
+            }
+            if (version >= ZE_API_VERSION_1_3) {
+                pDdiTable->pfnInspectLinkageExt                        = firstDriver->dditable.ze.Module.pfnInspectLinkageExt;
+            }
         }
     }
 
@@ -12090,7 +12934,12 @@ zeGetModuleBuildLogProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.ModuleBuildLog;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.ModuleBuildLog.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetString                                = firstDriver->dditable.ze.ModuleBuildLog.pfnGetString;
+            }
         }
     }
 
@@ -12190,7 +13039,15 @@ zeGetPhysicalMemProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.PhysicalMem;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.PhysicalMem.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.PhysicalMem.pfnDestroy;
+            }
+            if (version >= ZE_API_VERSION_1_15) {
+                pDdiTable->pfnGetProperties                            = firstDriver->dditable.ze.PhysicalMem.pfnGetProperties;
+            }
         }
     }
 
@@ -12283,7 +13140,12 @@ zeGetSamplerProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.Sampler;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnCreate                                   = firstDriver->dditable.ze.Sampler.pfnCreate;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnDestroy                                  = firstDriver->dditable.ze.Sampler.pfnDestroy;
+            }
         }
     }
 
@@ -12411,7 +13273,27 @@ zeGetVirtualMemProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.VirtualMem;
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnReserve                                  = firstDriver->dditable.ze.VirtualMem.pfnReserve;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnFree                                     = firstDriver->dditable.ze.VirtualMem.pfnFree;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnQueryPageSize                            = firstDriver->dditable.ze.VirtualMem.pfnQueryPageSize;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnMap                                      = firstDriver->dditable.ze.VirtualMem.pfnMap;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnUnmap                                    = firstDriver->dditable.ze.VirtualMem.pfnUnmap;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnSetAccessAttribute                       = firstDriver->dditable.ze.VirtualMem.pfnSetAccessAttribute;
+            }
+            if (version >= ZE_API_VERSION_1_0) {
+                pDdiTable->pfnGetAccessAttribute                       = firstDriver->dditable.ze.VirtualMem.pfnGetAccessAttribute;
+            }
         }
     }
 
@@ -12511,7 +13393,15 @@ zeGetFabricEdgeExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.FabricEdgeExp;
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetExp                                   = firstDriver->dditable.ze.FabricEdgeExp.pfnGetExp;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetVerticesExp                           = firstDriver->dditable.ze.FabricEdgeExp.pfnGetVerticesExp;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetPropertiesExp                         = firstDriver->dditable.ze.FabricEdgeExp.pfnGetPropertiesExp;
+            }
         }
     }
 
@@ -12618,7 +13508,18 @@ zeGetFabricVertexExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.ze.FabricVertexExp;
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetExp                                   = firstDriver->dditable.ze.FabricVertexExp.pfnGetExp;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetSubVerticesExp                        = firstDriver->dditable.ze.FabricVertexExp.pfnGetSubVerticesExp;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetPropertiesExp                         = firstDriver->dditable.ze.FabricVertexExp.pfnGetPropertiesExp;
+            }
+            if (version >= ZE_API_VERSION_1_4) {
+                pDdiTable->pfnGetDeviceExp                             = firstDriver->dditable.ze.FabricVertexExp.pfnGetDeviceExp;
+            }
         }
     }
 

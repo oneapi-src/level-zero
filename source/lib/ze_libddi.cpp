@@ -178,6 +178,12 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDeviceSynchronize") );
             initialzeDdiTable.Device.pfnGetAggregatedCopyOffloadIncrementValue = reinterpret_cast<ze_pfnDeviceGetAggregatedCopyOffloadIncrementValue_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceGetAggregatedCopyOffloadIncrementValue") );
+            initialzeDdiTable.Device.pfnGetRuntimeRequirements = reinterpret_cast<ze_pfnDeviceGetRuntimeRequirements_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceGetRuntimeRequirements") );
+            initialzeDdiTable.Device.pfnGetRuntimeRequirementsKey = reinterpret_cast<ze_pfnDeviceGetRuntimeRequirementsKey_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceGetRuntimeRequirementsKey") );
+            initialzeDdiTable.Device.pfnValidateRuntimeRequirements = reinterpret_cast<ze_pfnDeviceValidateRuntimeRequirements_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceValidateRuntimeRequirements") );
             initialzeDdiTable.Device.pfnReserveCacheExt = reinterpret_cast<ze_pfnDeviceReserveCacheExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceReserveCacheExt") );
             initialzeDdiTable.Device.pfnSetCacheAdviceExt = reinterpret_cast<ze_pfnDeviceSetCacheAdviceExt_t>(
@@ -307,6 +313,12 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendLaunchKernelWithParameters") );
             initialzeDdiTable.CommandList.pfnAppendLaunchKernelWithArguments = reinterpret_cast<ze_pfnCommandListAppendLaunchKernelWithArguments_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendLaunchKernelWithArguments") );
+            initialzeDdiTable.CommandList.pfnAppendMemoryCopyWithParameters = reinterpret_cast<ze_pfnCommandListAppendMemoryCopyWithParameters_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListAppendMemoryCopyWithParameters") );
+            initialzeDdiTable.CommandList.pfnAppendMemoryFillWithParameters = reinterpret_cast<ze_pfnCommandListAppendMemoryFillWithParameters_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListAppendMemoryFillWithParameters") );
+            initialzeDdiTable.CommandList.pfnImmediateAppendCommandListsWithParameters = reinterpret_cast<ze_pfnCommandListImmediateAppendCommandListsWithParameters_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListImmediateAppendCommandListsWithParameters") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyToMemoryExt_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendImageCopyToMemoryExt") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyFromMemoryExt_t>(

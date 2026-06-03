@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.15-r1.15.31
+ * @version v1.16-r1.16.24
  *
  */
 #ifndef _ZES_DDI_H
@@ -906,6 +906,28 @@ typedef ze_result_t (ZE_APICALL *zes_pfnPowerSetLimitsExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesPowerGetUsage 
+typedef ze_result_t (ZE_APICALL *zes_pfnPowerGetUsage_t)(
+    zes_pwr_handle_t,
+    uint32_t*,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesPowerGetLimitsExt2 
+typedef ze_result_t (ZE_APICALL *zes_pfnPowerGetLimitsExt2_t)(
+    zes_pwr_handle_t,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesPowerSetLimitsExt2 
+typedef ze_result_t (ZE_APICALL *zes_pfnPowerSetLimitsExt2_t)(
+    zes_pwr_handle_t,
+    const uint32_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Power functions pointers
 typedef struct _zes_power_dditable_t
 {
@@ -917,6 +939,9 @@ typedef struct _zes_power_dditable_t
     zes_pfnPowerSetEnergyThreshold_t                            pfnSetEnergyThreshold;
     zes_pfnPowerGetLimitsExt_t                                  pfnGetLimitsExt;
     zes_pfnPowerSetLimitsExt_t                                  pfnSetLimitsExt;
+    zes_pfnPowerGetUsage_t                                      pfnGetUsage;
+    zes_pfnPowerGetLimitsExt2_t                                 pfnGetLimitsExt2;
+    zes_pfnPowerSetLimitsExt2_t                                 pfnSetLimitsExt2;
 } zes_power_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1781,11 +1806,48 @@ typedef ze_result_t (ZE_APICALL *zes_pfnRasClearStateExp_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesRasGetSupportedCategoriesExp 
+typedef ze_result_t (ZE_APICALL *zes_pfnRasGetSupportedCategoriesExp_t)(
+    zes_ras_handle_t,
+    uint32_t*,
+    zes_ras_error_category_exp_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesRasGetStateExp2 
+typedef ze_result_t (ZE_APICALL *zes_pfnRasGetStateExp2_t)(
+    zes_ras_handle_t,
+    const uint32_t,
+    const zes_ras_error_category_exp_t*,
+    zes_ras_state_exp2_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesRasGetConfigExp 
+typedef ze_result_t (ZE_APICALL *zes_pfnRasGetConfigExp_t)(
+    zes_ras_handle_t,
+    const uint32_t,
+    zes_ras_config_exp_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesRasSetConfigExp 
+typedef ze_result_t (ZE_APICALL *zes_pfnRasSetConfigExp_t)(
+    zes_ras_handle_t,
+    const uint32_t,
+    const zes_ras_config_exp_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of RasExp functions pointers
 typedef struct _zes_ras_exp_dditable_t
 {
     zes_pfnRasGetStateExp_t                                     pfnGetStateExp;
     zes_pfnRasClearStateExp_t                                   pfnClearStateExp;
+    zes_pfnRasGetSupportedCategoriesExp_t                       pfnGetSupportedCategoriesExp;
+    zes_pfnRasGetStateExp2_t                                    pfnGetStateExp2;
+    zes_pfnRasGetConfigExp_t                                    pfnGetConfigExp;
+    zes_pfnRasSetConfigExp_t                                    pfnSetConfigExp;
 } zes_ras_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

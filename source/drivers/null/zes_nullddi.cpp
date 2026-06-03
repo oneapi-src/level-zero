@@ -3120,6 +3120,34 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetUsage
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetUsage(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
+        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
+        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetUsage = context.zesDdiTable.Power.pfnGetUsage;
+        if( nullptr != pfnGetUsage )
+        {
+            result = pfnGetUsage( hPower, pInstantPower, pAveragePower );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesPowerGetUsage", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumPsus
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumPsus(
@@ -3992,6 +4020,60 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pLimit                                ///< [out] Returns limit value in milliwatts for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetLimitsExt2 = context.zesDdiTable.Power.pfnGetLimitsExt2;
+        if( nullptr != pfnGetLimitsExt2 )
+        {
+            result = pfnGetLimitsExt2( hPower, pLimit );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesPowerGetLimitsExt2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerSetLimitsExt2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt2(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        const uint32_t limit                            ///< [in] Limit value in milliwatts to be set for given power domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetLimitsExt2 = context.zesDdiTable.Power.pfnSetLimitsExt2;
+        if( nullptr != pfnSetLimitsExt2 )
+        {
+            result = pfnSetLimitsExt2( hPower, limit );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesPowerSetLimitsExt2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesEngineGetActivityExt
     __zedlllocal ze_result_t ZE_APICALL
     zesEngineGetActivityExt(
@@ -4088,6 +4170,128 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zesRasClearStateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetSupportedCategoriesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of categories.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of categories supported.
+                                                        ///< if count is non-zero, then driver shall only retrieve that number of categories.
+        zes_ras_error_category_exp_t* pCategories       ///< [in,out][optional][range(0, *pCount)] array of category types.
+                                                        ///< if count is less than the number of categories supported, then driver
+                                                        ///< shall only retrieve that number of categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetSupportedCategoriesExp = context.zesDdiTable.RasExp.pfnGetSupportedCategoriesExp;
+        if( nullptr != pfnGetSupportedCategoriesExp )
+        {
+            result = pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasGetSupportedCategoriesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetStateExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp2(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of elements in pCategories (same as in pState array).
+        const zes_ras_error_category_exp_t* pCategories,///< [in][range(0, count)] Array of RAS error categories to query.
+        zes_ras_state_exp2_t* pState                    ///< [out][range(0, count)] Array of RAS error states. Caller must
+                                                        ///< initialize stype and pNext for each element.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetStateExp2 = context.zesDdiTable.RasExp.pfnGetStateExp2;
+        if( nullptr != pfnGetStateExp2 )
+        {
+            result = pfnGetStateExp2( hRas, count, pCategories, pState );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasGetStateExp2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        zes_ras_config_exp_t* pConfig                   ///< [in,out][range(0, count)] array of RAS configuration structures.
+                                                        ///< The caller should set the category field for each entry to specify
+                                                        ///< which categories to query.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetConfigExp = context.zesDdiTable.RasExp.pfnGetConfigExp;
+        if( nullptr != pfnGetConfigExp )
+        {
+            result = pfnGetConfigExp( hRas, count, pConfig );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasGetConfigExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasSetConfigExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasSetConfigExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        const uint32_t count,                           ///< [in] Number of RAS configuration structures in pConfig array.
+        const zes_ras_config_exp_t* pConfig             ///< [in][range(0, count)] array of RAS configuration structures specifying
+                                                        ///< thresholds for different error categories.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetConfigExp = context.zesDdiTable.RasExp.pfnSetConfigExp;
+        if( nullptr != pfnSetConfigExp )
+        {
+            result = pfnSetConfigExp( hRas, count, pConfig );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesRasSetConfigExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -4614,7 +4818,9 @@ zesGetGlobalProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnInit                                   = driver::zesInit;
+    }
 
     return result;
 }
@@ -4641,81 +4847,157 @@ zesGetDeviceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesDeviceGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesDeviceGetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReset                                  = driver::zesDeviceReset;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnProcessesGetState                      = driver::zesDeviceProcessesGetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnPciGetProperties                       = driver::zesDevicePciGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnPciGetState                            = driver::zesDevicePciGetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnPciGetBars                             = driver::zesDevicePciGetBars;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnPciGetStats                            = driver::zesDevicePciGetStats;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumDiagnosticTestSuites               = driver::zesDeviceEnumDiagnosticTestSuites;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumEngineGroups                       = driver::zesDeviceEnumEngineGroups;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEventRegister                          = driver::zesDeviceEventRegister;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumFabricPorts                        = driver::zesDeviceEnumFabricPorts;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumFans                               = driver::zesDeviceEnumFans;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumFirmwares                          = driver::zesDeviceEnumFirmwares;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumFrequencyDomains                   = driver::zesDeviceEnumFrequencyDomains;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumLeds                               = driver::zesDeviceEnumLeds;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumMemoryModules                      = driver::zesDeviceEnumMemoryModules;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumPerformanceFactorDomains           = driver::zesDeviceEnumPerformanceFactorDomains;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumPowerDomains                       = driver::zesDeviceEnumPowerDomains;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetCardPowerDomain                     = driver::zesDeviceGetCardPowerDomain;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumPsus                               = driver::zesDeviceEnumPsus;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumRasErrorSets                       = driver::zesDeviceEnumRasErrorSets;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumSchedulers                         = driver::zesDeviceEnumSchedulers;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumStandbyDomains                     = driver::zesDeviceEnumStandbyDomains;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEnumTemperatureSensors                 = driver::zesDeviceEnumTemperatureSensors;
+    }
 
+    if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnPciLinkSpeedUpdateExt                  = driver::zesDevicePciLinkSpeedUpdateExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnEccAvailable                           = driver::zesDeviceEccAvailable;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnEccConfigurable                        = driver::zesDeviceEccConfigurable;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetEccState                            = driver::zesDeviceGetEccState;
+    }
 
+    if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnSetEccState                            = driver::zesDeviceSetEccState;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGet                                    = driver::zesDeviceGet;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnSetOverclockWaiver                     = driver::zesDeviceSetOverclockWaiver;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetOverclockDomains                    = driver::zesDeviceGetOverclockDomains;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetOverclockControls                   = driver::zesDeviceGetOverclockControls;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnResetOverclockSettings                 = driver::zesDeviceResetOverclockSettings;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnReadOverclockState                     = driver::zesDeviceReadOverclockState;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnEnumOverclockDomains                   = driver::zesDeviceEnumOverclockDomains;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnResetExt                               = driver::zesDeviceResetExt;
+    }
 
     return result;
 }
@@ -4742,11 +5024,17 @@ zesGetDeviceExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnEnumEnabledVFExp                       = driver::zesDeviceEnumEnabledVFExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetSubDevicePropertiesExp              = driver::zesDeviceGetSubDevicePropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnEnumActiveVFExp                        = driver::zesDeviceEnumActiveVFExp;
+    }
 
     return result;
 }
@@ -4773,15 +5061,25 @@ zesGetDriverProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnEventListen                            = driver::zesDriverEventListen;
+    }
 
+    if (version >= ZE_API_VERSION_1_1) {
     pDdiTable->pfnEventListenEx                          = driver::zesDriverEventListenEx;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGet                                    = driver::zesDriverGet;
+    }
 
+    if (version >= ZE_API_VERSION_1_8) {
     pDdiTable->pfnGetExtensionProperties                 = driver::zesDriverGetExtensionProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_8) {
     pDdiTable->pfnGetExtensionFunctionAddress            = driver::zesDriverGetExtensionFunctionAddress;
+    }
 
     return result;
 }
@@ -4808,7 +5106,9 @@ zesGetDriverExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetDeviceByUuidExp                     = driver::zesDriverGetDeviceByUuidExp;
+    }
 
     return result;
 }
@@ -4835,11 +5135,17 @@ zesGetDiagnosticsProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesDiagnosticsGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetTests                               = driver::zesDiagnosticsGetTests;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnRunTests                               = driver::zesDiagnosticsRunTests;
+    }
 
     return result;
 }
@@ -4866,11 +5172,17 @@ zesGetEngineProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesEngineGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetActivity                            = driver::zesEngineGetActivity;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetActivityExt                         = driver::zesEngineGetActivityExt;
+    }
 
     return result;
 }
@@ -4897,21 +5209,37 @@ zesGetFabricPortProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesFabricPortGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetLinkType                            = driver::zesFabricPortGetLinkType;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetConfig                              = driver::zesFabricPortGetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetConfig                              = driver::zesFabricPortSetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesFabricPortGetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetThroughput                          = driver::zesFabricPortGetThroughput;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetFabricErrorCounters                 = driver::zesFabricPortGetFabricErrorCounters;
+    }
 
+    if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetMultiPortThroughput                 = driver::zesFabricPortGetMultiPortThroughput;
+    }
 
     return result;
 }
@@ -4938,17 +5266,29 @@ zesGetFanProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesFanGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetConfig                              = driver::zesFanGetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetDefaultMode                         = driver::zesFanSetDefaultMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetFixedSpeedMode                      = driver::zesFanSetFixedSpeedMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetSpeedTableMode                      = driver::zesFanSetSpeedTableMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesFanGetState;
+    }
 
     return result;
 }
@@ -4975,13 +5315,21 @@ zesGetFirmwareProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesFirmwareGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnFlash                                  = driver::zesFirmwareFlash;
+    }
 
+    if (version >= ZE_API_VERSION_1_8) {
     pDdiTable->pfnGetFlashProgress                       = driver::zesFirmwareGetFlashProgress;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetConsoleLogs                         = driver::zesFirmwareGetConsoleLogs;
+    }
 
     return result;
 }
@@ -5008,9 +5356,13 @@ zesGetFirmwareExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetSecurityVersionExp                  = driver::zesFirmwareGetSecurityVersionExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnSetSecurityVersionExp                  = driver::zesFirmwareSetSecurityVersionExp;
+    }
 
     return result;
 }
@@ -5037,39 +5389,73 @@ zesGetFrequencyProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesFrequencyGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetAvailableClocks                     = driver::zesFrequencyGetAvailableClocks;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetRange                               = driver::zesFrequencyGetRange;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetRange                               = driver::zesFrequencySetRange;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesFrequencyGetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetThrottleTime                        = driver::zesFrequencyGetThrottleTime;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcGetCapabilities                      = driver::zesFrequencyOcGetCapabilities;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcGetFrequencyTarget                   = driver::zesFrequencyOcGetFrequencyTarget;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcSetFrequencyTarget                   = driver::zesFrequencyOcSetFrequencyTarget;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcGetVoltageTarget                     = driver::zesFrequencyOcGetVoltageTarget;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcSetVoltageTarget                     = driver::zesFrequencyOcSetVoltageTarget;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcSetMode                              = driver::zesFrequencyOcSetMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcGetMode                              = driver::zesFrequencyOcGetMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcGetIccMax                            = driver::zesFrequencyOcGetIccMax;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcSetIccMax                            = driver::zesFrequencyOcSetIccMax;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcGetTjMax                             = driver::zesFrequencyOcGetTjMax;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOcSetTjMax                             = driver::zesFrequencyOcSetTjMax;
+    }
 
     return result;
 }
@@ -5096,13 +5482,21 @@ zesGetLedProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesLedGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesLedGetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetState                               = driver::zesLedSetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetColor                               = driver::zesLedSetColor;
+    }
 
     return result;
 }
@@ -5129,11 +5523,17 @@ zesGetMemoryProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesMemoryGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesMemoryGetState;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetBandwidth                           = driver::zesMemoryGetBandwidth;
+    }
 
     return result;
 }
@@ -5160,23 +5560,41 @@ zesGetOverclockProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetDomainProperties                    = driver::zesOverclockGetDomainProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetDomainVFProperties                  = driver::zesOverclockGetDomainVFProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetDomainControlProperties             = driver::zesOverclockGetDomainControlProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetControlCurrentValue                 = driver::zesOverclockGetControlCurrentValue;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetControlPendingValue                 = driver::zesOverclockGetControlPendingValue;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnSetControlUserValue                    = driver::zesOverclockSetControlUserValue;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetControlState                        = driver::zesOverclockGetControlState;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetVFPointValues                       = driver::zesOverclockGetVFPointValues;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnSetVFPointValues                       = driver::zesOverclockSetVFPointValues;
+    }
 
     return result;
 }
@@ -5203,11 +5621,17 @@ zesGetPerformanceFactorProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesPerformanceFactorGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetConfig                              = driver::zesPerformanceFactorGetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetConfig                              = driver::zesPerformanceFactorSetConfig;
+    }
 
     return result;
 }
@@ -5234,21 +5658,49 @@ zesGetPowerProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesPowerGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetEnergyCounter                       = driver::zesPowerGetEnergyCounter;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetLimits                              = driver::zesPowerGetLimits;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetLimits                              = driver::zesPowerSetLimits;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetEnergyThreshold                     = driver::zesPowerGetEnergyThreshold;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetEnergyThreshold                     = driver::zesPowerSetEnergyThreshold;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetLimitsExt                           = driver::zesPowerGetLimitsExt;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetLimitsExt                           = driver::zesPowerSetLimitsExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnGetUsage                               = driver::zesPowerGetUsage;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnGetLimitsExt2                          = driver::zesPowerGetLimitsExt2;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnSetLimitsExt2                          = driver::zesPowerSetLimitsExt2;
+    }
 
     return result;
 }
@@ -5275,9 +5727,13 @@ zesGetPsuProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesPsuGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesPsuGetState;
+    }
 
     return result;
 }
@@ -5304,13 +5760,21 @@ zesGetRasProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesRasGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetConfig                              = driver::zesRasGetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetConfig                              = driver::zesRasSetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesRasGetState;
+    }
 
     return result;
 }
@@ -5337,9 +5801,29 @@ zesGetRasExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetStateExp                            = driver::zesRasGetStateExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnClearStateExp                          = driver::zesRasClearStateExp;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnGetSupportedCategoriesExp              = driver::zesRasGetSupportedCategoriesExp;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnGetStateExp2                           = driver::zesRasGetStateExp2;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnGetConfigExp                           = driver::zesRasGetConfigExp;
+    }
+
+    if (version >= ZE_API_VERSION_1_16) {
+    pDdiTable->pfnSetConfigExp                           = driver::zesRasSetConfigExp;
+    }
 
     return result;
 }
@@ -5366,21 +5850,37 @@ zesGetSchedulerProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesSchedulerGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetCurrentMode                         = driver::zesSchedulerGetCurrentMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetTimeoutModeProperties               = driver::zesSchedulerGetTimeoutModeProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetTimesliceModeProperties             = driver::zesSchedulerGetTimesliceModeProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetTimeoutMode                         = driver::zesSchedulerSetTimeoutMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetTimesliceMode                       = driver::zesSchedulerSetTimesliceMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetExclusiveMode                       = driver::zesSchedulerSetExclusiveMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetComputeUnitDebugMode                = driver::zesSchedulerSetComputeUnitDebugMode;
+    }
 
     return result;
 }
@@ -5407,11 +5907,17 @@ zesGetStandbyProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesStandbyGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetMode                                = driver::zesStandbyGetMode;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetMode                                = driver::zesStandbySetMode;
+    }
 
     return result;
 }
@@ -5438,13 +5944,21 @@ zesGetTemperatureProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zesTemperatureGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetConfig                              = driver::zesTemperatureGetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetConfig                              = driver::zesTemperatureSetConfig;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetState                               = driver::zesTemperatureGetState;
+    }
 
     return result;
 }
@@ -5471,23 +5985,41 @@ zesGetVFManagementExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnGetVFCapabilitiesExp                   = driver::zesVFManagementGetVFCapabilitiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnGetVFMemoryUtilizationExp2             = driver::zesVFManagementGetVFMemoryUtilizationExp2;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnGetVFEngineUtilizationExp2             = driver::zesVFManagementGetVFEngineUtilizationExp2;
+    }
 
+    if (version >= ZE_API_VERSION_1_12) {
     pDdiTable->pfnGetVFCapabilitiesExp2                  = driver::zesVFManagementGetVFCapabilitiesExp2;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetVFPropertiesExp                     = driver::zesVFManagementGetVFPropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetVFMemoryUtilizationExp              = driver::zesVFManagementGetVFMemoryUtilizationExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetVFEngineUtilizationExp              = driver::zesVFManagementGetVFEngineUtilizationExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnSetVFTelemetryModeExp                  = driver::zesVFManagementSetVFTelemetryModeExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnSetVFTelemetrySamplingIntervalExp      = driver::zesVFManagementSetVFTelemetrySamplingIntervalExp;
+    }
 
     return result;
 }

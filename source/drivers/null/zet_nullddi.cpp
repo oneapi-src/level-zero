@@ -738,13 +738,17 @@ namespace driver
         zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
         uint32_t maxReportCount,                        ///< [in] the maximum number of reports the application wants to receive.
                                                         ///< if `UINT32_MAX`, then function will retrieve all reports available
-        size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
-                                                        ///< if size is zero, then the driver will update the value with the total
-                                                        ///< size in bytes needed for all reports available.
-                                                        ///< if size is non-zero, then driver will only retrieve the number of
-                                                        ///< reports that fit into the buffer.
-                                                        ///< if size is larger than size needed for all reports, then driver will
-                                                        ///< update the value with the actual size needed.
+        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                        ///< number of bytes written into the buffer.
+                                                        ///< If the size returns the full size requested, the application may need
+                                                        ///< to issue additional reads to
+                                                        ///< retrieve any remaining reports that did not fit into the buffer.
+                                                        ///< @deprecated: The behavior of passing in zero size and the function
+                                                        ///< returning the required size is deprecated,
+                                                        ///<             for now it returns only the maximum buffer size regardless
+                                                        ///< of how much data there is available to be read.
         uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing streamer
                                                         ///< reports in raw format
         )
@@ -1358,13 +1362,13 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricTracerReadDataExp(
         zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
-                                                        ///< if size is zero, then the driver will update the value with the total
-                                                        ///< size in bytes needed for all data available.
-                                                        ///< if size is non-zero, then driver will only retrieve that amount of
-                                                        ///< data. 
-                                                        ///< if size is larger than size needed for all data, then driver will
-                                                        ///< update the value with the actual size needed.
+        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                        ///< number of bytes written into the buffer.
+                                                        ///< If the size returns the full size requested, the application may need
+                                                        ///< to issue additional reads to
+                                                        ///< retrieve any remaining reports that did not fit into the buffer.
         uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
                                                         ///< data in raw format
         )
@@ -2264,11 +2268,17 @@ zetGetMetricDecoderExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnCreateExp                              = driver::zetMetricDecoderCreateExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnDestroyExp                             = driver::zetMetricDecoderDestroyExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnGetDecodableMetricsExp                 = driver::zetMetricDecoderGetDecodableMetricsExp;
+    }
 
     return result;
 }
@@ -2295,13 +2305,21 @@ zetGetMetricProgrammableExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetExp                                 = driver::zetMetricProgrammableGetExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetPropertiesExp                       = driver::zetMetricProgrammableGetPropertiesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetParamInfoExp                        = driver::zetMetricProgrammableGetParamInfoExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnGetParamValueInfoExp                   = driver::zetMetricProgrammableGetParamValueInfoExp;
+    }
 
     return result;
 }
@@ -2328,17 +2346,29 @@ zetGetMetricTracerExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnCreateExp                              = driver::zetMetricTracerCreateExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnDestroyExp                             = driver::zetMetricTracerDestroyExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnEnableExp                              = driver::zetMetricTracerEnableExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnDisableExp                             = driver::zetMetricTracerDisableExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnReadDataExp                            = driver::zetMetricTracerReadDataExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnDecodeExp                              = driver::zetMetricTracerDecodeExp;
+    }
 
     return result;
 }
@@ -2365,7 +2395,9 @@ zetGetDeviceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetDebugProperties                     = driver::zetDeviceGetDebugProperties;
+    }
 
     return result;
 }
@@ -2392,13 +2424,21 @@ zetGetDeviceExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnGetConcurrentMetricGroupsExp           = driver::zetDeviceGetConcurrentMetricGroupsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnCreateMetricGroupsFromMetricsExp       = driver::zetDeviceCreateMetricGroupsFromMetricsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnEnableMetricsExp                       = driver::zetDeviceEnableMetricsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnDisableMetricsExp                      = driver::zetDeviceDisableMetricsExp;
+    }
 
     return result;
 }
@@ -2425,7 +2465,9 @@ zetGetContextProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnActivateMetricGroups                   = driver::zetContextActivateMetricGroups;
+    }
 
     return result;
 }
@@ -2452,13 +2494,21 @@ zetGetCommandListProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMetricStreamerMarker             = driver::zetCommandListAppendMetricStreamerMarker;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMetricQueryBegin                 = driver::zetCommandListAppendMetricQueryBegin;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMetricQueryEnd                   = driver::zetCommandListAppendMetricQueryEnd;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAppendMetricMemoryBarrier              = driver::zetCommandListAppendMetricMemoryBarrier;
+    }
 
     return result;
 }
@@ -2485,7 +2535,9 @@ zetGetCommandListExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_13) {
     pDdiTable->pfnAppendMarkerExp                        = driver::zetCommandListAppendMarkerExp;
+    }
 
     return result;
 }
@@ -2512,7 +2564,9 @@ zetGetKernelProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProfileInfo                         = driver::zetKernelGetProfileInfo;
+    }
 
     return result;
 }
@@ -2539,7 +2593,9 @@ zetGetModuleProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetDebugInfo                           = driver::zetModuleGetDebugInfo;
+    }
 
     return result;
 }
@@ -2566,29 +2622,53 @@ zetGetDebugProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAttach                                 = driver::zetDebugAttach;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDetach                                 = driver::zetDebugDetach;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReadEvent                              = driver::zetDebugReadEvent;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnAcknowledgeEvent                       = driver::zetDebugAcknowledgeEvent;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnInterrupt                              = driver::zetDebugInterrupt;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnResume                                 = driver::zetDebugResume;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReadMemory                             = driver::zetDebugReadMemory;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnWriteMemory                            = driver::zetDebugWriteMemory;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetRegisterSetProperties               = driver::zetDebugGetRegisterSetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReadRegisters                          = driver::zetDebugReadRegisters;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnWriteRegisters                         = driver::zetDebugWriteRegisters;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetThreadRegisterSetProperties         = driver::zetDebugGetThreadRegisterSetProperties;
+    }
 
     return result;
 }
@@ -2615,9 +2695,13 @@ zetGetMetricProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGet                                    = driver::zetMetricGet;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zetMetricGetProperties;
+    }
 
     return result;
 }
@@ -2644,11 +2728,17 @@ zetGetMetricExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_11) {
     pDdiTable->pfnCreateFromProgrammableExp2             = driver::zetMetricCreateFromProgrammableExp2;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnCreateFromProgrammableExp              = driver::zetMetricCreateFromProgrammableExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnDestroyExp                             = driver::zetMetricDestroyExp;
+    }
 
     return result;
 }
@@ -2675,11 +2765,17 @@ zetGetMetricGroupProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGet                                    = driver::zetMetricGroupGet;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetProperties                          = driver::zetMetricGroupGetProperties;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCalculateMetricValues                  = driver::zetMetricGroupCalculateMetricValues;
+    }
 
     return result;
 }
@@ -2706,23 +2802,41 @@ zetGetMetricGroupExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnCalculateMultipleMetricValuesExp       = driver::zetMetricGroupCalculateMultipleMetricValuesExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_5) {
     pDdiTable->pfnGetGlobalTimestampsExp                 = driver::zetMetricGroupGetGlobalTimestampsExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnGetExportDataExp                       = driver::zetMetricGroupGetExportDataExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_6) {
     pDdiTable->pfnCalculateMetricExportDataExp           = driver::zetMetricGroupCalculateMetricExportDataExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnCreateExp                              = driver::zetMetricGroupCreateExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnAddMetricExp                           = driver::zetMetricGroupAddMetricExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnRemoveMetricExp                        = driver::zetMetricGroupRemoveMetricExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnCloseExp                               = driver::zetMetricGroupCloseExp;
+    }
 
+    if (version >= ZE_API_VERSION_1_9) {
     pDdiTable->pfnDestroyExp                             = driver::zetMetricGroupDestroyExp;
+    }
 
     return result;
 }
@@ -2749,13 +2863,21 @@ zetGetMetricQueryProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zetMetricQueryCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zetMetricQueryDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReset                                  = driver::zetMetricQueryReset;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnGetData                                = driver::zetMetricQueryGetData;
+    }
 
     return result;
 }
@@ -2782,9 +2904,13 @@ zetGetMetricQueryPoolProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zetMetricQueryPoolCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zetMetricQueryPoolDestroy;
+    }
 
     return result;
 }
@@ -2811,11 +2937,17 @@ zetGetMetricStreamerProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnOpen                                   = driver::zetMetricStreamerOpen;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnClose                                  = driver::zetMetricStreamerClose;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnReadData                               = driver::zetMetricStreamerReadData;
+    }
 
     return result;
 }
@@ -2842,15 +2974,25 @@ zetGetTracerExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnCreate                                 = driver::zetTracerExpCreate;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnDestroy                                = driver::zetTracerExpDestroy;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetPrologues                           = driver::zetTracerExpSetPrologues;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetEpilogues                           = driver::zetTracerExpSetEpilogues;
+    }
 
+    if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSetEnabled                             = driver::zetTracerExpSetEnabled;
+    }
 
     return result;
 }
