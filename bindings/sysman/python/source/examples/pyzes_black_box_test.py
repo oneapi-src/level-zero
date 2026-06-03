@@ -475,9 +475,9 @@ def test_global_operation(driver_handle, device_handle, device_index):
 
                 # Initialize each structure
                 for i in range(subdevice_count.value):
-                    subdevice_props[
-                        i
-                    ].stype = pz.ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES
+                    subdevice_props[i].stype = (
+                        pz.ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES
+                    )
                     subdevice_props[i].pNext = None
 
                 # Second call to get properties
@@ -952,9 +952,9 @@ def test_power_module(device_handle, device_index):
             limit_descs = PowerLimitArray()
 
             for limit_index in range(limit_count.value):
-                limit_descs[
-                    limit_index
-                ].stype = pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+                limit_descs[limit_index].stype = (
+                    pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+                )
                 limit_descs[limit_index].pNext = None
 
             rc = pz.zesPowerGetLimitsExt(
