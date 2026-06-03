@@ -970,3 +970,89 @@ TEST(
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueDestroy(commandQueue));
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Handle Lifetime Tests
+//
+// These tests validate the ZE_ENABLE_HANDLE_LIFETIME feature of the validation
+// layer. Handle lifetime tracking registers handles when they are created and
+// validates them on every subsequent API call, returning
+// ZE_RESULT_ERROR_INVALID_NULL_HANDLE for any unregistered handle.
+//
+// The tests are run as separate CTest invocations with the environment:
+//   ZE_ENABLE_VALIDATION_LAYER=1
+//   ZE_ENABLE_HANDLE_LIFETIME=1
+//   ZE_ENABLE_NULL_DRIVER=1
+
+// Regression test: driver handles obtained via zeInitDrivers must be registered
+// in the handle lifetime tracker so that subsequent API calls succeed.
+// Before the fix, zeInitDrivers had no handle-registration epilogue (unlike
+// zeDriverGet), causing zeDeviceGet to return ZE_RESULT_ERROR_INVALID_NULL_HANDLE.
+TEST(
+    HandleLifetimeValidation,
+    GivenHandleLifetimeEnabledWhenCallingzeDeviceGetWithDriverHandleFromzeInitDriversThenSucceeds) {
+
+    ze_init_driver_type_desc_t driverTypeDesc = {};
+    driverTypeDesc.stype = ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC;
+    driverTypeDesc.pNext = nullptr;
+    driverTypeDesc.flags = UINT32_MAX;
+
+    uint32_t count = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&count, nullptr, &driverTypeDesc));
+    EXPECT_GT(count, 0);
+
+    std::vector<ze_driver_handle_t> drivers(count);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&count, drivers.data(), &driverTypeDesc));
+
+    // Regression: driver handles from zeInitDrivers must be registered with the
+    // handle lifetime tracker so that zeDeviceGet does not fail with
+    // ZE_RESULT_ERROR_INVALID_NULL_HANDLE.
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+}
+
+// Verify that driver handles obtained via zeDriverGet are registered correctly
+// and can be used with zeDeviceGet when handle lifetime tracking is enabled.
+TEST(
+    HandleLifetimeValidation,
+    GivenHandleLifetimeEnabledWhenCallingzeDeviceGetWithDriverHandleFromzeDriverGetThenSucceeds) {
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+}
+
+// Verify that calling an API with a null (unregistered) handle returns
+// ZE_RESULT_ERROR_INVALID_NULL_HANDLE when handle lifetime tracking is enabled.
+TEST(
+    HandleLifetimeValidation,
+    GivenHandleLifetimeEnabledWhenCallingzeDeviceGetWithNullDriverHandleThenReturnsInvalidHandle) {
+
+    ze_init_driver_type_desc_t driverTypeDesc = {};
+    driverTypeDesc.stype = ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC;
+    driverTypeDesc.pNext = nullptr;
+    driverTypeDesc.flags = UINT32_MAX;
+
+    uint32_t count = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&count, nullptr, &driverTypeDesc));
+
+    // A null handle is never registered; the handle lifetime checker must reject it.
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_HANDLE, zeDeviceGet(nullptr, &deviceCount, nullptr));
+}
