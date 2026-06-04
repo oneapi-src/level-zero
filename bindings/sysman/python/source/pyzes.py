@@ -153,7 +153,7 @@ class zes_engine_handle_t(c_void_p):
 
 ##
 
-ze_bool_t = c_uint32
+ze_bool_t = c_uint8
 ze_device_property_flags_t = c_uint32
 zes_engine_type_flags_t = c_uint32
 zes_device_property_flags_t = c_uint32
@@ -240,6 +240,9 @@ ZES_FREQ_THROTTLE_REASON_FLAG_THERMAL_LIMIT = 1 << 3
 ZES_FREQ_THROTTLE_REASON_FLAG_PSU_ALERT = 1 << 4
 ZES_FREQ_THROTTLE_REASON_FLAG_SW_RANGE = 1 << 5
 ZES_FREQ_THROTTLE_REASON_FLAG_HW_RANGE = 1 << 6
+ZES_FREQ_THROTTLE_REASON_FLAG_VOLTAGE = 1 << 7
+ZES_FREQ_THROTTLE_REASON_FLAG_THERMAL = 1 << 8
+ZES_FREQ_THROTTLE_REASON_FLAG_POWER = 1 << 9
 ZES_FREQ_THROTTLE_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
 
 ## Temperature sensor enums ##
@@ -250,6 +253,9 @@ ZES_TEMP_SENSORS_MEMORY = 2
 ZES_TEMP_SENSORS_GLOBAL_MIN = 3
 ZES_TEMP_SENSORS_GPU_MIN = 4
 ZES_TEMP_SENSORS_MEMORY_MIN = 5
+ZES_TEMP_SENSORS_GPU_BOARD = 6
+ZES_TEMP_SENSORS_GPU_BOARD_MIN = 7
+ZES_TEMP_SENSORS_VOLTAGE_REGULATOR = 8
 ZES_TEMP_SENSORS_FORCE_UINT32 = 0x7FFFFFFF
 
 ## Engine type enums ##
@@ -334,14 +340,17 @@ ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
 
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
+ZES_STRUCTURE_TYPE_PROCESS_STATE = 0x16
 ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES = 0x2D  # from zes_structure_type_t
-ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES = 0x2E  # Experimental subdevice properties
+ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES = (
+    0x00020004  # Experimental subdevice properties
+)
 ZES_STRUCTURE_TYPE_MEM_PROPERTIES = 0xB
 ZES_STRUCTURE_TYPE_MEM_STATE = 0x1E
 ZES_STRUCTURE_TYPE_FREQ_PROPERTIES = 0x9
 ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
-ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0xA
-ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x1C
+ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
+ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
 
 
@@ -396,14 +405,14 @@ class zes_device_properties_t(_PrintableStructure):
 ## Sysman zes_process_state_t ##
 class zes_process_state_t(_PrintableStructure):
     _fields_ = [
-        ("pid", c_uint32),
-        ("command", c_char * ZES_STRING_PROPERTY_SIZE),
-        ("memSize", c_uint64),  # in bytes
-        ("sharedMemSize", c_uint64),  # in bytes
-        ("engineType", zes_engine_type_flags_t),
-        ("subdeviceId", c_uint32),
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("processId", c_uint32),
+        ("memSize", c_uint64),
+        ("sharedSize", c_uint64),
+        ("engines", zes_engine_type_flags_t),
     ]
-    _fmt_ = {"memSize": "%d bytes", "sharedMemSize": "%d bytes"}
+    _fmt_ = {"memSize": "%d bytes", "sharedSize": "%d bytes"}
 
 
 ## Sysman zes_uuid_t ##
@@ -524,15 +533,23 @@ class zes_temp_properties_t(_PrintableStructure):
     _fmt_ = {"maxTemperature": "%.1f °C"}
 
 
+class zes_temp_threshold_t(_PrintableStructure):
+    _fields_ = [
+        ("enableLowToHigh", ze_bool_t),
+        ("enableHighToLow", ze_bool_t),
+        ("threshold", c_double),
+    ]
+    _fmt_ = {"threshold": "%.1f °C"}
+
+
 class zes_temp_config_t(_PrintableStructure):
     _fields_ = [
         ("stype", c_int32),  # ZES_STRUCTURE_TYPE_TEMP_CONFIG
         ("pNext", c_void_p),
         ("enableCritical", ze_bool_t),  # enable critical temperature event
-        ("threshold1", c_double),  # threshold 1 in degrees Celsius
-        ("threshold2", c_double),  # threshold 2 in degrees Celsius
+        ("threshold1", zes_temp_threshold_t),
+        ("threshold2", zes_temp_threshold_t),
     ]
-    _fmt_ = {"threshold1": "%.1f °C", "threshold2": "%.1f °C"}
 
 
 ## Engine structures ##

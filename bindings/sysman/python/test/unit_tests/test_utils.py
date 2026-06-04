@@ -32,8 +32,8 @@ class TestUtilsInfrastructure(unittest.TestCase):
         # Test _PrintableStructure string formatting functionality
         temp_state = self.pyzes.zes_temp_config_t()
         temp_state.enableCritical = True
-        temp_state.threshold1 = 75.0
-        temp_state.threshold2 = 80.0
+        temp_state.threshold1.threshold = 75.0
+        temp_state.threshold2.threshold = 80.0
 
         # Test string representation functionality
         str_repr = str(temp_state)
