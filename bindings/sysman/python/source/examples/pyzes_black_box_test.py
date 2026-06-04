@@ -1052,7 +1052,7 @@ def test_power_module(device_handle, device_index):
         if not check_rc(f"zesPowerSetLimitsExt(power {i})", rc):
             return False
 
-        print_verbose(f"    Set power limit successfully")
+        print_verbose("    Set power limit successfully")
 
     return True
 
