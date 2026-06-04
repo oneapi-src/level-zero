@@ -73,6 +73,61 @@ class TestPowerFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesPowerGetEnergyCounter")
         mock_func.assert_called_once()
 
+    def test_GivenValidPowerHandleWhenCallingZesPowerGetPropertiesThenCallSucceedsWithDomainData(
+        self, mock_get_func
+    ):
+        def mock_get_properties(power_handle, properties_ptr):
+            properties = properties_ptr._obj
+            properties.onSubdevice = 1
+            properties.subdeviceId = 3
+            properties.canControl = 1
+            properties.isEnergyThresholdSupported = 1
+            properties.defaultLimit = 250000
+            properties.minLimit = 150000
+            properties.maxLimit = 300000
+
+            ext_properties_ptr = cast(
+                properties.pNext, POINTER(self.pyzes.zes_power_ext_properties_t)
+            )
+            ext_properties_ptr.contents.domain = self.pyzes.ZES_POWER_DOMAIN_GPU
+            ext_properties_ptr.contents.defaultLimit.contents.level = (
+                self.pyzes.ZES_POWER_LEVEL_SUSTAINED
+            )
+            ext_properties_ptr.contents.defaultLimit.contents.limit = 250000
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_get_func.return_value = mock_func
+
+        power_handle = self.pyzes.zes_pwr_handle_t()
+        default_limit = self.pyzes.zes_power_limit_ext_desc_t()
+        ext_properties = self.pyzes.zes_power_ext_properties_t()
+        ext_properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
+        ext_properties.defaultLimit = pointer(default_limit)
+
+        properties = self.pyzes.zes_power_properties_t()
+        properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_POWER_PROPERTIES
+        properties.pNext = cast(pointer(ext_properties), c_void_p)
+
+        result = self.pyzes.zesPowerGetProperties(power_handle, byref(properties))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(properties.onSubdevice, 1)
+        self.assertEqual(properties.subdeviceId, 3)
+        self.assertEqual(properties.canControl, 1)
+        self.assertEqual(properties.isEnergyThresholdSupported, 1)
+        self.assertEqual(properties.defaultLimit, 250000)
+        self.assertEqual(properties.minLimit, 150000)
+        self.assertEqual(properties.maxLimit, 300000)
+        self.assertEqual(ext_properties.domain, self.pyzes.ZES_POWER_DOMAIN_GPU)
+        self.assertEqual(
+            ext_properties.defaultLimit.contents.level,
+            self.pyzes.ZES_POWER_LEVEL_SUSTAINED,
+        )
+        self.assertEqual(ext_properties.defaultLimit.contents.limit, 250000)
+        mock_get_func.assert_called_with("zesPowerGetProperties")
+        mock_func.assert_called_once()
+
     def test_GivenValidPowerHandleWhenCallingZesPowerGetLimitsExtThenCallSucceedsWithDescriptors(
         self, mock_get_func
     ):

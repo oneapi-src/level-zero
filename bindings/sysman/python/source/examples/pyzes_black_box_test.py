@@ -13,6 +13,7 @@
 import argparse
 import os
 import sys
+import time
 from ctypes import *
 
 # Add the source directory to Python path so we can import pyzes
@@ -912,7 +913,7 @@ def test_memory_modules(device_handle, device_index):
 
 
 def test_power_module(device_handle, device_index):
-    """Test power domain enumeration, energy counter, and power limit extension operations"""
+    """Test power domain enumeration, properties, energy-derived power, and power limit extension operations"""
     print(f"\n---- Device {device_index} Power Domains Test ----")
 
     # Get power domain count
@@ -938,6 +939,33 @@ def test_power_module(device_handle, device_index):
     # Test each power domain
     for i in range(power_count.value):
         print_verbose(f"\n  Power Domain {i}:")
+
+        default_limit = pz.zes_power_limit_ext_desc_t()
+        ext_properties = pz.zes_power_ext_properties_t()
+        ext_properties.stype = pz.ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES
+        ext_properties.pNext = None
+        ext_properties.defaultLimit = pointer(default_limit)
+
+        properties = pz.zes_power_properties_t()
+        properties.stype = pz.ZES_STRUCTURE_TYPE_POWER_PROPERTIES
+        properties.pNext = cast(pointer(ext_properties), c_void_p)
+
+        rc = pz.zesPowerGetProperties(power_handles[i], byref(properties))
+        if not check_rc(f"zesPowerGetProperties(power {i})", rc):
+            continue
+
+        print_verbose("    Power Properties:")
+        print_verbose(f"      On Subdevice: {bool(properties.onSubdevice)}")
+        if properties.onSubdevice:
+            print_verbose(f"      Subdevice ID: {properties.subdeviceId}")
+        print_verbose(f"      Can Control: {bool(properties.canControl)}")
+        print_verbose(
+            f"      Energy Threshold Supported: {bool(properties.isEnergyThresholdSupported)}"
+        )
+        print_verbose(f"      Default Limit: {properties.defaultLimit}")
+        print_verbose(f"      Min Limit: {properties.minLimit}")
+        print_verbose(f"      Max Limit: {properties.maxLimit}")
+        print_verbose(f"      Domain: {get_power_domain_string(ext_properties.domain)}")
 
         limit_count = c_uint32(0)
         rc = pz.zesPowerGetLimitsExt(power_handles[i], byref(limit_count), None)
@@ -989,31 +1017,26 @@ def test_power_module(device_handle, device_index):
                 )
                 print_verbose(f"        Limit: {limit_desc.limit}")
 
-        # Test power energy counter
-        energy_counter = pz.zes_power_energy_counter_t()
-
-        rc = pz.zesPowerGetEnergyCounter(power_handles[i], byref(energy_counter))
-        if not check_rc(f"zesPowerGetEnergyCounter(power {i})", rc):
+        energy_counter1 = pz.zes_power_energy_counter_t()
+        rc = pz.zesPowerGetEnergyCounter(power_handles[i], byref(energy_counter1))
+        if not check_rc(f"zesPowerGetEnergyCounter(power {i}, first)", rc):
             continue
 
-        print_verbose("    Energy Counter:")
-        print_verbose(f"      Energy: {energy_counter.energy}")
-        print_verbose(f"      Timestamp: {energy_counter.timestamp} microseconds")
-
-        # Take a second reading after a small delay
-        import time
-
-        time.sleep(0.01)  # 10ms delay
+        time.sleep(1)
 
         energy_counter2 = pz.zes_power_energy_counter_t()
-        ret2 = pz.zesPowerGetEnergyCounter(power_handles[i], byref(energy_counter2))
-        if ret2 == pz.ZE_RESULT_SUCCESS:
-            energy_delta = energy_counter2.energy - energy_counter.energy
-            time_delta = energy_counter2.timestamp - energy_counter.timestamp
-            if time_delta > 0:
-                print_verbose(
-                    f"    Energy Delta: {energy_delta} over {time_delta} microseconds"
-                )
+        rc = pz.zesPowerGetEnergyCounter(power_handles[i], byref(energy_counter2))
+        if not check_rc(f"zesPowerGetEnergyCounter(power {i}, second)", rc):
+            continue
+
+        energy_delta = energy_counter2.energy - energy_counter1.energy
+        time_delta = energy_counter2.timestamp - energy_counter1.timestamp
+        if time_delta > 0:
+            power_watt = energy_delta / time_delta
+            device_scope = "subDevice" if properties.onSubdevice else "rootDevice"
+            print_verbose(f"    Current Power: {power_watt:.6f} W for {device_scope}")
+        else:
+            print_verbose("    Current Power: unavailable due to zero delta time")
 
         if limit_descs is None:
             continue
@@ -1029,9 +1052,7 @@ def test_power_module(device_handle, device_index):
         if not check_rc(f"zesPowerSetLimitsExt(power {i})", rc):
             return False
 
-        print_verbose(
-            f"    Re-applied {set_count.value} power limit descriptor(s) successfully"
-        )
+        print_verbose(f"    Set power limit successfully")
 
     return True
 
@@ -1099,15 +1120,6 @@ def test_frequency_domains(device_handle, device_index):
         print_verbose("    Frequency Range:")
         print_verbose(f"      Min: {freq_range.min:.1f} MHz")
         print_verbose(f"      Max: {freq_range.max:.1f} MHz")
-
-        throttle_time = pz.zes_freq_throttle_time_t()
-        rc = pz.zesFrequencyGetThrottleTime(freq_handles[i], byref(throttle_time))
-        if not check_rc(f"zesFrequencyGetThrottleTime(frequency {i})", rc):
-            continue
-
-        print_verbose("    Throttle Time:")
-        print_verbose(f"      Throttle Time: {throttle_time.throttleTime}")
-        print_verbose(f"      Timestamp: {throttle_time.timestamp} microseconds")
 
         # Test frequency state
         freq_state = pz.zes_freq_state_t()

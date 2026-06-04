@@ -355,6 +355,7 @@ ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
 ZES_STRUCTURE_TYPE_PCI_PROPERTIES = 0x2
+ZES_STRUCTURE_TYPE_POWER_PROPERTIES = 0xD
 ZES_STRUCTURE_TYPE_PCI_STATE = 0x17
 ZES_STRUCTURE_TYPE_DEVICE_ECC_DESC = 0x25
 ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES = 0x26
@@ -615,6 +616,20 @@ class zes_mem_bandwidth_t(_PrintableStructure):
 
 
 ## Power structures ##
+class zes_power_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("onSubdevice", ze_bool_t),
+        ("subdeviceId", c_uint32),
+        ("canControl", ze_bool_t),
+        ("isEnergyThresholdSupported", ze_bool_t),
+        ("defaultLimit", c_int32),
+        ("minLimit", c_int32),
+        ("maxLimit", c_int32),
+    ]
+
+
 class zes_power_limit_ext_desc_t(_PrintableStructure):
     _fields_ = [
         ("stype", c_int32),
@@ -1143,6 +1158,26 @@ def zesPowerGetEnergyCounter(hPower, pEnergy):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hPower, pEnergy)
+    return retVal
+
+
+def zesPowerGetProperties(hPower, pProperties):
+    """Wraps API:
+    ze_result_t zesPowerGetProperties(
+            zes_pwr_handle_t hPower,
+            zes_power_properties_t* pProperties)
+
+    Parameters:
+        hPower: power handle
+        pProperties: POINTER(zes_power_properties_t) - power properties structure to fill
+    Returns:
+        ze_result_t - return code only, power properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetProperties")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(zes_power_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pProperties)
     return retVal
 
 
