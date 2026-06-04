@@ -7748,6 +7748,15 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeInitDrivers(result, pCount, phDrivers, desc);
         }
 
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            for (size_t i = 0; ( nullptr != phDrivers) && (i < *pCount); ++i){
+                if (phDrivers[i]){
+                    context.handleLifetime->addHandle( phDrivers[i] );
+                    context.handleLifetime->addDependent( pCount, phDrivers[i] );
+                }
+            }
+        }
         return logAndPropagateResult_zeInitDrivers(driver_result, pCount, phDrivers, desc);
     }
 
