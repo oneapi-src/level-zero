@@ -67,7 +67,7 @@ def _LoadZeLibrary():
         # load the library
         libName = "ze_loader"
         if sys.platform.startswith("linux"):
-            libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
+            libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so"
         else:
             # Try multiple common locations for Windows Intel GPU drivers
             possible_paths = [
