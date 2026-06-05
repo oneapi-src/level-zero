@@ -1096,6 +1096,28 @@ def test_frequency_domains(device_handle, device_index):
     for i in range(freq_count.value):
         print_verbose(f"\n  Frequency Domain {i}:")
 
+        freq_properties = pz.zes_freq_properties_t()
+        freq_properties.stype = pz.ZES_STRUCTURE_TYPE_FREQ_PROPERTIES
+        freq_properties.pNext = None
+
+        rc = pz.zesFrequencyGetProperties(freq_handles[i], byref(freq_properties))
+        if not check_rc(f"zesFrequencyGetProperties(frequency {i})", rc):
+            continue
+
+        print_verbose("    Frequency Properties:")
+        print_verbose(
+            f"      Type: {get_frequency_domain_string(freq_properties.type)}"
+        )
+        print_verbose(f"      Can Control: {bool(freq_properties.canControl)}")
+        print_verbose(
+            "      Throttle Event Supported: "
+            f"{bool(freq_properties.isThrottleEventSupported)}"
+        )
+        print_verbose(f"      Minimum Frequency: {freq_properties.min:.1f} MHz")
+        print_verbose(f"      Maximum Frequency: {freq_properties.max:.1f} MHz")
+        if freq_properties.onSubdevice:
+            print_verbose(f"      Subdevice ID: {freq_properties.subdeviceId}")
+
         available_clock_count = c_uint32(0)
         rc = pz.zesFrequencyGetAvailableClocks(
             freq_handles[i], byref(available_clock_count), None

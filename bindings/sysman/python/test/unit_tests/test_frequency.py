@@ -50,6 +50,52 @@ class TestFrequencyFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesDeviceEnumFrequencyDomains")
         mock_func.assert_called_once()
 
+    def test_GivenValidFrequencyHandleWhenCallingZesFrequencyGetPropertiesThenCallSucceedsWithProperties(
+        self, mock_get_func
+    ):
+        mock_type = self.pyzes.ZES_FREQ_DOMAIN_GPU
+        mock_on_subdevice = True
+        mock_subdevice_id = 1
+        mock_can_control = True
+        mock_is_throttle_event_supported = True
+        mock_min = 300.0
+        mock_max = 1800.0
+
+        def mock_get_properties(frequency_handle, properties_ptr):
+            properties_ptr._obj.type = mock_type
+            properties_ptr._obj.onSubdevice = mock_on_subdevice
+            properties_ptr._obj.subdeviceId = mock_subdevice_id
+            properties_ptr._obj.canControl = mock_can_control
+            properties_ptr._obj.isThrottleEventSupported = (
+                mock_is_throttle_event_supported
+            )
+            properties_ptr._obj.min = mock_min
+            properties_ptr._obj.max = mock_max
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_get_func.return_value = mock_func
+
+        frequency_handle = self.pyzes.zes_freq_handle_t()
+        properties = self.pyzes.zes_freq_properties_t()
+
+        result = self.pyzes.zesFrequencyGetProperties(
+            frequency_handle, byref(properties)
+        )
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(properties.type, mock_type)
+        self.assertEqual(properties.onSubdevice, mock_on_subdevice)
+        self.assertEqual(properties.subdeviceId, mock_subdevice_id)
+        self.assertEqual(properties.canControl, mock_can_control)
+        self.assertEqual(
+            properties.isThrottleEventSupported, mock_is_throttle_event_supported
+        )
+        self.assertEqual(properties.min, mock_min)
+        self.assertEqual(properties.max, mock_max)
+        mock_get_func.assert_called_with("zesFrequencyGetProperties")
+        mock_func.assert_called_once()
+
     def test_GivenValidFrequencyHandleWhenCallingZesFrequencyGetStateThenCallSucceedsWithState(
         self, mock_get_func
     ):
