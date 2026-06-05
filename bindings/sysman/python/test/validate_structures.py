@@ -102,12 +102,13 @@ def parse_python_structure(
     fields = []
 
     # Parse line by line to handle nested parentheses like POINTER(...)
-    for line in fields_str.split('\n'):
+    for line in fields_str.split("\n"):
         # Match: ("field_name", field_type), with optional comment
-        field_match = re.match(r'\s*\(\s*"([^"]+)"\s*,\s*(.+?)\s*\)\s*,?\s*(?:#.*)?$', line)
+        pattern = r'\s*\(\s*"([^"]+)"\s*,\s*(.+?)\s*\)\s*,?\s*(?:#.*)?$'
+        field_match = re.match(pattern, line)
         if field_match:
             field_name = field_match.group(1)
-            field_type = field_match.group(2).strip().rstrip(',')
+            field_type = field_match.group(2).strip().rstrip(",")
             fields.append((field_name, field_type))
 
     return fields if fields else None
@@ -127,12 +128,13 @@ def normalize_c_type(c_type: str) -> str:
         python_base = C_TO_PYTHON_TYPE_MAP.get(base_type, base_type)
         return f"{python_base} * {size}"
 
-    # Handle pointers to custom structures: zes_power_limit_ext_desc_t* -> POINTER(zes_power_limit_ext_desc_t)
+    # Handle pointers to custom structures:
+    # e.g., zes_power_limit_ext_desc_t* -> POINTER(zes_power_limit_ext_desc_t)
     if c_type.endswith("*"):
         # Check if it's a mapped type first (like void*, const void*)
         if c_type in C_TO_PYTHON_TYPE_MAP:
             return C_TO_PYTHON_TYPE_MAP[c_type]
-        
+
         # Otherwise, it's a pointer to a custom type
         base_type = c_type[:-1].strip()  # Remove * and trailing spaces
         # Check if base type is in map (unlikely for pointers, but be safe)
@@ -163,7 +165,9 @@ def types_are_equivalent(type1: str, type2: str) -> bool:
 
 
 def compare_structures(
-    c_fields: List[Tuple[str, str]], py_fields: List[Tuple[str, str]], struct_name: str
+    c_fields: List[Tuple[str, str]],
+    py_fields: List[Tuple[str, str]],
+    struct_name: str,
 ) -> List[str]:
     """
     Compare C and Python structure fields.
@@ -194,18 +198,22 @@ def compare_structures(
 
         # Check field name
         if c_name != py_name:
-            errors.append(
-                f"Field {i}: name mismatch - C: '{c_name}' ({c_type}), Python: '{py_name}' ({py_type})"
+            msg = (
+                f"Field {i}: name mismatch - "
+                f"C: '{c_name}' ({c_type}), Python: '{py_name}' ({py_type})"
             )
-            # Skip type comparison when names don't match - they're different fields
+            errors.append(msg)
+            # Skip type comparison when names don't match
             continue
 
         # Check field type (only if names match)
         expected_type = normalize_c_type(c_type)
         if not types_are_equivalent(expected_type, py_type):
-            errors.append(
-                f"Field '{c_name}' (position {i}): type mismatch - C: '{c_type}' -> '{expected_type}', Python: '{py_type}'"
+            msg = (
+                f"Field '{c_name}' (position {i}): type mismatch - "
+                f"C: '{c_type}' -> '{expected_type}', Python: '{py_type}'"
             )
+            errors.append(msg)
 
     return errors
 
