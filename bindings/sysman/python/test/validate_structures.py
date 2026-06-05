@@ -101,13 +101,14 @@ def parse_python_structure(
     fields_str = match.group(1)
     fields = []
 
-    # Parse each field tuple
-    field_pattern = r'\(\s*"([^"]+)"\s*,\s*([^\)]+?)\s*\)'
-
-    for field_match in re.finditer(field_pattern, fields_str):
-        field_name = field_match.group(1).strip()
-        field_type = field_match.group(2).strip().rstrip(",")
-        fields.append((field_name, field_type))
+    # Parse line by line to handle nested parentheses like POINTER(...)
+    for line in fields_str.split('\n'):
+        # Match: ("field_name", field_type), with optional comment
+        field_match = re.match(r'\s*\(\s*"([^"]+)"\s*,\s*(.+?)\s*\)\s*,?\s*(?:#.*)?$', line)
+        if field_match:
+            field_name = field_match.group(1)
+            field_type = field_match.group(2).strip().rstrip(',')
+            fields.append((field_name, field_type))
 
     return fields if fields else None
 
@@ -125,6 +126,18 @@ def normalize_c_type(c_type: str) -> str:
         size = array_match.group(2)
         python_base = C_TO_PYTHON_TYPE_MAP.get(base_type, base_type)
         return f"{python_base} * {size}"
+
+    # Handle pointers to custom structures: zes_power_limit_ext_desc_t* -> POINTER(zes_power_limit_ext_desc_t)
+    if c_type.endswith("*"):
+        # Check if it's a mapped type first (like void*, const void*)
+        if c_type in C_TO_PYTHON_TYPE_MAP:
+            return C_TO_PYTHON_TYPE_MAP[c_type]
+        
+        # Otherwise, it's a pointer to a custom type
+        base_type = c_type[:-1].strip()  # Remove * and trailing spaces
+        # Check if base type is in map (unlikely for pointers, but be safe)
+        python_base = C_TO_PYTHON_TYPE_MAP.get(base_type, base_type)
+        return f"POINTER({python_base})"
 
     # Map type if in dictionary, otherwise keep as-is
     return C_TO_PYTHON_TYPE_MAP.get(c_type, c_type)
