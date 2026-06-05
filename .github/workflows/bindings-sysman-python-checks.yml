@@ -1,0 +1,99 @@
+##
+# Copyright (C) 2026 Intel Corporation
+#
+# SPDX-License-Identifier: MIT
+#
+##
+
+name: Python Bindings - Validation Checks
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'bindings/sysman/python/**'
+  push:
+    branches:
+      - main
+      - master
+      - python_bindings
+    paths:
+      - 'bindings/sysman/python/**'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.10'
+
+jobs:
+  validation-checks:
+    name: Validation Checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bindings/sysman/python
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies for Level-Zero loader build
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      - name: Build and install Level-Zero loader
+        working-directory: ${{ github.workspace }}
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr
+          cmake --build . --parallel $(nproc)
+          sudo cmake --build . --target install
+          sudo ldconfig
+
+      - name: Create virtual environment and install
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip --quiet
+          pip install -e . --quiet
+
+      - name: Run validation checks
+        run: |
+          source .venv/bin/activate
+          
+          # Check 1: Verify installation location
+          PYZES_LOCATION=$(python -c "import pyzes; print(pyzes.__file__ if hasattr(pyzes, '__file__') else 'N/A')")
+          if [[ ! "$PYZES_LOCATION" =~ "bindings/sysman/python/source" ]]; then
+            echo "❌ FAIL: pyzes is not loading from local source"
+            echo "Location: $PYZES_LOCATION"
+            exit 1
+          fi
+          
+          # Check 2: Test silent import (no stdout output)
+          OUTPUT=$(python -c "import pyzes" 2>/dev/null)
+          if [ -n "$OUTPUT" ]; then
+            echo "❌ FAIL: Import produced stdout output:"
+            echo "$OUTPUT"
+            echo ""
+            echo "The 'import pyzes' statement should not print anything to stdout."
+            echo "Please remove any print statements from the module initialization."
+            exit 1
+          fi
+          
+          # Check 3: Validate structure definitions match C headers
+          python test/validate_structures.py || {
+            echo ""
+            echo "Structure validation failed. Please ensure Python ctypes structures match the C headers."
+            exit 1
+          }
+          
+          echo "✅ All validation checks passed: Local installation verified, import is silent, structures validated"
