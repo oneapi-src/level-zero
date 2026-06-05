@@ -974,55 +974,60 @@ def test_power_module(device_handle, device_index):
         print_verbose(f"      Max Limit: {properties.maxLimit}")
         print_verbose(f"      Domain: {get_power_domain_string(ext_properties.domain)}")
 
-        limit_count = c_uint32(0)
-        rc = pz.zesPowerGetLimitsExt(power_handles[i], byref(limit_count), None)
-        if not check_rc(f"zesPowerGetLimitsExt(power {i}, count)", rc):
-            continue
-
-        print_verbose(f"    Power Limit Descriptor Count: {limit_count.value}")
-
         limit_descs = None
-        if limit_count.value > 0:
-            PowerLimitArray = pz.zes_power_limit_ext_desc_t * limit_count.value
-            limit_descs = PowerLimitArray()
-
-            for limit_index in range(limit_count.value):
-                limit_descs[limit_index].stype = (
-                    pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
-                )
-                limit_descs[limit_index].pNext = None
-
-            rc = pz.zesPowerGetLimitsExt(
-                power_handles[i], byref(limit_count), limit_descs
+        limit_count = c_uint32(0)
+        if properties.onSubdevice:
+            print_verbose(
+                "    Skipping power limit APIs for subdevice-scoped power domain"
             )
-            if not check_rc(f"zesPowerGetLimitsExt(power {i}, descriptors)", rc):
+        else:
+            rc = pz.zesPowerGetLimitsExt(power_handles[i], byref(limit_count), None)
+            if not check_rc(f"zesPowerGetLimitsExt(power {i}, count)", rc):
                 continue
 
-            print_verbose("    Power Limit Descriptors:")
-            for limit_index in range(limit_count.value):
-                limit_desc = limit_descs[limit_index]
-                print_verbose(f"      Descriptor {limit_index}:")
-                print_verbose(
-                    f"        Level: {get_power_level_string(limit_desc.level)}"
+            print_verbose(f"    Power Limit Descriptor Count: {limit_count.value}")
+
+            if limit_count.value > 0:
+                PowerLimitArray = pz.zes_power_limit_ext_desc_t * limit_count.value
+                limit_descs = PowerLimitArray()
+
+                for limit_index in range(limit_count.value):
+                    limit_descs[limit_index].stype = (
+                        pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+                    )
+                    limit_descs[limit_index].pNext = None
+
+                rc = pz.zesPowerGetLimitsExt(
+                    power_handles[i], byref(limit_count), limit_descs
                 )
-                print_verbose(
-                    f"        Source: {get_power_source_string(limit_desc.source)}"
-                )
-                print_verbose(
-                    f"        Limit Unit: {get_limit_unit_string(limit_desc.limitUnit)}"
-                )
-                print_verbose(
-                    f"        Enabled State Locked: {bool(limit_desc.enabledStateLocked)}"
-                )
-                print_verbose(f"        Enabled: {bool(limit_desc.enabled)}")
-                print_verbose(
-                    f"        Interval Value Locked: {bool(limit_desc.intervalValueLocked)}"
-                )
-                print_verbose(f"        Interval: {limit_desc.interval}")
-                print_verbose(
-                    f"        Limit Value Locked: {bool(limit_desc.limitValueLocked)}"
-                )
-                print_verbose(f"        Limit: {limit_desc.limit}")
+                if not check_rc(f"zesPowerGetLimitsExt(power {i}, descriptors)", rc):
+                    continue
+
+                print_verbose("    Power Limit Descriptors:")
+                for limit_index in range(limit_count.value):
+                    limit_desc = limit_descs[limit_index]
+                    print_verbose(f"      Descriptor {limit_index}:")
+                    print_verbose(
+                        f"        Level: {get_power_level_string(limit_desc.level)}"
+                    )
+                    print_verbose(
+                        f"        Source: {get_power_source_string(limit_desc.source)}"
+                    )
+                    print_verbose(
+                        f"        Limit Unit: {get_limit_unit_string(limit_desc.limitUnit)}"
+                    )
+                    print_verbose(
+                        f"        Enabled State Locked: {bool(limit_desc.enabledStateLocked)}"
+                    )
+                    print_verbose(f"        Enabled: {bool(limit_desc.enabled)}")
+                    print_verbose(
+                        f"        Interval Value Locked: {bool(limit_desc.intervalValueLocked)}"
+                    )
+                    print_verbose(f"        Interval: {limit_desc.interval}")
+                    print_verbose(
+                        f"        Limit Value Locked: {bool(limit_desc.limitValueLocked)}"
+                    )
+                    print_verbose(f"        Limit: {limit_desc.limit}")
 
         energy_counter1 = pz.zes_power_energy_counter_t()
         rc = pz.zesPowerGetEnergyCounter(power_handles[i], byref(energy_counter1))
@@ -1045,7 +1050,7 @@ def test_power_module(device_handle, device_index):
         else:
             print_verbose("    Current Power: unavailable due to zero delta time")
 
-        if limit_descs is None:
+        if properties.onSubdevice or limit_descs is None:
             continue
 
         if not is_root_user():
