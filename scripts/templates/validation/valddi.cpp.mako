@@ -197,7 +197,7 @@ return ${failure_return};
 
         <% 
         func_name = th.make_func_name(n, tags, obj)
-        generate_post_call = re.match(r"\w+Create\w*$|\w+Get$|\w+Get\w*Exp$|\w+GetIpcHandle$|\w+GetSubDevices$", func_name)
+        generate_post_call = re.match(r"\w+Create\w*$|\w+Get$|\w+Get\w*Exp$|\w+GetIpcHandle$|\w+GetSubDevices$|\w+InitDrivers$", func_name)
         %>
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->${n}HandleLifetime.${th.make_func_name(n, tags, obj)}Prologue( \

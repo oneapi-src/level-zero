@@ -264,28 +264,28 @@ class TestGlobalOperations(unittest.TestCase):
         self, mock_get_func
     ):
         mock_process_count = 2
-        mock_pid_1 = 1234
-        mock_pid_2 = 5678
+        mock_process_id_1 = 1234
+        mock_process_id_2 = 5678
         mock_mem_size_1 = 1073741824  # 1GB
         mock_mem_size_2 = 2147483648  # 2GB
-        mock_shared_mem_size_1 = 536870912  # 512MB
-        mock_shared_mem_size_2 = 1073741824  # 1GB
-        mock_subdevice_id_1 = 0
-        mock_subdevice_id_2 = 1
+        mock_shared_size_1 = 536870912  # 512MB
+        mock_shared_size_2 = 1073741824  # 1GB
+        mock_engines_1 = 0x3
+        mock_engines_2 = 0x5
 
         def mock_get_processes_state_with_data(device_handle, count_ptr, processes_ptr):
             if processes_ptr:
                 # Fill in process data for first process
-                processes_ptr[0].pid = mock_pid_1
+                processes_ptr[0].processId = mock_process_id_1
                 processes_ptr[0].memSize = mock_mem_size_1
-                processes_ptr[0].sharedMemSize = mock_shared_mem_size_1
-                processes_ptr[0].subdeviceId = mock_subdevice_id_1
+                processes_ptr[0].sharedSize = mock_shared_size_1
+                processes_ptr[0].engines = mock_engines_1
 
                 # Fill in process data for second process
-                processes_ptr[1].pid = mock_pid_2
+                processes_ptr[1].processId = mock_process_id_2
                 processes_ptr[1].memSize = mock_mem_size_2
-                processes_ptr[1].sharedMemSize = mock_shared_mem_size_2
-                processes_ptr[1].subdeviceId = mock_subdevice_id_2
+                processes_ptr[1].sharedSize = mock_shared_size_2
+                processes_ptr[1].engines = mock_engines_2
             else:
                 count_ptr._obj.value = mock_process_count
             return self.pyzes.ZE_RESULT_SUCCESS
@@ -298,6 +298,9 @@ class TestGlobalOperations(unittest.TestCase):
 
         # Create array for process states
         process_array = (self.pyzes.zes_process_state_t * mock_process_count)()
+        for i in range(mock_process_count):
+            process_array[i].stype = self.pyzes.ZES_STRUCTURE_TYPE_PROCESS_STATE
+            process_array[i].pNext = None
 
         result = self.pyzes.zesDeviceProcessesGetState(
             device_handle, byref(count), process_array
@@ -306,16 +309,16 @@ class TestGlobalOperations(unittest.TestCase):
         self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
 
         # Validate first process data
-        self.assertEqual(process_array[0].pid, mock_pid_1)
+        self.assertEqual(process_array[0].processId, mock_process_id_1)
         self.assertEqual(process_array[0].memSize, mock_mem_size_1)
-        self.assertEqual(process_array[0].sharedMemSize, mock_shared_mem_size_1)
-        self.assertEqual(process_array[0].subdeviceId, mock_subdevice_id_1)
+        self.assertEqual(process_array[0].sharedSize, mock_shared_size_1)
+        self.assertEqual(process_array[0].engines, mock_engines_1)
 
         # Validate second process data
-        self.assertEqual(process_array[1].pid, mock_pid_2)
+        self.assertEqual(process_array[1].processId, mock_process_id_2)
         self.assertEqual(process_array[1].memSize, mock_mem_size_2)
-        self.assertEqual(process_array[1].sharedMemSize, mock_shared_mem_size_2)
-        self.assertEqual(process_array[1].subdeviceId, mock_subdevice_id_2)
+        self.assertEqual(process_array[1].sharedSize, mock_shared_size_2)
+        self.assertEqual(process_array[1].engines, mock_engines_2)
 
         mock_get_func.assert_called_with("zesDeviceProcessesGetState")
         mock_func.assert_called_once()

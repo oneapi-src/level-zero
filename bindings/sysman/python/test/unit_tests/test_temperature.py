@@ -105,8 +105,8 @@ class TestTemperatureFunctions(unittest.TestCase):
 
         def mock_get_config(temp_handle, config_ptr):
             config_ptr._obj.enableCritical = mock_enable_critical
-            config_ptr._obj.threshold1 = mock_threshold1
-            config_ptr._obj.threshold2 = mock_threshold2
+            config_ptr._obj.threshold1.threshold = mock_threshold1
+            config_ptr._obj.threshold2.threshold = mock_threshold2
             return self.pyzes.ZE_RESULT_SUCCESS
 
         mock_func = MagicMock(side_effect=mock_get_config)
@@ -118,8 +118,8 @@ class TestTemperatureFunctions(unittest.TestCase):
 
         self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
         self.assertEqual(temp_config.enableCritical, mock_enable_critical)
-        self.assertEqual(temp_config.threshold1, mock_threshold1)
-        self.assertEqual(temp_config.threshold2, mock_threshold2)
+        self.assertEqual(temp_config.threshold1.threshold, mock_threshold1)
+        self.assertEqual(temp_config.threshold2.threshold, mock_threshold2)
         mock_get_func.assert_called_with("zesTemperatureGetConfig")
         mock_func.assert_called_once()
 

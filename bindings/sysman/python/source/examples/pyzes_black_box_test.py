@@ -216,6 +216,7 @@ def get_temperature_sensor_string(temp_sensor):
         pz.ZES_TEMP_SENSORS_GPU: "ZES_TEMP_SENSORS_GPU",
         pz.ZES_TEMP_SENSORS_MEMORY: "ZES_TEMP_SENSORS_MEMORY",
         pz.ZES_TEMP_SENSORS_GLOBAL_MIN: "ZES_TEMP_SENSORS_GLOBAL_MIN",
+        pz.ZES_TEMP_SENSORS_VOLTAGE_REGULATOR: "ZES_TEMP_SENSORS_VOLTAGE_REGULATOR",
         pz.ZES_TEMP_SENSORS_GPU_MIN: "ZES_TEMP_SENSORS_GPU_MIN",
         pz.ZES_TEMP_SENSORS_MEMORY_MIN: "ZES_TEMP_SENSORS_MEMORY_MIN",
     }
@@ -552,6 +553,10 @@ def test_global_operation(driver_handle, device_handle, device_index):
         ProcessArray = pz.zes_process_state_t * process_count.value
         processes = ProcessArray()
 
+        for i in range(process_count.value):
+            processes[i].stype = pz.ZES_STRUCTURE_TYPE_PROCESS_STATE
+            processes[i].pNext = None
+
         rc = pz.zesDeviceProcessesGetState(
             device_handle, byref(process_count), processes
         )
@@ -563,11 +568,10 @@ def test_global_operation(driver_handle, device_handle, device_index):
         for i in range(process_count.value):
             process = processes[i]
             print_verbose(f"  Process {i}:")
-            print_verbose(f"    PID: {process.pid}")
+            print_verbose(f"    PID: {process.processId}")
             print_verbose(f"    Memory Size: {process.memSize} bytes")
-            print_verbose(f"    Shared Memory Size: {process.sharedMemSize} bytes")
-            print_verbose(f"    Engine Type Flags: 0x{process.engineType:08X}")
-            print_verbose(f"    Subdevice ID: {process.subdeviceId}")
+            print_verbose(f"    Shared Memory Size: {process.sharedSize} bytes")
+            print_verbose(f"    Engine Type Flags: 0x{process.engines:08X}")
 
     return True
 
@@ -750,6 +754,10 @@ def test_device_processes(device_handle, device_index):
     ProcessArray = pz.zes_process_state_t * process_count.value
     processes = ProcessArray()
 
+    for i in range(process_count.value):
+        processes[i].stype = pz.ZES_STRUCTURE_TYPE_PROCESS_STATE
+        processes[i].pNext = None
+
     rc = pz.zesDeviceProcessesGetState(device_handle, byref(process_count), processes)
     if not check_rc(f"zesDeviceProcessesGetState(device {device_index}, handles)", rc):
         return False
@@ -757,11 +765,10 @@ def test_device_processes(device_handle, device_index):
     for i in range(process_count.value):
         process = processes[i]
         print_verbose(f"  Process {i}:")
-        print_verbose(f"    PID: {process.pid}")
+        print_verbose(f"    PID: {process.processId}")
         print_verbose(f"    Memory Size: {process.memSize} bytes")
-        print_verbose(f"    Shared Memory Size: {process.sharedMemSize} bytes")
-        print_verbose(f"    Engine Type Flags: 0x{process.engineType:08X}")
-        print_verbose(f"    Subdevice ID: {process.subdeviceId}")
+        print_verbose(f"    Shared Memory Size: {process.sharedSize} bytes")
+        print_verbose(f"    Engine Type Flags: 0x{process.engines:08X}")
 
     return True
 
@@ -1287,13 +1294,13 @@ def test_temperature_sensors(device_handle, device_index):
             print_verbose("    Temperature Config:")
             print_verbose(f"      Critical Enabled: {bool(temp_config.enableCritical)}")
             print_verbose(
-                f"      Threshold 1: {temp_config.threshold1:.1f} °C"
-                if temp_config.threshold1 >= 0
+                f"      Threshold 1: {temp_config.threshold1.threshold:.1f} °C"
+                if temp_config.threshold1.threshold >= 0
                 else "      Threshold 1: Not set"
             )
             print_verbose(
-                f"      Threshold 2: {temp_config.threshold2:.1f} °C"
-                if temp_config.threshold2 >= 0
+                f"      Threshold 2: {temp_config.threshold2.threshold:.1f} °C"
+                if temp_config.threshold2.threshold >= 0
                 else "      Threshold 2: Not set"
             )
         else:
