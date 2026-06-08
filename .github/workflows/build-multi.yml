@@ -65,7 +65,7 @@ jobs:
     env:
       MSYS_NO_PATHCONV: 1
       MOUNT_TARGET:  ${{ matrix.os.name == 'windows' && 'C:/project' || '/project' }}
-      # -j breaks the Visual Studio configuration selection
+      # Ninja handles parallelism internally; -j not needed for Windows
       PARALLEL: ${{ ! (matrix.os.name == 'windows') && '-j' || '' }}
       ARCH_SUFFIX: ${{ matrix.arch != '' && format('_{0}', matrix.arch) || '' }}
     steps:
@@ -141,7 +141,7 @@ jobs:
           -D CMAKE_INSTALL_PREFIX="${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && 'C:/Program Files' || '' }}" `
           -D CPACK_OUTPUT_FILE_PREFIX="${{ github.workspace }}/level-zero-package" `
           ..
-        cmake --build . --config Release --target ${{ matrix.target }}
+        cmake --build . --target ${{ matrix.target }}
       shell: powershell
     - name: Build (Linux)
       if: matrix.os.name != 'windows'
