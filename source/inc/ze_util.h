@@ -148,6 +148,32 @@ inline bool getenv_tobool( const char* name )
     return ( 0 == strcmp( "1", env ) );
 }
 
+// Returns the numeric mode (0, 1, or 2) for env vars that support a two-level
+// flag scheme: 0 = off, 1 = legacy/normal, 2 = advanced/verbose.
+// Any value other than "1" or "2" is treated as 0.
+inline uint32_t getenv_tomode( const char* name )
+{
+    const char* env = nullptr;
+
+#if defined(_WIN32)
+    char buffer[8];
+    auto rc = GetEnvironmentVariable(name, buffer, 8);
+    if (0 != rc && rc <= 8) {
+        env = buffer;
+    }
+#else
+    env = getenv(name);
+#endif
+
+    if (env == nullptr || strcmp("0", env) == 0)
+        return 0;
+    if (strcmp("2", env) == 0)
+        return 2;
+    if (strcmp("1", env) == 0)
+        return 1;
+    return 0;
+}
+
 
 inline std::string getenv_string ( const char* name){
 

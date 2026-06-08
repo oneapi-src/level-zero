@@ -63,7 +63,11 @@ namespace ze_lib
     ///////////////////////////////////////////////////////////////////////////////
     __zedlllocal context_t::context_t()
     {
-        debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
+        {
+            uint32_t dtMode = getenv_tomode( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
+            debugTraceEnabled = (dtMode != 0);
+        }
+ 
         memset(&initialzeDdiTable, 0, sizeof(ze_dditable_t));
         memset(&initialzetDdiTable, 0, sizeof(zet_dditable_t));
         memset(&initialzesDdiTable, 0, sizeof(zes_dditable_t));
@@ -107,8 +111,9 @@ namespace ze_lib
             loaderLibraryPath = readLevelZeroLoaderLibraryPath();
         }
 #endif
-        if (debugTraceEnabled)
+        if (debugTraceEnabled) {
             debug_trace_message("Static Loader Using Loader Library Path: ", loaderLibraryPath);
+        }
         std::string loaderFullLibraryPath = create_library_path(MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION), loaderLibraryPath.c_str());
         loader = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
 
