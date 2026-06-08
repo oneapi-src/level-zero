@@ -136,8 +136,7 @@ jobs:
         mkdir build
         cd build
         cmake `
-          -G "Visual Studio 17 2022" `
-          -A x64 `
+          -G "Ninja" `
           -D CMAKE_BUILD_TYPE=Release `
           -D CMAKE_INSTALL_PREFIX="${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && 'C:/Program Files' || '' }}" `
           -D CPACK_OUTPUT_FILE_PREFIX="${{ github.workspace }}/level-zero-package" `
