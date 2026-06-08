@@ -30,6 +30,20 @@ jobs:
         short-sha=$(git rev-parse --short=7 ${GITHUB_SHA})
         ref-slug=$(echo ${{ github.ref_name }} | tr '/_' '-')
         EOF
+    - name: "Registry login: ghcr.io"
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} |
+        docker login -u sys-lzdev --password-stdin ghcr.io
+    - name: List available base images
+      run: |
+        for distro in ubuntu sles rhel; do
+          echo "=== ghcr.io/oneapi-src/level-zero-linux-compute/${distro} ==="
+          curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://ghcr.io/v2/oneapi-src/level-zero-linux-compute/${distro}/tags/list" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print('\n'.join(sorted(d.get('tags',[]))))" \
+            2>/dev/null || echo "(no access or not found)"
+        done
 
   build:
     # Notes on formatting:
