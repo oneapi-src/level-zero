@@ -99,6 +99,29 @@ jobs:
           cd build
           cmake -G "Ninja" -D CMAKE_BUILD_TYPE=Release -D BUILD_L0_LOADER_TESTS=1 -D BUILD_STATIC=1 ..
           cmake --build .
+          # TEMPORARY WORKAROUND — safe to remove once this PR's changes have merged to master.
+          #
+          # Background: The CI was switched from the Visual Studio generator (-G "Visual Studio 17 2022")
+          # to Ninja (-G "Ninja") because windows-latest now ships with Visual Studio 2026 (v18),
+          # which CMake 3.31 does not recognise as a valid generator.
+          #
+          # The VS generator is multi-config and places build outputs under bin/<CONFIG>/
+          # (e.g. bin/Release/). Ninja is single-config and places outputs directly under bin/.
+          #
+          # master's test/CMakeLists.txt still contains hardcoded bin/$<CONFIG>/ paths in its
+          # CTest ENVIRONMENT properties (e.g. bin/Release/ze_null_test1.dll). This PR fixes
+          # those paths to use $<TARGET_FILE_DIR:ze_null_test1>/ which is generator-agnostic,
+          # but until that fix lands on master the n-1 build (which checks out master for the
+          # static loader) will fail to find the DLLs.
+          #
+          # This junction makes bin/Release/ point to bin/ so the old hardcoded paths resolve
+          # correctly. Once the fix is on master, Ninja will place DLLs in bin/ and the CTest
+          # properties will resolve directly there — this junction will never be traversed and
+          # can be removed along with this comment.
+          # This command assumes default shell is 'powershell'
+          if (-not (Test-Path bin\Release)) {
+            New-Item -ItemType Junction -Path bin\Release -Target (Resolve-Path bin).Path
+          }
 
       # Build dynamic loader from PR branch
       - name: Build Dynamic Loader from PR
