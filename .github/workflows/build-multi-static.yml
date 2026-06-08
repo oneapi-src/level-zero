@@ -128,6 +128,7 @@ jobs:
     - name: Build (Windows)
       if: matrix.os.name == 'windows'
       run: |
+        $ws = "${{ github.workspace }}".Replace('\', '/')
         mkdir build
         cd build
         cmake `
@@ -135,7 +136,7 @@ jobs:
           -D CMAKE_BUILD_TYPE=Release `
           -D BUILD_STATIC=1 `
           -D CMAKE_INSTALL_PREFIX="${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && 'C:/Program Files' || '' }}" `
-          -D CPACK_OUTPUT_FILE_PREFIX="${{ github.workspace }}/level-zero-package" `
+          -D CPACK_OUTPUT_FILE_PREFIX="$ws/level-zero-package" `
           ..
         cmake --build . --target ${{ matrix.target }}
       shell: powershell
