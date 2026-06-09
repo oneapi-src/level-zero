@@ -50,9 +50,8 @@ jobs:
           {name: ubuntu, vmaj: 20, vmin: '04'},
           {name: ubuntu, vmaj: 22, vmin: '04'},
           {name: ubuntu, vmaj: 24, vmin: '04'},
-          {name: sles, vmaj: 15, vmin: 2},
-          {name: sles, vmaj: 15, vmin: 3},
           {name: sles, vmaj: 15, vmin: 4},
+          {name: sles, vmaj: 15, vmin: 6},
           {name: rhel, vmaj: 8, vmin: 6},
           {name: windows}
         ]
@@ -65,7 +64,7 @@ jobs:
     env:
       MSYS_NO_PATHCONV: 1
       MOUNT_TARGET:  ${{ matrix.os.name == 'windows' && 'C:/project' || '/project' }}
-      # -j breaks the Visual Studio configuration selection
+      # Ninja handles parallelism internally; -j not needed for Windows
       PARALLEL: ${{ ! (matrix.os.name == 'windows') && '-j' || '' }}
       ARCH_SUFFIX: ${{ matrix.arch != '' && format('_{0}', matrix.arch) || '' }}
     steps:
@@ -128,17 +127,17 @@ jobs:
     - name: Build (Windows)
       if: matrix.os.name == 'windows'
       run: |
+        $ws = "${{ github.workspace }}".Replace('\', '/')
         mkdir build
         cd build
         cmake `
-          -G "Visual Studio 17 2022" `
-          -A x64 `
+          -G "Ninja" `
           -D CMAKE_BUILD_TYPE=Release `
           -D BUILD_STATIC=1 `
           -D CMAKE_INSTALL_PREFIX="${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && 'C:/Program Files' || '' }}" `
-          -D CPACK_OUTPUT_FILE_PREFIX="${{ github.workspace }}/level-zero-package" `
+          -D CPACK_OUTPUT_FILE_PREFIX="$ws/level-zero-package" `
           ..
-        cmake --build . --config Release --target ${{ matrix.target }}
+        cmake --build . --target ${{ matrix.target }}
       shell: powershell
     - name: Build (Linux)
       if: matrix.os.name != 'windows'

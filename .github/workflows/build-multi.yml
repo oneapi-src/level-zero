@@ -30,6 +30,24 @@ jobs:
         short-sha=$(git rev-parse --short=7 ${GITHUB_SHA})
         ref-slug=$(echo ${{ github.ref_name }} | tr '/_' '-')
         EOF
+    - name: "Registry login: ghcr.io"
+      # Uses built-in github.token (replaces hardcoded sys-lzdev PAT) and
+      # github.actor as the username (any non-empty string works with token auth).
+      run: |
+        echo ${{ github.token }} |
+        docker login -u ${{ github.actor }} --password-stdin ghcr.io
+    - name: List available base images
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        for distro in ubuntu sles rhel; do
+          echo "=== ${distro} ==="
+          # GitHub Packages API - lists all versions with their tags
+          curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/orgs/oneapi-src/packages/container/level-zero-linux-compute%2F${distro}/versions?per_page=100" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print('\n'.join(sorted(t for v in d for t in v.get('metadata',{}).get('container',{}).get('tags',[]))) or '(no tags found)') if isinstance(d,list) else print('API error:',d.get('message','unknown'))" 2>/dev/null || echo "(query failed)"
+        done
 
   build:
     # Notes on formatting:
@@ -50,9 +68,8 @@ jobs:
           {name: ubuntu, vmaj: 20, vmin: '04'},
           {name: ubuntu, vmaj: 22, vmin: '04'},
           {name: ubuntu, vmaj: 24, vmin: '04'},
-          {name: sles, vmaj: 15, vmin: 2},
-          {name: sles, vmaj: 15, vmin: 3},
           {name: sles, vmaj: 15, vmin: 4},
+          {name: sles, vmaj: 15, vmin: 6},
           {name: rhel, vmaj: 8, vmin: 6},
           {name: windows}
         ]
@@ -65,7 +82,7 @@ jobs:
     env:
       MSYS_NO_PATHCONV: 1
       MOUNT_TARGET:  ${{ matrix.os.name == 'windows' && 'C:/project' || '/project' }}
-      # -j breaks the Visual Studio configuration selection
+      # Ninja handles parallelism internally; -j not needed for Windows
       PARALLEL: ${{ ! (matrix.os.name == 'windows') && '-j' || '' }}
       ARCH_SUFFIX: ${{ matrix.arch != '' && format('_{0}', matrix.arch) || '' }}
     steps:
@@ -104,9 +121,11 @@ jobs:
       run: echo "DOCKER_IMAGE=localhost/${{ github.repository }}/${{ steps.const.outputs.os-string }}" >> ${GITHUB_ENV}
     - name: "Registry login: ghcr.io"
       if: matrix.os.name != 'windows'
+      # Uses built-in github.token (replaces hardcoded sys-lzdev PAT) and
+      # github.actor as the username (any non-empty string works with token auth).
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} |
-        docker login -u sys-lzdev --password-stdin ghcr.io
+        echo ${{ github.token }} |
+        docker login -u ${{ github.actor }} --password-stdin ghcr.io
     - name: Verify Docker configuration
       if: matrix.os.name != 'windows'
       run: |
@@ -133,16 +152,16 @@ jobs:
     - name: Build (Windows)
       if: matrix.os.name == 'windows'
       run: |
+        $ws = "${{ github.workspace }}".Replace('\', '/')
         mkdir build
         cd build
         cmake `
-          -G "Visual Studio 17 2022" `
-          -A x64 `
+          -G "Ninja" `
           -D CMAKE_BUILD_TYPE=Release `
           -D CMAKE_INSTALL_PREFIX="${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && 'C:/Program Files' || '' }}" `
-          -D CPACK_OUTPUT_FILE_PREFIX="${{ github.workspace }}/level-zero-package" `
+          -D CPACK_OUTPUT_FILE_PREFIX="$ws/level-zero-package" `
           ..
-        cmake --build . --config Release --target ${{ matrix.target }}
+        cmake --build . --target ${{ matrix.target }}
       shell: powershell
     - name: Build (Linux)
       if: matrix.os.name != 'windows'

@@ -49,20 +49,24 @@ jobs:
     runs-on: [windows-latest]
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Windows build environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
       - name: Build Static Loader on Latest Windows
         run: |
           mkdir build
           cd build
-          cmake -D BUILD_L0_LOADER_TESTS=1 -D BUILD_STATIC=1 ..
-          cmake --build . --config Release
+          cmake -G "Ninja" -D CMAKE_BUILD_TYPE=Release -D BUILD_L0_LOADER_TESTS=1 -D BUILD_STATIC=1 ..
+          cmake --build .
       - name: Build Dynamic Loader on Latest Windows
         run: |
           cd ${{ github.workspace }}
           mkdir dynamic_build
           cd dynamic_build
-          cmake -D BUILD_L0_LOADER_TESTS=0 -D BUILD_STATIC=0 ..
-          cmake --build . --config Release
+          cmake -G "Ninja" -D CMAKE_BUILD_TYPE=Release -D BUILD_L0_LOADER_TESTS=0 -D BUILD_STATIC=0 ..
+          cmake --build .
       - env:
-          ZEL_LIBRARY_PATH: '${{ github.workspace }}/dynamic_build/bin/Release'
+          ZEL_LIBRARY_PATH: '${{ github.workspace }}/dynamic_build/bin'
         working-directory: build
-        run: ctest -C Release -V
+        run: ctest -V
