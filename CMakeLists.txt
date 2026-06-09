@@ -244,21 +244,21 @@ if(BUILD_INSTALLER)
 endif()
 
 install(FILES ${LEVEL_ZERO_API_HEADERS}
-    DESTINATION ./include/level_zero
+    DESTINATION include/level_zero
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LAYERS_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/layers/*.h")
 
 install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
-    DESTINATION ./include/level_zero/layers
+    DESTINATION include/level_zero/layers
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LOADER_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/loader/*.h")
 
 install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
-    DESTINATION ./include/level_zero/loader
+    DESTINATION include/level_zero/loader
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
