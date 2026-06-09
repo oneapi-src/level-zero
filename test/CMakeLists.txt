@@ -103,14 +103,14 @@ if(NOT BUILD_STATIC)
   else()
     add_custom_command(TARGET tests POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_BINARY_DIR}/lib/libze_null.so.1
-        ${CMAKE_BINARY_DIR}/lib/libze_fake_gpu.so.1
+        $<TARGET_FILE:ze_null>
+        $<TARGET_FILE_DIR:ze_null>/libze_fake_gpu.so.1
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_BINARY_DIR}/lib/libze_null_test1.so.1
-        ${CMAKE_BINARY_DIR}/lib/libze_fake_npu.so.1
+        $<TARGET_FILE:ze_null_test1>
+        $<TARGET_FILE_DIR:ze_null_test1>/libze_fake_npu.so.1
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_BINARY_DIR}/lib/libze_null_test2.so.1
-        ${CMAKE_BINARY_DIR}/lib/libze_fake_vpu.so.1
+        $<TARGET_FILE:ze_null_test2>
+        $<TARGET_FILE_DIR:ze_null_test2>/libze_fake_vpu.so.1
       COMMENT "Copying null drivers to fake driver names for init_driver_unit_tests"
     )
   endif()
@@ -171,7 +171,7 @@ if(NOT BUILD_STATIC AND NOT WIN32)
   add_test(NAME tests_init_gpu_npu_regression_combined
     COMMAND tests --gtest_filter=*InitDriverGPUNPURegressionTest*)
   set_property(TEST tests_init_gpu_npu_regression_combined PROPERTY ENVIRONMENT
-    "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib_fake/libze_intel_gpu.so,${CMAKE_BINARY_DIR}/lib_fake/libze_intel_npu.so")
+    "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_intel_gpu>,$<TARGET_FILE:ze_intel_npu>")
 endif()
 
 
@@ -180,49 +180,49 @@ add_test(NAME tests_multi_driver_missing_initDrivers COMMAND tests --gtest_filte
 if (MSVC)
   set_property(TEST tests_multi_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_one_driver_missing_initDrivers COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversInOneDriverWhenCallingZeInitDriversThenExpectSuccessForZeInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_one_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_one_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_one_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_missing_initDrivers_sort_after_error COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_sort COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitDriversThenExpectSuccessForZeInit)
 if (MSVC)
   set_property(TEST tests_multi_driver_sort PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sort PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sort PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_driverget_sort COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitThenZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_driverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_driverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_driverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_zesdriverget_sort COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZesInitThenExpectSuccessForZesDriverGet)
 if (MSVC)
   set_property(TEST tests_multi_driver_zesdriverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_zesdriverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_zesdriverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_zeandzesdriverget_sort COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZesInitThenZeInitDriversExpectSuccessForZesDriverGetAndZeInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_zeandzesdriverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_zeandzesdriverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_zeandzesdriverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_loader_teardown_check COMMAND tests --gtest_filter=*GivenLoaderNotInDestructionStateWhenCallingzelCheckIsLoaderInTearDownThenFalseIsReturned)
@@ -289,7 +289,7 @@ add_test(NAME tests_multi_driver_stdout COMMAND tests --gtest_filter=*GivenZeIni
 if (MSVC)
   set_property(TEST tests_multi_driver_stdout APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_stdout APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_stdout APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_sigle_driver_stdout COMMAND tests --gtest_filter=*GivenZeInitDriverWhenCalledThenNoOutputIsPrintedToStdout)
@@ -299,7 +299,7 @@ add_test(NAME tests_multi_driver_drivergetproperties_sort COMMAND tests --gtest_
 if (MSVC)
   set_property(TEST tests_multi_driver_drivergetproperties_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_drivergetproperties_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_drivergetproperties_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 # Run with multiple drivers with one driver using legacy mode
@@ -307,35 +307,35 @@ add_test(NAME tests_multi_driver_missing_initDrivers_onelegacy COMMAND tests --g
 if (MSVC)
   set_property(TEST tests_multi_driver_missing_initDrivers_onelegacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers_onelegacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers_onelegacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_missing_initDrivers_sort_after_error_onelegacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_sort_onelegacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitDriversThenExpectSuccessForZeInit)
 if (MSVC)
   set_property(TEST tests_multi_driver_sort_onelegacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sort_onelegacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sort_onelegacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_driverget_sort_onelegacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitThenZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_driverget_sort_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_driverget_sort_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_driverget_sort_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_drivergetproperties_sort_onelegacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingDriverGetPropertiesThenExpectSuccess)
 if (MSVC)
   set_property(TEST tests_multi_driver_drivergetproperties_sort_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_drivergetproperties_sort_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_drivergetproperties_sort_onelegacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=1;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 # Run with multiple drivers with both drivers using legacy mode
@@ -343,35 +343,35 @@ add_test(NAME tests_multi_driver_missing_initDrivers_legacy COMMAND tests --gtes
 if (MSVC)
   set_property(TEST tests_multi_driver_missing_initDrivers_legacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers_legacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers_legacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_missing_initDrivers_sort_after_error_legacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_sort_legacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitDriversThenExpectSuccessForZeInit)
 if (MSVC)
   set_property(TEST tests_multi_driver_sort_legacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sort_legacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sort_legacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_driverget_sort_legacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitThenZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
   set_property(TEST tests_multi_driver_driverget_sort_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_driverget_sort_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_driverget_sort_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_multi_driver_drivergetproperties_sort_legacy COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingDriverGetPropertiesThenExpectSuccess)
 if (MSVC)
   set_property(TEST tests_multi_driver_drivergetproperties_sort_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_drivergetproperties_sort_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_drivergetproperties_sort_legacy APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_loader_translate_handles_module COMMAND tests --gtest_filter=*LoaderTranslateHandles.GivenLevelZeroLoaderPresentWhenCallingZelLoaderTranslateHandleInternalWithInterceptEnabledAndDDiSupportDisabledThenExpectHandleTranslationForModule)
@@ -462,7 +462,7 @@ set_property(TEST tests_loader_translate_handles_device_ddi_enabled PROPERTY ENV
 if (MSVC)
   set(ALT_DRIVERS_ENV "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set(ALT_DRIVERS_ENV "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set(ALT_DRIVERS_ENV "ZE_ENABLE_LOADER_DRIVER_DDI_PATH=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 foreach(test_name IN ITEMS
@@ -505,7 +505,7 @@ add_test(NAME tests_multi_driver_sysman_vf_management_api COMMAND tests --gtest_
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_vf_management_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_vf_management_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_vf_management_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_driver_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDriverApisThenExpectNullDriverIsReachedSuccessfully)
@@ -515,7 +515,7 @@ add_test(NAME tests_multi_driver_sysman_driver_api COMMAND tests --gtest_filter=
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_driver_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_driver_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_driver_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_device_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDeviceApisThenExpectNullDriverIsReachedSuccessfully)
@@ -525,7 +525,7 @@ add_test(NAME tests_multi_driver_sysman_device_api COMMAND tests --gtest_filter=
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_device_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_device_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_device_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_device_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDeviceExtApisThenExpectNullDriverIsReachedSuccessfully)
@@ -535,7 +535,7 @@ add_test(NAME tests_multi_driver_sysman_device_ext_api COMMAND tests --gtest_fil
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_device_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_device_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_device_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_engine_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEngineApisThenExpectNullDriverIsReachedSuccessfully)
@@ -545,7 +545,7 @@ add_test(NAME tests_multi_driver_sysman_engine_api COMMAND tests --gtest_filter=
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_engine_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_engine_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_engine_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_engine_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEngineExtApisThenExpectNullDriverIsReachedSuccessfully)
@@ -555,7 +555,7 @@ add_test(NAME tests_multi_driver_sysman_engine_ext_api COMMAND tests --gtest_fil
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_engine_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_engine_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_engine_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_memory_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManMemoryApisThenExpectNullDriverIsReachedSuccessfully)
@@ -565,7 +565,7 @@ add_test(NAME tests_multi_driver_sysman_memory_api COMMAND tests --gtest_filter=
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_memory_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_memory_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_memory_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_diagnostics_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDiagnosticsApisThenExpectNullDriverIsReachedSuccessfully)
@@ -575,7 +575,7 @@ add_test(NAME tests_multi_driver_sysman_diagnostics_api COMMAND tests --gtest_fi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_diagnostics_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_diagnostics_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_diagnostics_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_ecc_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEccApisThenExpectNullDriverIsReachedSuccessfully)
@@ -585,7 +585,7 @@ add_test(NAME tests_multi_driver_sysman_ecc_api COMMAND tests --gtest_filter=*Gi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_ecc_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_ecc_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_ecc_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_event_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManEventApisThenExpectNullDriverIsReachedSuccessfully)
@@ -595,7 +595,7 @@ add_test(NAME tests_multi_driver_sysman_event_api COMMAND tests --gtest_filter=*
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_event_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_event_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_event_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_fabric_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManFabricApisThenExpectNullDriverIsReachedSuccessfully)
@@ -605,7 +605,7 @@ add_test(NAME tests_multi_driver_sysman_fabric_api COMMAND tests --gtest_filter=
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_fabric_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_fabric_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_fabric_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_fan_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManFanApisThenExpectNullDriverIsReachedSuccessfully)
@@ -615,7 +615,7 @@ add_test(NAME tests_multi_driver_sysman_fan_api COMMAND tests --gtest_filter=*Gi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_fan_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_fan_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_fan_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_firmware_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManFirmwareApisThenExpectNullDriverIsReachedSuccessfully)
@@ -625,7 +625,7 @@ add_test(NAME tests_multi_driver_sysman_firmware_api COMMAND tests --gtest_filte
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_firmware_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_firmware_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_firmware_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_frequency_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManFrequencyApisThenExpectNullDriverIsReachedSuccessfully)
@@ -635,7 +635,7 @@ add_test(NAME tests_multi_driver_sysman_frequency_api COMMAND tests --gtest_filt
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_frequency_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_frequency_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_frequency_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_led_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManLedApisThenExpectNullDriverIsReachedSuccessfully)
@@ -645,7 +645,7 @@ add_test(NAME tests_multi_driver_sysman_led_api COMMAND tests --gtest_filter=*Gi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_led_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_led_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_led_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_performance_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManPerformanceApisThenExpectNullDriverIsReachedSuccessfully)
@@ -655,7 +655,7 @@ add_test(NAME tests_multi_driver_sysman_performance_api COMMAND tests --gtest_fi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_performance_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_performance_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_performance_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_power_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManPowerApisThenExpectNullDriverIsReachedSuccessfully)
@@ -665,7 +665,7 @@ add_test(NAME tests_multi_driver_sysman_power_api COMMAND tests --gtest_filter=*
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_power_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_power_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_power_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_psu_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManPsuApisThenExpectNullDriverIsReachedSuccessfully)
@@ -675,7 +675,7 @@ add_test(NAME tests_multi_driver_sysman_psu_api COMMAND tests --gtest_filter=*Gi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_psu_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_psu_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_psu_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_ras_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManRasApisThenExpectNullDriverIsReachedSuccessfully)
@@ -685,7 +685,7 @@ add_test(NAME tests_multi_driver_sysman_ras_api COMMAND tests --gtest_filter=*Gi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_ras_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_ras_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_ras_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_scheduler_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManSchedulerApisThenExpectNullDriverIsReachedSuccessfully)
@@ -695,7 +695,7 @@ add_test(NAME tests_multi_driver_sysman_scheduler_api COMMAND tests --gtest_filt
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_scheduler_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_scheduler_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_scheduler_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_standby_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManStandbyApisThenExpectNullDriverIsReachedSuccessfully)
@@ -705,7 +705,7 @@ add_test(NAME tests_multi_driver_sysman_standby_api COMMAND tests --gtest_filter
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_standby_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_standby_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_standby_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_temperature_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManTemperatureApisThenExpectNullDriverIsReachedSuccessfully)
@@ -715,7 +715,7 @@ add_test(NAME tests_multi_driver_sysman_temperature_api COMMAND tests --gtest_fi
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_temperature_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_temperature_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_temperature_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_overclock_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManOverclockApisThenExpectNullDriverIsReachedSuccessfully)
@@ -725,7 +725,7 @@ add_test(NAME tests_multi_driver_sysman_overclock_api COMMAND tests --gtest_filt
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_overclock_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_overclock_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_overclock_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_pci_link_speed_downgrade_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManPciLinkSpeedDowngradeApisThenExpectNullDriverIsReachedSuccessfully)
@@ -735,7 +735,7 @@ add_test(NAME tests_multi_driver_sysman_pci_link_speed_downgrade_api COMMAND tes
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_pci_link_speed_downgrade_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_pci_link_speed_downgrade_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_pci_link_speed_downgrade_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_power_limits_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManPowerLimitsExtApisThenExpectNullDriverIsReachedSuccessfully)
@@ -745,7 +745,7 @@ add_test(NAME tests_multi_driver_sysman_power_limits_ext_api COMMAND tests --gte
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_power_limits_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_power_limits_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_power_limits_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_ras_state_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManRasStateExtApisThenExpectNullDriverIsReachedSuccessfully)
@@ -755,7 +755,7 @@ add_test(NAME tests_multi_driver_sysman_ras_state_ext_api COMMAND tests --gtest_
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_ras_state_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_ras_state_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_ras_state_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_firmware_security_version_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManFirmwareSecurityVersionExtApisThenExpectNullDriverIsReachedSuccessfully)
@@ -765,7 +765,7 @@ add_test(NAME tests_multi_driver_sysman_firmware_security_version_ext_api COMMAN
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_firmware_security_version_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_firmware_security_version_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_firmware_security_version_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_single_driver_sysman_device_mapping_ext_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingSysManDeviceMappingExtApisThenExpectNullDriverIsReachedSuccessfully)
@@ -775,7 +775,7 @@ add_test(NAME tests_multi_driver_sysman_device_mapping_ext_api COMMAND tests --g
 if (MSVC)
   set_property(TEST tests_multi_driver_sysman_device_mapping_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sysman_device_mapping_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sysman_device_mapping_ext_api APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 # Driver ordering tests - each test added individually
@@ -783,161 +783,161 @@ add_test(NAME tests_driver_ordering_specific_type_and_index COMMAND tests --gtes
 if (MSVC)
   set_property(TEST tests_driver_ordering_specific_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_specific_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_specific_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_gpu_type_and_index COMMAND tests --gtest_filter=*GivenZelDriversOrderWithGpuTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_gpu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_gpu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_gpu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_integrated_gpu_type_and_index COMMAND tests --gtest_filter=*GivenZelDriversOrderWithIntegratedGpuTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_integrated_gpu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_integrated_gpu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_integrated_gpu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_npu_type_and_index COMMAND tests --gtest_filter=*GivenZelDriversOrderWithNpuTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_npu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_npu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_npu_type_and_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_specific_type_only COMMAND tests --gtest_filter=*GivenZelDriversOrderWithSpecificTypeOnlyWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_specific_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_specific_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_specific_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_gpu_type_only COMMAND tests --gtest_filter=*GivenZelDriversOrderWithGpuTypeOnlyWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_gpu_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_gpu_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_gpu_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_integrated_gpu_type_only COMMAND tests --gtest_filter=*GivenZelDriversOrderWithIntegratedGpuTypeOnlyWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_integrated_gpu_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_integrated_gpu_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_integrated_gpu_type_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_single_npu_type COMMAND tests --gtest_filter=*GivenZelDriversOrderWithSingleNpuTypeWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_single_npu_type PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_single_npu_type PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_single_npu_type PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_global_index_only COMMAND tests --gtest_filter=*GivenZelDriversOrderWithGlobalIndexOnlyWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_global_index_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_global_index_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_global_index_only PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_single_global_index COMMAND tests --gtest_filter=*GivenZelDriversOrderWithSingleGlobalIndexWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_single_global_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_single_global_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_single_global_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_multiple_global_indices COMMAND tests --gtest_filter=*GivenZelDriversOrderWithMultipleGlobalIndicesWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_multiple_global_indices PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_multiple_global_indices PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_multiple_global_indices PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_mixed_syntax COMMAND tests --gtest_filter=*GivenZelDriversOrderWithMixedSyntaxWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_mixed_syntax PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_mixed_syntax PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_mixed_syntax PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_mixed_type_and_index_syntax COMMAND tests --gtest_filter=*GivenZelDriversOrderWithMixedTypeAndIndexSyntaxWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_mixed_type_and_index_syntax PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_mixed_type_and_index_syntax PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_mixed_type_and_index_syntax PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_invalid_driver_type COMMAND tests --gtest_filter=*GivenZelDriversOrderWithInvalidDriverTypeWhenCallingZeInitDriversThenDriversStillInitialize)
 if (MSVC)
   set_property(TEST tests_driver_ordering_invalid_driver_type PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_invalid_driver_type PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_invalid_driver_type PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_invalid_index COMMAND tests --gtest_filter=*GivenZelDriversOrderWithInvalidIndexWhenCallingZeInitDriversThenDriversStillInitialize)
 if (MSVC)
   set_property(TEST tests_driver_ordering_invalid_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_invalid_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_invalid_index PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_empty_string COMMAND tests --gtest_filter=*GivenZelDriversOrderWithEmptyStringWhenCallingZeInitDriversThenDriversUseDefaultOrder)
 if (MSVC)
   set_property(TEST tests_driver_ordering_empty_string PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_empty_string PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_empty_string PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_whitespace_and_commas COMMAND tests --gtest_filter=*GivenZelDriversOrderWithWhitespaceAndCommasWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_whitespace_and_commas PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_whitespace_and_commas PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_whitespace_and_commas PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_duplicate_entries COMMAND tests --gtest_filter=*GivenZelDriversOrderWithDuplicateEntriesWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_duplicate_entries PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_duplicate_entries PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_duplicate_entries PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_zeinit_compatibility COMMAND tests --gtest_filter=*GivenZelDriversOrderWithzeInitWhenCallingzeInitThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_zeinit_compatibility PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_zeinit_compatibility PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_zeinit_compatibility PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_zeinit_and_zeinitdrivers COMMAND tests --gtest_filter=*GivenZelDriversOrderWithzeInitAndzeInitDriversWhenCallingBothThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_zeinit_and_zeinitdrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_zeinit_and_zeinitdrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_zeinit_and_zeinitdrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_complex_scenario_example1 COMMAND tests --gtest_filter=*GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample1WhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_complex_scenario_example1 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_complex_scenario_example1 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_complex_scenario_example1 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_complex_scenario_example3 COMMAND tests --gtest_filter=*GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample3WhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_complex_scenario_example3 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_complex_scenario_example3 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_complex_scenario_example3 PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_driver_ordering_all_supported_driver_types COMMAND tests --gtest_filter=*GivenZelDriversOrderWithAllSupportedDriverTypesWhenCallingZeInitDriversThenSuccessfulReturn)
 if (MSVC)
   set_property(TEST tests_driver_ordering_all_supported_driver_types PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_driver_ordering_all_supported_driver_types PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+  set_property(TEST tests_driver_ordering_all_supported_driver_types PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 # Driver Ordering Unit Tests
@@ -1009,7 +1009,7 @@ add_test(NAME init_driver_unit_tests COMMAND tests --gtest_filter=InitDriverUnit
 if (MSVC)
   set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;")
 elseif(NOT BUILD_STATIC)
-  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib_fake:${CMAKE_BINARY_DIR}/lib/")
+  set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;LD_LIBRARY_PATH=$<TARGET_FILE_DIR:ze_intel_gpu>:$<TARGET_FILE_DIR:ze_null>")
 else()
   set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;")
 endif()
@@ -1057,7 +1057,7 @@ function(add_runtime_api_test test_scenario init_method driver_config)
         if(MSVC)
             set(alt_drivers "$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
         else()
-            set(alt_drivers "${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+            set(alt_drivers "$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
         endif()
         set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "${base_env};ZE_ENABLE_ALT_DRIVERS=${alt_drivers}")
     endif()

@@ -2,7 +2,7 @@
 ## v1.30.0
 * Remove SPDLog from project entirely
 * Add New custom C++ smaller Logger, to replace SPDLog
-* Add future Enhancements to new Logger with =2 Environs
+* Add future Enhancements to new Logger with available with expiremental =2 settings
 * Fix: Bug where zeInitDrivers was not enabling lifehandle trackers in validation layer
 ## v1.29.0
 * Update to L0 Zero Spec v1.16.24: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-16-24

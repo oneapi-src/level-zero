@@ -31,9 +31,11 @@ jobs:
         ref-slug=$(echo ${{ github.ref_name }} | tr '/_' '-')
         EOF
     - name: "Registry login: ghcr.io"
+      # Uses built-in github.token (replaces hardcoded sys-lzdev PAT) and
+      # github.actor as the username (any non-empty string works with token auth).
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} |
-        docker login -u sys-lzdev --password-stdin ghcr.io
+        echo ${{ github.token }} |
+        docker login -u ${{ github.actor }} --password-stdin ghcr.io
     - name: List available base images
       if: github.event_name == 'workflow_dispatch'
       run: |
@@ -119,9 +121,11 @@ jobs:
       run: echo "DOCKER_IMAGE=localhost/${{ github.repository }}/${{ steps.const.outputs.os-string }}" >> ${GITHUB_ENV}
     - name: "Registry login: ghcr.io"
       if: matrix.os.name != 'windows'
+      # Uses built-in github.token (replaces hardcoded sys-lzdev PAT) and
+      # github.actor as the username (any non-empty string works with token auth).
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} |
-        docker login -u sys-lzdev --password-stdin ghcr.io
+        echo ${{ github.token }} |
+        docker login -u ${{ github.actor }} --password-stdin ghcr.io
     - name: Verify Docker configuration
       if: matrix.os.name != 'windows'
       run: |
