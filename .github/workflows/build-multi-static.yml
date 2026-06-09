@@ -50,9 +50,8 @@ jobs:
           {name: ubuntu, vmaj: 20, vmin: '04'},
           {name: ubuntu, vmaj: 22, vmin: '04'},
           {name: ubuntu, vmaj: 24, vmin: '04'},
-          {name: sles, vmaj: 15, vmin: 2},
-          {name: sles, vmaj: 15, vmin: 3},
           {name: sles, vmaj: 15, vmin: 4},
+          {name: sles, vmaj: 15, vmin: 6},
           {name: rhel, vmaj: 8, vmin: 6},
           {name: windows}
         ]
