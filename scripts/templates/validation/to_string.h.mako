@@ -76,7 +76,7 @@ inline std::string to_string(uint8_t value) { return std::to_string(static_cast<
 inline std::string to_string(uint16_t value) { return std::to_string(value); }
 inline std::string to_string(int32_t value) { return std::to_string(value); }
 inline std::string to_string(int64_t value) { return std::to_string(value); }
-#if SIZE_MAX != UINT64_MAX
+#if SIZE_MAX != UINT64_MAX && SIZE_MAX != UINT32_MAX
 inline std::string to_string(size_t value) { return std::to_string(value); }
 #endif
 inline std::string to_string(double value) { return std::to_string(value); }
@@ -110,7 +110,7 @@ inline std::string to_string(const int64_t* ptr) {
     if (!ptr) return "nullptr";
     return to_string(*ptr);
 }
-#if SIZE_MAX != UINT64_MAX
+#if SIZE_MAX != UINT64_MAX && SIZE_MAX != UINT32_MAX
 inline std::string to_string(const size_t* ptr) {
     if (!ptr) return "nullptr";
     return to_string(*ptr);
