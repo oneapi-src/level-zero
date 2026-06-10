@@ -61,10 +61,9 @@ zeLoaderGetTracingHandle();
 /// @brief Get pointer to Loader Context
 ///
 /// @returns
-///     - ::handle to tracing library
+///     - ::Pointer to the Loader's Context
 ZE_DLLEXPORT loader::context_t *ZE_APICALL
 zelLoaderGetContext();
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for getting version

@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.29.0)
+project(level-zero VERSION 1.30.0)
 include(GNUInstallDirs)
 
 find_package(Git)
@@ -37,17 +37,6 @@ else()
 	set(VERSION_SHA " - No git SHA found, compiled outside git folder.")
 endif()
 add_definitions(-DLOADER_VERSION_SHA="${VERSION_SHA}")
-
-if(SYSTEM_SPDLOG)
-	find_package(spdlog CONFIG)
-	if(spdlog_FOUND)
-		message(STATUS "System spdlog found.")
-	else()
-		message(FATAL_ERROR "SYSTEM_SPDLOG specified but spdlog wasn't found.")
-	endif()
-else()
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog_headers")
-endif()
 
 include(FetchContent)
 
@@ -255,21 +244,21 @@ if(BUILD_INSTALLER)
 endif()
 
 install(FILES ${LEVEL_ZERO_API_HEADERS}
-    DESTINATION ./include/level_zero
+    DESTINATION include/level_zero
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LAYERS_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/layers/*.h")
 
 install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
-    DESTINATION ./include/level_zero/layers
+    DESTINATION include/level_zero/layers
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LOADER_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/loader/*.h")
 
 install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
-    DESTINATION ./include/level_zero/loader
+    DESTINATION include/level_zero/loader
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
