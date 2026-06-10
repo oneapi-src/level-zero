@@ -88,6 +88,8 @@ class TestEccFunctions(unittest.TestCase):
 
         device_handle = self.pyzes.zes_device_handle_t()
         ecc_state = self.pyzes.zes_device_ecc_properties_t()
+        ecc_state.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES
+        ecc_state.pNext = None
 
         result = self.pyzes.zesDeviceGetEccState(device_handle, byref(ecc_state))
 

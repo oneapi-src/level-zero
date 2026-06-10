@@ -133,6 +133,8 @@ class TestGlobalOperations(unittest.TestCase):
 
         device_handle = self.pyzes.zes_device_handle_t()
         pci_props = self.pyzes.zes_pci_properties_t()
+        pci_props.stype = self.pyzes.ZES_STRUCTURE_TYPE_PCI_PROPERTIES
+        pci_props.pNext = None
 
         result = self.pyzes.zesDevicePciGetProperties(device_handle, byref(pci_props))
 
@@ -222,6 +224,8 @@ class TestGlobalOperations(unittest.TestCase):
 
         device_handle = self.pyzes.zes_device_handle_t()
         pci_state = self.pyzes.zes_pci_state_t()
+        pci_state.stype = self.pyzes.ZES_STRUCTURE_TYPE_PCI_STATE
+        pci_state.pNext = None
 
         result = self.pyzes.zesDevicePciGetState(device_handle, byref(pci_state))
 
