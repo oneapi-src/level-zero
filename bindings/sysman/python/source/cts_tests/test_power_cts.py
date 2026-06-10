@@ -92,7 +92,9 @@ class TestPowerCts:
         limit_descriptors = LimitsArray()
 
         for index in range(limit_count.value):
-            limit_descriptors[index].stype = self.pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+            limit_descriptors[index].stype = (
+                self.pz.ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC
+            )
             limit_descriptors[index].pNext = None
 
         rc = self.pz.zesPowerGetLimitsExt(
@@ -343,8 +345,8 @@ class TestPowerCts:
                 continue
 
             limit_count = c_uint32(len(modified_descriptors))
-            ModifiedArray = (
-                self.pz.zes_power_limit_ext_desc_t * len(modified_descriptors)
+            ModifiedArray = self.pz.zes_power_limit_ext_desc_t * len(
+                modified_descriptors
             )
             modified_array = ModifiedArray(*modified_descriptors)
             rc = self.pz.zesPowerSetLimitsExt(
@@ -369,8 +371,8 @@ class TestPowerCts:
                 exercised_any = True
             finally:
                 restore_count = c_uint32(len(initial_descriptors))
-                RestoreArray = (
-                    self.pz.zes_power_limit_ext_desc_t * len(initial_descriptors)
+                RestoreArray = self.pz.zes_power_limit_ext_desc_t * len(
+                    initial_descriptors
                 )
                 restore_array = RestoreArray(*initial_descriptors)
                 restore_rc = self.pz.zesPowerSetLimitsExt(
