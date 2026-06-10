@@ -11,7 +11,6 @@ from ctypes import byref, c_uint32
 
 import pytest
 
-
 CTS_TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCE_DIR = os.path.abspath(os.path.join(CTS_TESTS_DIR, ".."))
 
