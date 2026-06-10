@@ -11,8 +11,8 @@
 
 import sys
 import threading
-from ctypes.util import find_library
 from ctypes import *
+from ctypes.util import find_library
 from typing import Any, Dict
 
 libLoadLock = threading.Lock()
