@@ -133,17 +133,33 @@ jobs:
         docker info
     - name: Build image
       if: matrix.os.name != 'windows'
+      # Retry the build to ride out transient Docker Hub registry timeouts
+      # (e.g. `dial tcp ...:443: i/o timeout` resolving docker/dockerfile:1.4).
       run: |
         docker info
-        docker build \
-          --platform linux/amd64 \
-        ${{ matrix.os.vmaj != '' && format('  \
-          --build-arg VMAJ={0} \
-          --build-arg VMIN={1} ', matrix.os.vmaj, matrix.os.vmin) || '  '
-        }}\
-          --pull \
-          --tag ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
-          - < .github/docker/${{ matrix.os.name }}.Dockerfile
+        build_image() {
+          docker build \
+            --platform linux/amd64 \
+          ${{ matrix.os.vmaj != '' && format('  \
+            --build-arg VMAJ={0} \
+            --build-arg VMIN={1} ', matrix.os.vmaj, matrix.os.vmin) || '  '
+          }}\
+            --pull \
+            --tag ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
+            - < .github/docker/${{ matrix.os.name }}.Dockerfile
+        }
+        attempt=0
+        max_attempts=3
+        until build_image; do
+          attempt=$((attempt+1))
+          if [ "$attempt" -ge "$max_attempts" ]; then
+            echo "docker build failed after ${attempt} attempts" >&2
+            exit 1
+          fi
+          delay=$((attempt*15))
+          echo "docker build attempt ${attempt} failed; retrying in ${delay}s" >&2
+          sleep "$delay"
+        done
     - name: Setup Windows build environment
       if: matrix.os.name == 'windows'
       uses: ilammy/msvc-dev-cmd@v1
