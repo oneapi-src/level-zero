@@ -55,6 +55,17 @@ public:
     ZeLogger(bool use_stderr, LogLevel level, const std::string &pattern);
     ~ZeLogger();
 
+    // Non-copyable and non-movable: a logger owns a sink (stream + mutex) and
+    // is always handled through shared_ptr<ZeLogger> (via createLogger()) or as
+    // a raw pointer to the process-lifetime noopLogger() instance.  Copying
+    // would imply duplicating the sink (nonsensical for console, racy for
+    // files); moving is not needed because callers never hold a ZeLogger by
+    // value.  Deleting all four documents intent and satisfies Rule-of-Five.
+    ZeLogger(const ZeLogger&)            = delete;
+    ZeLogger& operator=(const ZeLogger&) = delete;
+    ZeLogger(ZeLogger&&)                 = delete;
+    ZeLogger& operator=(ZeLogger&&)      = delete;
+
     void setLevel(LogLevel level);
     LogLevel getLevel() const;
 
