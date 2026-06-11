@@ -59,12 +59,22 @@ def setup_environment():
 setup_environment()
 
 verbose = True
+ZE_RESULT_NAMES = {
+    value: name
+    for name, value in vars(pz).items()
+    if name.startswith("ZE_RESULT_") and isinstance(value, int)
+}
+
+
+def get_result_string(result):
+    """Convert ze_result_t value to enum name."""
+    return ZE_RESULT_NAMES.get(result, f"UNKNOWN_ZE_RESULT_{result}")
 
 
 def check_rc(label, rc):
     """Check return code and exit on error"""
     if rc != pz.ZE_RESULT_SUCCESS:
-        print(f"ERROR: {label} failed with ze_result_t={rc}")
+        print(f"ERROR: {label} failed with {get_result_string(rc)}")
         return False
     return True
 
@@ -321,7 +331,7 @@ def check_rc_allow_action_required(label, rc):
     """Accept ZE_RESULT_SUCCESS and ZE_RESULT_WARNING_ACTION_REQUIRED"""
     if rc in (pz.ZE_RESULT_SUCCESS, pz.ZE_RESULT_WARNING_ACTION_REQUIRED):
         return True
-    print(f"ERROR: {label} failed with ze_result_t={rc}")
+    print(f"ERROR: {label} failed with {get_result_string(rc)}")
     return False
 
 
@@ -531,7 +541,7 @@ def test_global_operation(driver_handle, device_handle, device_index):
             print_verbose(f"  On subdevice: {bool(on_subdevice.value)}")
             print_verbose(f"  Subdevice ID: {subdevice_id.value}")
         else:
-            print_verbose(f"  UUID mapping failed with return code: {ret}")
+            print_verbose(f"  UUID mapping failed with {get_result_string(ret)}")
 
     except Exception:
         print_verbose("  UUID mapping test failed with exception")
@@ -976,11 +986,7 @@ def test_power_module(device_handle, device_index):
 
         limit_descs = None
         limit_count = c_uint32(0)
-        if properties.onSubdevice:
-            print_verbose(
-                "    Skipping power limit APIs for subdevice-scoped power domain"
-            )
-        else:
+        if not properties.onSubdevice:
             rc = pz.zesPowerGetLimitsExt(power_handles[i], byref(limit_count), None)
             if not check_rc(f"zesPowerGetLimitsExt(power {i}, count)", rc):
                 continue
@@ -1331,7 +1337,9 @@ def test_temperature_sensors(device_handle, device_index):
                 else "      Threshold 2: Not set"
             )
         else:
-            print_verbose(f"    Temperature Config: Not available (rc={rc})")
+            print_verbose(
+                f"    Temperature Config: Not available ({get_result_string(rc)})"
+            )
 
     return True
 

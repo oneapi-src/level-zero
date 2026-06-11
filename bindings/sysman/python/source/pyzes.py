@@ -12,7 +12,6 @@
 import sys
 import threading
 from ctypes import *
-from ctypes.util import find_library
 from typing import Any, Dict
 
 libLoadLock = threading.Lock()
@@ -68,7 +67,7 @@ def _LoadZeLibrary():
         # load the library
         libName = "ze_loader"
         if sys.platform.startswith("linux"):
-            libName = find_library(libName) or "libze_loader.so.1"
+            libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
         else:
             # Try multiple common locations for Windows Intel GPU drivers
             possible_paths = [
