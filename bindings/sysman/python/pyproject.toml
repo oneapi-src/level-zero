@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyzes"
-version = "0.1.1"
+dynamic = ["version"]
 description = "Python bindings for Intel Level-Zero Driver Library (Sysman API)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,6 +35,9 @@ Issues = "https://github.com/oneapi-src/level-zero/issues"
 package-dir = {"" = "source"}
 py-modules = ["pyzes"]
 packages = ["examples"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pyzes.__version__"}
 
 [tool.coverage.run]
 omit = [

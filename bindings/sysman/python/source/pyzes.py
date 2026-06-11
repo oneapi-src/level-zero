@@ -9,6 +9,8 @@
 # Python bindings for the libze_intel_gpu.so / ze_intel_gpu.dll library
 ##
 
+__version__ = "0.1.2"
+
 import sys
 import threading
 from ctypes import *
