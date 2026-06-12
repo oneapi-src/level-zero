@@ -12,8 +12,15 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#ifdef _WIN32
+#include <windows.h>
+#include <psapi.h>
+#include <tlhelp32.h>
+typedef ptrdiff_t ssize_t;
+#else
 #include <sys/resource.h>
 #include <unistd.h>
+#endif
 #include <cstring>
 #include <mutex>
 #include <chrono>
@@ -162,6 +169,50 @@ namespace validation_layer
     static SystemResourceMetrics getSystemResourceMetrics();
     static void writeCsvData(const std::string& apiCall, const SystemResourceMetrics& current, const SystemResourceMetrics& delta, bool checkLeak);
 
+#ifdef _WIN32
+    // Helper function to read system resource metrics (Windows)
+    static SystemResourceMetrics getSystemResourceMetrics() {
+        SystemResourceMetrics metrics;
+
+        PROCESS_MEMORY_COUNTERS_EX pmc;
+        ZeroMemory(&pmc, sizeof(pmc));
+        pmc.cb = sizeof(pmc);
+        if (GetProcessMemoryInfo(GetCurrentProcess(),
+                                 reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc),
+                                 sizeof(pmc))) {
+            metrics.vmSize = static_cast<size_t>(pmc.PrivateUsage) / 1024;
+            metrics.vmRSS  = static_cast<size_t>(pmc.WorkingSetSize) / 1024;
+            metrics.vmData = static_cast<size_t>(pmc.PrivateUsage) / 1024;
+            metrics.vmPeak = static_cast<size_t>(pmc.PeakWorkingSetSize) / 1024;
+        }
+
+        // Count threads belonging to this process
+        DWORD currentPid = GetCurrentProcessId();
+        HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+        if (hSnapshot != INVALID_HANDLE_VALUE) {
+            THREADENTRY32 te;
+            te.dwSize = sizeof(THREADENTRY32);
+            size_t threadCount = 0;
+            if (Thread32First(hSnapshot, &te)) {
+                do {
+                    if (te.th32OwnerProcessID == currentPid) {
+                        threadCount++;
+                    }
+                } while (Thread32Next(hSnapshot, &te));
+            }
+            CloseHandle(hSnapshot);
+            metrics.numThreads = threadCount;
+        }
+
+        // Count open handles
+        DWORD handleCount = 0;
+        if (GetProcessHandleCount(GetCurrentProcess(), &handleCount)) {
+            metrics.numFDs = static_cast<size_t>(handleCount);
+        }
+
+        return metrics;
+    }
+#else
     // Helper function to read system resource metrics from /proc/self/status
     static SystemResourceMetrics getSystemResourceMetrics() {
         SystemResourceMetrics metrics;
@@ -207,6 +258,7 @@ namespace validation_layer
         
         return metrics;
     }
+#endif
 
     // Helper function to write CSV data with signed deltas (assumes mutex is already held by caller)
     static void writeCsvData(const std::string& apiCall, const SystemResourceMetrics& current, const SystemResourceMetrics& delta, bool checkLeak = false) {
@@ -402,11 +454,21 @@ namespace validation_layer
                                    std::to_string(reinterpret_cast<uintptr_t>(&getResourceTracker())));
             
             // Check if CSV output is requested
+#ifdef _WIN32
+            char* csvPath = nullptr;
+            size_t csvPathLen = 0;
+            _dupenv_s(&csvPath, &csvPathLen, "ZEL_SYSTEM_RESOURCE_TRACKER_CSV");
+#else
             const char* csvPath = getenv("ZEL_SYSTEM_RESOURCE_TRACKER_CSV");
+#endif
             if (csvPath && csvPath[0] != '\0') {
                 try {
                     // Create unique filename per process by appending PID
+#ifdef _WIN32
+                    DWORD pid = GetCurrentProcessId();
+#else
                     pid_t pid = getpid();
+#endif
                     std::string uniquePath(csvPath);
                     
                     // Insert PID before file extension or at end
@@ -440,6 +502,9 @@ namespace validation_layer
                     context.logger->log_error("Exception opening CSV file: " + std::string(e.what()));
                 }
             }
+#ifdef _WIN32
+            free(csvPath);
+#endif
             
             system_resource_trackerChecker::ZEsystem_resource_trackerChecker *zeChecker = new system_resource_trackerChecker::ZEsystem_resource_trackerChecker;
             system_resource_trackerChecker::ZESsystem_resource_trackerChecker *zesChecker = new system_resource_trackerChecker::ZESsystem_resource_trackerChecker;
