@@ -34,29 +34,29 @@ endif()
 # since they are not built into the library when BUILD_STATIC=1
 if(BUILD_STATIC)
   target_sources(tests PRIVATE
-    ${CMAKE_SOURCE_DIR}/source/loader/ze_loader.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/ze_loader_api.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/ze_ldrddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/ze_ldrddi_driver_ddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/zet_ldrddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/zet_ldrddi_driver_ddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/zes_ldrddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/zes_ldrddi_driver_ddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/zer_ldrddi_driver_ddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/zer_ldrddi.cpp
-    ${CMAKE_SOURCE_DIR}/source/loader/zel_tracing_ldrddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/ze_loader.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/ze_loader_api.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/ze_ldrddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/ze_ldrddi_driver_ddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/zet_ldrddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/zet_ldrddi_driver_ddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/zes_ldrddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/zes_ldrddi_driver_ddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/zer_ldrddi_driver_ddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/zer_ldrddi.cpp
+    ${PROJECT_SOURCE_DIR}/source/loader/zel_tracing_ldrddi.cpp
   )
   
   # Platform-specific source files
   if(WIN32)
     target_sources(tests PRIVATE
-      ${CMAKE_SOURCE_DIR}/source/loader/windows/driver_discovery_win.cpp
-      ${CMAKE_SOURCE_DIR}/source/loader/windows/loader_init.cpp
+      ${PROJECT_SOURCE_DIR}/source/loader/windows/driver_discovery_win.cpp
+      ${PROJECT_SOURCE_DIR}/source/loader/windows/loader_init.cpp
     )
   else()
     target_sources(tests PRIVATE
-      ${CMAKE_SOURCE_DIR}/source/loader/linux/driver_discovery_lin.cpp
-      ${CMAKE_SOURCE_DIR}/source/loader/linux/loader_init.cpp
+      ${PROJECT_SOURCE_DIR}/source/loader/linux/driver_discovery_lin.cpp
+      ${PROJECT_SOURCE_DIR}/source/loader/linux/loader_init.cpp
     )
   endif()
   
@@ -68,7 +68,7 @@ if(BUILD_STATIC)
   )
 endif()
 
-target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/source/inc)
+target_include_directories(tests PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/source/inc)
 target_link_libraries(
   tests
   PRIVATE
