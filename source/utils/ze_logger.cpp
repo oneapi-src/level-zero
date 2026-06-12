@@ -156,10 +156,6 @@ struct LogSink {
           is_good(true)
     {}
 
-    bool good() const {
-        return is_good;
-    }
-
     void write(const std::string &line) {
         std::lock_guard<std::mutex> lk(mtx);
         if (is_good) {
@@ -550,44 +546,52 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
         output_dest = "stderr (console)";
     } else {
         // Create the full directory path (equivalent to mkdir -p).
+        // Each component is created with mkdir-first, then verified on EEXIST.
+        // This avoids a check-then-create TOCTOU window: an attacker cannot win
+        // a race between an existence test and the create call because there is
+        // no separate existence test — mkdir itself is the atomic decision.
+        // We still use stat()/GetFileAttributesA (which follow symlinks) so that
+        // existing symlinks-to-directories continue to work as before.
 #ifdef _WIN32
-        // Walk each component and create it if missing.
         for (std::size_t pos = 0; pos <= log_directory.size(); ++pos) {
             if (pos == log_directory.size() ||
                 log_directory[pos] == '\\' || log_directory[pos] == '/') {
                 if (pos == 0) continue;
                 std::string partial = log_directory.substr(0, pos);
-                DWORD attrs = GetFileAttributesA(partial.c_str());
-                if (attrs == INVALID_FILE_ATTRIBUTES) {
-                    if (_mkdir(partial.c_str()) != 0 && errno != EEXIST) {
+                if (_mkdir(partial.c_str()) != 0) {
+                    if (errno != EEXIST) {
                         std::cerr << "ze_logger: Failed to create log directory '"
                                   << partial << "': " << errnoToString(errno) << "\n";
                         return std::shared_ptr<ZeLogger>(new ZeLogger());
                     }
-                } else if (!(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-                    std::cerr << "ze_logger: Log directory path component '"
-                              << partial << "' exists but is not a directory\n";
-                    return std::shared_ptr<ZeLogger>(new ZeLogger());
+                    // Already exists — verify it is a directory.
+                    DWORD attrs = GetFileAttributesA(partial.c_str());
+                    if (attrs == INVALID_FILE_ATTRIBUTES || !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
+                        std::cerr << "ze_logger: Log directory path component '"
+                                  << partial << "' exists but is not a directory\n";
+                        return std::shared_ptr<ZeLogger>(new ZeLogger());
+                    }
                 }
             }
         }
 #else
-        // Walk each component and create it if missing.
         for (std::size_t pos = 0; pos <= log_directory.size(); ++pos) {
             if (pos == log_directory.size() || log_directory[pos] == '/') {
                 if (pos == 0) continue;
                 std::string partial = log_directory.substr(0, pos);
-                struct stat st{};
-                if (stat(partial.c_str(), &st) != 0) {
-                    if (mkdir(partial.c_str(), 0755) != 0 && errno != EEXIST) {
+                if (mkdir(partial.c_str(), 0755) != 0) {
+                    if (errno != EEXIST) {
                         std::cerr << "ze_logger: Failed to create log directory '"
                                   << partial << "': " << errnoToString(errno) << "\n";
                         return std::shared_ptr<ZeLogger>(new ZeLogger());
                     }
-                } else if (!S_ISDIR(st.st_mode)) {
-                    std::cerr << "ze_logger: Log directory path component '"
-                              << partial << "' exists but is not a directory\n";
-                    return std::shared_ptr<ZeLogger>(new ZeLogger());
+                    // Already exists — verify it is a directory (follows symlinks).
+                    struct stat st{};
+                    if (stat(partial.c_str(), &st) != 0 || !S_ISDIR(st.st_mode)) {
+                        std::cerr << "ze_logger: Log directory path component '"
+                                  << partial << "' exists but is not a directory\n";
+                        return std::shared_ptr<ZeLogger>(new ZeLogger());
+                    }
                 }
             }
         }
@@ -600,7 +604,7 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
         std::string cfg;
         cfg  = caller + " logging enabled:";
         cfg += "\n  ZEL_LOADER_LOG_CONSOLE          : " + std::string(log_console ? "stderr" : "disabled");
-        cfg += "\n  ZEL_ENABLE_LOADER_LOGGING        : " + std::string(logging_enabled ? "enabled" : "disabled");
+        cfg += "\n  ZEL_ENABLE_LOADER_LOGGING        : " + std::string(logging_mode == 2 ? "enabled (advanced)" : "enabled");
         cfg += "\n  ZEL_LOADER_LOGGING_LEVEL         : " + log_level;
         cfg += "\n  ZEL_LOADER_LOG_DIR               : " + log_directory;
         cfg += "\n  ZEL_LOADER_LOG_FILE              : " + loader_file;
