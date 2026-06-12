@@ -168,14 +168,14 @@ SUPPORTED APIs
 | `zesPowerGetEnergyCounter` | Power | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
 | `zesPowerGetProperties` | Power | 0.1.2 | None |
 | `zesPowerGetLimitsExt` | Power | 0.1.2 | Extended power limits API |
-| `zesPowerSetLimitsExt` | Power | 0.1.2 | Extended power limits API |
+| `zesPowerSetLimitsExt` | Power | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
 | **Frequency Management** |-|-|-|
 | `zesDeviceEnumFrequencyDomains` | Frequency | 0.1.0 | None |
 | `zesFrequencyGetState` | Frequency | 0.1.0 | None |
 | `zesFrequencyGetProperties` | Frequency | 0.1.2 | None |
 | `zesFrequencyGetAvailableClocks` | Frequency | 0.1.2 | None |
 | `zesFrequencyGetRange` | Frequency | 0.1.2 | None |
-| `zesFrequencySetRange` | Frequency | 0.1.2 | None |
+| `zesFrequencySetRange` | Frequency | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
 | `zesFrequencyGetThrottleTime` | Frequency | 0.1.2 | None |
 | **Temperature Monitoring** |-|-|-|
 | `zesDeviceEnumTemperatureSensors` | Temperature | 0.1.0 | None |
@@ -187,9 +187,9 @@ SUPPORTED APIs
 | `zesEngineGetProperties` | Engine | 0.1.0 | None |
 | `zesEngineGetActivity` | Engine | 0.1.0 | None |
 | **PCI Management** |-|-|-|
-| `zesDevicePciGetProperties` | PCI | 0.1.2 | None |
-| `zesDevicePciGetState` | PCI | 0.1.2 | None |
-| `zesDevicePciGetStats` | PCI | 0.1.2 | None |
+| `zesDevicePciGetProperties` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesDevicePciGetState` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesDevicePciGetStats` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
 | **ECC (Error Correction Code) Management** |-|-|-|
 | `zesDeviceEccAvailable` | ECC | 0.1.2 | None |
 | `zesDeviceEccConfigurable` | ECC | 0.1.2 | None |
