@@ -166,9 +166,17 @@ SUPPORTED APIs
 | **Power Management** |-|-|-|
 | `zesDeviceEnumPowerDomains` | Power | 0.1.0 | None |
 | `zesPowerGetEnergyCounter` | Power | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesPowerGetProperties` | Power | 0.1.2 | None |
+| `zesPowerGetLimitsExt` | Power | 0.1.2 | Extended power limits API |
+| `zesPowerSetLimitsExt` | Power | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes |
 | **Frequency Management** |-|-|-|
 | `zesDeviceEnumFrequencyDomains` | Frequency | 0.1.0 | None |
 | `zesFrequencyGetState` | Frequency | 0.1.0 | None |
+| `zesFrequencyGetProperties` | Frequency | 0.1.2 | None |
+| `zesFrequencyGetAvailableClocks` | Frequency | 0.1.2 | None |
+| `zesFrequencyGetRange` | Frequency | 0.1.2 | None |
+| `zesFrequencySetRange` | Frequency | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes |
+| `zesFrequencyGetThrottleTime` | Frequency | 0.1.2 | None |
 | **Temperature Monitoring** |-|-|-|
 | `zesDeviceEnumTemperatureSensors` | Temperature | 0.1.0 | None |
 | `zesTemperatureGetProperties` | Temperature | 0.1.0 | None |
@@ -178,9 +186,27 @@ SUPPORTED APIs
 | `zesDeviceEnumEngineGroups` | Engine | 0.1.0 | Linux: Shows "no handles found" error when not in superuser mode |
 | `zesEngineGetProperties` | Engine | 0.1.0 | None |
 | `zesEngineGetActivity` | Engine | 0.1.0 | None |
+| **PCI Management** |-|-|-|
+| `zesDevicePciGetProperties` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesDevicePciGetState` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesDevicePciGetStats` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
+| **ECC (Error Correction Code) Management** |-|-|-|
+| `zesDeviceEccAvailable` | ECC | 0.1.2 | None |
+| `zesDeviceEccConfigurable` | ECC | 0.1.2 | None |
+| `zesDeviceGetEccState` | ECC | 0.1.2 | None |
+| `zesDeviceSetEccState` | ECC | 0.1.2 | None |
 
 RELEASE NOTES
 -------------
+Version 0.1.2
+- **New API Functions:**
+  - `zesDevicePciGetProperties`, `zesDevicePciGetStats`, `zesDevicePciGetState`
+  - `zesDeviceEccAvailable`, `zesDeviceEccConfigurable`, `zesDeviceGetEccState`, `zesDeviceSetEccState`
+  - `zesPowerGetProperties`, `zesPowerGetLimitsExt`, `zesPowerSetLimitsExt`
+  - `zesFrequencyGetProperties`, `zesFrequencyGetAvailableClocks`, `zesFrequencyGetRange`, `zesFrequencySetRange`, `zesFrequencyGetThrottleTime`
+- **Bug Fixes:**
+  - Fixed ctypes structure definitions to correctly match L0 API specifications
+
 Version 0.1.1
 - Minor fixes: Removed unnecessary debug print statements
 
