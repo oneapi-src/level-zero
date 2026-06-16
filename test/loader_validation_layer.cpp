@@ -1056,3 +1056,54 @@ TEST(
     uint32_t deviceCount = 0;
     EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_HANDLE, zeDeviceGet(nullptr, &deviceCount, nullptr));
 }
+
+// Verify that enabling the Timing Checker is transparent: it records host-side
+// timing for every API call without altering results or crashing. The per-API
+// summary is emitted by the checker at teardown.
+TEST(
+    ValidationLayerTimingChecker,
+    GivenTimingCheckerEnabledWhenCallingApisThenResultsAreUnchangedAndNoCrash) {
+
+    putenv_safe(const_cast<char *>("ZE_ENABLE_VALIDATION_LAYER=1"));
+    putenv_safe(const_cast<char *>("ZEL_ENABLE_TIMING_CHECKER=1"));
+    putenv_safe(const_cast<char *>("ZE_ENABLE_NULL_DRIVER=1"));
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &context_desc, &context));
+    EXPECT_NE(context, nullptr);
+
+    ze_command_list_desc_t cmdlist_desc = {};
+    cmdlist_desc.stype = ZE_STRUCTURE_TYPE_COMMAND_LIST_DESC;
+    ze_command_list_handle_t commandList = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListCreate(context, devices[0], &cmdlist_desc, &commandList));
+    EXPECT_NE(commandList, nullptr);
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListDestroy(commandList));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+}

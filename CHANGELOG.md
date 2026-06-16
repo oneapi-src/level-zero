@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## Unreleased
+* feature: Add validation layer Timing Checker (`ZEL_ENABLE_TIMING_CHECKER`) for host-side per-API timing with summary, CSV and live-log output modes
 ## v1.30.0
 * Remove SPDLog from project entirely
 * Add New custom C++ smaller Logger, to replace SPDLog

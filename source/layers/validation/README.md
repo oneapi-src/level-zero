@@ -23,6 +23,7 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
 - `ZEL_ENABLE_CERTIFICATION_CHECKER`
 - `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER`
+- `ZEL_ENABLE_TIMING_CHECKER`
 
 ## Validation Modes
 
@@ -140,6 +141,42 @@ export ZEL_LOADER_LOGGING_LEVEL=debug
 **Platform Support:** This checker supports Linux and Windows. On Linux it reads `/proc/self/status`; on Windows it uses the Win32 `PSAPI` and `Toolhelp32` APIs. macOS is not supported.
 
 See [System Resource Tracker documentation](checkers/system_resource_tracker/system_resource_tracker.md) for detailed usage and CSV format.
+
+### `ZEL_ENABLE_TIMING_CHECKER`
+
+The Timing Checker measures the host-side (CPU) duration of every Level Zero API
+call and aggregates per-API statistics (call count, total, min, max and average
+time in nanoseconds). It is inspired by the host-function timing in Intel's
+unitrace profiler, ported into the validation layer.
+
+For each API call the checker stamps a high-resolution monotonic timestamp in the
+Prologue and reads it again in the Epilogue. The clock is
+`QueryPerformanceCounter` on Windows and `clock_gettime(CLOCK_MONOTONIC_RAW)`
+elsewhere. The measured span is dominated by the underlying driver call and is
+consistent across calls, making it suitable for relative host-cost analysis.
+
+> **Note:** Device-side (GPU execution) timing is not provided. The validation
+> layer receives handles by value and the Epilogue runs after the driver call, so
+> it cannot inject the timestamp events that GPU timing requires.
+
+To enable, set:
+```bash
+export ZE_ENABLE_VALIDATION_LAYER=1
+export ZEL_ENABLE_TIMING_CHECKER=1
+export ZEL_ENABLE_LOADER_LOGGING=1
+export ZEL_LOADER_LOG_CONSOLE=1   # optional: log to stderr instead of a file
+```
+
+Output modes (each independently controlled):
+
+| Environment Variable | Default | Description |
+|---|---|---|
+| `ZEL_ENABLE_TIMING_CHECKER` | `0` | Enable the checker; a per-API summary table is logged at teardown |
+| `ZEL_TIMING_CHECKER_CSV` | (unset) | Also export the per-API statistics to a CSV file (the process id is appended to the filename) |
+| `ZEL_TIMING_CHECKER_LIVE` | `0` | Also log each call's duration as it happens (verbose) |
+
+The summary and live output are emitted through the loader logger, so logging
+must be enabled as shown above for them to be visible.
 
 ## Testing
 
