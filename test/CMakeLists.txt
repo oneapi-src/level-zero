@@ -1177,3 +1177,11 @@ if(UNIX AND NOT APPLE)
   target_link_libraries(ze_logger_teardown_unit_tests PRIVATE pthread)
 endif()
 add_test(NAME ze_logger_teardown_unit_tests COMMAND ze_logger_teardown_unit_tests)
+
+# Timing Checker - host-side per-API timing must be transparent to results
+add_test(NAME test_validation_layer_timing_checker COMMAND tests --gtest_filter=ValidationLayerTimingChecker.GivenTimingCheckerEnabledWhenCallingApisThenResultsAreUnchangedAndNoCrash)
+set_property(TEST test_validation_layer_timing_checker PROPERTY ENVIRONMENT "ZE_ENABLE_VALIDATION_LAYER=1;ZEL_ENABLE_TIMING_CHECKER=1;ZE_ENABLE_NULL_DRIVER=1;ZEL_TEST_NULL_DRIVER_TYPE=GPU")
+
+# Timing Checker - live mode must report correct per-API timing data
+add_test(NAME test_validation_layer_timing_checker_data COMMAND tests --gtest_filter=ValidationLayerTimingChecker.GivenTimingCheckerWithLiveLoggingWhenCallingApisThenPerApiTimingDataIsReported)
+set_property(TEST test_validation_layer_timing_checker_data PROPERTY ENVIRONMENT "ZE_ENABLE_VALIDATION_LAYER=1;ZEL_ENABLE_TIMING_CHECKER=1;ZEL_TIMING_CHECKER_LIVE=1;ZE_ENABLE_NULL_DRIVER=1;ZEL_TEST_NULL_DRIVER_TYPE=GPU")
