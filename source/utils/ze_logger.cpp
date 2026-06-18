@@ -12,6 +12,7 @@
 #include <cerrno>
 #include <chrono>
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -156,10 +157,13 @@ struct LogSink {
           is_good(true)
     {}
 
-    void write(const std::string &line) {
+    // Raw (data,len) overload — lets callers emit a fixed char buffer without
+    // constructing an intermediate std::string (keeps the log hot path allocation-free).
+    void write(const char *data, std::size_t len) {
         std::lock_guard<std::mutex> lk(mtx);
         if (is_good) {
-            *stream << line << '\n';
+            stream->write(data, static_cast<std::streamsize>(len));
+            stream->put('\n');
             // stream->fail() is a single rdstate() bitmask read — negligible cost.
             // Once a failure is detected, is_good=false so all future calls return
             // immediately at the guard above, paying zero additional cost.
@@ -171,6 +175,8 @@ struct LogSink {
             }
         }
     }
+
+    void write(const std::string &line) { write(line.data(), line.size()); }
 
     void flush() {
         std::lock_guard<std::mutex> lk(mtx);
@@ -235,10 +241,13 @@ void ZeLogger::flush() {
 //   %^%l%$                 — level label (with color when tty)
 //   %v                     — message
 //
-// formatLine writes into an existing string (passed by ref) to avoid
-// a return-by-value heap allocation on every log call.
+// formatLine writes into a caller-provided fixed char buffer (snprintf-style)
+// and returns the total length the line needs.  It keeps no owning static state
+// (POD thread_local buffers only), so it is allocation-free on the hot path and
+// safe to call during exit-time teardown.
 // ---------------------------------------------------------------------------
-void ZeLogger::formatLine(LogLevel msg_level, const std::string &msg, std::string &out) {
+std::size_t ZeLogger::formatLine(LogLevel msg_level, const std::string &msg,
+                                 char *out, std::size_t cap) {
     // Build timestamp: YYYY-MM-DD HH:MM:SS.mmm
     auto now   = std::chrono::system_clock::now();
     auto now_t = std::chrono::system_clock::to_time_t(now);
@@ -259,22 +268,50 @@ void ZeLogger::formatLine(LogLevel msg_level, const std::string &msg, std::strin
     std::snprintf(ts_full, sizeof(ts_full), "%s.%03lld", ts,
                   static_cast<long long>(ms.count()));
 
-    // Thread id — computed once per thread, stored in a thread_local local
-    // static inside this non-inline, non-template .cpp function.
-    // This produces STB_LOCAL linkage (not STB_GNU_UNIQUE), so dlclose() is unaffected.
-    static thread_local const std::string tid_str = [](){
+    // Thread id — computed once per thread into a POD thread_local char buffer.
+    // POD storage has a trivial destructor (nothing runs at thread/exit teardown),
+    // so it cannot become a use-after-free when logging happens during process exit;
+    // and as a function-local static in this non-inline, non-template .cpp function
+    // it has STB_LOCAL linkage (not STB_GNU_UNIQUE), so dlclose() is unaffected.
+    static thread_local char   tid_buf[32];
+    static thread_local std::size_t tid_len = 0;
+    if (tid_len == 0) {
         std::ostringstream ss;
         ss << std::this_thread::get_id();
-        return ss.str();
-    }();
+        const std::string s = ss.str();
+        tid_len = s.size() < sizeof(tid_buf) ? s.size() : sizeof(tid_buf);
+        std::memcpy(tid_buf, s.data(), tid_len);
+    }
+
+    char pid_buf[24];
+    int pid_written = std::snprintf(pid_buf, sizeof(pid_buf), "%lld",
+                                    static_cast<long long>(GET_PID()));
+    if (pid_written < 0) pid_written = 0;
+    const std::size_t pid_len =
+        static_cast<std::size_t>(pid_written) < sizeof(pid_buf)
+            ? static_cast<std::size_t>(pid_written)
+            : sizeof(pid_buf) - 1;
 
     const char *label = levelLabel(msg_level);
     const char *color = _sink->color_enabled ? levelColor(msg_level) : "";
     const char *reset = _sink->color_enabled ? AnsiColor::reset()     : "";
 
-    // Write directly into the caller-provided string — no extra allocation.
-    out.clear();
-    out.reserve(_pattern.size() + msg.size() + 64);
+    // Bounded append into the caller buffer. `len` always tracks the TOTAL bytes
+    // the full line needs (so the caller can detect overflow), but we never write
+    // past `cap`. No heap allocation on this path.
+    std::size_t len = 0;
+    auto put = [&](const char *s, std::size_t n) {
+        if (len < cap) {
+            std::size_t avail = cap - len;
+            std::memcpy(out + len, s, n < avail ? n : avail);
+        }
+        len += n;
+    };
+    auto put_cstr = [&](const char *s) { put(s, std::strlen(s)); };
+    auto put_ch   = [&](char c) {
+        if (len < cap) out[len] = c;
+        len += 1;
+    };
 
     bool color_span_open = false;
 
@@ -285,64 +322,77 @@ void ZeLogger::formatLine(LogLevel msg_level, const std::string &msg, std::strin
                 case 'Y': {
                     const char *seq = "%Y-%m-%d %H:%M:%S.%e";
                     if (_pattern.compare(i, 20, seq) == 0) {
-                        out += ts_full;
+                        put_cstr(ts_full);
                         i += 19;
                     } else {
-                        out += '%';
-                        out += tok;
+                        put_ch('%');
+                        put_ch(tok);
                         ++i;
                     }
                     break;
                 }
                 case 't':
-                    out += tid_str;
+                    put(tid_buf, tid_len);
                     ++i;
                     break;
                 case 'P':
-                    out += std::to_string(GET_PID());
+                    put(pid_buf, pid_len);
                     ++i;
                     break;
                 case '^':
-                    out += color;
+                    put_cstr(color);
                     color_span_open = true;
                     ++i;
                     break;
                 case 'l':
-                    out += label;
+                    put_cstr(label);
                     ++i;
                     break;
                 case '$':
-                    out += reset;
+                    put_cstr(reset);
                     color_span_open = false;
                     ++i;
                     break;
                 case 'v':
-                    out += msg;
+                    put(msg.data(), msg.size());
                     ++i;
                     break;
                 default:
-                    out += '%';
+                    put_ch('%');
                     break;
             }
         } else {
-            out += _pattern[i];
+            put_ch(_pattern[i]);
         }
     }
 
     if (color_span_open) {
-        out += reset;
+        put_cstr(reset);
     }
+
+    return len;
 }
 
 void ZeLogger::write(LogLevel msg_level, const std::string &msg) {
     if (!_sink || msg_level < _level) {
         return;
     }
-    // Reuse a thread_local buffer to avoid a heap allocation per log call.
+    // POD thread_local buffer — trivial destructor, freed with the thread, no heap
+    // leak. A log call can arrive during exit-time teardown (e.g. SYCL shutdown →
+    // validation-layer DDI → log) AFTER a non-trivial thread_local (std::string)
+    // would have been destroyed; a POD char buffer is safe to use at any time.
     // STB_LOCAL linkage (non-inline, non-template .cpp function) — safe for dlclose.
-    static thread_local std::string line_buf;
-    formatLine(msg_level, msg, line_buf);
-    _sink->write(line_buf);
+    static thread_local char line_buf[2048];
+    const std::size_t n = formatLine(msg_level, msg, line_buf, sizeof(line_buf));
+    if (n <= sizeof(line_buf)) {
+        _sink->write(line_buf, n);                 // hot path: zero allocation
+    } else {
+        // Rare oversized line: one allocation, same output (no truncation).
+        // Line length is deterministic for a given message, so a single retry fits.
+        std::string big(n, '\0');
+        const std::size_t n2 = formatLine(msg_level, msg, &big[0], big.size());
+        _sink->write(big.data(), n2 < big.size() ? n2 : big.size());
+    }
 }
 
 void ZeLogger::trace(const std::string &msg)    { write(LogLevel::trace,    msg); }
