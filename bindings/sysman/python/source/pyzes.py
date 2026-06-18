@@ -9,6 +9,8 @@
 # Python bindings for the libze_intel_gpu.so / ze_intel_gpu.dll library
 ##
 
+import glob
+import os
 import sys
 import threading
 from ctypes import *
@@ -69,45 +71,40 @@ def _LoadZeLibrary():
         if sys.platform.startswith("linux"):
             libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
         else:
-            # Try multiple common locations for Windows Intel GPU drivers
+            libName = libName + ".dll"
+
+            module_dir = os.path.dirname(os.path.abspath(__file__))
+            system_root = os.environ.get("SystemRoot", r"C:\Windows")
+
             possible_paths = [
-                # Try system PATH first
-                libName + "64.dll",
-                # Common Intel GPU driver locations
-                r"C:\Windows\System32\DriverStore\FileRepository\iigd_dch.inf_amd64_*\ze_intel_gpu64.dll",
-                r"C:\Windows\System32\DriverStore\FileRepository\igdlh64.inf_amd64_*\ze_intel_gpu64.dll",
-                # Try current directory
-                "ze_intel_gpu64.dll",
+                os.path.join(module_dir, libName),
+                os.path.join(system_root, "System32", libName),
+                r"C:\Windows\System32\DriverStore\FileRepository\iigd_dch.inf_amd64_*\ze_loader.dll",
+                r"C:\Windows\System32\DriverStore\FileRepository\igdlh64.inf_amd64_*\ze_loader.dll",
+                libName,
             ]
 
             library_loaded = False
+            load_errors = []
             for path in possible_paths:
+                candidate_matches = glob.glob(path) if "*" in path else [path]
+                if not candidate_matches:
+                    load_errors.append(f"{path}: no matches found")
+                    continue
+                for match_path in candidate_matches:
+                    try:
+                        gpuLib = CDLL(match_path)
+                        library_loaded = True
+                        break
+                    except OSError as error:
+                        load_errors.append(f"{match_path}: {error}")
                 if library_loaded:
                     break
 
-                if "*" in path:
-                    # Handle wildcard paths for driver store
-                    import glob
-
-                    matching_paths = glob.glob(path)
-                    for match_path in matching_paths:
-                        try:
-                            gpuLib = CDLL(match_path)
-                            library_loaded = True
-                            break
-                        except OSError:
-                            pass  # Try next path
-                else:
-                    # Try loading the library directly
-                    try:
-                        gpuLib = CDLL(path)
-                        library_loaded = True
-                    except OSError:
-                        pass  # Try next path
-
             if not library_loaded:
                 raise Exception(
-                    f"Failed to load Intel GPU library. Tried paths: {possible_paths}"
+                    "Failed to load Level Zero loader on Windows. "
+                    f"Tried paths: {possible_paths}. Errors: {load_errors}"
                 )
 
         if sys.platform.startswith("linux"):
