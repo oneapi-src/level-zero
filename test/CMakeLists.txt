@@ -1159,3 +1159,21 @@ set_property(TEST test_validation_layer_api_tracing_immediate_cmdlist PROPERTY E
 
 add_test(NAME test_validation_layer_api_tracing_command_queue COMMAND tests --gtest_filter=ValidationLayerApiTracing.GivenValidationLayerEnabledWithTraceLevelLoggingWhenCallingCommandQueueApisThenTracingDoesNotCrash)
 set_property(TEST test_validation_layer_api_tracing_command_queue PROPERTY ENVIRONMENT "ZE_ENABLE_VALIDATION_LAYER=1;ZEL_ENABLE_LOADER_LOGGING=1;ZEL_LOADER_LOGGING_LEVEL=trace;ZE_ENABLE_NULL_DRIVER=1")
+
+# -----------------------------------------------------------------------------
+# Standalone unit test for the ZeLogger exit-time / teardown use-after-free fix.
+# Links ONLY level_zero_utils (no loader, drivers, or layers), so it is a true
+# unit test independent of the static/dynamic build model and of any hardware.
+# Built with -DUSE_ASAN=ON it is a deterministic regression detector for the
+# logger UAF; without ASan it still exercises the teardown-time logging path.
+# -----------------------------------------------------------------------------
+add_executable(ze_logger_teardown_unit_tests ze_logger_teardown_unit_tests.cpp)
+target_include_directories(ze_logger_teardown_unit_tests PRIVATE
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/source/inc
+)
+target_link_libraries(ze_logger_teardown_unit_tests PRIVATE GTest::gtest_main level_zero_utils)
+if(UNIX AND NOT APPLE)
+  target_link_libraries(ze_logger_teardown_unit_tests PRIVATE pthread)
+endif()
+add_test(NAME ze_logger_teardown_unit_tests COMMAND ze_logger_teardown_unit_tests)

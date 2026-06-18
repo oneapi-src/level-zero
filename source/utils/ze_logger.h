@@ -89,7 +89,13 @@ public:
 
 private:
     void write(LogLevel msg_level, const std::string &msg);
-    void formatLine(LogLevel msg_level, const std::string &msg, std::string &out);
+    // Formats the log line into a caller-provided fixed buffer (snprintf-style).
+    // Returns the total number of bytes the full line needs; if that exceeds
+    // `cap` the buffer holds a truncated prefix and the caller must retry with a
+    // larger buffer. Uses no owning static state, so it is safe to call during
+    // exit-time teardown (no thread_local std::string to outlive its destructor).
+    std::size_t formatLine(LogLevel msg_level, const std::string &msg,
+                           char *out, std::size_t cap);
 
     LogLevel _level;
     std::string _pattern;
