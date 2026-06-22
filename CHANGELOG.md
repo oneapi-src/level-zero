@@ -1,4 +1,11 @@
 # Level zero loader changelog
+## v1.31.0
+* Fix: logger use-after-free in ZeLogger during teardown
+* Fix: .mako drift from actual headers
+* Fix: Static Analysis Fixes
+* Feature: Enable System Resource Tracker on Windows
+* Removed unnused size_t for to_string in 32b compiles
+* Use PROJECT_*_DIR instead of CMAKE_*_DIR to support subproject builds
 ## v1.30.0
 * Remove SPDLog from project entirely
 * Add New custom C++ smaller Logger, to replace SPDLog
