@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.30.1
+* (fix)logger use-after-free in ZeLogger during teardown
 ## v1.30.0
 * Remove SPDLog from project entirely
 * Add New custom C++ smaller Logger, to replace SPDLog
