@@ -60,11 +60,22 @@ inline std::string to_string(${th.make_type_name(n, tags, obj)} handle) {
 
 %endfor
 // Callback to_string functions (function pointers)
+// Multiple callback typedefs can resolve to the same underlying function-pointer
+// type (e.g. void(*)(void*)). Since typedefs are aliases rather than distinct
+// types in C++, emit only one to_string overload per unique signature
+// (returntype + parameter types) to avoid redefinition errors.
+<% seen_cb_sigs = set() %>\
 %for obj in th.extract_objs(specs, r"callback"):
+<%
+    cb_sig = (obj.get('returntype'), tuple(p['type'] for p in obj.get('params', [])))
+%>\
+%if cb_sig not in seen_cb_sigs:
+<% seen_cb_sigs.add(cb_sig) %>\
 inline std::string to_string(${th.make_type_name(n, tags, obj)} ptr) {
     return to_string(reinterpret_cast<const void*>(ptr));
 }
 
+%endif
 %endfor
 %endif
 %if n == 'ze':
