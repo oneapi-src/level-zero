@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.16-r1.16.24
+ @version v1.17-r1.17.23
 
  """
 import platform
@@ -174,6 +174,8 @@ class zes_structure_type_v(IntEnum):
     PCI_LINK_SPEED_DOWNGRADE_EXT_PROPERTIES = 0x00020014                    ## ::zes_pci_link_speed_downgrade_ext_properties_t
     RAS_STATE_EXP2 = 0x00020015                                             ## ::zes_ras_state_exp2_t
     RAS_CONFIG_EXP = 0x00020016                                             ## ::zes_ras_config_exp_t
+    OEM_SERIAL_ID_EXT_PROPERTIES = 0x00020017                               ## ::zes_oem_serial_id_ext_properties_t
+    DEVICE_EXT_STATE = 0x00020018                                           ## ::zes_device_ext_state_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -307,7 +309,8 @@ class zes_reset_type_t(c_int):
 
 
 ###############################################################################
-## @brief Device state
+## @brief Device state. To retrieve the current device state, please use
+##        ::zes_device_ext_state_t as pNext.
 class zes_device_state_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -365,7 +368,10 @@ class zes_device_property_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Device properties
+## @brief Device properties. To get OEM Serial ID, pNext member of this
+##        structure should point to an instance of
+##        ${s}_oem_serial_id_ext_properties_t with its stype set to
+##        ::ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES.
 class zes_device_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -1553,6 +1559,13 @@ class zes_mem_type_v(IntEnum):
     GDDR6X = 18                                                             ## GDDR6X memory
     GDDR7 = 19                                                              ## GDDR7 memory
     LPDDR5X = 20                                                            ## LPDDR5X memory
+    HBM2 = 21                                                               ## HBM2 memory
+    DDR2 = 22                                                               ## DDR2 memory
+    HBM2E = 23                                                              ## HBM2E memory
+    HBM3 = 24                                                               ## HBM3 memory
+    HBM3E = 25                                                              ## HBM3E memory
+    HBM4 = 26                                                               ## HBM4 memory
+    LPDDR6 = 27                                                             ## LPDDR6 memory
 
 class zes_mem_type_t(c_int):
     def __str__(self):
@@ -2226,6 +2239,86 @@ class zes_pci_link_speed_downgrade_ext_properties_t(Structure):
         ("pciLinkSpeedUpdateCapable", ze_bool_t),                       ## [out] Returns if PCIe downgrade capability is available.
         ("maxPciGenSupported", c_int32_t)                               ## [out] Returns the max supported PCIe generation of the device. -1
                                                                         ## indicates the information is not available
+    ]
+
+###############################################################################
+## @brief Device State Extension Name
+ZES_DEVICE_EXT_STATE_NAME = "ZES_extension_device_state"
+
+###############################################################################
+## @brief Device State Extension Version(s)
+class zes_device_ext_state_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_ext_state_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_ext_state_version_v(self.value))
+
+
+###############################################################################
+## @brief Device state flags
+class zes_device_state_ext_flags_v(IntEnum):
+    NORMAL = ZE_BIT(0)                                                      ## The device is operating normally
+    WEDGED = ZE_BIT(1)                                                      ## The device is wedged
+    SURVIVABILITY = ZE_BIT(2)                                               ## The device is in survivability mode
+    FLASH_OVERRIDE = ZE_BIT(3)                                              ## The device has flash override enabled
+
+class zes_device_state_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Extension properties for Device State
+## 
+## @details
+##     - This structure may be returned from ::zesDeviceGetState via the
+##       `pNext` member of ::zes_device_state_t
+##     - Provides extended device state information including wedged state,
+##       survivability mode, and flash override status
+class zes_device_ext_state_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", zes_device_state_ext_flags_t)                         ## [out] Device state flags. Returns 0 (if state cannot be determined) or
+                                                                        ## a combination of ::zes_device_state_ext_flags_t
+    ]
+
+###############################################################################
+## @brief OEM Serial ID Extension Name
+ZES_OEM_SERIAL_ID_EXT_NAME = "ZES_extension_oem_serial_id"
+
+###############################################################################
+## @brief OEM Serial ID Extension Version(s)
+class zes_oem_serial_id_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_oem_serial_id_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_oem_serial_id_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Maximum OEM serial ID string size
+ZES_OEM_SERIAL_ID_SIZE = 1024
+
+###############################################################################
+## @brief OEM Serial ID Properties structure
+## 
+## @details
+##     - This structure can be passed as an extension structure to
+##       ::zesDeviceGetProperties via pNext member
+##     - Returns the OEM serial ID of the device
+class zes_oem_serial_id_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("length", c_ushort),                                           ## [out] OEM serial ID length
+        ("oemSerialId", c_char * ZES_OEM_SERIAL_ID_SIZE)                ## [out] OEM serial ID for the device.
     ]
 
 ###############################################################################

@@ -510,10 +510,15 @@ namespace validation_layer
     ze_result_t
     ZEParameterValidation::zeDeviceGetGlobalTimestampsPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                        ///< Device's global timestamp value.
-        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                        ///< Host's global timestamp value.
+        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp in nanoseconds at the time
+                                                        ///< of invoking the function.
+        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp in tick counts at the
+                                                        ///< time of invoking the function.
+                                                        ///< To get the devicetime stamp in nanoseconds, resolve the tick counts
+                                                        ///< using the timestampValidBits as mask together with timerResolution
+                                                        ///< members of the ::ze_device_properties_t structure.
+                                                        ///< For example: deviceTimestampinNS = (deviceTimestamp &
+                                                        ///< timestampValidBits) * 1/timerResolution.(when timer resolution is in cycle/sec)
         )
     {
         if( nullptr == hDevice )
@@ -551,6 +556,24 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         if( nullptr == incrementValue )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeDeviceGetCounterBasedEventMaxValuePrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint64_t* maxValue                              ///< [out] maximum value that may appear under externally managed counter
+                                                        ///< storage and that may be passed as `completionValue` when creating a
+                                                        ///< Counter Based Event
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == maxValue )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
@@ -819,6 +842,54 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeCommandQueueGetFlagsPrologue(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command queue creation
+        )
+    {
+        if( nullptr == hCmdQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pFlags )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandQueueGetModePrologue(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command queue creation
+        )
+    {
+        if( nullptr == hCmdQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pMode )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandQueueGetPriorityPrologue(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command queue creation
+        )
+    {
+        if( nullptr == hCmdQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pPriority )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeCommandListCreatePrologue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
@@ -1041,6 +1112,70 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeCommandListGetFlagsPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_list_flags_t* pFlags                 ///< [out] pointer to flags used during command list creation
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pFlags )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListImmediateGetFlagsPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command list creation
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pFlags )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListImmediateGetModePrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command list creation
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pMode )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListImmediateGetPriorityPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command list creation
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pPriority )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeCommandListAppendBarrierPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
@@ -1190,6 +1325,9 @@ namespace validation_layer
         if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
             return ZE_RESULT_ERROR_INVALID_SIZE;
 
+        if( size % pattern_size != 0 )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
         return ZE_RESULT_SUCCESS;
     }
 
@@ -1219,6 +1357,9 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        if( size % pattern_size != 0 )
             return ZE_RESULT_ERROR_INVALID_SIZE;
 
         return ZE_RESULT_SUCCESS;
@@ -1553,7 +1694,7 @@ namespace validation_layer
         if( nullptr == phEvent )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x3f < desc->flags )
+        if( 0x7f < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         if( 0x7 < desc->signal )
@@ -1934,6 +2075,23 @@ namespace validation_layer
         )
     {
         if( nullptr == hEventPool )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pFlags )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeEventGetCounterBasedFlagsPrologue(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_counter_based_flags_t* pFlags          ///< [out] flags used during creation of a counter based event; may be 0 or
+                                                        ///< a valid combination of ::ze_event_counter_based_flag_t
+        )
+    {
+        if( nullptr == hEvent )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         if( nullptr == pFlags )
@@ -3807,6 +3965,271 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeGraphCreateExtPrologue(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
+        )
+    {
+        if( nullptr == hContext )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListBeginGraphCaptureExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListBeginCaptureIntoGraphExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListIsGraphCaptureEnabledExtPrologue(
+        ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListEndGraphCaptureExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListGetGraphExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphGetPrimaryCommandListExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
+                                                        ///< graph
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphSetDestructionCallbackExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
+        void* pUserData,                                ///< [in][optional] user data to pass to the callback
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphInstantiateExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phExecutableGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListAppendGraphExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeExecutableGraphGetSourceGraphExtPrologue(
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phSourceGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphIsEmptyExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphDumpContentsExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        const char* filePath,                           ///< [in] path where the DOT file is written
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == filePath )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeExecutableGraphDestroyExtPrologue(
+        ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphDestroyExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListAppendHostFunctionPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
+                                                        ///< non-blocking
+        void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
+                                                        ///< neither the runtime nor the device will dereference it
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
+                                                        ///< phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeDeviceReserveCacheExtPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
@@ -4675,6 +5098,23 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListIsMutableExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                        ///< mutable extension
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pIsMutable )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
     }
 
 

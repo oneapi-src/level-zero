@@ -36,13 +36,14 @@ To generate the code from the scripts, run the following commands:
 * Clone the specification repo: `git clone https://github.com/oneapi-src/level-zero-spec.git level-zero-spec`
 * Checkout the specification version in the specification repo, for example:
   * `cd level-zero-spec`
-  * `git checkout v1.12.15`
+  * `git checkout v1.17.23`
 * Generate the specification JSON file and Headers:
   * `cd level-zero-spec/scripts`
   * `python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver 1.16`
 * Copy the Headers From Spec to Loader repo
   * `cp level-zero-spec/include/* level-zero/include/`
 * Execute the json2src script in the level-zero repo with the input.json in the specification repo with the corresponding spec version, for example (be sure you're inside the level-zero repository folder)
+  * `cd level-zero`
   * `./scripts/json2src.py --ver 1.16 --api-json ../level-zero-spec/scripts/input.json .`
 
 These scripts update the code with what would be generated in the next specification update.
@@ -56,7 +57,7 @@ When releasing a new version of the Level Zero Loader, the following steps must 
 The loader version is defined in the root [CMakeLists.txt](CMakeLists.txt) file using semantic versioning (https://semver.org/):
 
 ```cmake
-project(level-zero VERSION 1.29.0)
+project(level-zero VERSION 1.32.0)
 ```
 
 Update the version number according to the type of changes:

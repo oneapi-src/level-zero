@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.16-r1.16.24
+ @version v1.17-r1.17.23
 
  """
 import platform
@@ -32,6 +32,10 @@ def ZE_MINOR_VERSION( _ver ):
 ###############################################################################
 ## @brief Calling convention for all API functions
 # ZE_APICALL not required for python
+
+###############################################################################
+## @brief Callback function calling convention
+# ZE_CALLBACK_CONV not required for python
 
 ###############################################################################
 ## @brief Microsoft-specific dllexport storage-class attribute
@@ -232,6 +236,18 @@ class ze_result_v(IntEnum):
     EXT_ERROR_OPERANDS_INCOMPATIBLE = 0x7800001f                            ## [Core, Extension] operands of comparison are not compatible
     ERROR_SURVIVABILITY_MODE_DETECTED = 0x78000020                          ## [Sysman] device is in survivability mode, firmware update needed
     ERROR_ADDRESS_NOT_FOUND = 0x78000021                                    ## [Core] address not found within specified or current context
+    QUERY_TRUE = 0x78000022                                                 ## [Core, Extension] query API returned true
+    QUERY_FALSE = 0x78000023                                                ## [Core, Extension] query API returned false
+    ERROR_INVALID_GRAPH = 0x78000024                                        ## [Core, Extension] graph object is invalid
+    ERROR_GRAPH_CAPTURE_UNSUPPORTED = 0x78000025                            ## [Core, Extension] operation is not supported during graph capture
+    ERROR_GRAPH_CAPTURE_INVALIDATED = 0x78000026                            ## [Core, Extension] operations failed and invalidated graph capture
+                                                                            ## session
+    ERROR_GRAPH_CAPTURE_MERGE_ATTEMPT = 0x78000027                          ## [Core, Extension] operation failed because it would merge two graph
+                                                                            ## capture sessions
+    ERROR_COMMAND_LIST_NOT_CAPTURING = 0x78000028                           ## [Core, Extension] command list is not in graph capture mode
+    ERROR_GRAPH_UNJOINED_FORKS = 0x78000029                                 ## [Core, Extension] graph contains unjoined forks
+    ERROR_GRAPH_INTERNAL_EVENT = 0x7800002a                                 ## [Core, Extension] operation failed because it uses a graph-internal
+                                                                            ## counter-based event outside of the graph
     ERROR_UNKNOWN = 0x7ffffffe                                              ## [Core] unknown or internal error
 
 class ze_result_t(c_int):
@@ -244,7 +260,8 @@ class ze_result_t(c_int):
 class ze_structure_type_v(IntEnum):
     DRIVER_PROPERTIES = 0x1                                                 ## ::ze_driver_properties_t
     DRIVER_IPC_PROPERTIES = 0x2                                             ## ::ze_driver_ipc_properties_t
-    DEVICE_PROPERTIES = 0x3                                                 ## ::ze_device_properties_t
+    DEVICE_PROPERTIES = 0x3                                                 ## ::ze_device_properties_t. @deprecated since 1.17: Use
+                                                                            ## ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 instead.
     DEVICE_COMPUTE_PROPERTIES = 0x4                                         ## ::ze_device_compute_properties_t
     DEVICE_MODULE_PROPERTIES = 0x5                                          ## ::ze_device_module_properties_t
     COMMAND_QUEUE_GROUP_PROPERTIES = 0x6                                    ## ::ze_command_queue_group_properties_t
@@ -297,6 +314,8 @@ class ze_structure_type_v(IntEnum):
     EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012          ## ::ze_event_query_kernel_timestamps_results_ext_properties_t
     KERNEL_MAX_GROUP_SIZE_EXT_PROPERTIES = 0x10013                          ## ::ze_kernel_max_group_size_ext_properties_t
     IMAGE_FORMAT_SUPPORT_EXT_PROPERTIES = 0x10014                           ## ::ze_image_format_support_ext_properties_t
+    DEVICE_READONLY_MEMORY_EXT_PROPERTIES = 0x10015                         ## ::ze_device_readonly_memory_ext_properties_t
+    RELAXED_ALLOCATION_LIMITS_EXT_DESC = 0x10016                            ## ::ze_relaxed_allocation_limits_ext_desc_t
     RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001                         ## ::ze_relaxed_allocation_limits_exp_desc_t
     MODULE_PROGRAM_EXP_DESC = 0x00020002                                    ## ::ze_module_program_exp_desc_t
     SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003                             ## ::ze_scheduling_hint_exp_properties_t
@@ -361,6 +380,8 @@ class ze_structure_type_v(IntEnum):
     RUNTIME_REQUIREMENTS_MODULE_DESC = 0x00020044                           ## ::ze_runtime_requirements_module_desc_t
     RUNTIME_REQUIREMENTS_GRAPH_DESC = 0x00020045                            ## ::ze_runtime_requirements_graph_desc_t
     RUNTIME_REQUIREMENTS_OUTPUT = 0x00020046                                ## ::ze_validate_runtime_requirements_output_t
+    RECORD_REPLAY_GRAPH_EXT_PROPERTIES = 0x00020047                         ## ::ze_record_replay_graph_ext_properties_t
+    RECORD_REPLAY_GRAPH_EXT_DUMP_DESC = 0x00020048                          ## ::ze_record_replay_graph_ext_dump_desc_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -545,7 +566,8 @@ class ze_api_version_v(IntEnum):
     _1_14 = ZE_MAKE_VERSION( 1, 14 )                                        ## version 1.14
     _1_15 = ZE_MAKE_VERSION( 1, 15 )                                        ## version 1.15
     _1_16 = ZE_MAKE_VERSION( 1, 16 )                                        ## version 1.16
-    CURRENT = ZE_MAKE_VERSION( 1, 16 )                                      ## latest known version
+    _1_17 = ZE_MAKE_VERSION( 1, 17 )                                        ## version 1.17
+    CURRENT = ZE_MAKE_VERSION( 1, 17 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -554,7 +576,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 16 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 17 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -684,13 +706,18 @@ class ze_device_properties_t(Structure):
         ("numEUsPerSubslice", c_ulong),                                 ## [out] Maximum number of EUs per sub-slice.
         ("numSubslicesPerSlice", c_ulong),                              ## [out] Maximum number of sub-slices per slice.
         ("numSlices", c_ulong),                                         ## [out] Maximum number of slices.
-        ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of device timer used for profiling,
-                                                                        ## timestamps, etc. When stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES the
-                                                                        ## units are in nanoseconds. When
-                                                                        ## stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 units are in
-                                                                        ## cycles/sec
-        ("timestampValidBits", c_ulong),                                ## [out] Returns the number of valid bits in the timestamp value.
-        ("kernelTimestampValidBits", c_ulong),                          ## [out] Returns the number of valid bits in the kernel timestamp values
+        ("timerResolution", c_ulonglong),                               ## [out] @deprecated when using ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES
+                                                                        ## since 1.17: Use ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 to obtain
+                                                                        ## timerResolution in cycles/sec for profiling and timestamps.
+        ("timestampValidBits", c_ulong),                                ## [out] Returns the number of valid bits in the timestamp value. (i.e
+                                                                        ## can be used to calculate the max value of the device timestamp in
+                                                                        ## hardware or get the mask of valid bits in the timestamp value).
+                                                                        ## timestampValidBits may or may not be same as the
+                                                                        ## kernelTimestampValidBits as they may be tracked using different
+                                                                        ## register sizes which are platform specific.
+        ("kernelTimestampValidBits", c_ulong),                          ## [out] Returns the number of valid bits in the kernel timestamp values.
+                                                                        ## (i.e can beused to calculate the max value of the  kernel timestamp in
+                                                                        ## hardware or get the mask of valid bits in the kernel timestamp value).
         ("uuid", ze_device_uuid_t),                                     ## [out] universal unique identifier. Note: Subdevices will have their
                                                                         ## own uuid.
         ("name", c_char * ZE_MAX_DEVICE_NAME)                           ## [out] Device name
@@ -758,7 +785,7 @@ class ze_device_dp_capability_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Supported device dot product(dp) input data types flags
+## @brief Supported device  dot product(dp) input data types flags
 class ze_device_input_data_type_flags_v(IntEnum):
     DEVICE_INPUT_DATA_TYPE_NONE = ZE_BIT(0)                                 ## No data types available for the supported dot product operation
     ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(1)               ## Supports int8 data type with 4 packed data elements per SIMD lane.
@@ -770,9 +797,14 @@ class ze_device_input_data_type_flags_v(IntEnum):
     DEVICE_INPUT_DATA_FP8_PACK4_PER_SIMD_LANE = ZE_BIT(7)                   ## Supports fp8 data type with 4 packed data elements per SIMD lane.
     DEVICE_INPUT_DATA_BF8_PACK4_PER_SIMD_LANE = ZE_BIT(8)                   ## Supports bf8 data type with 4 packed data elements per SIMD lane.
     DEVICE_INPUT_DATA_E2M1_PACK8_PER_SIMD_LANE = ZE_BIT(9)                  ## Supports e2m1 data type with 8 packed data elements per SIMD lane.
-    DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(10)                 ## Supports 8bit integer data type with 4 packed data elements per SIMD
+    DEVICE_INPUT_DATA_E3M0_PACK8_PER_SIMD_LANE = ZE_BIT(10)                 ## Supports e3m0 data type with 8 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(11)                 ## Supports 8bit integer data type with 4 packed data elements per SIMD
                                                                             ## lane.This is exclusively for DP4V dot product support
-    DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(11)                            ## Supports uint8 data type support for scaling, exclusive to BDPAS dot
+    DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(12)                            ## Supports uint8 data type support for scaling, exclusive to BDPAS dot
+                                                                            ## product support.
+    DEVICE_INPUT_DATA_SCALING_UE5M3 = ZE_BIT(13)                            ## Supports ue5m3 data type support for scaling, exclusive to BDPAS dot
+                                                                            ## product support.
+    DEVICE_INPUT_DATA_SCALING_UE4M3 = ZE_BIT(14)                            ## Supports ue4m3 data type support for scaling, exclusive to BDPAS dot
                                                                             ## product support.
 
 class ze_device_input_data_type_flags_t(c_int):
@@ -1413,6 +1445,9 @@ class ze_event_counter_based_flags_v(IntEnum):
                                                                             ## It is recommended to use this flag for most users that want to
                                                                             ## correlate timestamps from the host and device into a single timeline.
                                                                             ## For host timestamps see ::zeDeviceGetGlobalTimestamps.
+    GRAPH_EXTERNAL = ZE_BIT(6)                                              ## Counter-based event is used for synchronization between recorded graph
+                                                                            ## commands and commands submitted outside the graph (see
+                                                                            ## ::zeGraphInstantiateExt in ::ZE_RECORD_REPLAY_GRAPH_EXT_NAME for details).
 
 class ze_event_counter_based_flags_t(c_int):
     def __str__(self):
@@ -1497,7 +1532,10 @@ class ze_event_counter_based_external_sync_allocation_desc_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("deviceAddress", POINTER(c_ulonglong)),                        ## [in] device address for external synchronization allocation
         ("hostAddress", POINTER(c_ulonglong)),                          ## [in] host address for external synchronization allocation
-        ("completionValue", c_ulonglong)                                ## [in] completion value for external synchronization allocation
+        ("completionValue", c_ulonglong)                                ## [in] completion value for external synchronization allocation.
+                                                                        ## Must not exceed the value returned by ::zeDeviceGetCounterBasedEventMaxValue.
+                                                                        ## User is also responsible for ensuring that any value written by the
+                                                                        ## application to `deviceAddress` or `hostAddress` does not exceed that maximum.
     ]
 
 ###############################################################################
@@ -1512,7 +1550,11 @@ class ze_event_counter_based_external_aggregate_storage_desc_t(Structure):
                                                                         ## signaling of this event, must be device USM memory
         ("incrementValue", c_ulonglong),                                ## [in] value which would by atomically added upon each completion
         ("completionValue", c_ulonglong)                                ## [in] final completion value, when value under deviceAddress is equal
-                                                                        ## or greater then this value then event is considered as completed
+                                                                        ## or greater then this value then event is considered as completed.
+                                                                        ## Must not exceed the value returned by ::zeDeviceGetCounterBasedEventMaxValue.
+                                                                        ## User is responsible for ensuring that the value aggregated under
+                                                                        ## `deviceAddress` (initial value plus any number of `incrementValue`
+                                                                        ## additions) does not exceed that maximum at any point in time.
     ]
 
 ###############################################################################
@@ -1521,21 +1563,22 @@ class ze_event_counter_based_external_aggregate_storage_desc_t(Structure):
 ## @details
 ##     - The timestamp frequency can be queried from the `timerResolution`
 ##       member of ::ze_device_properties_t.
-##     - The number of valid bits in the timestamp value can be queried from
+##     - The number of valid bits in the timestamp values can be inferred from
 ##       the `kernelTimestampValidBits` member of ::ze_device_properties_t.
 class ze_kernel_timestamp_data_t(Structure):
     _fields_ = [
-        ("kernelStart", c_ulonglong),                                   ## [out] device clock at start of kernel execution
-        ("kernelEnd", c_ulonglong)                                      ## [out] device clock at end of kernel execution
+        ("kernelStart", c_ulonglong),                                   ## [out] time sample in tick counts at start of kernel execution
+        ("kernelEnd", c_ulonglong)                                      ## [out] time sample in tick counts at end of kernel execution
     ]
 
 ###############################################################################
 ## @brief Kernel timestamp result
 class ze_kernel_timestamp_result_t(Structure):
     _fields_ = [
-        ("global", ze_kernel_timestamp_data_t),                         ## [out] wall-clock data
-        ("context", ze_kernel_timestamp_data_t)                         ## [out] context-active data; only includes clocks while device context
-                                                                        ## was actively executing.
+        ("global", ze_kernel_timestamp_data_t),                         ## [out] wall-clock data; free running device clock indicating active
+                                                                        ## device state.
+        ("context", ze_kernel_timestamp_data_t)                         ## [out] context specific active data; only includes clocks while context
+                                                                        ## was actively executing on the device.
     ]
 
 ###############################################################################
@@ -2454,26 +2497,26 @@ class ze_global_offset_exp_version_t(c_int):
 
 ###############################################################################
 ## @brief Relaxed Allocation Limits Extension Name
-ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME = "ZE_experimental_relaxed_allocation_limits"
+ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME = "ZE_extension_relaxed_allocation_limits"
 
 ###############################################################################
 ## @brief Relaxed Allocation Limits Extension Version(s)
-class ze_relaxed_allocation_limits_exp_version_v(IntEnum):
+class ze_relaxed_allocation_limits_ext_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
-class ze_relaxed_allocation_limits_exp_version_t(c_int):
+class ze_relaxed_allocation_limits_ext_version_t(c_int):
     def __str__(self):
-        return str(ze_relaxed_allocation_limits_exp_version_v(self.value))
+        return str(ze_relaxed_allocation_limits_ext_version_v(self.value))
 
 
 ###############################################################################
 ## @brief Supported relaxed memory allocation flags
-class ze_relaxed_allocation_limits_exp_flags_v(IntEnum):
+class ze_relaxed_allocation_limits_ext_flags_v(IntEnum):
     MAX_SIZE = ZE_BIT(0)                                                    ## Allocation size may exceed the `maxMemAllocSize` member of
                                                                             ## ::ze_device_properties_t.
 
-class ze_relaxed_allocation_limits_exp_flags_t(c_int):
+class ze_relaxed_allocation_limits_ext_flags_t(c_int):
     def __str__(self):
         return hex(self.value)
 
@@ -2487,13 +2530,64 @@ class ze_relaxed_allocation_limits_exp_flags_t(c_int):
 ##       ::ze_device_mem_alloc_desc_t.
 ##     - This structure may also be passed to ::zeMemAllocHost, via the `pNext`
 ##       member of ::ze_host_mem_alloc_desc_t.
+class ze_relaxed_allocation_limits_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_relaxed_allocation_limits_ext_flags_t)             ## [in] flags specifying allocation limits to relax.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_ext_flag_t;
+    ]
+
+###############################################################################
+## @brief [DEPRECATED] Relaxed Allocation Limits Extension Name. Use
+##        ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
+ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME = "ZE_experimental_relaxed_allocation_limits"
+
+###############################################################################
+## @brief [DEPRECATED] Relaxed Allocation Limits Extension Version(s). Use
+##        ::ze_relaxed_allocation_limits_ext_version_t instead.
+class ze_relaxed_allocation_limits_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## [DEPRECATED] version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_relaxed_allocation_limits_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_relaxed_allocation_limits_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief [DEPRECATED] Supported relaxed memory allocation flags. Use
+##        ::ze_relaxed_allocation_limits_ext_flags_t instead.
+class ze_relaxed_allocation_limits_exp_flags_v(IntEnum):
+    MAX_SIZE = ZE_BIT(0)                                                    ## [DEPRECATED] Allocation size may exceed the `maxMemAllocSize` member
+                                                                            ## of ::ze_device_properties_t. Use
+                                                                            ## ::ze_relaxed_allocation_limits_ext_flags_t MAX_SIZE instead.
+
+class ze_relaxed_allocation_limits_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief [DEPRECATED] Relaxed limits memory allocation descriptor. Use
+##        ::ze_relaxed_allocation_limits_ext_desc_t instead.
+## 
+## @details
+##     - [DEPRECATED] This structure may be passed to ::zeMemAllocShared or
+##       ::zeMemAllocDevice, via the `pNext` member of
+##       ::ze_device_mem_alloc_desc_t. Use
+##       ::ze_relaxed_allocation_limits_ext_desc_t instead.
+##     - [DEPRECATED] This structure may also be passed to ::zeMemAllocHost,
+##       via the `pNext` member of ::ze_host_mem_alloc_desc_t. Use
+##       ::ze_relaxed_allocation_limits_ext_desc_t instead.
 class ze_relaxed_allocation_limits_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("flags", ze_relaxed_allocation_limits_exp_flags_t)             ## [in] flags specifying allocation limits to relax.
-                                                                        ## must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
+        ("flags", ze_relaxed_allocation_limits_exp_flags_t)             ## [in] [DEPRECATED] no longer supported, use
+                                                                        ## ::ze_relaxed_allocation_limits_ext_desc_t instead
     ]
 
 ###############################################################################
@@ -2543,6 +2637,20 @@ class ze_driver_ddi_handle_ext_flags_t(c_int):
 ## @details
 ##     - This structure may be returned from ::zeDriverGetProperties, via the
 ##       `pNext` member of ::ze_driver_properties_t.
+##     - Starting from spec version 1.17, support for this extension is assumed
+##       for any driver reporting API version 1.17 or later via
+##       ::zeDriverGetApiVersion; the loader does NOT need to query the
+##       extension property for such drivers.
+##     - For drivers reporting API version 1.16 or earlier, the loader must
+##       check for this extension before using DDI handles.
+##     - This guarantee enables Level Zero extensions introduced in spec v1.17
+##       or later to embed handles directly inside Level Zero structures (e.g.,
+##       via pNext chains) without requiring the loader to translate or unwrap
+##       handles.
+##     - Additionally, drivers may assume the loader will dispatch calls
+##       exclusively via the DDI tables embedded in their handles; the only
+##       exception is the global DDI table used during driver initialization
+##       and to read the reported API version.
 class ze_driver_ddi_handles_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -3307,15 +3415,46 @@ class ze_external_memmap_sysmem_ext_version_t(c_int):
 ##     - This structure may be passed to ::zeMemAllocHost, via the `pNext`
 ##       member of ::ze_host_mem_alloc_desc_t to map system memory for a host
 ##       allocation.
-##     - The system memory pointer and size being mapped must be page aligned
-##       based on the supported page sizes on the device.
+##     - The `pSystemMemory` pointer and `size` being mapped must be aligned to
+##       the host page size. The host page size must be queried using
+##       operating-system-specific calls, as the mapped memory originates from
+##       the system allocator rather than from Level-Zero; there is no
+##       Level-Zero query for this value.
+##     - On success, the pointer returned from ::zeMemAllocHost is identical to
+##       `pSystemMemory`; the mapping preserves the virtual address, so the
+##       same address is valid on both the host and the device.
+##     - Memory from the application's heap, stack, or statically-allocated
+##       (global) storage is supported. Support for memory obtained by other
+##       means is platform- and driver-dependent and is not guaranteed. If
+##       `pSystemMemory` points to a memory type that cannot be mapped,
+##       ::zeMemAllocHost returns ::ZE_RESULT_ERROR_INVALID_ARGUMENT.
+##     - Host memory that is read-only can only be mapped successfully when the
+##       ::ZE_HOST_MEM_ALLOC_FLAG_MEM_READ_ONLY flag is set in
+##       ::ze_host_mem_alloc_desc_t; in that case device access to the mapped
+##       memory is read-only.
+##     - The system memory referenced by `pSystemMemory` must remain valid for
+##       the entire lifetime of the resulting allocation. Freeing or unmapping
+##       the underlying system memory before the allocation is released results
+##       in undefined behavior.
+##     - Mapped memory ranges must not overlap. Releasing a mapping with
+##       ::zeMemFree tears down the device page-table entries for its virtual
+##       address range. Because these page tables are shared across imports,
+##       releasing a mapping that overlaps another import also tears down the
+##       overlapping device page-table entries, leaving the other allocation
+##       invalid for device access. The host system memory itself is
+##       unaffected.
+##     - After mapping, ::zeMemGetAllocProperties reports the allocation type
+##       as ::ZE_MEMORY_TYPE_HOST_IMPORTED.
+##     - The mapping is released by passing the pointer to ::zeMemFree, like
+##       any other host allocation.
 class ze_external_memmap_sysmem_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("pSystemMemory", c_void_p),                                    ## [in] system memory pointer to map; must be page-aligned.
-        ("size", c_ulonglong)                                           ## [in] size of the system memory to map; must be page-aligned.
+        ("size", c_ulonglong)                                           ## [in] size of the system memory to map; must be a multiple of the page
+                                                                        ## size.
     ]
 
 ###############################################################################
@@ -3457,6 +3596,133 @@ class ze_ipc_mem_handle_type_ext_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("typeFlags", ze_ipc_mem_handle_type_flags_t)                   ## [in] valid combination of ::ze_ipc_mem_handle_type_flag_t
+    ]
+
+###############################################################################
+## @brief Record and Replay Graph Extension Name
+ZE_RECORD_REPLAY_GRAPH_EXT_NAME = "ZE_extension_record_replay_graph"
+
+###############################################################################
+## @brief Record and Replay Graph Extension Version(s)
+class ze_record_replay_graph_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_record_replay_graph_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_record_replay_graph_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Record and Replay Graph capability flags
+class ze_record_replay_graph_ext_flags_v(IntEnum):
+    IMMUTABLE_GRAPH = ZE_BIT(0)                                             ## Supports graphs that can't mutate
+    MUTABLE_GRAPH = ZE_BIT(1)                                               ## Supports graphs that can mutate
+    SUBGRAPHS = ZE_BIT(2)                                                   ## Supports appending a subgraph into a graph
+    APPEND_COMMANDLIST = ZE_BIT(3)                                          ## Supports appending a command list into a graph
+    CB_EXTERNAL_IPC = ZE_BIT(4)                                             ## Supports waiting/signaling events that were created with both
+                                                                            ## ZEX_COUNTER_BASED_EVENT_FLAG_IPC and
+                                                                            ## ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL
+
+class ze_record_replay_graph_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Supported Record and Replay Graph properties. This structure is
+##        accepted as pNext to ::ze_device_properties_t
+class ze_record_replay_graph_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("graphFlags", ze_record_replay_graph_ext_flags_t)              ## [out] record and replay flags
+    ]
+
+###############################################################################
+## @brief Handle of an executable graph object
+class ze_executable_graph_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Record and Replay Graph dump mode
+class ze_record_replay_graph_ext_dump_mode_v(IntEnum):
+    DETAILED = 0x0                                                          ## detailed mode (default)
+    SIMPLE = 0x1                                                            ## simple mode
+
+class ze_record_replay_graph_ext_dump_mode_t(c_int):
+    def __str__(self):
+        return str(ze_record_replay_graph_ext_dump_mode_v(self.value))
+
+
+###############################################################################
+## @brief Record and Replay Graph dump descriptor
+## 
+## @details
+##     - Accepted as pNext in ::zeGraphDumpContentsExt.
+class ze_record_replay_graph_ext_dump_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("mode", ze_record_replay_graph_ext_dump_mode_t)                ## [in] graph dump mode
+    ]
+
+###############################################################################
+## @brief Callback function pointer type invoked when a graph is destroyed
+
+###############################################################################
+## @brief Host Function callback type
+
+###############################################################################
+## @brief Virtual Memory Read-Only Properties Extension Name
+ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_NAME = "ZE_extension_virtual_mem_readonly_properties"
+
+###############################################################################
+## @brief Virtual Memory Read-Only Properties Extension Version(s)
+class ze_virtual_mem_readonly_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_virtual_mem_readonly_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_virtual_mem_readonly_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Read-only memory page capability values
+class ze_device_readonly_memory_capability_v(IntEnum):
+    NONE = 0                                                                ## Read-only attribute has no effect; the driver does not act on it.
+    HINT = 1                                                                ## Read-only attribute is a performance hint to the OS; writes may still
+                                                                            ## succeed without fault.
+    ENFORCED = 2                                                            ## Read-only attribute is hardware-enforced; writes to read-only pages
+                                                                            ## will cause a device fault.
+
+class ze_device_readonly_memory_capability_t(c_int):
+    def __str__(self):
+        return str(ze_device_readonly_memory_capability_v(self.value))
+
+
+###############################################################################
+## @brief Device read-only memory capability properties
+## 
+## @details
+##     - This structure may be returned from ::zeDeviceGetProperties via the
+##       `pNext` member of ::ze_device_properties_t
+class ze_device_readonly_memory_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("readonlyCapability", ze_device_readonly_memory_capability_t)  ## [out] Indicates device behavior when
+                                                                        ## ::ZE_MEMORY_ACCESS_ATTRIBUTE_READONLY is applied to a virtual memory page.
+                                                                        ## ::ZE_DEVICE_READONLY_MEMORY_CAPABILITY_NONE - the attribute has no
+                                                                        ## effect; writes succeed normally.
+                                                                        ## ::ZE_DEVICE_READONLY_MEMORY_CAPABILITY_HINT - the attribute is a
+                                                                        ## performance hint; writes may still succeed.
+                                                                        ## ::ZE_DEVICE_READONLY_MEMORY_CAPABILITY_ENFORCED - the attribute is
+                                                                        ## hardware-enforced; writes cause a device fault.
     ]
 
 ###############################################################################
@@ -4308,6 +4574,8 @@ class ze_device_memory_ext_type_v(IntEnum):
     HBM3 = 23                                                               ## HBM3 memory
     HBM3E = 24                                                              ## HBM3E memory
     HBM4 = 25                                                               ## HBM4 memory
+    LPDDR5X = 26                                                            ## LPDDR5X memory
+    LPDDR6 = 27                                                             ## LPDDR6 memory
 
 class ze_device_memory_ext_type_t(c_int):
     def __str__(self):
@@ -4506,17 +4774,19 @@ class ze_event_query_kernel_timestamps_ext_properties_t(Structure):
 ## @brief Kernel timestamp clock data synchronized to the host time domain
 class ze_synchronized_timestamp_data_ext_t(Structure):
     _fields_ = [
-        ("kernelStart", c_ulonglong),                                   ## [out] synchronized clock at start of kernel execution
-        ("kernelEnd", c_ulonglong)                                      ## [out] synchronized clock at end of kernel execution
+        ("kernelStart", c_ulonglong),                                   ## [out] start of kernel execution in nanoseconds, on the host time
+                                                                        ## domain.
+        ("kernelEnd", c_ulonglong)                                      ## [out] end of kernel execution in nanoseconds, on the host time domain.
     ]
 
 ###############################################################################
 ## @brief Synchronized kernel timestamp result
 class ze_synchronized_timestamp_result_ext_t(Structure):
     _fields_ = [
-        ("global", ze_synchronized_timestamp_data_ext_t),               ## [out] wall-clock data
-        ("context", ze_synchronized_timestamp_data_ext_t)               ## [out] context-active data; only includes clocks while device context
-                                                                        ## was actively executing.
+        ("global", ze_synchronized_timestamp_data_ext_t),               ## [out] wall-clock data; free running device clock when device was
+                                                                        ## active,on the host time domain
+        ("context", ze_synchronized_timestamp_data_ext_t)               ## [out] context specific active data; only includes clocks while context
+                                                                        ## was actively executing on the device, on the host time domain
     ]
 
 ###############################################################################
@@ -5595,6 +5865,69 @@ class _ze_rtas_parallel_operation_exp_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zeGraphCreateExt
+if __use_win_types:
+    _zeGraphCreateExt_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_graph_handle_t) )
+else:
+    _zeGraphCreateExt_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_graph_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeGraphGetPrimaryCommandListExt
+if __use_win_types:
+    _zeGraphGetPrimaryCommandListExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(ze_command_list_handle_t) )
+else:
+    _zeGraphGetPrimaryCommandListExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(ze_command_list_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeGraphSetDestructionCallbackExt
+if __use_win_types:
+    _zeGraphSetDestructionCallbackExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t, zex_mem_graph_free_callback_fn_t, c_void_p, c_void_p )
+else:
+    _zeGraphSetDestructionCallbackExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t, zex_mem_graph_free_callback_fn_t, c_void_p, c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeGraphInstantiateExt
+if __use_win_types:
+    _zeGraphInstantiateExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t, c_void_p, POINTER(ze_executable_graph_handle_t) )
+else:
+    _zeGraphInstantiateExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t, c_void_p, POINTER(ze_executable_graph_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeGraphIsEmptyExt
+if __use_win_types:
+    _zeGraphIsEmptyExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t )
+else:
+    _zeGraphIsEmptyExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeGraphDumpContentsExt
+if __use_win_types:
+    _zeGraphDumpContentsExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t, c_char_p, c_void_p )
+else:
+    _zeGraphDumpContentsExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t, c_char_p, c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeGraphDestroyExt
+if __use_win_types:
+    _zeGraphDestroyExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t )
+else:
+    _zeGraphDestroyExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t )
+
+
+###############################################################################
+## @brief Table of Graph functions pointers
+class _ze_graph_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateExt", c_void_p),                                     ## _zeGraphCreateExt_t
+        ("pfnGetPrimaryCommandListExt", c_void_p),                      ## _zeGraphGetPrimaryCommandListExt_t
+        ("pfnSetDestructionCallbackExt", c_void_p),                     ## _zeGraphSetDestructionCallbackExt_t
+        ("pfnInstantiateExt", c_void_p),                                ## _zeGraphInstantiateExt_t
+        ("pfnIsEmptyExt", c_void_p),                                    ## _zeGraphIsEmptyExt_t
+        ("pfnDumpContentsExt", c_void_p),                               ## _zeGraphDumpContentsExt_t
+        ("pfnDestroyExt", c_void_p)                                     ## _zeGraphDestroyExt_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zeInit
 if __use_win_types:
     _zeInit_t = WINFUNCTYPE( ze_result_t, ze_init_flags_t )
@@ -5615,6 +5948,29 @@ class _ze_global_dditable_t(Structure):
     _fields_ = [
         ("pfnInit", c_void_p),                                          ## _zeInit_t
         ("pfnInitDrivers", c_void_p)                                    ## _zeInitDrivers_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeExecutableGraphGetSourceGraphExt
+if __use_win_types:
+    _zeExecutableGraphGetSourceGraphExt_t = WINFUNCTYPE( ze_result_t, ze_executable_graph_handle_t, POINTER(ze_graph_handle_t) )
+else:
+    _zeExecutableGraphGetSourceGraphExt_t = CFUNCTYPE( ze_result_t, ze_executable_graph_handle_t, POINTER(ze_graph_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeExecutableGraphDestroyExt
+if __use_win_types:
+    _zeExecutableGraphDestroyExt_t = WINFUNCTYPE( ze_result_t, ze_executable_graph_handle_t )
+else:
+    _zeExecutableGraphDestroyExt_t = CFUNCTYPE( ze_result_t, ze_executable_graph_handle_t )
+
+
+###############################################################################
+## @brief Table of ExecutableGraph functions pointers
+class _ze_executable_graph_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetSourceGraphExt", c_void_p),                             ## _zeExecutableGraphGetSourceGraphExt_t
+        ("pfnDestroyExt", c_void_p)                                     ## _zeExecutableGraphDestroyExt_t
     ]
 
 ###############################################################################
@@ -5900,6 +6256,13 @@ if __use_win_types:
 else:
     _zeDeviceValidateRuntimeRequirements_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, c_char_p, POINTER(ze_validate_runtime_requirements_output_t) )
 
+###############################################################################
+## @brief Function-pointer for zeDeviceGetCounterBasedEventMaxValue
+if __use_win_types:
+    _zeDeviceGetCounterBasedEventMaxValue_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulonglong) )
+else:
+    _zeDeviceGetCounterBasedEventMaxValue_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulonglong) )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -5931,7 +6294,8 @@ class _ze_device_dditable_t(Structure):
         ("pfnGetAggregatedCopyOffloadIncrementValue", c_void_p),        ## _zeDeviceGetAggregatedCopyOffloadIncrementValue_t
         ("pfnGetRuntimeRequirements", c_void_p),                        ## _zeDeviceGetRuntimeRequirements_t
         ("pfnGetRuntimeRequirementsKey", c_void_p),                     ## _zeDeviceGetRuntimeRequirementsKey_t
-        ("pfnValidateRuntimeRequirements", c_void_p)                    ## _zeDeviceValidateRuntimeRequirements_t
+        ("pfnValidateRuntimeRequirements", c_void_p),                   ## _zeDeviceValidateRuntimeRequirements_t
+        ("pfnGetCounterBasedEventMaxValue", c_void_p)                   ## _zeDeviceGetCounterBasedEventMaxValue_t
     ]
 
 ###############################################################################
@@ -6070,6 +6434,27 @@ if __use_win_types:
 else:
     _zeCommandQueueGetIndex_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandQueueGetFlags
+if __use_win_types:
+    _zeCommandQueueGetFlags_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_flags_t) )
+else:
+    _zeCommandQueueGetFlags_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_flags_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandQueueGetMode
+if __use_win_types:
+    _zeCommandQueueGetMode_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_mode_t) )
+else:
+    _zeCommandQueueGetMode_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_mode_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandQueueGetPriority
+if __use_win_types:
+    _zeCommandQueueGetPriority_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_priority_t) )
+else:
+    _zeCommandQueueGetPriority_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_priority_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandQueue functions pointers
@@ -6080,7 +6465,10 @@ class _ze_command_queue_dditable_t(Structure):
         ("pfnExecuteCommandLists", c_void_p),                           ## _zeCommandQueueExecuteCommandLists_t
         ("pfnSynchronize", c_void_p),                                   ## _zeCommandQueueSynchronize_t
         ("pfnGetOrdinal", c_void_p),                                    ## _zeCommandQueueGetOrdinal_t
-        ("pfnGetIndex", c_void_p)                                       ## _zeCommandQueueGetIndex_t
+        ("pfnGetIndex", c_void_p),                                      ## _zeCommandQueueGetIndex_t
+        ("pfnGetFlags", c_void_p),                                      ## _zeCommandQueueGetFlags_t
+        ("pfnGetMode", c_void_p),                                       ## _zeCommandQueueGetMode_t
+        ("pfnGetPriority", c_void_p)                                    ## _zeCommandQueueGetPriority_t
     ]
 
 ###############################################################################
@@ -6370,6 +6758,83 @@ if __use_win_types:
 else:
     _zeCommandListImmediateAppendCommandListsWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListGetFlags
+if __use_win_types:
+    _zeCommandListGetFlags_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_list_flags_t) )
+else:
+    _zeCommandListGetFlags_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_list_flags_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListImmediateGetFlags
+if __use_win_types:
+    _zeCommandListImmediateGetFlags_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_queue_flags_t) )
+else:
+    _zeCommandListImmediateGetFlags_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_queue_flags_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListImmediateGetMode
+if __use_win_types:
+    _zeCommandListImmediateGetMode_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_queue_mode_t) )
+else:
+    _zeCommandListImmediateGetMode_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_queue_mode_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListImmediateGetPriority
+if __use_win_types:
+    _zeCommandListImmediateGetPriority_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_queue_priority_t) )
+else:
+    _zeCommandListImmediateGetPriority_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_queue_priority_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListBeginGraphCaptureExt
+if __use_win_types:
+    _zeCommandListBeginGraphCaptureExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p )
+else:
+    _zeCommandListBeginGraphCaptureExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListBeginCaptureIntoGraphExt
+if __use_win_types:
+    _zeCommandListBeginCaptureIntoGraphExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_graph_handle_t, c_void_p )
+else:
+    _zeCommandListBeginCaptureIntoGraphExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_graph_handle_t, c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListIsGraphCaptureEnabledExt
+if __use_win_types:
+    _zeCommandListIsGraphCaptureEnabledExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t )
+else:
+    _zeCommandListIsGraphCaptureEnabledExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListEndGraphCaptureExt
+if __use_win_types:
+    _zeCommandListEndGraphCaptureExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, POINTER(ze_graph_handle_t) )
+else:
+    _zeCommandListEndGraphCaptureExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, POINTER(ze_graph_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListGetGraphExt
+if __use_win_types:
+    _zeCommandListGetGraphExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_graph_handle_t) )
+else:
+    _zeCommandListGetGraphExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_graph_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendGraphExt
+if __use_win_types:
+    _zeCommandListAppendGraphExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_executable_graph_handle_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendGraphExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_executable_graph_handle_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendHostFunction
+if __use_win_types:
+    _zeCommandListAppendHostFunction_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_host_function_callback_t, c_void_p, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendHostFunction_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_host_function_callback_t, c_void_p, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandList functions pointers
@@ -6415,7 +6880,18 @@ class _ze_command_list_dditable_t(Structure):
         ("pfnAppendLaunchKernelWithArguments", c_void_p),               ## _zeCommandListAppendLaunchKernelWithArguments_t
         ("pfnAppendMemoryCopyWithParameters", c_void_p),                ## _zeCommandListAppendMemoryCopyWithParameters_t
         ("pfnAppendMemoryFillWithParameters", c_void_p),                ## _zeCommandListAppendMemoryFillWithParameters_t
-        ("pfnImmediateAppendCommandListsWithParameters", c_void_p)      ## _zeCommandListImmediateAppendCommandListsWithParameters_t
+        ("pfnImmediateAppendCommandListsWithParameters", c_void_p),     ## _zeCommandListImmediateAppendCommandListsWithParameters_t
+        ("pfnGetFlags", c_void_p),                                      ## _zeCommandListGetFlags_t
+        ("pfnImmediateGetFlags", c_void_p),                             ## _zeCommandListImmediateGetFlags_t
+        ("pfnImmediateGetMode", c_void_p),                              ## _zeCommandListImmediateGetMode_t
+        ("pfnImmediateGetPriority", c_void_p),                          ## _zeCommandListImmediateGetPriority_t
+        ("pfnBeginGraphCaptureExt", c_void_p),                          ## _zeCommandListBeginGraphCaptureExt_t
+        ("pfnBeginCaptureIntoGraphExt", c_void_p),                      ## _zeCommandListBeginCaptureIntoGraphExt_t
+        ("pfnIsGraphCaptureEnabledExt", c_void_p),                      ## _zeCommandListIsGraphCaptureEnabledExt_t
+        ("pfnEndGraphCaptureExt", c_void_p),                            ## _zeCommandListEndGraphCaptureExt_t
+        ("pfnGetGraphExt", c_void_p),                                   ## _zeCommandListGetGraphExt_t
+        ("pfnAppendGraphExt", c_void_p),                                ## _zeCommandListAppendGraphExt_t
+        ("pfnAppendHostFunction", c_void_p)                             ## _zeCommandListAppendHostFunction_t
     ]
 
 ###############################################################################
@@ -6474,6 +6950,13 @@ if __use_win_types:
 else:
     _zeCommandListUpdateMutableCommandKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListIsMutableExp
+if __use_win_types:
+    _zeCommandListIsMutableExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_bool_t) )
+else:
+    _zeCommandListIsMutableExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_bool_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandListExp functions pointers
@@ -6486,7 +6969,8 @@ class _ze_command_list_exp_dditable_t(Structure):
         ("pfnUpdateMutableCommandSignalEventExp", c_void_p),            ## _zeCommandListUpdateMutableCommandSignalEventExp_t
         ("pfnUpdateMutableCommandWaitEventsExp", c_void_p),             ## _zeCommandListUpdateMutableCommandWaitEventsExp_t
         ("pfnGetNextCommandIdWithKernelsExp", c_void_p),                ## _zeCommandListGetNextCommandIdWithKernelsExp_t
-        ("pfnUpdateMutableCommandKernelsExp", c_void_p)                 ## _zeCommandListUpdateMutableCommandKernelsExp_t
+        ("pfnUpdateMutableCommandKernelsExp", c_void_p),                ## _zeCommandListUpdateMutableCommandKernelsExp_t
+        ("pfnIsMutableExp", c_void_p)                                   ## _zeCommandListIsMutableExp_t
     ]
 
 ###############################################################################
@@ -6947,6 +7431,13 @@ if __use_win_types:
 else:
     _zeEventCounterBasedGetDeviceAddress_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
 
+###############################################################################
+## @brief Function-pointer for zeEventGetCounterBasedFlags
+if __use_win_types:
+    _zeEventGetCounterBasedFlags_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_counter_based_flags_t) )
+else:
+    _zeEventGetCounterBasedFlags_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_counter_based_flags_t) )
+
 
 ###############################################################################
 ## @brief Table of Event functions pointers
@@ -6967,7 +7458,8 @@ class _ze_event_dditable_t(Structure):
         ("pfnCounterBasedGetIpcHandle", c_void_p),                      ## _zeEventCounterBasedGetIpcHandle_t
         ("pfnCounterBasedOpenIpcHandle", c_void_p),                     ## _zeEventCounterBasedOpenIpcHandle_t
         ("pfnCounterBasedCloseIpcHandle", c_void_p),                    ## _zeEventCounterBasedCloseIpcHandle_t
-        ("pfnCounterBasedGetDeviceAddress", c_void_p)                   ## _zeEventCounterBasedGetDeviceAddress_t
+        ("pfnCounterBasedGetDeviceAddress", c_void_p),                  ## _zeEventCounterBasedGetDeviceAddress_t
+        ("pfnGetCounterBasedFlags", c_void_p)                           ## _zeEventGetCounterBasedFlags_t
     ]
 
 ###############################################################################
@@ -7423,7 +7915,9 @@ class _ze_dditable_t(Structure):
         ("RTASBuilderExp", _ze_rtas_builder_exp_dditable_t),
         ("RTASParallelOperation", _ze_rtas_parallel_operation_dditable_t),
         ("RTASParallelOperationExp", _ze_rtas_parallel_operation_exp_dditable_t),
+        ("Graph", _ze_graph_dditable_t),
         ("Global", _ze_global_dditable_t),
+        ("ExecutableGraph", _ze_executable_graph_dditable_t),
         ("Driver", _ze_driver_dditable_t),
         ("DriverExp", _ze_driver_exp_dditable_t),
         ("Device", _ze_device_dditable_t),
@@ -7518,6 +8012,22 @@ class ZE_DDI:
         self.zeRTASParallelOperationDestroyExp = _zeRTASParallelOperationDestroyExp_t(self.__dditable.RTASParallelOperationExp.pfnDestroyExp)
 
         # call driver to get function pointers
+        _Graph = _ze_graph_dditable_t()
+        r = ze_result_v(self.__dll.zeGetGraphProcAddrTable(version, byref(_Graph)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Graph = _Graph
+
+        # attach function interface to function address
+        self.zeGraphCreateExt = _zeGraphCreateExt_t(self.__dditable.Graph.pfnCreateExt)
+        self.zeGraphGetPrimaryCommandListExt = _zeGraphGetPrimaryCommandListExt_t(self.__dditable.Graph.pfnGetPrimaryCommandListExt)
+        self.zeGraphSetDestructionCallbackExt = _zeGraphSetDestructionCallbackExt_t(self.__dditable.Graph.pfnSetDestructionCallbackExt)
+        self.zeGraphInstantiateExt = _zeGraphInstantiateExt_t(self.__dditable.Graph.pfnInstantiateExt)
+        self.zeGraphIsEmptyExt = _zeGraphIsEmptyExt_t(self.__dditable.Graph.pfnIsEmptyExt)
+        self.zeGraphDumpContentsExt = _zeGraphDumpContentsExt_t(self.__dditable.Graph.pfnDumpContentsExt)
+        self.zeGraphDestroyExt = _zeGraphDestroyExt_t(self.__dditable.Graph.pfnDestroyExt)
+
+        # call driver to get function pointers
         _Global = _ze_global_dditable_t()
         r = ze_result_v(self.__dll.zeGetGlobalProcAddrTable(version, byref(_Global)))
         if r != ze_result_v.SUCCESS:
@@ -7527,6 +8037,17 @@ class ZE_DDI:
         # attach function interface to function address
         self.zeInit = _zeInit_t(self.__dditable.Global.pfnInit)
         self.zeInitDrivers = _zeInitDrivers_t(self.__dditable.Global.pfnInitDrivers)
+
+        # call driver to get function pointers
+        _ExecutableGraph = _ze_executable_graph_dditable_t()
+        r = ze_result_v(self.__dll.zeGetExecutableGraphProcAddrTable(version, byref(_ExecutableGraph)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.ExecutableGraph = _ExecutableGraph
+
+        # attach function interface to function address
+        self.zeExecutableGraphGetSourceGraphExt = _zeExecutableGraphGetSourceGraphExt_t(self.__dditable.ExecutableGraph.pfnGetSourceGraphExt)
+        self.zeExecutableGraphDestroyExt = _zeExecutableGraphDestroyExt_t(self.__dditable.ExecutableGraph.pfnDestroyExt)
 
         # call driver to get function pointers
         _Driver = _ze_driver_dditable_t()
@@ -7591,6 +8112,7 @@ class ZE_DDI:
         self.zeDeviceGetRuntimeRequirements = _zeDeviceGetRuntimeRequirements_t(self.__dditable.Device.pfnGetRuntimeRequirements)
         self.zeDeviceGetRuntimeRequirementsKey = _zeDeviceGetRuntimeRequirementsKey_t(self.__dditable.Device.pfnGetRuntimeRequirementsKey)
         self.zeDeviceValidateRuntimeRequirements = _zeDeviceValidateRuntimeRequirements_t(self.__dditable.Device.pfnValidateRuntimeRequirements)
+        self.zeDeviceGetCounterBasedEventMaxValue = _zeDeviceGetCounterBasedEventMaxValue_t(self.__dditable.Device.pfnGetCounterBasedEventMaxValue)
 
         # call driver to get function pointers
         _DeviceExp = _ze_device_exp_dditable_t()
@@ -7634,6 +8156,9 @@ class ZE_DDI:
         self.zeCommandQueueSynchronize = _zeCommandQueueSynchronize_t(self.__dditable.CommandQueue.pfnSynchronize)
         self.zeCommandQueueGetOrdinal = _zeCommandQueueGetOrdinal_t(self.__dditable.CommandQueue.pfnGetOrdinal)
         self.zeCommandQueueGetIndex = _zeCommandQueueGetIndex_t(self.__dditable.CommandQueue.pfnGetIndex)
+        self.zeCommandQueueGetFlags = _zeCommandQueueGetFlags_t(self.__dditable.CommandQueue.pfnGetFlags)
+        self.zeCommandQueueGetMode = _zeCommandQueueGetMode_t(self.__dditable.CommandQueue.pfnGetMode)
+        self.zeCommandQueueGetPriority = _zeCommandQueueGetPriority_t(self.__dditable.CommandQueue.pfnGetPriority)
 
         # call driver to get function pointers
         _CommandList = _ze_command_list_dditable_t()
@@ -7684,6 +8209,17 @@ class ZE_DDI:
         self.zeCommandListAppendMemoryCopyWithParameters = _zeCommandListAppendMemoryCopyWithParameters_t(self.__dditable.CommandList.pfnAppendMemoryCopyWithParameters)
         self.zeCommandListAppendMemoryFillWithParameters = _zeCommandListAppendMemoryFillWithParameters_t(self.__dditable.CommandList.pfnAppendMemoryFillWithParameters)
         self.zeCommandListImmediateAppendCommandListsWithParameters = _zeCommandListImmediateAppendCommandListsWithParameters_t(self.__dditable.CommandList.pfnImmediateAppendCommandListsWithParameters)
+        self.zeCommandListGetFlags = _zeCommandListGetFlags_t(self.__dditable.CommandList.pfnGetFlags)
+        self.zeCommandListImmediateGetFlags = _zeCommandListImmediateGetFlags_t(self.__dditable.CommandList.pfnImmediateGetFlags)
+        self.zeCommandListImmediateGetMode = _zeCommandListImmediateGetMode_t(self.__dditable.CommandList.pfnImmediateGetMode)
+        self.zeCommandListImmediateGetPriority = _zeCommandListImmediateGetPriority_t(self.__dditable.CommandList.pfnImmediateGetPriority)
+        self.zeCommandListBeginGraphCaptureExt = _zeCommandListBeginGraphCaptureExt_t(self.__dditable.CommandList.pfnBeginGraphCaptureExt)
+        self.zeCommandListBeginCaptureIntoGraphExt = _zeCommandListBeginCaptureIntoGraphExt_t(self.__dditable.CommandList.pfnBeginCaptureIntoGraphExt)
+        self.zeCommandListIsGraphCaptureEnabledExt = _zeCommandListIsGraphCaptureEnabledExt_t(self.__dditable.CommandList.pfnIsGraphCaptureEnabledExt)
+        self.zeCommandListEndGraphCaptureExt = _zeCommandListEndGraphCaptureExt_t(self.__dditable.CommandList.pfnEndGraphCaptureExt)
+        self.zeCommandListGetGraphExt = _zeCommandListGetGraphExt_t(self.__dditable.CommandList.pfnGetGraphExt)
+        self.zeCommandListAppendGraphExt = _zeCommandListAppendGraphExt_t(self.__dditable.CommandList.pfnAppendGraphExt)
+        self.zeCommandListAppendHostFunction = _zeCommandListAppendHostFunction_t(self.__dditable.CommandList.pfnAppendHostFunction)
 
         # call driver to get function pointers
         _CommandListExp = _ze_command_list_exp_dditable_t()
@@ -7701,6 +8237,7 @@ class ZE_DDI:
         self.zeCommandListUpdateMutableCommandWaitEventsExp = _zeCommandListUpdateMutableCommandWaitEventsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp)
         self.zeCommandListGetNextCommandIdWithKernelsExp = _zeCommandListGetNextCommandIdWithKernelsExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdWithKernelsExp)
         self.zeCommandListUpdateMutableCommandKernelsExp = _zeCommandListUpdateMutableCommandKernelsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandKernelsExp)
+        self.zeCommandListIsMutableExp = _zeCommandListIsMutableExp_t(self.__dditable.CommandListExp.pfnIsMutableExp)
 
         # call driver to get function pointers
         _Image = _ze_image_dditable_t()
@@ -7818,6 +8355,7 @@ class ZE_DDI:
         self.zeEventCounterBasedOpenIpcHandle = _zeEventCounterBasedOpenIpcHandle_t(self.__dditable.Event.pfnCounterBasedOpenIpcHandle)
         self.zeEventCounterBasedCloseIpcHandle = _zeEventCounterBasedCloseIpcHandle_t(self.__dditable.Event.pfnCounterBasedCloseIpcHandle)
         self.zeEventCounterBasedGetDeviceAddress = _zeEventCounterBasedGetDeviceAddress_t(self.__dditable.Event.pfnCounterBasedGetDeviceAddress)
+        self.zeEventGetCounterBasedFlags = _zeEventGetCounterBasedFlags_t(self.__dditable.Event.pfnGetCounterBasedFlags)
 
         # call driver to get function pointers
         _EventExp = _ze_event_exp_dditable_t()

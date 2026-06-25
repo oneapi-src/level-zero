@@ -116,6 +116,10 @@ inline std::string to_string(ze_rtas_parallel_operation_ext_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
 
+inline std::string to_string(ze_executable_graph_handle_t handle) {
+    return to_string(reinterpret_cast<const void*>(handle));
+}
+
 inline std::string to_string(ze_rtas_builder_exp_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
@@ -125,7 +129,15 @@ inline std::string to_string(ze_rtas_parallel_operation_exp_handle_t handle) {
 }
 
 // Callback to_string functions (function pointers)
+// Multiple callback typedefs can resolve to the same underlying function-pointer
+// type (e.g. void(*)(void*)). Since typedefs are aliases rather than distinct
+// types in C++, emit only one to_string overload per unique signature
+// (returntype + parameter types) to avoid redefinition errors.
 inline std::string to_string(ze_rtas_geometry_aabbs_cb_ext_t ptr) {
+    return to_string(reinterpret_cast<const void*>(ptr));
+}
+
+inline std::string to_string(zex_mem_graph_free_callback_fn_t ptr) {
     return to_string(reinterpret_cast<const void*>(ptr));
 }
 
@@ -1321,6 +1333,20 @@ inline std::string to_string(const ze_float_atomic_ext_properties_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const ze_relaxed_allocation_limits_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_relaxed_allocation_limits_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const ze_relaxed_allocation_limits_exp_desc_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -1865,6 +1891,48 @@ inline std::string to_string(const ze_ipc_mem_handle_type_ext_desc_t* desc) {
 }
 
 inline std::string to_string(const ze_ipc_mem_handle_type_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", graphFlags=" << to_string(&desc->graphFlags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_dump_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", mode=" << to_string(&desc->mode);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_dump_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_device_readonly_memory_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", readonlyCapability=" << to_string(&desc->readonlyCapability);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_device_readonly_memory_ext_properties_t& desc) {
     return to_string(&desc);
 }
 

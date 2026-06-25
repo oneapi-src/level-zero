@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.16-r1.16.24
+ @version v1.17-r1.17.23
 
  """
 import platform
@@ -810,7 +810,10 @@ class zet_metric_global_timestamps_resolution_exp_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of metrics timer (used for timestamps) in
                                                                         ## cycles/sec.
-        ("timestampValidBits", c_ulonglong)                             ## [out] Returns the number of valid bits in the timestamp value.
+        ("timestampValidBits", c_ulonglong)                             ## [out] Returns the number of valid bits in the timestamp value. (i.e
+                                                                        ## can be used to calculate the max value of the hardware timestamp
+                                                                        ## register or can be use to generate the mask of valid bits in the
+                                                                        ## timestamp value)
     ]
 
 ###############################################################################

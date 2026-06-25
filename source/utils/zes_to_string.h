@@ -1235,6 +1235,35 @@ inline std::string to_string(const zes_pci_link_speed_downgrade_ext_properties_t
     return to_string(&desc);
 }
 
+inline std::string to_string(const zes_device_ext_state_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_device_ext_state_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_oem_serial_id_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", length=" << to_string(desc->length);
+    oss << ", oemSerialId=" << to_string(desc->oemSerialId);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_oem_serial_id_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const zes_power_limit_ext_desc_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;

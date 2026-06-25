@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.16-r1.16.24
+ * @version v1.17-r1.17.23
  *
  */
 #ifndef _ZET_API_H
@@ -3037,18 +3037,19 @@ typedef struct _zet_metric_global_timestamps_resolution_exp_t
                                                                             ///< structure (i.e. contains stype and pNext).
     uint64_t timerResolution;                                               ///< [out] Returns the resolution of metrics timer (used for timestamps) in
                                                                             ///< cycles/sec.
-    uint64_t timestampValidBits;                                            ///< [out] Returns the number of valid bits in the timestamp value.
+    uint64_t timestampValidBits;                                            ///< [out] Returns the number of valid bits in the timestamp value. (i.e
+                                                                            ///< can be used to calculate the max value of the hardware timestamp
+                                                                            ///< register or can be use to generate the mask of valid bits in the
+                                                                            ///< timestamp value)
 
 } zet_metric_global_timestamps_resolution_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Returns metric timestamps synchronized with global device timestamps,
-///        optionally synchronized with host
+/// @brief Returns metric timestamps synchronized with either host or device
+///        timestamps at the time of invoking the function
 /// 
 /// @details
 ///     - The application may call this function from simultaneous threads.
-///     - By default, the global and metrics timestamps are synchronized to the
-///       device.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3072,9 +3073,11 @@ typedef struct _zet_metric_global_timestamps_resolution_exp_t
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetMetricGroupGetGlobalTimestampsExp(
     zet_metric_group_handle_t hMetricGroup,                                 ///< [in] handle of the metric group
-    ze_bool_t synchronizedWithHost,                                         ///< [in] Returns the timestamps synchronized to the host or the device.
-    uint64_t* globalTimestamp,                                              ///< [out] Device timestamp.
-    uint64_t* metricTimestamp                                               ///< [out] Metric timestamp.
+    ze_bool_t synchronizedWithHost,                                         ///< [in] if set to true, the globalTimestamp will reflect the host
+                                                                            ///< timestamp, else will reflect the device timestamp.
+    uint64_t* globalTimestamp,                                              ///< [out] if synchronizedWithHost is false, timestamp is in tick counts.
+                                                                            ///< [out] if synchronizedWithHost is true, the timestamp is in nanoseconds.
+    uint64_t* metricTimestamp                                               ///< [out] Metric timestamp in tick counts.
     );
 
 #if !defined(__GNUC__)

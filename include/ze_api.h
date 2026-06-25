@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.16-r1.16.24
+ * @version v1.17-r1.17.23
  *
  */
 #ifndef _ZE_API_H
@@ -53,6 +53,16 @@ extern "C" {
 #define ZE_APICALL  
 #endif // defined(_WIN32)
 #endif // ZE_APICALL
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_CALLBACK_CONV
+#if defined(_WIN32)
+/// @brief Callback function calling convention
+#define ZE_CALLBACK_CONV  __stdcall
+#else
+#define ZE_CALLBACK_CONV  
+#endif // defined(_WIN32)
+#endif // ZE_CALLBACK_CONV
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_APIEXPORT
@@ -261,6 +271,18 @@ typedef enum _ze_result_t
     ZE_RESULT_EXT_ERROR_OPERANDS_INCOMPATIBLE = 0x7800001f,                 ///< [Core, Extension] operands of comparison are not compatible
     ZE_RESULT_ERROR_SURVIVABILITY_MODE_DETECTED = 0x78000020,               ///< [Sysman] device is in survivability mode, firmware update needed
     ZE_RESULT_ERROR_ADDRESS_NOT_FOUND = 0x78000021,                         ///< [Core] address not found within specified or current context
+    ZE_RESULT_QUERY_TRUE = 0x78000022,                                      ///< [Core, Extension] query API returned true
+    ZE_RESULT_QUERY_FALSE = 0x78000023,                                     ///< [Core, Extension] query API returned false
+    ZE_RESULT_ERROR_INVALID_GRAPH = 0x78000024,                             ///< [Core, Extension] graph object is invalid
+    ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED = 0x78000025,                 ///< [Core, Extension] operation is not supported during graph capture
+    ZE_RESULT_ERROR_GRAPH_CAPTURE_INVALIDATED = 0x78000026,                 ///< [Core, Extension] operations failed and invalidated graph capture
+                                                                            ///< session
+    ZE_RESULT_ERROR_GRAPH_CAPTURE_MERGE_ATTEMPT = 0x78000027,               ///< [Core, Extension] operation failed because it would merge two graph
+                                                                            ///< capture sessions
+    ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING = 0x78000028,                ///< [Core, Extension] command list is not in graph capture mode
+    ZE_RESULT_ERROR_GRAPH_UNJOINED_FORKS = 0x78000029,                      ///< [Core, Extension] graph contains unjoined forks
+    ZE_RESULT_ERROR_GRAPH_INTERNAL_EVENT = 0x7800002a,                      ///< [Core, Extension] operation failed because it uses a graph-internal
+                                                                            ///< counter-based event outside of the graph
     ZE_RESULT_ERROR_UNKNOWN = 0x7ffffffe,                                   ///< [Core] unknown or internal error
     ZE_RESULT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RESULT_* ENUMs
 
@@ -272,7 +294,8 @@ typedef enum _ze_structure_type_t
 {
     ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES = 0x1,                              ///< ::ze_driver_properties_t
     ZE_STRUCTURE_TYPE_DRIVER_IPC_PROPERTIES = 0x2,                          ///< ::ze_driver_ipc_properties_t
-    ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x3,                              ///< ::ze_device_properties_t
+    ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x3,                              ///< ::ze_device_properties_t. @deprecated since 1.17: Use
+                                                                            ///< ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 instead.
     ZE_STRUCTURE_TYPE_DEVICE_COMPUTE_PROPERTIES = 0x4,                      ///< ::ze_device_compute_properties_t
     ZE_STRUCTURE_TYPE_DEVICE_MODULE_PROPERTIES = 0x5,                       ///< ::ze_device_module_properties_t
     ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES = 0x6,                 ///< ::ze_command_queue_group_properties_t
@@ -325,6 +348,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012,   ///< ::ze_event_query_kernel_timestamps_results_ext_properties_t
     ZE_STRUCTURE_TYPE_KERNEL_MAX_GROUP_SIZE_EXT_PROPERTIES = 0x10013,       ///< ::ze_kernel_max_group_size_ext_properties_t
     ZE_STRUCTURE_TYPE_IMAGE_FORMAT_SUPPORT_EXT_PROPERTIES = 0x10014,        ///< ::ze_image_format_support_ext_properties_t
+    ZE_STRUCTURE_TYPE_DEVICE_READONLY_MEMORY_EXT_PROPERTIES = 0x10015,      ///< ::ze_device_readonly_memory_ext_properties_t
+    ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXT_DESC = 0x10016,         ///< ::ze_relaxed_allocation_limits_ext_desc_t
     ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001,      ///< ::ze_relaxed_allocation_limits_exp_desc_t
     ZE_STRUCTURE_TYPE_MODULE_PROGRAM_EXP_DESC = 0x00020002,                 ///< ::ze_module_program_exp_desc_t
     ZE_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003,          ///< ::ze_scheduling_hint_exp_properties_t
@@ -389,6 +414,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_RUNTIME_REQUIREMENTS_MODULE_DESC = 0x00020044,        ///< ::ze_runtime_requirements_module_desc_t
     ZE_STRUCTURE_TYPE_RUNTIME_REQUIREMENTS_GRAPH_DESC = 0x00020045,         ///< ::ze_runtime_requirements_graph_desc_t
     ZE_STRUCTURE_TYPE_RUNTIME_REQUIREMENTS_OUTPUT = 0x00020046,             ///< ::ze_validate_runtime_requirements_output_t
+    ZE_STRUCTURE_TYPE_RECORD_REPLAY_GRAPH_EXT_PROPERTIES = 0x00020047,      ///< ::ze_record_replay_graph_ext_properties_t
+    ZE_STRUCTURE_TYPE_RECORD_REPLAY_GRAPH_EXT_DUMP_DESC = 0x00020048,       ///< ::ze_record_replay_graph_ext_dump_desc_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_STRUCTURE_TYPE_* ENUMs
 
 } ze_structure_type_t;
@@ -793,6 +820,10 @@ typedef struct _ze_physical_mem_properties_t ze_physical_mem_properties_t;
 typedef struct _ze_float_atomic_ext_properties_t ze_float_atomic_ext_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_relaxed_allocation_limits_ext_desc_t
+typedef struct _ze_relaxed_allocation_limits_ext_desc_t ze_relaxed_allocation_limits_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_relaxed_allocation_limits_exp_desc_t
 typedef struct _ze_relaxed_allocation_limits_exp_desc_t ze_relaxed_allocation_limits_exp_desc_t;
 
@@ -919,6 +950,18 @@ typedef struct _ze_image_format_support_ext_properties_t ze_image_format_support
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_ipc_mem_handle_type_ext_desc_t
 typedef struct _ze_ipc_mem_handle_type_ext_desc_t ze_ipc_mem_handle_type_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_record_replay_graph_ext_properties_t
+typedef struct _ze_record_replay_graph_ext_properties_t ze_record_replay_graph_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_record_replay_graph_ext_dump_desc_t
+typedef struct _ze_record_replay_graph_ext_dump_desc_t ze_record_replay_graph_ext_dump_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_device_readonly_memory_ext_properties_t
+typedef struct _ze_device_readonly_memory_ext_properties_t ze_device_readonly_memory_ext_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_cache_reservation_ext_desc_t
@@ -1425,7 +1468,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_14 = ZE_MAKE_VERSION( 1, 14 ),                         ///< version 1.14
     ZE_API_VERSION_1_15 = ZE_MAKE_VERSION( 1, 15 ),                         ///< version 1.15
     ZE_API_VERSION_1_16 = ZE_MAKE_VERSION( 1, 16 ),                         ///< version 1.16
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 16 ),                      ///< latest known version
+    ZE_API_VERSION_1_17 = ZE_MAKE_VERSION( 1, 17 ),                         ///< version 1.17
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 17 ),                      ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_API_VERSION_* ENUMs
 
 } ze_api_version_t;
@@ -1433,7 +1477,7 @@ typedef enum _ze_api_version_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 16 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 17 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1442,6 +1486,9 @@ typedef enum _ze_api_version_t
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - Starting from API version 1.17, any driver reporting version 1.17 or
+///       later is assumed to support the ::ZE_DRIVER_DDI_HANDLES_EXT_NAME
+///       extension; see ::ze_driver_ddi_handles_ext_properties_t for details.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -1947,13 +1994,18 @@ typedef struct _ze_device_properties_t
     uint32_t numEUsPerSubslice;                                             ///< [out] Maximum number of EUs per sub-slice.
     uint32_t numSubslicesPerSlice;                                          ///< [out] Maximum number of sub-slices per slice.
     uint32_t numSlices;                                                     ///< [out] Maximum number of slices.
-    uint64_t timerResolution;                                               ///< [out] Returns the resolution of device timer used for profiling,
-                                                                            ///< timestamps, etc. When stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES the
-                                                                            ///< units are in nanoseconds. When
-                                                                            ///< stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 units are in
-                                                                            ///< cycles/sec
-    uint32_t timestampValidBits;                                            ///< [out] Returns the number of valid bits in the timestamp value.
-    uint32_t kernelTimestampValidBits;                                      ///< [out] Returns the number of valid bits in the kernel timestamp values
+    uint64_t timerResolution;                                               ///< [out] @deprecated when using ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES
+                                                                            ///< since 1.17: Use ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 to obtain
+                                                                            ///< timerResolution in cycles/sec for profiling and timestamps.
+    uint32_t timestampValidBits;                                            ///< [out] Returns the number of valid bits in the timestamp value. (i.e
+                                                                            ///< can be used to calculate the max value of the device timestamp in
+                                                                            ///< hardware or get the mask of valid bits in the timestamp value).
+                                                                            ///< timestampValidBits may or may not be same as the
+                                                                            ///< kernelTimestampValidBits as they may be tracked using different
+                                                                            ///< register sizes which are platform specific.
+    uint32_t kernelTimestampValidBits;                                      ///< [out] Returns the number of valid bits in the kernel timestamp values.
+                                                                            ///< (i.e can beused to calculate the max value of the  kernel timestamp in
+                                                                            ///< hardware or get the mask of valid bits in the kernel timestamp value).
     ze_device_uuid_t uuid;                                                  ///< [out] universal unique identifier. Note: Subdevices will have their
                                                                             ///< own uuid.
     char name[ZE_MAX_DEVICE_NAME];                                          ///< [out] Device name
@@ -2061,7 +2113,7 @@ typedef enum _ze_device_dp_capability_flag_t
 } ze_device_dp_capability_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Supported device dot product(dp) input data types flags
+/// @brief Supported device  dot product(dp) input data types flags
 typedef uint32_t ze_device_input_data_type_flags_t;
 typedef enum _ze_device_input_data_type_flag_t
 {
@@ -2075,9 +2127,14 @@ typedef enum _ze_device_input_data_type_flag_t
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_FP8_PACK4_PER_SIMD_LANE = ZE_BIT(7),   ///< Supports fp8 data type with 4 packed data elements per SIMD lane.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_BF8_PACK4_PER_SIMD_LANE = ZE_BIT(8),   ///< Supports bf8 data type with 4 packed data elements per SIMD lane.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_E2M1_PACK8_PER_SIMD_LANE = ZE_BIT(9),  ///< Supports e2m1 data type with 8 packed data elements per SIMD lane.
-    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(10), ///< Supports 8bit integer data type with 4 packed data elements per SIMD
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_E3M0_PACK8_PER_SIMD_LANE = ZE_BIT(10), ///< Supports e3m0 data type with 8 packed data elements per SIMD lane.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(11), ///< Supports 8bit integer data type with 4 packed data elements per SIMD
                                                                             ///< lane.This is exclusively for DP4V dot product support
-    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(11),///< Supports uint8 data type support for scaling, exclusive to BDPAS dot
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(12),///< Supports uint8 data type support for scaling, exclusive to BDPAS dot
+                                                                            ///< product support.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE5M3 = ZE_BIT(13),///< Supports ue5m3 data type support for scaling, exclusive to BDPAS dot
+                                                                            ///< product support.
+    ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE4M3 = ZE_BIT(14),///< Supports ue4m3 data type support for scaling, exclusive to BDPAS dot
                                                                             ///< product support.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_INPUT_DATA_TYPE_FLAG_* ENUMs
 
@@ -2830,6 +2887,11 @@ zeDeviceGetStatus(
 ///     - The application may call this function from simultaneous threads with
 ///       the same device handle.
 ///     - The implementation of this function must be thread-safe.
+///     - The hostTimestamp value needs to return a sample from a
+///       RAW_MONOTONIC_CLOCK source that is not affected by system time changes
+///       or by software adjustments to the clock.
+///     - The hostTimestamp and deviceTimestamp values should be coordinated to
+///       be sampled at the same time/close together
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2854,10 +2916,15 @@ zeDeviceGetStatus(
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeDeviceGetGlobalTimestamps(
     ze_device_handle_t hDevice,                                             ///< [in] handle of the device
-    uint64_t* hostTimestamp,                                                ///< [out] value of the Host's global timestamp that correlates with the
-                                                                            ///< Device's global timestamp value.
-    uint64_t* deviceTimestamp                                               ///< [out] value of the Device's global timestamp that correlates with the
-                                                                            ///< Host's global timestamp value.
+    uint64_t* hostTimestamp,                                                ///< [out] value of the Host's global timestamp in nanoseconds at the time
+                                                                            ///< of invoking the function.
+    uint64_t* deviceTimestamp                                               ///< [out] value of the Device's global timestamp in tick counts at the
+                                                                            ///< time of invoking the function.
+                                                                            ///< To get the devicetime stamp in nanoseconds, resolve the tick counts
+                                                                            ///< using the timestampValidBits as mask together with timerResolution
+                                                                            ///< members of the ::ze_device_properties_t structure.
+                                                                            ///< For example: deviceTimestampinNS = (deviceTimestamp &
+                                                                            ///< timestampValidBits) * 1/timerResolution.(when timer resolution is in cycle/sec)
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2953,6 +3020,55 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zeDeviceGetAggregatedCopyOffloadIncrementValue(
     ze_device_handle_t hDevice,                                             ///< [in] handle of the device
     uint32_t* incrementValue                                                ///< [out] increment value that can be used for Event creation
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns maximum value supported by the driver for Counter Based Events
+///        created with externally managed counter storage (see
+///        ::ze_event_counter_based_external_sync_allocation_desc_t and
+///        ::ze_event_counter_based_external_aggregate_storage_desc_t).
+/// 
+/// @details
+///     - Value is applicable only to this specific device.
+///     - User must query this value before creating a Counter Based Event with
+///       externally managed counter storage and ensure that `completionValue`
+///       provided in the descriptor does not exceed it.
+///     - User must also ensure that any value written by the application to
+///       `deviceAddress` or `hostAddress` of an externally managed counter
+///       storage (including values aggregated under `deviceAddress` of
+///       ::ze_event_counter_based_external_aggregate_storage_desc_t) does not
+///       exceed this maximum at any point in time.
+///     - Driver does not validate values written by the user to externally
+///       managed memory; exceeding this maximum results in undefined behavior.
+///     - ::zeEventCounterBasedCreate returns ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///       if the descriptor specifies a value greater than the value returned by
+///       this query.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == maxValue`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Provided invalid hDevice or maxValue pointer
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceGetCounterBasedEventMaxValue(
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device
+    uint64_t* maxValue                                                      ///< [out] maximum value that may appear under externally managed counter
+                                                                            ///< storage and that may be passed as `completionValue` when creating a
+                                                                            ///< Counter Based Event
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3636,6 +3752,99 @@ zeCommandQueueGetIndex(
     uint32_t* pIndex                                                        ///< [out] command queue index within the group
     );
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command queue creation flags.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCmdQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandQueueGetFlags(
+    ze_command_queue_handle_t hCmdQueue,                                    ///< [in] handle of the command queue
+    ze_command_queue_flags_t* pFlags                                        ///< [out] pointer to flags used during command queue creation
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command queue operation mode.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCmdQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pMode`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandQueueGetMode(
+    ze_command_queue_handle_t hCmdQueue,                                    ///< [in] handle of the command queue
+    ze_command_queue_mode_t* pMode                                          ///< [out] pointer to mode used during command queue creation
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command queue priority.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCmdQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pPriority`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandQueueGetPriority(
+    ze_command_queue_handle_t hCmdQueue,                                    ///< [in] handle of the command queue
+    ze_command_queue_priority_t* pPriority                                  ///< [out] pointer to priority used during command queue creation
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
@@ -4147,6 +4356,139 @@ zeCommandListIsImmediate(
                                                                             ///< command list (true) or not (false)
     );
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command list creation flags.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListGetFlags(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_command_list_flags_t* pFlags                                         ///< [out] pointer to flags used during command list creation
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets immediate command list command queue flags.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListImmediateGetFlags(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_command_queue_flags_t* pFlags                                        ///< [out] pointer to flags used during command list creation
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets immediate command list command queue mode.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pMode`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListImmediateGetMode(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_command_queue_mode_t* pMode                                          ///< [out] pointer to mode used during command list creation
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets immediate command list command queue priority.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pPriority`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListImmediateGetPriority(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_command_queue_priority_t* pPriority                                  ///< [out] pointer to priority used during command list creation
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
@@ -4434,6 +4776,7 @@ zeCommandListAppendMemoryCopyWithParameters(
 ///     - The pattern size must be a power-of-two and less than or equal to the
 ///       `maxMemoryFillPatternSize` member of
 ///       ::ze_command_queue_group_properties_t.
+///     - The size must be a multiple of pattern size.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The application must ensure the command list and events were created,
@@ -4470,6 +4813,7 @@ zeCommandListAppendMemoryCopyWithParameters(
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `size % pattern_size != 0`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeCommandListAppendMemoryFill(
     ze_command_list_handle_t hCommandList,                                  ///< [in] handle of command list
@@ -4499,6 +4843,7 @@ zeCommandListAppendMemoryFill(
 ///     - The pattern size must be a power-of-two and less than or equal to the
 ///       `maxMemoryFillPatternSize` member of
 ///       ::ze_command_queue_group_properties_t.
+///     - The size must be a multiple of pattern size.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The application must ensure the command list and events were created,
@@ -4534,6 +4879,7 @@ zeCommandListAppendMemoryFill(
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `size % pattern_size != 0`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///         + an extension passed via pNext is not supported
 ZE_APIEXPORT ze_result_t ZE_APICALL
@@ -5204,6 +5550,9 @@ typedef enum _ze_event_counter_based_flag_t
                                                                             ///< It is recommended to use this flag for most users that want to
                                                                             ///< correlate timestamps from the host and device into a single timeline.
                                                                             ///< For host timestamps see ::zeDeviceGetGlobalTimestamps.
+    ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL = ZE_BIT(6),                 ///< Counter-based event is used for synchronization between recorded graph
+                                                                            ///< commands and commands submitted outside the graph (see
+                                                                            ///< ::zeGraphInstantiateExt in ::ZE_RECORD_REPLAY_GRAPH_EXT_NAME for details).
     ZE_EVENT_COUNTER_BASED_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_COUNTER_BASED_FLAG_* ENUMs
 
 } ze_event_counter_based_flag_t;
@@ -5289,7 +5638,10 @@ typedef struct _ze_event_counter_based_external_sync_allocation_desc_t
                                                                             ///< structure (i.e. contains stype and pNext).
     uint64_t* deviceAddress;                                                ///< [in] device address for external synchronization allocation
     uint64_t* hostAddress;                                                  ///< [in] host address for external synchronization allocation
-    uint64_t completionValue;                                               ///< [in] completion value for external synchronization allocation
+    uint64_t completionValue;                                               ///< [in] completion value for external synchronization allocation.
+                                                                            ///< Must not exceed the value returned by ::zeDeviceGetCounterBasedEventMaxValue.
+                                                                            ///< User is also responsible for ensuring that any value written by the
+                                                                            ///< application to `deviceAddress` or `hostAddress` does not exceed that maximum.
 
 } ze_event_counter_based_external_sync_allocation_desc_t;
 
@@ -5305,7 +5657,11 @@ typedef struct _ze_event_counter_based_external_aggregate_storage_desc_t
                                                                             ///< signaling of this event, must be device USM memory
     uint64_t incrementValue;                                                ///< [in] value which would by atomically added upon each completion
     uint64_t completionValue;                                               ///< [in] final completion value, when value under deviceAddress is equal
-                                                                            ///< or greater then this value then event is considered as completed
+                                                                            ///< or greater then this value then event is considered as completed.
+                                                                            ///< Must not exceed the value returned by ::zeDeviceGetCounterBasedEventMaxValue.
+                                                                            ///< User is responsible for ensuring that the value aggregated under
+                                                                            ///< `deviceAddress` (initial value plus any number of `incrementValue`
+                                                                            ///< additions) does not exceed that maximum at any point in time.
 
 } ze_event_counter_based_external_aggregate_storage_desc_t;
 
@@ -5379,11 +5735,12 @@ zeEventCreate(
 ///         + `nullptr == desc`
 ///         + `nullptr == phEvent`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3f < desc->flags`
+///         + `0x7f < desc->flags`
 ///         + `0x7 < desc->signal`
 ///         + `0x7 < desc->wait`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + `completionValue` provided in `pNext` ::ze_event_counter_based_external_sync_allocation_desc_t or ::ze_event_counter_based_external_aggregate_storage_desc_t exceeds the value returned by ::zeDeviceGetCounterBasedEventMaxValue
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeEventCounterBasedCreate(
     ze_context_handle_t hContext,                                           ///< [in] handle of the context object
@@ -5614,6 +5971,23 @@ zeEventCounterBasedGetIpcHandle(
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Opens an IPC event handle to retrieve from another process.
 /// 
+/// @details
+///     - The `hContext` parameter has no requirement to match the context that
+///       was used to create the event in the exporting process. Any context of
+///       the importing process may be used, including the driver's default
+///       context.
+///     - Device association of the opened event depends on its current state at
+///       the time of the call: if the event has not yet been enqueued for
+///       signaling, no device is yet associated with it; if the event has been
+///       enqueued for signaling, it is associated with the device performing
+///       that signal operation.
+///     - Any device of the importing process may signal the opened event.
+///       Enqueuing a signal operation overwrites the previous tracking point.
+///     - A device may wait on the opened event only if it has P2P access to the
+///       device associated with the current tracking point. The set of devices
+///       that may wait therefore depends on the P2P capabilities relative to
+///       the signaling device.
+/// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
@@ -5700,7 +6074,15 @@ zeEventCounterBasedGetDeviceAddress(
 /// 
 /// @details
 ///     - The application must ensure the events are accessible by the device on
-///       which the command list was created.
+///       which the command list was created. This requirement does not apply to
+///       counter-based events.
+///     - For counter-based events, the event may be signaled on any device,
+///       regardless of the device used to create the event. When a
+///       counter-based event is passed for signaling, it drops its previous
+///       tracking point and re-associates with the device on which the command
+///       list was created, tracking the new signaling point. No peer-to-peer
+///       access between the previously associated device and the new signaling
+///       device is required.
 ///     - The duration of an event created from an event pool that was created
 ///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
 ///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined.
@@ -5747,6 +6129,10 @@ zeCommandListAppendSignalEvent(
 /// @details
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
+///     - For counter-based events, the device on which the command list was
+///       created must have peer-to-peer access to the device that last signaled
+///       the event. Unlike signaling, waiting on a counter-based event does not
+///       re-associate it with another device.
 ///     - The application must ensure the command list and events were created
 ///       on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -5976,12 +6362,12 @@ zeEventHostReset(
 /// @details
 ///     - The timestamp frequency can be queried from the `timerResolution`
 ///       member of ::ze_device_properties_t.
-///     - The number of valid bits in the timestamp value can be queried from
+///     - The number of valid bits in the timestamp values can be inferred from
 ///       the `kernelTimestampValidBits` member of ::ze_device_properties_t.
 typedef struct _ze_kernel_timestamp_data_t
 {
-    uint64_t kernelStart;                                                   ///< [out] device clock at start of kernel execution
-    uint64_t kernelEnd;                                                     ///< [out] device clock at end of kernel execution
+    uint64_t kernelStart;                                                   ///< [out] time sample in tick counts at start of kernel execution
+    uint64_t kernelEnd;                                                     ///< [out] time sample in tick counts at end of kernel execution
 
 } ze_kernel_timestamp_data_t;
 
@@ -5989,9 +6375,10 @@ typedef struct _ze_kernel_timestamp_data_t
 /// @brief Kernel timestamp result
 typedef struct _ze_kernel_timestamp_result_t
 {
-    ze_kernel_timestamp_data_t global;                                      ///< [out] wall-clock data
-    ze_kernel_timestamp_data_t context;                                     ///< [out] context-active data; only includes clocks while device context
-                                                                            ///< was actively executing.
+    ze_kernel_timestamp_data_t global;                                      ///< [out] wall-clock data; free running device clock indicating active
+                                                                            ///< device state.
+    ze_kernel_timestamp_data_t context;                                     ///< [out] context specific active data; only includes clocks while context
+                                                                            ///< was actively executing on the device.
 
 } ze_kernel_timestamp_result_t;
 
@@ -6041,7 +6428,8 @@ zeEventQueryKernelTimestamp(
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The application must ensure the events were created from an event pool
-///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag.
 ///     - The application must ensure the memory pointed to by both dstptr and
 ///       pOffsets is accessible by the device on which the command list was
 ///       created.
@@ -6252,6 +6640,41 @@ zeEventPoolGetFlags(
     ze_event_pool_handle_t hEventPool,                                      ///< [in] handle of the event pool
     ze_event_pool_flags_t* pFlags                                           ///< [out] creation flags used to create the event pool; may be 0 or a
                                                                             ///< valid combination of ::ze_event_pool_flag_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets counter based flags of an event.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - Returns 0 for regular events created with ::zeEventCreate, and a valid
+///       combination of ::ze_event_counter_based_flag_t for counter based
+///       events created with ::zeEventCounterBasedCreate.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeEventGetCounterBasedFlags(
+    ze_event_handle_t hEvent,                                               ///< [in] handle of the event
+    ze_event_counter_based_flags_t* pFlags                                  ///< [out] flags used during creation of a counter based event; may be 0 or
+                                                                            ///< a valid combination of ::ze_event_counter_based_flag_t
     );
 
 #if !defined(__GNUC__)
@@ -7157,9 +7580,13 @@ zeMemGetAddressRange(
 /// @details
 ///     - Takes a pointer to a device memory allocation and creates an IPC
 ///       memory handle for exporting it for use in another process.
-///     - The pointer must be base pointer of a device or host memory
-///       allocation; i.e. the value returned from ::zeMemAllocDevice or from
-///       ::zeMemAllocHost, respectively.
+///     - The pointer may also be a physical memory handle cast to ``void*``
+///       (i.e. ``(void*)hPhysicalMem``); in that case, the IPC handle
+///       represents the physical memory object directly and no virtual address
+///       mapping is required in the sending process.
+///     - Only one physical memory object may be associated with a single IPC
+///       handle at a time; the virtual address range passed must map to exactly
+///       one physical memory object.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -7317,10 +7744,29 @@ typedef enum _ze_ipc_memory_flag_t
 /// @details
 ///     - Takes an IPC memory handle from a remote process and associates it
 ///       with a device pointer usable in this process.
+///     - The 'hDevice' parameter identifies the device into which the
+///       allocation is imported. If this device differs from the one where the
+///       memory was originally allocated, it must have P2P access to the
+///       exporting device. P2P accessibility can be verified using
+///       ::zeDeviceGetP2PProperties or ::zeDeviceCanAccessPeer.
+///     - The `hContext` parameter has no requirement to match the context used
+///       during the original allocation in the exporting process. Any context
+///       of the importing process may be used.
+///     - After the handle is successfully opened, the returned pointer may be
+///       accessed by `hDevice` and by any other device of the importing process
+///       that has P2P connectivity to the exporting device.
+///     - When the IPC handle was originally created from a physical memory
+///       object (directly via a mapped virtual address), opening the handle
+///       assigns a new virtual address in the importing process that maps to
+///       the underlying physical memory; no prior ::zeVirtualMemReserve or
+///       ::zeVirtualMemMap call is required in the importing process.
 ///     - The device pointer in this process should not be freed with
 ///       ::zeMemFree, but rather with ::zeMemCloseIpcHandle.
 ///     - Multiple calls to this function with the same IPC handle will return
 ///       unique pointers.
+///     - The driver must not release the underlying physical memory until all
+///       IPC handles referencing it have been closed via ::zeMemCloseIpcHandle
+///       or returned via ::zeMemPutIpcHandle.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -10032,36 +10478,36 @@ zeKernelSetGlobalOffsetExp(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
-// Intel 'oneAPI' Level-Zero Extension for supporting relaxed allocation limits.
+// [DEPRECATED] Intel 'oneAPI' Level-Zero Extension for supporting relaxed allocation limits. Use the standard `ZE_extension_relaxed_allocation_limits` extension instead.
 #if !defined(__GNUC__)
 #pragma region relaxedAllocLimits
 #endif
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME
+#ifndef ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME
 /// @brief Relaxed Allocation Limits Extension Name
-#define ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME  "ZE_experimental_relaxed_allocation_limits"
-#endif // ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME
+#define ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME  "ZE_extension_relaxed_allocation_limits"
+#endif // ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Relaxed Allocation Limits Extension Version(s)
-typedef enum _ze_relaxed_allocation_limits_exp_version_t
+typedef enum _ze_relaxed_allocation_limits_ext_version_t
 {
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_* ENUMs
+    ZE_RELAXED_ALLOCATION_LIMITS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
+    ZE_RELAXED_ALLOCATION_LIMITS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZE_RELAXED_ALLOCATION_LIMITS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXT_VERSION_* ENUMs
 
-} ze_relaxed_allocation_limits_exp_version_t;
+} ze_relaxed_allocation_limits_ext_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported relaxed memory allocation flags
-typedef uint32_t ze_relaxed_allocation_limits_exp_flags_t;
-typedef enum _ze_relaxed_allocation_limits_exp_flag_t
+typedef uint32_t ze_relaxed_allocation_limits_ext_flags_t;
+typedef enum _ze_relaxed_allocation_limits_ext_flag_t
 {
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_MAX_SIZE = ZE_BIT(0),             ///< Allocation size may exceed the `maxMemAllocSize` member of
+    ZE_RELAXED_ALLOCATION_LIMITS_EXT_FLAG_MAX_SIZE = ZE_BIT(0),             ///< Allocation size may exceed the `maxMemAllocSize` member of
                                                                             ///< ::ze_device_properties_t.
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_* ENUMs
+    ZE_RELAXED_ALLOCATION_LIMITS_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXT_FLAG_* ENUMs
 
-} ze_relaxed_allocation_limits_exp_flag_t;
+} ze_relaxed_allocation_limits_ext_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Relaxed limits memory allocation descriptor
@@ -10072,13 +10518,66 @@ typedef enum _ze_relaxed_allocation_limits_exp_flag_t
 ///       ::ze_device_mem_alloc_desc_t.
 ///     - This structure may also be passed to ::zeMemAllocHost, via the `pNext`
 ///       member of ::ze_host_mem_alloc_desc_t.
+typedef struct _ze_relaxed_allocation_limits_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_relaxed_allocation_limits_ext_flags_t flags;                         ///< [in] flags specifying allocation limits to relax.
+                                                                            ///< must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_ext_flag_t;
+
+} ze_relaxed_allocation_limits_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME
+/// @brief [DEPRECATED] Relaxed Allocation Limits Extension Name. Use
+///        ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
+#define ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME  "ZE_experimental_relaxed_allocation_limits"
+#endif // ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief [DEPRECATED] Relaxed Allocation Limits Extension Version(s). Use
+///        ::ze_relaxed_allocation_limits_ext_version_t instead.
+typedef enum _ze_relaxed_allocation_limits_exp_version_t
+{
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< [DEPRECATED] version 1.0
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_* ENUMs
+
+} ze_relaxed_allocation_limits_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief [DEPRECATED] Supported relaxed memory allocation flags. Use
+///        ::ze_relaxed_allocation_limits_ext_flags_t instead.
+typedef uint32_t ze_relaxed_allocation_limits_exp_flags_t;
+typedef enum _ze_relaxed_allocation_limits_exp_flag_t
+{
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_MAX_SIZE = ZE_BIT(0),             ///< [DEPRECATED] Allocation size may exceed the `maxMemAllocSize` member
+                                                                            ///< of ::ze_device_properties_t. Use
+                                                                            ///< ::ze_relaxed_allocation_limits_ext_flags_t MAX_SIZE instead.
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_* ENUMs
+
+} ze_relaxed_allocation_limits_exp_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief [DEPRECATED] Relaxed limits memory allocation descriptor. Use
+///        ::ze_relaxed_allocation_limits_ext_desc_t instead.
+/// 
+/// @details
+///     - [DEPRECATED] This structure may be passed to ::zeMemAllocShared or
+///       ::zeMemAllocDevice, via the `pNext` member of
+///       ::ze_device_mem_alloc_desc_t. Use
+///       ::ze_relaxed_allocation_limits_ext_desc_t instead.
+///     - [DEPRECATED] This structure may also be passed to ::zeMemAllocHost,
+///       via the `pNext` member of ::ze_host_mem_alloc_desc_t. Use
+///       ::ze_relaxed_allocation_limits_ext_desc_t instead.
 typedef struct _ze_relaxed_allocation_limits_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
-    ze_relaxed_allocation_limits_exp_flags_t flags;                         ///< [in] flags specifying allocation limits to relax.
-                                                                            ///< must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
+    ze_relaxed_allocation_limits_exp_flags_t flags;                         ///< [in] [DEPRECATED] no longer supported, use
+                                                                            ///< ::ze_relaxed_allocation_limits_ext_desc_t instead
 
 } ze_relaxed_allocation_limits_exp_desc_t;
 
@@ -10181,6 +10680,20 @@ typedef enum _ze_driver_ddi_handle_ext_flag_t
 /// @details
 ///     - This structure may be returned from ::zeDriverGetProperties, via the
 ///       `pNext` member of ::ze_driver_properties_t.
+///     - Starting from spec version 1.17, support for this extension is assumed
+///       for any driver reporting API version 1.17 or later via
+///       ::zeDriverGetApiVersion; the loader does NOT need to query the
+///       extension property for such drivers.
+///     - For drivers reporting API version 1.16 or earlier, the loader must
+///       check for this extension before using DDI handles.
+///     - This guarantee enables Level Zero extensions introduced in spec v1.17
+///       or later to embed handles directly inside Level Zero structures (e.g.,
+///       via pNext chains) without requiring the loader to translate or unwrap
+///       handles.
+///     - Additionally, drivers may assume the loader will dispatch calls
+///       exclusively via the DDI tables embedded in their handles; the only
+///       exception is the global DDI table used during driver initialization
+///       and to read the reported API version.
 typedef struct _ze_driver_ddi_handles_ext_properties_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -11625,7 +12138,7 @@ zeDeviceGetVectorWidthPropertiesExt(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
-// Intel 'oneAPI' Level-Zero Extension APIs for Mapping External Memory as part of host llocation
+// Intel 'oneAPI' Level-Zero Extension APIs for Mapping External Memory as part of host allocation
 #if !defined(__GNUC__)
 #pragma region externalMemMap
 #endif
@@ -11652,15 +12165,46 @@ typedef enum _ze_external_memmap_sysmem_ext_version_t
 ///     - This structure may be passed to ::zeMemAllocHost, via the `pNext`
 ///       member of ::ze_host_mem_alloc_desc_t to map system memory for a host
 ///       allocation.
-///     - The system memory pointer and size being mapped must be page aligned
-///       based on the supported page sizes on the device.
+///     - The `pSystemMemory` pointer and `size` being mapped must be aligned to
+///       the host page size. The host page size must be queried using
+///       operating-system-specific calls, as the mapped memory originates from
+///       the system allocator rather than from Level-Zero; there is no
+///       Level-Zero query for this value.
+///     - On success, the pointer returned from ::zeMemAllocHost is identical to
+///       `pSystemMemory`; the mapping preserves the virtual address, so the
+///       same address is valid on both the host and the device.
+///     - Memory from the application's heap, stack, or statically-allocated
+///       (global) storage is supported. Support for memory obtained by other
+///       means is platform- and driver-dependent and is not guaranteed. If
+///       `pSystemMemory` points to a memory type that cannot be mapped,
+///       ::zeMemAllocHost returns ::ZE_RESULT_ERROR_INVALID_ARGUMENT.
+///     - Host memory that is read-only can only be mapped successfully when the
+///       ::ZE_HOST_MEM_ALLOC_FLAG_MEM_READ_ONLY flag is set in
+///       ::ze_host_mem_alloc_desc_t; in that case device access to the mapped
+///       memory is read-only.
+///     - The system memory referenced by `pSystemMemory` must remain valid for
+///       the entire lifetime of the resulting allocation. Freeing or unmapping
+///       the underlying system memory before the allocation is released results
+///       in undefined behavior.
+///     - Mapped memory ranges must not overlap. Releasing a mapping with
+///       ::zeMemFree tears down the device page-table entries for its virtual
+///       address range. Because these page tables are shared across imports,
+///       releasing a mapping that overlaps another import also tears down the
+///       overlapping device page-table entries, leaving the other allocation
+///       invalid for device access. The host system memory itself is
+///       unaffected.
+///     - After mapping, ::zeMemGetAllocProperties reports the allocation type
+///       as ::ZE_MEMORY_TYPE_HOST_IMPORTED.
+///     - The mapping is released by passing the pointer to ::zeMemFree, like
+///       any other host allocation.
 typedef struct _ze_external_memmap_sysmem_ext_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     void* pSystemMemory;                                                    ///< [in] system memory pointer to map; must be page-aligned.
-    uint64_t size;                                                          ///< [in] size of the system memory to map; must be page-aligned.
+    uint64_t size;                                                          ///< [in] size of the system memory to map; must be a multiple of the page
+                                                                            ///< size.
 
 } ze_external_memmap_sysmem_ext_desc_t;
 
@@ -11894,6 +12438,12 @@ typedef struct _ze_ipc_mem_handle_type_ext_desc_t
 ///       allocation; i.e. the value returned from ::zeMemAllocDevice or from
 ///       ::zeMemAllocHost, respectively or allocated from
 ///       ::zePhysicalMemCreate.
+///     - The pointer may also be a virtual address that was mapped to a
+///       physical memory object via ::zeVirtualMemMap; in that case, the IPC
+///       handle represents the underlying physical memory object.
+///     - Only one physical memory object may be associated with a single IPC
+///       handle at a time; the virtual address range passed must map to exactly
+///       one physical memory object.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -11923,6 +12473,836 @@ zeMemGetIpcHandleWithProperties(
     void* pNext,                                                            ///< [in][optional] Pointer to extension-specific structure.
     ze_ipc_mem_handle_t* pIpcHandle                                         ///< [out] Returned IPC memory handle
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Level-Zero Extension for Record and Replay of Graphs.
+#if !defined(__GNUC__)
+#pragma region graph
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_RECORD_REPLAY_GRAPH_EXT_NAME
+/// @brief Record and Replay Graph Extension Name
+#define ZE_RECORD_REPLAY_GRAPH_EXT_NAME  "ZE_extension_record_replay_graph"
+#endif // ZE_RECORD_REPLAY_GRAPH_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Record and Replay Graph Extension Version(s)
+typedef enum _ze_record_replay_graph_ext_version_t
+{
+    ZE_RECORD_REPLAY_GRAPH_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),       ///< version 1.0
+    ZE_RECORD_REPLAY_GRAPH_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
+    ZE_RECORD_REPLAY_GRAPH_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RECORD_REPLAY_GRAPH_EXT_VERSION_* ENUMs
+
+} ze_record_replay_graph_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Record and Replay Graph capability flags
+typedef uint32_t ze_record_replay_graph_ext_flags_t;
+typedef enum _ze_record_replay_graph_ext_flag_t
+{
+    ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_IMMUTABLE_GRAPH = ZE_BIT(0),            ///< Supports graphs that can't mutate
+    ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_MUTABLE_GRAPH = ZE_BIT(1),              ///< Supports graphs that can mutate
+    ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_SUBGRAPHS = ZE_BIT(2),                  ///< Supports appending a subgraph into a graph
+    ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_APPEND_COMMANDLIST = ZE_BIT(3),         ///< Supports appending a command list into a graph
+    ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_CB_EXTERNAL_IPC = ZE_BIT(4),            ///< Supports waiting/signaling events that were created with both
+                                                                            ///< ZEX_COUNTER_BASED_EVENT_FLAG_IPC and
+                                                                            ///< ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL
+    ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_* ENUMs
+
+} ze_record_replay_graph_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported Record and Replay Graph properties. This structure is
+///        accepted as pNext to ::ze_device_properties_t
+typedef struct _ze_record_replay_graph_ext_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_record_replay_graph_ext_flags_t graphFlags;                          ///< [out] record and replay flags
+
+} ze_record_replay_graph_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of an executable graph object
+typedef struct _ze_executable_graph_handle_t *ze_executable_graph_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Record and Replay Graph dump mode
+typedef enum _ze_record_replay_graph_ext_dump_mode_t
+{
+    ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_DETAILED = 0x0,                    ///< detailed mode (default)
+    ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_SIMPLE = 0x1,                      ///< simple mode
+    ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_* ENUMs
+
+} ze_record_replay_graph_ext_dump_mode_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Record and Replay Graph dump descriptor
+/// 
+/// @details
+///     - Accepted as pNext in ::zeGraphDumpContentsExt.
+typedef struct _ze_record_replay_graph_ext_dump_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_record_replay_graph_ext_dump_mode_t mode;                            ///< [in] graph dump mode
+
+} ze_record_replay_graph_ext_dump_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function pointer type invoked when a graph is destroyed
+typedef void (ZE_CALLBACK_CONV *zex_mem_graph_free_callback_fn_t)(
+        void* pUserData                                                         ///< [in][optional] user data pointer provided at callback registration
+                                                                                ///< time
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates a new graph object.
+/// 
+/// @details
+///     - A newly created graph is an empty container for captured operations.
+///     - The application may instantiate executable graph objects from a
+///       recorded graph using ::zeGraphInstantiateExt.
+///     - The application may begin capturing into an empty graph using
+///       ::zeCommandListBeginCaptureIntoGraphExt.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphCreateExt(
+    ze_context_handle_t hContext,                                           ///< [in] handle of the context
+    const void* pNext,                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    ze_graph_handle_t* phGraph                                              ///< [out] pointer to handle of the graph object created
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Begins recording asynchronous append operations into a new graph
+///        associated with an immediate command list.
+/// 
+/// @details
+///     - Graph capture is intended for asynchronous append operations only;
+///       synchronous operations are not supported while capture is active and
+///       return ::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED.
+///     - The application must call this function only with an immediate command
+///       list.
+///     - The application must not call this function with a synchronous
+///       immediate command list.
+///     - After this call succeeds, append operations issued to the command list
+///       are recorded into a graph and are not submitted to the device. Events
+///       used by these operations are not signaled until capture ends and the
+///       graph is instantiated and executed.
+///     - If the device does not support
+///       ::ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_APPEND_COMMANDLIST, then while
+///       capture is active, calling
+///       ::zeCommandListImmediateAppendCommandListsExp on the capturing command
+///       list returns an error (::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED).
+///     - If the device does not support
+///       ::ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_SUBGRAPHS, then while capture is
+///       active, calling ::zeCommandListAppendGraphExt on the capturing command
+///       list returns an error (::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED).
+///     - While capture is active, host-side synchronization operations on
+///       recorded work, such as ::zeCommandListHostSynchronize or
+///       ::zeEventHostSynchronize, return
+///       ::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED.
+///     - While capture is active, internal counter-based events (i.e. without
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) captured in the graph
+///       cannot be used outside the graph; such use returns an error
+///       (::ZE_RESULT_ERROR_GRAPH_INTERNAL_EVENT).
+///     - The command list on which capture starts is called the primary command
+///       list for a given capture session.
+///     - If an event signaled by a captured command list is used in the wait
+///       list of another immediate command list, that command list also enters
+///       graph capture mode. This creates a fork. The command list from which
+///       the fork originated is called the parent, and the forked command list
+///       is called the child. A child command list may itself be used to create
+///       additional forks, resulting in a tree of command lists participating
+///       in the same graph capture.
+///     - Subsequent signals from the parent command list to a child command
+///       list are allowed and do not create additional forks or capture
+///       sessions; the child command list remains in the same capture session
+///       as the parent command list.
+///     - Each fork must be joined by signaling on the child command list and by
+///       waiting on the parent command list.
+///     - A child command list may signal multiple times back to the parent
+///       command list, but only the last signal on the child command list may
+///       become part of the join operation.
+///     - Child command lists continue recording as long as the primary command
+///       list is in capture mode.
+///     - Commands that append work (for example, compute kernels or data
+///       transfers) to a recording child command list after the intended join
+///       operation are treated as unjoined work, and the graph is considered
+///       invalid. Commands that do not append work (for example, event signal
+///       and wait operations) are allowed after the join operation and do not
+///       invalidate the graph.
+///     - All restrictions described for ::zeCommandListBeginGraphCaptureExt
+///       apply to recording child command lists as well.
+///     - It is invalid to merge two separate graph capture sessions (i.e. with
+///       different primary command lists) by waiting on an event associated
+///       with a different graph (operation will return
+///       ::ZE_RESULT_ERROR_GRAPH_CAPTURE_MERGE_ATTEMPT).
+///     - If the device does not support
+///       ::ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_CB_EXTERNAL_IPC, then using an event
+///       that was created with both ZEX_COUNTER_BASED_EVENT_FLAG_IPC and
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL returns an error
+///       (::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED) during append
+///       operations.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListBeginGraphCaptureExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list to start capture on
+    const void* pNext                                                       ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Begins recording asynchronous append operations into an existing
+///        graph.
+/// 
+/// @details
+///     - The graph must be created with ::zeGraphCreateExt before calling this
+///       function.
+///     - The graph must be empty when capture begins.
+///     - After this call succeeds, the command list enters graph capture mode
+///       and all restrictions described for ::zeCommandListBeginGraphCaptureExt
+///       apply.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListBeginCaptureIntoGraphExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list to start capture on
+    ze_graph_handle_t hGraph,                                               ///< [in] handle of the graph to capture into
+    const void* pNext                                                       ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries whether a command list is in graph capture mode.
+/// 
+/// @details
+///     - The function returns `ZE_RESULT_QUERY_TRUE` when the command list is
+///       in graph capture mode.
+///     - The function returns `ZE_RESULT_QUERY_FALSE` when the command list is
+///       not in graph capture mode.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListIsGraphCaptureEnabledExt(
+    ze_command_list_handle_t hCommandList                                   ///< [in] handle of the command list
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Ends graph capture on the primary command list and returns the
+///        recorded graph.
+/// 
+/// @details
+///     - This function may only be called on the primary command list used with
+///       ::zeCommandListBeginGraphCaptureExt or
+///       ::zeCommandListBeginCaptureIntoGraphExt.
+///     - If capture was started with ::zeCommandListBeginCaptureIntoGraphExt,
+///       the returned graph handle is the same graph handle that was provided
+///       when capture began.
+///     - The returned graph must be instantiated before execution.
+///     - This call ends graph capture mode on all command lists participating
+///       in the same graph capture (including forks).
+///     - After this call succeeds, subsequent append operations submit work to
+///       the device normally.
+///     - If capture mode is not active on the command list, an error is
+///       returned.
+///     - After this call succeeds, events signaled by previously captured
+///       commands do not create new forks.
+///     - After this call succeeds, internal counter-based events (i.e. without
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) can be reused by the
+///       application and don't interfere with recorded state.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phGraph`
+///     - $ZE_RESULT_ERROR_GRAPH_UNJOINED_FORKS
+///         + if graph contains unjoined forks
+///     - $ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING
+///         + if command list is not in graph capture mode
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListEndGraphCaptureExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list to end capture on
+    const void* pNext,                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    ze_graph_handle_t* phGraph                                              ///< [out] pointer to the captured graph handle
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the graph associated with a command list that is in graph
+///        capture mode.
+/// 
+/// @details
+///     - This function may only be called while the command list is in graph
+///       capture mode.
+///     - The returned graph handle cannot be instantiated until capture is
+///       ended by ::zeCommandListEndGraphCaptureExt.
+///     - This function does not transfer ownership of the graph handle.
+///     - If the command list is not in graph capture mode, an error is returned
+///       and `*phGraph` is set to null.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phGraph`
+///     - $ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING
+///         + if command list is not in graph capture mode
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListGetGraphExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list that is in capture mode
+    ze_graph_handle_t* phGraph                                              ///< [out] pointer to the graph handle associated with the command list
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the primary command list associated with a graph capture
+///        session.
+/// 
+/// @details
+///     - The returned command list is the command list that initiated capture
+///       for the graph during its recording stage.
+///     - This function can be called while the graph is being recorded and
+///       after capture has ended.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phCommandList`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphGetPrimaryCommandListExt(
+    ze_graph_handle_t hGraph,                                               ///< [in] handle of the graph
+    ze_command_list_handle_t* phCommandList                                 ///< [out] pointer to the primary command list handle associated with the
+                                                                            ///< graph
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Registers a host callback that is invoked when a graph is destroyed.
+/// 
+/// @details
+///     - Callbacks may be registered while a graph is being recorded or after
+///       executable graph instances have been created from it.
+///     - Multiple callbacks may be registered for the same graph.
+///     - All registered callbacks are invoked when the graph is destroyed.
+///     - The callback must not call Level Zero APIs that use the graph being
+///       destroyed.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphSetDestructionCallbackExt(
+    ze_graph_handle_t hGraph,                                               ///< [in] handle of the graph
+    zex_mem_graph_free_callback_fn_t pfnCallback,                           ///< [in] callback function to invoke when the graph is destroyed
+    void* pUserData,                                                        ///< [in][optional] user data to pass to the callback
+    const void* pNext                                                       ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates an executable graph object from a recorded graph.
+/// 
+/// @details
+///     - Multiple executable graph objects may be created from a single
+///       recorded graph.
+///     - Recorded regular events (not counter-based) are shared between
+///       executable graph instances; the application is responsible for
+///       avoiding data races during concurrent execution of multiple graph
+///       instances.
+///     - Recorded internal counter-based events (i.e. without
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) may be used only for
+///       synchronization within the graph. Their state is tied to the
+///       underlying execution queue and is not shared between executable graph
+///       instances.
+///     - Recorded external counter-based events (i.e. with
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) may be used to
+///       synchronize the graph with device commands submitted outside the graph
+///       (for example, before or after ::zeCommandListAppendGraphExt) and with
+///       the host. External counter-based events may incur additional overhead
+///       compared to internal counter-based events.
+///     - Resources used in captured commands (e.g. buffers passed to kernels as
+///       arguments) are shared between instances; the application is
+///       responsible for avoiding data races during concurrent execution.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phExecutableGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphInstantiateExt(
+    ze_graph_handle_t hGraph,                                               ///< [in] handle of the recorded graph
+    const void* pNext,                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    ze_executable_graph_handle_t* phExecutableGraph                         ///< [out] pointer to handle of the executable graph
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Appends execution of an executable graph to a command list.
+/// 
+/// @details
+///     - The destination command list must match the type and execution
+///       characteristics of the command list used to initiate recording,
+///       including the queue group ordinal and immediate mode configuration.
+///     - Only one execution of the same executable graph object may run at a
+///       time; concurrent graph execution requires multiple executable graph
+///       instances.
+///     - If this function is called while the executable graph is already
+///       running, the new execution is scheduled after the current execution
+///       completes.
+///     - Graph execution obeys the implicit in-order dependency semantics of
+///       the destination command list.
+///     - If `hSignalEvent` is provided, it is signaled after all recorded
+///       append operations on all recorded queues complete.
+///     - If wait events are provided, graph execution does not begin until all
+///       wait events are satisfied.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendGraphExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list to execute the graph on
+    ze_executable_graph_handle_t hGraph,                                    ///< [in] handle of the executable graph
+    const void* pNext,                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the recorded graph used to instantiate an executable graph.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSourceGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeExecutableGraphGetSourceGraphExt(
+    ze_executable_graph_handle_t hGraph,                                    ///< [in] handle of the executable graph
+    ze_graph_handle_t* phSourceGraph                                        ///< [out] pointer to the source recorded graph handle
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries whether a graph is empty.
+/// 
+/// @details
+///     - The function returns `ZE_RESULT_QUERY_TRUE` when the graph contains no
+///       operations.
+///     - The function returns `ZE_RESULT_QUERY_FALSE` when the graph contains
+///       recorded operations.
+///     - The function returns `ZE_RESULT_ERROR_INVALID_GRAPH` when the recorded
+///       graph is invalid.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphIsEmptyExt(
+    ze_graph_handle_t hGraph                                                ///< [in] handle of the graph
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Writes a DOT description of a recorded graph to disk.
+/// 
+/// @details
+///     - The generated DOT output captures the graph structure and recorded
+///       append operations.
+///     - Kernel node output includes kernel names, argument lists, and argument
+///       types and values.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == filePath`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphDumpContentsExt(
+    ze_graph_handle_t hGraph,                                               ///< [in] handle of the graph
+    const char* filePath,                                                   ///< [in] path where the DOT file is written
+    const void* pNext                                                       ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext)
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroys an executable graph object.
+/// 
+/// @details
+///     - The executable graph must not be in use or executing on any command
+///       list when it is destroyed.
+///     - After destruction, the handle becomes invalid and must not be used in
+///       further API calls.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeExecutableGraphDestroyExt(
+    ze_executable_graph_handle_t hGraph                                     ///< [in][release] handle of the executable graph to destroy
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroys a recorded graph object.
+/// 
+/// @details
+///     - All executable graph instances created from the recorded graph must be
+///       destroyed before this function is called.
+///     - After destruction, the handle becomes invalid and must not be used in
+///       further API calls.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphDestroyExt(
+    ze_graph_handle_t hGraph                                                ///< [in][release] handle of the graph to destroy
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero APIs for Append Host Function
+#if !defined(__GNUC__)
+#pragma region hostFunction
+#endif
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Host Function callback type
+typedef void (ZE_CALLBACK_CONV *ze_host_function_callback_t)(
+        void* pUserData                                                         ///< [in][optional] user data pointer
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Appends a host function call into a command list.
+/// 
+/// @details
+///     - The application must ensure the events are accessible by the device on
+///       which the command list was created.
+///     - The host function will be executed on the host when the command list
+///       reaches this point during execution.
+///     - The host function callback must be of type
+///       ::ze_host_function_callback_t.
+///     - The host function must **not** call any Level Zero API functions.
+///     - The host function may access USM shared and USM host allocations.
+///     - The runtime invokes the host function asynchronously to API calls.
+///     - Device may wait for preceding commands to finish before invoking the
+///       callback (i.e. callbacks may introduce implicit synchronization point
+///       on the device).
+///     - Device will wait for all phWaitEvents to be signaled before executing
+///       the host function.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendHostFunction(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_host_function_callback_t pfnHostFunction,                            ///< [in] host function to call, expected to be lightweight and
+                                                                            ///< non-blocking
+    void* pUserData,                                                        ///< [in][optional] user specific data that would be passed to function;
+                                                                            ///< neither the runtime nor the device will dereference it
+    const void* pNext,                                                      ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
+                                                                            ///< phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Virtual Memory Read-Only Properties
+#if !defined(__GNUC__)
+#pragma region virtualMemReadOnlyProperties
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_NAME
+/// @brief Virtual Memory Read-Only Properties Extension Name
+#define ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_NAME  "ZE_extension_virtual_mem_readonly_properties"
+#endif // ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Virtual Memory Read-Only Properties Extension Version(s)
+typedef enum _ze_virtual_mem_readonly_properties_ext_version_t
+{
+    ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),   ///< version 1.0
+    ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
+    ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_VIRTUAL_MEM_READONLY_PROPERTIES_EXT_VERSION_* ENUMs
+
+} ze_virtual_mem_readonly_properties_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Read-only memory page capability values
+typedef enum _ze_device_readonly_memory_capability_t
+{
+    ZE_DEVICE_READONLY_MEMORY_CAPABILITY_NONE = 0,                          ///< Read-only attribute has no effect; the driver does not act on it.
+    ZE_DEVICE_READONLY_MEMORY_CAPABILITY_HINT = 1,                          ///< Read-only attribute is a performance hint to the OS; writes may still
+                                                                            ///< succeed without fault.
+    ZE_DEVICE_READONLY_MEMORY_CAPABILITY_ENFORCED = 2,                      ///< Read-only attribute is hardware-enforced; writes to read-only pages
+                                                                            ///< will cause a device fault.
+    ZE_DEVICE_READONLY_MEMORY_CAPABILITY_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_READONLY_MEMORY_CAPABILITY_* ENUMs
+
+} ze_device_readonly_memory_capability_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device read-only memory capability properties
+/// 
+/// @details
+///     - This structure may be returned from ::zeDeviceGetProperties via the
+///       `pNext` member of ::ze_device_properties_t
+typedef struct _ze_device_readonly_memory_ext_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_device_readonly_memory_capability_t readonlyCapability;              ///< [out] Indicates device behavior when
+                                                                            ///< ::ZE_MEMORY_ACCESS_ATTRIBUTE_READONLY is applied to a virtual memory page.
+                                                                            ///< ::ZE_DEVICE_READONLY_MEMORY_CAPABILITY_NONE - the attribute has no
+                                                                            ///< effect; writes succeed normally.
+                                                                            ///< ::ZE_DEVICE_READONLY_MEMORY_CAPABILITY_HINT - the attribute is a
+                                                                            ///< performance hint; writes may still succeed.
+                                                                            ///< ::ZE_DEVICE_READONLY_MEMORY_CAPABILITY_ENFORCED - the attribute is
+                                                                            ///< hardware-enforced; writes cause a device fault.
+
+} ze_device_readonly_memory_ext_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -13869,6 +15249,8 @@ typedef enum _ze_device_memory_ext_type_t
     ZE_DEVICE_MEMORY_EXT_TYPE_HBM3 = 23,                                    ///< HBM3 memory
     ZE_DEVICE_MEMORY_EXT_TYPE_HBM3E = 24,                                   ///< HBM3E memory
     ZE_DEVICE_MEMORY_EXT_TYPE_HBM4 = 25,                                    ///< HBM4 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_LPDDR5X = 26,                                 ///< LPDDR5X memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_LPDDR6 = 27,                                  ///< LPDDR6 memory
     ZE_DEVICE_MEMORY_EXT_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_MEMORY_EXT_TYPE_* ENUMs
 
 } ze_device_memory_ext_type_t;
@@ -14110,8 +15492,9 @@ typedef struct _ze_event_query_kernel_timestamps_ext_properties_t
 /// @brief Kernel timestamp clock data synchronized to the host time domain
 typedef struct _ze_synchronized_timestamp_data_ext_t
 {
-    uint64_t kernelStart;                                                   ///< [out] synchronized clock at start of kernel execution
-    uint64_t kernelEnd;                                                     ///< [out] synchronized clock at end of kernel execution
+    uint64_t kernelStart;                                                   ///< [out] start of kernel execution in nanoseconds, on the host time
+                                                                            ///< domain.
+    uint64_t kernelEnd;                                                     ///< [out] end of kernel execution in nanoseconds, on the host time domain.
 
 } ze_synchronized_timestamp_data_ext_t;
 
@@ -14119,9 +15502,10 @@ typedef struct _ze_synchronized_timestamp_data_ext_t
 /// @brief Synchronized kernel timestamp result
 typedef struct _ze_synchronized_timestamp_result_ext_t
 {
-    ze_synchronized_timestamp_data_ext_t global;                            ///< [out] wall-clock data
-    ze_synchronized_timestamp_data_ext_t context;                           ///< [out] context-active data; only includes clocks while device context
-                                                                            ///< was actively executing.
+    ze_synchronized_timestamp_data_ext_t global;                            ///< [out] wall-clock data; free running device clock when device was
+                                                                            ///< active,on the host time domain
+    ze_synchronized_timestamp_data_ext_t context;                           ///< [out] context specific active data; only includes clocks while context
+                                                                            ///< was actively executing on the device, on the host time domain
 
 } ze_synchronized_timestamp_result_ext_t;
 
@@ -15433,6 +16817,7 @@ typedef enum _ze_command_list_clone_exp_version_t
 /// @brief Creates a command list as the clone of another command list.
 /// 
 /// @details
+///     - @deprecated since 1.17
 ///     - The source command list must be created with the
 ///       ::ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE flag.
 ///     - The source command list must be closed prior to cloning.
@@ -15882,6 +17267,39 @@ zeCommandListUpdateMutableCommandsExp(
     ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
     const ze_mutable_commands_exp_desc_t* desc                              ///< [in] pointer to mutable commands descriptor; multiple descriptors may
                                                                             ///< be chained via `pNext` member
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query whether a command list was created with the mutable command list
+///        extension.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIsMutable`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListIsMutableExp(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_bool_t* pIsMutable                                                   ///< [out] pointer bool determining whether command list was created with
+                                                                            ///< mutable extension
     );
 
 ///////////////////////////////////////////////////////////////////////////////

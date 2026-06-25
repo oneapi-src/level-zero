@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.16-r1.16.24
+ * @version v1.17-r1.17.23
  *
  */
 #ifndef _ZES_API_H
@@ -167,6 +167,8 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_PCI_LINK_SPEED_DOWNGRADE_EXT_PROPERTIES = 0x00020014,///< ::zes_pci_link_speed_downgrade_ext_properties_t
     ZES_STRUCTURE_TYPE_RAS_STATE_EXP2 = 0x00020015,                         ///< ::zes_ras_state_exp2_t
     ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP = 0x00020016,                         ///< ::zes_ras_config_exp_t
+    ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES = 0x00020017,           ///< ::zes_oem_serial_id_ext_properties_t
+    ZES_STRUCTURE_TYPE_DEVICE_EXT_STATE = 0x00020018,                       ///< ::zes_device_ext_state_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_STRUCTURE_TYPE_* ENUMs
 
 } zes_structure_type_t;
@@ -524,6 +526,14 @@ typedef struct _zes_pci_link_speed_downgrade_ext_state_t zes_pci_link_speed_down
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_pci_link_speed_downgrade_ext_properties_t
 typedef struct _zes_pci_link_speed_downgrade_ext_properties_t zes_pci_link_speed_downgrade_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_device_ext_state_t
+typedef struct _zes_device_ext_state_t zes_device_ext_state_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_oem_serial_id_ext_properties_t
+typedef struct _zes_oem_serial_id_ext_properties_t zes_oem_serial_id_ext_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_power_limit_ext_desc_t
@@ -898,7 +908,8 @@ typedef enum _zes_reset_type_t
 } zes_reset_type_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Device state
+/// @brief Device state. To retrieve the current device state, please use
+///        ::zes_device_ext_state_t as pNext.
 typedef struct _zes_device_state_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -958,7 +969,10 @@ typedef enum _zes_device_property_flag_t
 } zes_device_property_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Device properties
+/// @brief Device properties. To get OEM Serial ID, pNext member of this
+///        structure should point to an instance of
+///        ${s}_oem_serial_id_ext_properties_t with its stype set to
+///        ::ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES.
 typedef struct _zes_device_properties_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -5203,6 +5217,13 @@ typedef enum _zes_mem_type_t
     ZES_MEM_TYPE_GDDR6X = 18,                                               ///< GDDR6X memory
     ZES_MEM_TYPE_GDDR7 = 19,                                                ///< GDDR7 memory
     ZES_MEM_TYPE_LPDDR5X = 20,                                              ///< LPDDR5X memory
+    ZES_MEM_TYPE_HBM2 = 21,                                                 ///< HBM2 memory
+    ZES_MEM_TYPE_DDR2 = 22,                                                 ///< DDR2 memory
+    ZES_MEM_TYPE_HBM2E = 23,                                                ///< HBM2E memory
+    ZES_MEM_TYPE_HBM3 = 24,                                                 ///< HBM3 memory
+    ZES_MEM_TYPE_HBM3E = 25,                                                ///< HBM3E memory
+    ZES_MEM_TYPE_HBM4 = 26,                                                 ///< HBM4 memory
+    ZES_MEM_TYPE_LPDDR6 = 27,                                               ///< LPDDR6 memory
     ZES_MEM_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_MEM_TYPE_* ENUMs
 
 } zes_mem_type_t;
@@ -7567,6 +7588,106 @@ zesDevicePciLinkSpeedUpdateExt(
                                                                             ///< or set to default speed(false)
     zes_device_action_t* pendingAction                                      ///< [out] Pending action
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Device State
+#if !defined(__GNUC__)
+#pragma region deviceState
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_DEVICE_EXT_STATE_NAME
+/// @brief Device State Extension Name
+#define ZES_DEVICE_EXT_STATE_NAME  "ZES_extension_device_state"
+#endif // ZES_DEVICE_EXT_STATE_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device State Extension Version(s)
+typedef enum _zes_device_ext_state_version_t
+{
+    ZES_DEVICE_EXT_STATE_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),             ///< version 1.0
+    ZES_DEVICE_EXT_STATE_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),         ///< latest known version
+    ZES_DEVICE_EXT_STATE_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_EXT_STATE_VERSION_* ENUMs
+
+} zes_device_ext_state_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device state flags
+typedef uint32_t zes_device_state_ext_flags_t;
+typedef enum _zes_device_state_ext_flag_t
+{
+    ZES_DEVICE_STATE_EXT_FLAG_NORMAL = ZE_BIT(0),                           ///< The device is operating normally
+    ZES_DEVICE_STATE_EXT_FLAG_WEDGED = ZE_BIT(1),                           ///< The device is wedged
+    ZES_DEVICE_STATE_EXT_FLAG_SURVIVABILITY = ZE_BIT(2),                    ///< The device is in survivability mode
+    ZES_DEVICE_STATE_EXT_FLAG_FLASH_OVERRIDE = ZE_BIT(3),                   ///< The device has flash override enabled
+    ZES_DEVICE_STATE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_STATE_EXT_FLAG_* ENUMs
+
+} zes_device_state_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties for Device State
+/// 
+/// @details
+///     - This structure may be returned from ::zesDeviceGetState via the
+///       `pNext` member of ::zes_device_state_t
+///     - Provides extended device state information including wedged state,
+///       survivability mode, and flash override status
+typedef struct _zes_device_ext_state_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_device_state_ext_flags_t flags;                                     ///< [out] Device state flags. Returns 0 (if state cannot be determined) or
+                                                                            ///< a combination of ::zes_device_state_ext_flags_t
+
+} zes_device_ext_state_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for OEM Serial ID
+#if !defined(__GNUC__)
+#pragma region oemSerialId
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_OEM_SERIAL_ID_EXT_NAME
+/// @brief OEM Serial ID Extension Name
+#define ZES_OEM_SERIAL_ID_EXT_NAME  "ZES_extension_oem_serial_id"
+#endif // ZES_OEM_SERIAL_ID_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief OEM Serial ID Extension Version(s)
+typedef enum _zes_oem_serial_id_ext_version_t
+{
+    ZES_OEM_SERIAL_ID_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
+    ZES_OEM_SERIAL_ID_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
+    ZES_OEM_SERIAL_ID_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_OEM_SERIAL_ID_EXT_VERSION_* ENUMs
+
+} zes_oem_serial_id_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_OEM_SERIAL_ID_SIZE
+/// @brief Maximum OEM serial ID string size
+#define ZES_OEM_SERIAL_ID_SIZE  1024
+#endif // ZES_OEM_SERIAL_ID_SIZE
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief OEM Serial ID Properties structure
+/// 
+/// @details
+///     - This structure can be passed as an extension structure to
+///       ::zesDeviceGetProperties via pNext member
+///     - Returns the OEM serial ID of the device
+typedef struct _zes_oem_serial_id_ext_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint16_t length;                                                        ///< [out] OEM serial ID length
+    char oemSerialId[ZES_OEM_SERIAL_ID_SIZE];                               ///< [out] OEM serial ID for the device.
+
+} zes_oem_serial_id_ext_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

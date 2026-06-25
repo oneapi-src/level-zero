@@ -296,6 +296,9 @@ zeInitDrivers(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - Starting from API version 1.17, any driver reporting version 1.17 or
+///       later is assumed to support the ::ZE_DRIVER_DDI_HANDLES_EXT_NAME
+///       extension; see ::ze_driver_ddi_handles_ext_properties_t for details.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -1841,6 +1844,11 @@ zeDeviceGetStatus(
 ///     - The application may call this function from simultaneous threads with
 ///       the same device handle.
 ///     - The implementation of this function must be thread-safe.
+///     - The hostTimestamp value needs to return a sample from a
+///       RAW_MONOTONIC_CLOCK source that is not affected by system time changes
+///       or by software adjustments to the clock.
+///     - The hostTimestamp and deviceTimestamp values should be coordinated to
+///       be sampled at the same time/close together
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -1865,10 +1873,15 @@ zeDeviceGetStatus(
 ze_result_t ZE_APICALL
 zeDeviceGetGlobalTimestamps(
     ze_device_handle_t hDevice,                     ///< [in] handle of the device
-    uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                    ///< Device's global timestamp value.
-    uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                    ///< Host's global timestamp value.
+    uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp in nanoseconds at the time
+                                                    ///< of invoking the function.
+    uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp in tick counts at the
+                                                    ///< time of invoking the function.
+                                                    ///< To get the devicetime stamp in nanoseconds, resolve the tick counts
+                                                    ///< using the timestampValidBits as mask together with timerResolution
+                                                    ///< members of the ::ze_device_properties_t structure.
+                                                    ///< For example: deviceTimestampinNS = (deviceTimestamp &
+                                                    ///< timestampValidBits) * 1/timerResolution.(when timer resolution is in cycle/sec)
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
@@ -2036,6 +2049,88 @@ zeDeviceGetAggregatedCopyOffloadIncrementValue(
     }
 
     return pfnGetAggregatedCopyOffloadIncrementValue( hDevice, incrementValue );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns maximum value supported by the driver for Counter Based Events
+///        created with externally managed counter storage (see
+///        ::ze_event_counter_based_external_sync_allocation_desc_t and
+///        ::ze_event_counter_based_external_aggregate_storage_desc_t).
+/// 
+/// @details
+///     - Value is applicable only to this specific device.
+///     - User must query this value before creating a Counter Based Event with
+///       externally managed counter storage and ensure that `completionValue`
+///       provided in the descriptor does not exceed it.
+///     - User must also ensure that any value written by the application to
+///       `deviceAddress` or `hostAddress` of an externally managed counter
+///       storage (including values aggregated under `deviceAddress` of
+///       ::ze_event_counter_based_external_aggregate_storage_desc_t) does not
+///       exceed this maximum at any point in time.
+///     - Driver does not validate values written by the user to externally
+///       managed memory; exceeding this maximum results in undefined behavior.
+///     - ::zeEventCounterBasedCreate returns ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///       if the descriptor specifies a value greater than the value returned by
+///       this query.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == maxValue`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Provided invalid hDevice or maxValue pointer
+ze_result_t ZE_APICALL
+zeDeviceGetCounterBasedEventMaxValue(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    uint64_t* maxValue                              ///< [out] maximum value that may appear under externally managed counter
+                                                    ///< storage and that may be passed as `completionValue` when creating a
+                                                    ///< Counter Based Event
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnDeviceGetCounterBasedEventMaxValue_t pfnGetCounterBasedEventMaxValue = [&result] {
+        auto pfnGetCounterBasedEventMaxValue = ze_lib::context->zeDdiTable.load()->Device.pfnGetCounterBasedEventMaxValue;
+        if( nullptr == pfnGetCounterBasedEventMaxValue ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetCounterBasedEventMaxValue;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetCounterBasedEventMaxValue( hDevice, maxValue );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetCounterBasedEventMaxValue = ze_lib::context->zeDdiTable.load()->Device.pfnGetCounterBasedEventMaxValue;
+    if( nullptr == pfnGetCounterBasedEventMaxValue ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetCounterBasedEventMaxValue( hDevice, maxValue );
     #endif
 }
 
@@ -2989,6 +3084,198 @@ zeCommandQueueGetIndex(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command queue creation flags.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCmdQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+ze_result_t ZE_APICALL
+zeCommandQueueGetFlags(
+    ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+    ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command queue creation
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandQueueGetFlags_t pfnGetFlags = [&result] {
+        auto pfnGetFlags = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetFlags;
+        if( nullptr == pfnGetFlags ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetFlags;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetFlags( hCmdQueue, pFlags );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFlags = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetFlags;
+    if( nullptr == pfnGetFlags ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFlags( hCmdQueue, pFlags );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command queue operation mode.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCmdQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pMode`
+ze_result_t ZE_APICALL
+zeCommandQueueGetMode(
+    ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+    ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command queue creation
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandQueueGetMode_t pfnGetMode = [&result] {
+        auto pfnGetMode = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetMode;
+        if( nullptr == pfnGetMode ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetMode;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetMode( hCmdQueue, pMode );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetMode = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetMode;
+    if( nullptr == pfnGetMode ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetMode( hCmdQueue, pMode );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command queue priority.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCmdQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pPriority`
+ze_result_t ZE_APICALL
+zeCommandQueueGetPriority(
+    ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+    ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command queue creation
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandQueueGetPriority_t pfnGetPriority = [&result] {
+        auto pfnGetPriority = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetPriority;
+        if( nullptr == pfnGetPriority ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetPriority;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetPriority( hCmdQueue, pPriority );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetPriority = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetPriority;
+    if( nullptr == pfnGetPriority ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetPriority( hCmdQueue, pPriority );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Creates a command list on the context.
 /// 
 /// @details
@@ -3833,6 +4120,271 @@ zeCommandListIsImmediate(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets command list creation flags.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+ze_result_t ZE_APICALL
+zeCommandListGetFlags(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_command_list_flags_t* pFlags                 ///< [out] pointer to flags used during command list creation
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListGetFlags_t pfnGetFlags = [&result] {
+        auto pfnGetFlags = ze_lib::context->zeDdiTable.load()->CommandList.pfnGetFlags;
+        if( nullptr == pfnGetFlags ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetFlags;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetFlags( hCommandList, pFlags );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFlags = ze_lib::context->zeDdiTable.load()->CommandList.pfnGetFlags;
+    if( nullptr == pfnGetFlags ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFlags( hCommandList, pFlags );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets immediate command list command queue flags.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ze_result_t ZE_APICALL
+zeCommandListImmediateGetFlags(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command list creation
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListImmediateGetFlags_t pfnImmediateGetFlags = [&result] {
+        auto pfnImmediateGetFlags = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateGetFlags;
+        if( nullptr == pfnImmediateGetFlags ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnImmediateGetFlags;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnImmediateGetFlags( hCommandList, pFlags );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnImmediateGetFlags = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateGetFlags;
+    if( nullptr == pfnImmediateGetFlags ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnImmediateGetFlags( hCommandList, pFlags );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets immediate command list command queue mode.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pMode`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ze_result_t ZE_APICALL
+zeCommandListImmediateGetMode(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command list creation
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListImmediateGetMode_t pfnImmediateGetMode = [&result] {
+        auto pfnImmediateGetMode = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateGetMode;
+        if( nullptr == pfnImmediateGetMode ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnImmediateGetMode;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnImmediateGetMode( hCommandList, pMode );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnImmediateGetMode = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateGetMode;
+    if( nullptr == pfnImmediateGetMode ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnImmediateGetMode( hCommandList, pMode );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets immediate command list command queue priority.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pPriority`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ze_result_t ZE_APICALL
+zeCommandListImmediateGetPriority(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command list creation
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListImmediateGetPriority_t pfnImmediateGetPriority = [&result] {
+        auto pfnImmediateGetPriority = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateGetPriority;
+        if( nullptr == pfnImmediateGetPriority ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnImmediateGetPriority;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnImmediateGetPriority( hCommandList, pPriority );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnImmediateGetPriority = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateGetPriority;
+    if( nullptr == pfnImmediateGetPriority ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnImmediateGetPriority( hCommandList, pPriority );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Appends an execution and global memory barrier into a command list.
 /// 
 /// @details
@@ -4270,6 +4822,7 @@ zeCommandListAppendMemoryCopyWithParameters(
 ///     - The pattern size must be a power-of-two and less than or equal to the
 ///       `maxMemoryFillPatternSize` member of
 ///       ::ze_command_queue_group_properties_t.
+///     - The size must be a multiple of pattern size.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The application must ensure the command list and events were created,
@@ -4306,6 +4859,7 @@ zeCommandListAppendMemoryCopyWithParameters(
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `size % pattern_size != 0`
 ze_result_t ZE_APICALL
 zeCommandListAppendMemoryFill(
     ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
@@ -4368,6 +4922,7 @@ zeCommandListAppendMemoryFill(
 ///     - The pattern size must be a power-of-two and less than or equal to the
 ///       `maxMemoryFillPatternSize` member of
 ///       ::ze_command_queue_group_properties_t.
+///     - The size must be a multiple of pattern size.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The application must ensure the command list and events were created,
@@ -4403,6 +4958,7 @@ zeCommandListAppendMemoryFill(
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `size % pattern_size != 0`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///         + an extension passed via pNext is not supported
 ze_result_t ZE_APICALL
@@ -5421,11 +5977,12 @@ zeEventCreate(
 ///         + `nullptr == desc`
 ///         + `nullptr == phEvent`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3f < desc->flags`
+///         + `0x7f < desc->flags`
 ///         + `0x7 < desc->signal`
 ///         + `0x7 < desc->wait`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + `completionValue` provided in `pNext` ::ze_event_counter_based_external_sync_allocation_desc_t or ::ze_event_counter_based_external_aggregate_storage_desc_t exceeds the value returned by ::zeDeviceGetCounterBasedEventMaxValue
 ze_result_t ZE_APICALL
 zeEventCounterBasedCreate(
     ze_context_handle_t hContext,                   ///< [in] handle of the context object
@@ -5887,6 +6444,23 @@ zeEventCounterBasedGetIpcHandle(
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Opens an IPC event handle to retrieve from another process.
 /// 
+/// @details
+///     - The `hContext` parameter has no requirement to match the context that
+///       was used to create the event in the exporting process. Any context of
+///       the importing process may be used, including the driver's default
+///       context.
+///     - Device association of the opened event depends on its current state at
+///       the time of the call: if the event has not yet been enqueued for
+///       signaling, no device is yet associated with it; if the event has been
+///       enqueued for signaling, it is associated with the device performing
+///       that signal operation.
+///     - Any device of the importing process may signal the opened event.
+///       Enqueuing a signal operation overwrites the previous tracking point.
+///     - A device may wait on the opened event only if it has P2P access to the
+///       device associated with the current tracking point. The set of devices
+///       that may wait therefore depends on the P2P capabilities relative to
+///       the signaling device.
+/// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
@@ -6072,7 +6646,15 @@ zeEventCounterBasedGetDeviceAddress(
 /// 
 /// @details
 ///     - The application must ensure the events are accessible by the device on
-///       which the command list was created.
+///       which the command list was created. This requirement does not apply to
+///       counter-based events.
+///     - For counter-based events, the event may be signaled on any device,
+///       regardless of the device used to create the event. When a
+///       counter-based event is passed for signaling, it drops its previous
+///       tracking point and re-associates with the device on which the command
+///       list was created, tracking the new signaling point. No peer-to-peer
+///       access between the previously associated device and the new signaling
+///       device is required.
 ///     - The duration of an event created from an event pool that was created
 ///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
 ///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined.
@@ -6152,6 +6734,10 @@ zeCommandListAppendSignalEvent(
 /// @details
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
+///     - For counter-based events, the device on which the command list was
+///       created must have peer-to-peer access to the device that last signaled
+///       the event. Unlike signaling, waiting on a counter-based event does not
+///       re-associate it with another device.
 ///     - The application must ensure the command list and events were created
 ///       on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -6652,7 +7238,8 @@ zeEventQueryKernelTimestamp(
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The application must ensure the events were created from an event pool
-///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag.
 ///     - The application must ensure the memory pointed to by both dstptr and
 ///       pOffsets is accessible by the device on which the command list was
 ///       created.
@@ -7060,6 +7647,74 @@ zeEventPoolGetFlags(
     }
 
     return pfnGetFlags( hEventPool, pFlags );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets counter based flags of an event.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - Returns 0 for regular events created with ::zeEventCreate, and a valid
+///       combination of ::ze_event_counter_based_flag_t for counter based
+///       events created with ::zeEventCounterBasedCreate.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+ze_result_t ZE_APICALL
+zeEventGetCounterBasedFlags(
+    ze_event_handle_t hEvent,                       ///< [in] handle of the event
+    ze_event_counter_based_flags_t* pFlags          ///< [out] flags used during creation of a counter based event; may be 0 or
+                                                    ///< a valid combination of ::ze_event_counter_based_flag_t
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnEventGetCounterBasedFlags_t pfnGetCounterBasedFlags = [&result] {
+        auto pfnGetCounterBasedFlags = ze_lib::context->zeDdiTable.load()->Event.pfnGetCounterBasedFlags;
+        if( nullptr == pfnGetCounterBasedFlags ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetCounterBasedFlags;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetCounterBasedFlags( hEvent, pFlags );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetCounterBasedFlags = ze_lib::context->zeDdiTable.load()->Event.pfnGetCounterBasedFlags;
+    if( nullptr == pfnGetCounterBasedFlags ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetCounterBasedFlags( hEvent, pFlags );
     #endif
 }
 
@@ -8118,9 +8773,13 @@ zeMemGetAddressRange(
 /// @details
 ///     - Takes a pointer to a device memory allocation and creates an IPC
 ///       memory handle for exporting it for use in another process.
-///     - The pointer must be base pointer of a device or host memory
-///       allocation; i.e. the value returned from ::zeMemAllocDevice or from
-///       ::zeMemAllocHost, respectively.
+///     - The pointer may also be a physical memory handle cast to ``void*``
+///       (i.e. ``(void*)hPhysicalMem``); in that case, the IPC handle
+///       represents the physical memory object directly and no virtual address
+///       mapping is required in the sending process.
+///     - Only one physical memory object may be associated with a single IPC
+///       handle at a time; the virtual address range passed must map to exactly
+///       one physical memory object.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -8399,10 +9058,29 @@ zeMemPutIpcHandle(
 /// @details
 ///     - Takes an IPC memory handle from a remote process and associates it
 ///       with a device pointer usable in this process.
+///     - The 'hDevice' parameter identifies the device into which the
+///       allocation is imported. If this device differs from the one where the
+///       memory was originally allocated, it must have P2P access to the
+///       exporting device. P2P accessibility can be verified using
+///       ::zeDeviceGetP2PProperties or ::zeDeviceCanAccessPeer.
+///     - The `hContext` parameter has no requirement to match the context used
+///       during the original allocation in the exporting process. Any context
+///       of the importing process may be used.
+///     - After the handle is successfully opened, the returned pointer may be
+///       accessed by `hDevice` and by any other device of the importing process
+///       that has P2P connectivity to the exporting device.
+///     - When the IPC handle was originally created from a physical memory
+///       object (directly via a mapped virtual address), opening the handle
+///       assigns a new virtual address in the importing process that maps to
+///       the underlying physical memory; no prior ::zeVirtualMemReserve or
+///       ::zeVirtualMemMap call is required in the importing process.
 ///     - The device pointer in this process should not be freed with
 ///       ::zeMemFree, but rather with ::zeMemCloseIpcHandle.
 ///     - Multiple calls to this function with the same IPC handle will return
 ///       unique pointers.
+///     - The driver must not release the underlying physical memory until all
+///       IPC handles referencing it have been closed via ::zeMemCloseIpcHandle
+///       or returned via ::zeMemPutIpcHandle.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -13329,6 +14007,12 @@ zeKernelGetAllocationPropertiesExp(
 ///       allocation; i.e. the value returned from ::zeMemAllocDevice or from
 ///       ::zeMemAllocHost, respectively or allocated from
 ///       ::zePhysicalMemCreate.
+///     - The pointer may also be a virtual address that was mapped to a
+///       physical memory object via ::zeVirtualMemMap; in that case, the IPC
+///       handle represents the underlying physical memory object.
+///     - Only one physical memory object may be associated with a single IPC
+///       handle at a time; the virtual address range passed must map to exactly
+///       one physical memory object.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -13389,6 +14073,1207 @@ zeMemGetIpcHandleWithProperties(
     }
 
     return pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates a new graph object.
+/// 
+/// @details
+///     - A newly created graph is an empty container for captured operations.
+///     - The application may instantiate executable graph objects from a
+///       recorded graph using ::zeGraphInstantiateExt.
+///     - The application may begin capturing into an empty graph using
+///       ::zeCommandListBeginCaptureIntoGraphExt.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phGraph`
+ze_result_t ZE_APICALL
+zeGraphCreateExt(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context
+    const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnGraphCreateExt_t pfnCreateExt = [&result] {
+        auto pfnCreateExt = ze_lib::context->zeDdiTable.load()->Graph.pfnCreateExt;
+        if( nullptr == pfnCreateExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateExt( hContext, pNext, phGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateExt = ze_lib::context->zeDdiTable.load()->Graph.pfnCreateExt;
+    if( nullptr == pfnCreateExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateExt( hContext, pNext, phGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Begins recording asynchronous append operations into a new graph
+///        associated with an immediate command list.
+/// 
+/// @details
+///     - Graph capture is intended for asynchronous append operations only;
+///       synchronous operations are not supported while capture is active and
+///       return ::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED.
+///     - The application must call this function only with an immediate command
+///       list.
+///     - The application must not call this function with a synchronous
+///       immediate command list.
+///     - After this call succeeds, append operations issued to the command list
+///       are recorded into a graph and are not submitted to the device. Events
+///       used by these operations are not signaled until capture ends and the
+///       graph is instantiated and executed.
+///     - If the device does not support
+///       ::ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_APPEND_COMMANDLIST, then while
+///       capture is active, calling
+///       ::zeCommandListImmediateAppendCommandListsExp on the capturing command
+///       list returns an error (::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED).
+///     - If the device does not support
+///       ::ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_SUBGRAPHS, then while capture is
+///       active, calling ::zeCommandListAppendGraphExt on the capturing command
+///       list returns an error (::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED).
+///     - While capture is active, host-side synchronization operations on
+///       recorded work, such as ::zeCommandListHostSynchronize or
+///       ::zeEventHostSynchronize, return
+///       ::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED.
+///     - While capture is active, internal counter-based events (i.e. without
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) captured in the graph
+///       cannot be used outside the graph; such use returns an error
+///       (::ZE_RESULT_ERROR_GRAPH_INTERNAL_EVENT).
+///     - The command list on which capture starts is called the primary command
+///       list for a given capture session.
+///     - If an event signaled by a captured command list is used in the wait
+///       list of another immediate command list, that command list also enters
+///       graph capture mode. This creates a fork. The command list from which
+///       the fork originated is called the parent, and the forked command list
+///       is called the child. A child command list may itself be used to create
+///       additional forks, resulting in a tree of command lists participating
+///       in the same graph capture.
+///     - Subsequent signals from the parent command list to a child command
+///       list are allowed and do not create additional forks or capture
+///       sessions; the child command list remains in the same capture session
+///       as the parent command list.
+///     - Each fork must be joined by signaling on the child command list and by
+///       waiting on the parent command list.
+///     - A child command list may signal multiple times back to the parent
+///       command list, but only the last signal on the child command list may
+///       become part of the join operation.
+///     - Child command lists continue recording as long as the primary command
+///       list is in capture mode.
+///     - Commands that append work (for example, compute kernels or data
+///       transfers) to a recording child command list after the intended join
+///       operation are treated as unjoined work, and the graph is considered
+///       invalid. Commands that do not append work (for example, event signal
+///       and wait operations) are allowed after the join operation and do not
+///       invalidate the graph.
+///     - All restrictions described for ::zeCommandListBeginGraphCaptureExt
+///       apply to recording child command lists as well.
+///     - It is invalid to merge two separate graph capture sessions (i.e. with
+///       different primary command lists) by waiting on an event associated
+///       with a different graph (operation will return
+///       ::ZE_RESULT_ERROR_GRAPH_CAPTURE_MERGE_ATTEMPT).
+///     - If the device does not support
+///       ::ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_CB_EXTERNAL_IPC, then using an event
+///       that was created with both ZEX_COUNTER_BASED_EVENT_FLAG_IPC and
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL returns an error
+///       (::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED) during append
+///       operations.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ze_result_t ZE_APICALL
+zeCommandListBeginGraphCaptureExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+    const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListBeginGraphCaptureExt_t pfnBeginGraphCaptureExt = [&result] {
+        auto pfnBeginGraphCaptureExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnBeginGraphCaptureExt;
+        if( nullptr == pfnBeginGraphCaptureExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnBeginGraphCaptureExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnBeginGraphCaptureExt( hCommandList, pNext );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnBeginGraphCaptureExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnBeginGraphCaptureExt;
+    if( nullptr == pfnBeginGraphCaptureExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnBeginGraphCaptureExt( hCommandList, pNext );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Begins recording asynchronous append operations into an existing
+///        graph.
+/// 
+/// @details
+///     - The graph must be created with ::zeGraphCreateExt before calling this
+///       function.
+///     - The graph must be empty when capture begins.
+///     - After this call succeeds, the command list enters graph capture mode
+///       and all restrictions described for ::zeCommandListBeginGraphCaptureExt
+///       apply.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hGraph`
+ze_result_t ZE_APICALL
+zeCommandListBeginCaptureIntoGraphExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+    ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
+    const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListBeginCaptureIntoGraphExt_t pfnBeginCaptureIntoGraphExt = [&result] {
+        auto pfnBeginCaptureIntoGraphExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnBeginCaptureIntoGraphExt;
+        if( nullptr == pfnBeginCaptureIntoGraphExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnBeginCaptureIntoGraphExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnBeginCaptureIntoGraphExt( hCommandList, hGraph, pNext );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnBeginCaptureIntoGraphExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnBeginCaptureIntoGraphExt;
+    if( nullptr == pfnBeginCaptureIntoGraphExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnBeginCaptureIntoGraphExt( hCommandList, hGraph, pNext );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries whether a command list is in graph capture mode.
+/// 
+/// @details
+///     - The function returns `ZE_RESULT_QUERY_TRUE` when the command list is
+///       in graph capture mode.
+///     - The function returns `ZE_RESULT_QUERY_FALSE` when the command list is
+///       not in graph capture mode.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ze_result_t ZE_APICALL
+zeCommandListIsGraphCaptureEnabledExt(
+    ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListIsGraphCaptureEnabledExt_t pfnIsGraphCaptureEnabledExt = [&result] {
+        auto pfnIsGraphCaptureEnabledExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnIsGraphCaptureEnabledExt;
+        if( nullptr == pfnIsGraphCaptureEnabledExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnIsGraphCaptureEnabledExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnIsGraphCaptureEnabledExt( hCommandList );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnIsGraphCaptureEnabledExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnIsGraphCaptureEnabledExt;
+    if( nullptr == pfnIsGraphCaptureEnabledExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnIsGraphCaptureEnabledExt( hCommandList );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Ends graph capture on the primary command list and returns the
+///        recorded graph.
+/// 
+/// @details
+///     - This function may only be called on the primary command list used with
+///       ::zeCommandListBeginGraphCaptureExt or
+///       ::zeCommandListBeginCaptureIntoGraphExt.
+///     - If capture was started with ::zeCommandListBeginCaptureIntoGraphExt,
+///       the returned graph handle is the same graph handle that was provided
+///       when capture began.
+///     - The returned graph must be instantiated before execution.
+///     - This call ends graph capture mode on all command lists participating
+///       in the same graph capture (including forks).
+///     - After this call succeeds, subsequent append operations submit work to
+///       the device normally.
+///     - If capture mode is not active on the command list, an error is
+///       returned.
+///     - After this call succeeds, events signaled by previously captured
+///       commands do not create new forks.
+///     - After this call succeeds, internal counter-based events (i.e. without
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) can be reused by the
+///       application and don't interfere with recorded state.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phGraph`
+///     - $ZE_RESULT_ERROR_GRAPH_UNJOINED_FORKS
+///         + if graph contains unjoined forks
+///     - $ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING
+///         + if command list is not in graph capture mode
+ze_result_t ZE_APICALL
+zeCommandListEndGraphCaptureExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
+    const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListEndGraphCaptureExt_t pfnEndGraphCaptureExt = [&result] {
+        auto pfnEndGraphCaptureExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnEndGraphCaptureExt;
+        if( nullptr == pfnEndGraphCaptureExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnEndGraphCaptureExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnEndGraphCaptureExt( hCommandList, pNext, phGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnEndGraphCaptureExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnEndGraphCaptureExt;
+    if( nullptr == pfnEndGraphCaptureExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnEndGraphCaptureExt( hCommandList, pNext, phGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the graph associated with a command list that is in graph
+///        capture mode.
+/// 
+/// @details
+///     - This function may only be called while the command list is in graph
+///       capture mode.
+///     - The returned graph handle cannot be instantiated until capture is
+///       ended by ::zeCommandListEndGraphCaptureExt.
+///     - This function does not transfer ownership of the graph handle.
+///     - If the command list is not in graph capture mode, an error is returned
+///       and `*phGraph` is set to null.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phGraph`
+///     - $ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING
+///         + if command list is not in graph capture mode
+ze_result_t ZE_APICALL
+zeCommandListGetGraphExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
+    ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListGetGraphExt_t pfnGetGraphExt = [&result] {
+        auto pfnGetGraphExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnGetGraphExt;
+        if( nullptr == pfnGetGraphExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetGraphExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetGraphExt( hCommandList, phGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetGraphExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnGetGraphExt;
+    if( nullptr == pfnGetGraphExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetGraphExt( hCommandList, phGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the primary command list associated with a graph capture
+///        session.
+/// 
+/// @details
+///     - The returned command list is the command list that initiated capture
+///       for the graph during its recording stage.
+///     - This function can be called while the graph is being recorded and
+///       after capture has ended.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phCommandList`
+ze_result_t ZE_APICALL
+zeGraphGetPrimaryCommandListExt(
+    ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+    ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
+                                                    ///< graph
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnGraphGetPrimaryCommandListExt_t pfnGetPrimaryCommandListExt = [&result] {
+        auto pfnGetPrimaryCommandListExt = ze_lib::context->zeDdiTable.load()->Graph.pfnGetPrimaryCommandListExt;
+        if( nullptr == pfnGetPrimaryCommandListExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetPrimaryCommandListExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetPrimaryCommandListExt( hGraph, phCommandList );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetPrimaryCommandListExt = ze_lib::context->zeDdiTable.load()->Graph.pfnGetPrimaryCommandListExt;
+    if( nullptr == pfnGetPrimaryCommandListExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetPrimaryCommandListExt( hGraph, phCommandList );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Registers a host callback that is invoked when a graph is destroyed.
+/// 
+/// @details
+///     - Callbacks may be registered while a graph is being recorded or after
+///       executable graph instances have been created from it.
+///     - Multiple callbacks may be registered for the same graph.
+///     - All registered callbacks are invoked when the graph is destroyed.
+///     - The callback must not call Level Zero APIs that use the graph being
+///       destroyed.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ze_result_t ZE_APICALL
+zeGraphSetDestructionCallbackExt(
+    ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+    zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
+    void* pUserData,                                ///< [in][optional] user data to pass to the callback
+    const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnGraphSetDestructionCallbackExt_t pfnSetDestructionCallbackExt = [&result] {
+        auto pfnSetDestructionCallbackExt = ze_lib::context->zeDdiTable.load()->Graph.pfnSetDestructionCallbackExt;
+        if( nullptr == pfnSetDestructionCallbackExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetDestructionCallbackExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetDestructionCallbackExt( hGraph, pfnCallback, pUserData, pNext );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetDestructionCallbackExt = ze_lib::context->zeDdiTable.load()->Graph.pfnSetDestructionCallbackExt;
+    if( nullptr == pfnSetDestructionCallbackExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetDestructionCallbackExt( hGraph, pfnCallback, pUserData, pNext );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates an executable graph object from a recorded graph.
+/// 
+/// @details
+///     - Multiple executable graph objects may be created from a single
+///       recorded graph.
+///     - Recorded regular events (not counter-based) are shared between
+///       executable graph instances; the application is responsible for
+///       avoiding data races during concurrent execution of multiple graph
+///       instances.
+///     - Recorded internal counter-based events (i.e. without
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) may be used only for
+///       synchronization within the graph. Their state is tied to the
+///       underlying execution queue and is not shared between executable graph
+///       instances.
+///     - Recorded external counter-based events (i.e. with
+///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) may be used to
+///       synchronize the graph with device commands submitted outside the graph
+///       (for example, before or after ::zeCommandListAppendGraphExt) and with
+///       the host. External counter-based events may incur additional overhead
+///       compared to internal counter-based events.
+///     - Resources used in captured commands (e.g. buffers passed to kernels as
+///       arguments) are shared between instances; the application is
+///       responsible for avoiding data races during concurrent execution.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phExecutableGraph`
+ze_result_t ZE_APICALL
+zeGraphInstantiateExt(
+    ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
+    const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnGraphInstantiateExt_t pfnInstantiateExt = [&result] {
+        auto pfnInstantiateExt = ze_lib::context->zeDdiTable.load()->Graph.pfnInstantiateExt;
+        if( nullptr == pfnInstantiateExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnInstantiateExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnInstantiateExt( hGraph, pNext, phExecutableGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnInstantiateExt = ze_lib::context->zeDdiTable.load()->Graph.pfnInstantiateExt;
+    if( nullptr == pfnInstantiateExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnInstantiateExt( hGraph, pNext, phExecutableGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Appends execution of an executable graph to a command list.
+/// 
+/// @details
+///     - The destination command list must match the type and execution
+///       characteristics of the command list used to initiate recording,
+///       including the queue group ordinal and immediate mode configuration.
+///     - Only one execution of the same executable graph object may run at a
+///       time; concurrent graph execution requires multiple executable graph
+///       instances.
+///     - If this function is called while the executable graph is already
+///       running, the new execution is scheduled after the current execution
+///       completes.
+///     - Graph execution obeys the implicit in-order dependency semantics of
+///       the destination command list.
+///     - If `hSignalEvent` is provided, it is signaled after all recorded
+///       append operations on all recorded queues complete.
+///     - If wait events are provided, graph execution does not begin until all
+///       wait events are satisfied.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hGraph`
+ze_result_t ZE_APICALL
+zeCommandListAppendGraphExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
+    ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+    const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListAppendGraphExt_t pfnAppendGraphExt = [&result] {
+        auto pfnAppendGraphExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendGraphExt;
+        if( nullptr == pfnAppendGraphExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendGraphExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendGraphExt( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendGraphExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendGraphExt;
+    if( nullptr == pfnAppendGraphExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendGraphExt( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the recorded graph used to instantiate an executable graph.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSourceGraph`
+ze_result_t ZE_APICALL
+zeExecutableGraphGetSourceGraphExt(
+    ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+    ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnExecutableGraphGetSourceGraphExt_t pfnGetSourceGraphExt = [&result] {
+        auto pfnGetSourceGraphExt = ze_lib::context->zeDdiTable.load()->ExecutableGraph.pfnGetSourceGraphExt;
+        if( nullptr == pfnGetSourceGraphExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetSourceGraphExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetSourceGraphExt( hGraph, phSourceGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetSourceGraphExt = ze_lib::context->zeDdiTable.load()->ExecutableGraph.pfnGetSourceGraphExt;
+    if( nullptr == pfnGetSourceGraphExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetSourceGraphExt( hGraph, phSourceGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries whether a graph is empty.
+/// 
+/// @details
+///     - The function returns `ZE_RESULT_QUERY_TRUE` when the graph contains no
+///       operations.
+///     - The function returns `ZE_RESULT_QUERY_FALSE` when the graph contains
+///       recorded operations.
+///     - The function returns `ZE_RESULT_ERROR_INVALID_GRAPH` when the recorded
+///       graph is invalid.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ze_result_t ZE_APICALL
+zeGraphIsEmptyExt(
+    ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnGraphIsEmptyExt_t pfnIsEmptyExt = [&result] {
+        auto pfnIsEmptyExt = ze_lib::context->zeDdiTable.load()->Graph.pfnIsEmptyExt;
+        if( nullptr == pfnIsEmptyExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnIsEmptyExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnIsEmptyExt( hGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnIsEmptyExt = ze_lib::context->zeDdiTable.load()->Graph.pfnIsEmptyExt;
+    if( nullptr == pfnIsEmptyExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnIsEmptyExt( hGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Writes a DOT description of a recorded graph to disk.
+/// 
+/// @details
+///     - The generated DOT output captures the graph structure and recorded
+///       append operations.
+///     - Kernel node output includes kernel names, argument lists, and argument
+///       types and values.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == filePath`
+ze_result_t ZE_APICALL
+zeGraphDumpContentsExt(
+    ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+    const char* filePath,                           ///< [in] path where the DOT file is written
+    const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains stype and pNext)
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnGraphDumpContentsExt_t pfnDumpContentsExt = [&result] {
+        auto pfnDumpContentsExt = ze_lib::context->zeDdiTable.load()->Graph.pfnDumpContentsExt;
+        if( nullptr == pfnDumpContentsExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDumpContentsExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDumpContentsExt( hGraph, filePath, pNext );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDumpContentsExt = ze_lib::context->zeDdiTable.load()->Graph.pfnDumpContentsExt;
+    if( nullptr == pfnDumpContentsExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDumpContentsExt( hGraph, filePath, pNext );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroys an executable graph object.
+/// 
+/// @details
+///     - The executable graph must not be in use or executing on any command
+///       list when it is destroyed.
+///     - After destruction, the handle becomes invalid and must not be used in
+///       further API calls.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ze_result_t ZE_APICALL
+zeExecutableGraphDestroyExt(
+    ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnExecutableGraphDestroyExt_t pfnDestroyExt = [&result] {
+        auto pfnDestroyExt = ze_lib::context->zeDdiTable.load()->ExecutableGraph.pfnDestroyExt;
+        if( nullptr == pfnDestroyExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroyExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroyExt( hGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDestroyExt = ze_lib::context->zeDdiTable.load()->ExecutableGraph.pfnDestroyExt;
+    if( nullptr == pfnDestroyExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDestroyExt( hGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroys a recorded graph object.
+/// 
+/// @details
+///     - All executable graph instances created from the recorded graph must be
+///       destroyed before this function is called.
+///     - After destruction, the handle becomes invalid and must not be used in
+///       further API calls.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+ze_result_t ZE_APICALL
+zeGraphDestroyExt(
+    ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnGraphDestroyExt_t pfnDestroyExt = [&result] {
+        auto pfnDestroyExt = ze_lib::context->zeDdiTable.load()->Graph.pfnDestroyExt;
+        if( nullptr == pfnDestroyExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroyExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroyExt( hGraph );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDestroyExt = ze_lib::context->zeDdiTable.load()->Graph.pfnDestroyExt;
+    if( nullptr == pfnDestroyExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDestroyExt( hGraph );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Appends a host function call into a command list.
+/// 
+/// @details
+///     - The application must ensure the events are accessible by the device on
+///       which the command list was created.
+///     - The host function will be executed on the host when the command list
+///       reaches this point during execution.
+///     - The host function callback must be of type
+///       ::ze_host_function_callback_t.
+///     - The host function must **not** call any Level Zero API functions.
+///     - The host function may access USM shared and USM host allocations.
+///     - The runtime invokes the host function asynchronously to API calls.
+///     - Device may wait for preceding commands to finish before invoking the
+///       callback (i.e. callbacks may introduce implicit synchronization point
+///       on the device).
+///     - Device will wait for all phWaitEvents to be signaled before executing
+///       the host function.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + an extension passed via pNext is not supported
+ze_result_t ZE_APICALL
+zeCommandListAppendHostFunction(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
+                                                    ///< non-blocking
+    void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
+                                                    ///< neither the runtime nor the device will dereference it
+    const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
+                                                    ///< phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListAppendHostFunction_t pfnAppendHostFunction = [&result] {
+        auto pfnAppendHostFunction = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendHostFunction;
+        if( nullptr == pfnAppendHostFunction ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendHostFunction;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendHostFunction = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendHostFunction;
+    if( nullptr == pfnAppendHostFunction ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
     #endif
 }
 
@@ -15898,6 +17783,7 @@ zeImageGetDeviceOffsetExp(
 /// @brief Creates a command list as the clone of another command list.
 /// 
 /// @details
+///     - @deprecated since 1.17
 ///     - The source command list must be created with the
 ///       ::ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE flag.
 ///     - The source command list must be closed prior to cloning.
@@ -16353,6 +18239,72 @@ zeCommandListUpdateMutableCommandsExp(
     }
 
     return pfnUpdateMutableCommandsExp( hCommandList, desc );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query whether a command list was created with the mutable command list
+///        extension.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIsMutable`
+ze_result_t ZE_APICALL
+zeCommandListIsMutableExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                    ///< mutable extension
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandListIsMutableExp_t pfnIsMutableExp = [&result] {
+        auto pfnIsMutableExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnIsMutableExp;
+        if( nullptr == pfnIsMutableExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnIsMutableExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnIsMutableExp( hCommandList, pIsMutable );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnIsMutableExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnIsMutableExp;
+    if( nullptr == pfnIsMutableExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnIsMutableExp( hCommandList, pIsMutable );
     #endif
 }
 

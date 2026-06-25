@@ -84,6 +84,7 @@ namespace loader
         ze_driver_factory_t                 ze_driver_factory;
         ze_event_factory_t                  ze_event_factory;
         ze_event_pool_factory_t             ze_event_pool_factory;
+        ze_executable_graph_factory_t       ze_executable_graph_factory;
         ze_external_semaphore_ext_factory_t ze_external_semaphore_ext_factory;
         ze_fabric_edge_factory_t            ze_fabric_edge_factory;
         ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;

@@ -1789,9 +1789,11 @@ namespace validation_layer
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricGroupGetGlobalTimestampsExp(
         ze_result_t result,
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
-        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
-        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
-        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        ze_bool_t synchronizedWithHost,                 ///< [in] if set to true, the globalTimestamp will reflect the host
+                                                        ///< timestamp, else will reflect the device timestamp.
+        uint64_t* globalTimestamp,                      ///< [out] if synchronizedWithHost is false, timestamp is in tick counts.
+                                                        ///< [out] if synchronizedWithHost is true, the timestamp is in nanoseconds.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp in tick counts.
 ) {
         // Only log success results if verbose logging is enabled
         if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
@@ -4946,9 +4948,11 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupGetGlobalTimestampsExp(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
-        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
-        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
-        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        ze_bool_t synchronizedWithHost,                 ///< [in] if set to true, the globalTimestamp will reflect the host
+                                                        ///< timestamp, else will reflect the device timestamp.
+        uint64_t* globalTimestamp,                      ///< [out] if synchronizedWithHost is false, timestamp is in tick counts.
+                                                        ///< [out] if synchronizedWithHost is true, the timestamp is in nanoseconds.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp in tick counts.
         )
     {
         context.logger->log_trace("zetMetricGroupGetGlobalTimestampsExp(hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp)");

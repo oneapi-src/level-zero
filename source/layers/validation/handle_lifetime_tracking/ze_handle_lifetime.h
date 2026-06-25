@@ -44,6 +44,7 @@ namespace validation_layer
         ze_result_t zeDeviceGetGlobalTimestampsPrologue( ze_device_handle_t hDevice, uint64_t* hostTimestamp, uint64_t* deviceTimestamp ) override;
         ze_result_t zeDeviceSynchronizePrologue( ze_device_handle_t hDevice ) override;
         ze_result_t zeDeviceGetAggregatedCopyOffloadIncrementValuePrologue( ze_device_handle_t hDevice, uint32_t* incrementValue ) override;
+        ze_result_t zeDeviceGetCounterBasedEventMaxValuePrologue( ze_device_handle_t hDevice, uint64_t* maxValue ) override;
         ze_result_t zeDeviceGetRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const void* pObjDesc, size_t* pSize, char* pRequirements ) override;
         ze_result_t zeDeviceGetRuntimeRequirementsKeyPrologue( ze_device_handle_t hDevice, const char** pKey ) override;
         ze_result_t zeDeviceValidateRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const char* pRequirements, ze_validate_runtime_requirements_output_t* pOut ) override;
@@ -57,6 +58,9 @@ namespace validation_layer
         ze_result_t zeCommandQueueSynchronizePrologue( ze_command_queue_handle_t hCommandQueue, uint64_t timeout ) override;
         ze_result_t zeCommandQueueGetOrdinalPrologue( ze_command_queue_handle_t hCommandQueue, uint32_t* pOrdinal ) override;
         ze_result_t zeCommandQueueGetIndexPrologue( ze_command_queue_handle_t hCommandQueue, uint32_t* pIndex ) override;
+        ze_result_t zeCommandQueueGetFlagsPrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_flags_t* pFlags ) override;
+        ze_result_t zeCommandQueueGetModePrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_mode_t* pMode ) override;
+        ze_result_t zeCommandQueueGetPriorityPrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_priority_t* pPriority ) override;
         ze_result_t zeCommandListCreatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_list_desc_t* desc, ze_command_list_handle_t* phCommandList ) override;
         ze_result_t zeCommandListCreateImmediatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_queue_desc_t* altdesc, ze_command_list_handle_t* phCommandList ) override;
         ze_result_t zeCommandListDestroyPrologue( ze_command_list_handle_t hCommandList ) override;
@@ -69,6 +73,10 @@ namespace validation_layer
         ze_result_t zeCommandListGetOrdinalPrologue( ze_command_list_handle_t hCommandList, uint32_t* pOrdinal ) override;
         ze_result_t zeCommandListImmediateGetIndexPrologue( ze_command_list_handle_t hCommandListImmediate, uint32_t* pIndex ) override;
         ze_result_t zeCommandListIsImmediatePrologue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsImmediate ) override;
+        ze_result_t zeCommandListGetFlagsPrologue( ze_command_list_handle_t hCommandList, ze_command_list_flags_t* pFlags ) override;
+        ze_result_t zeCommandListImmediateGetFlagsPrologue( ze_command_list_handle_t hCommandList, ze_command_queue_flags_t* pFlags ) override;
+        ze_result_t zeCommandListImmediateGetModePrologue( ze_command_list_handle_t hCommandList, ze_command_queue_mode_t* pMode ) override;
+        ze_result_t zeCommandListImmediateGetPriorityPrologue( ze_command_list_handle_t hCommandList, ze_command_queue_priority_t* pPriority ) override;
         ze_result_t zeCommandListAppendBarrierPrologue( ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendMemoryRangesBarrierPrologue( ze_command_list_handle_t hCommandList, uint32_t numRanges, const size_t* pRangeSizes, const void** pRanges, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeContextSystemBarrierPrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice ) override;
@@ -111,6 +119,7 @@ namespace validation_layer
         ze_result_t zeEventGetWaitScopePrologue( ze_event_handle_t hEvent, ze_event_scope_flags_t* pWaitScope ) override;
         ze_result_t zeEventPoolGetContextHandlePrologue( ze_event_pool_handle_t hEventPool, ze_context_handle_t* phContext ) override;
         ze_result_t zeEventPoolGetFlagsPrologue( ze_event_pool_handle_t hEventPool, ze_event_pool_flags_t* pFlags ) override;
+        ze_result_t zeEventGetCounterBasedFlagsPrologue( ze_event_handle_t hEvent, ze_event_counter_based_flags_t* pFlags ) override;
         ze_result_t zeFenceCreatePrologue( ze_command_queue_handle_t hCommandQueue, const ze_fence_desc_t* desc, ze_fence_handle_t* phFence ) override;
         ze_result_t zeFenceDestroyPrologue( ze_fence_handle_t hFence ) override;
         ze_result_t zeFenceHostSynchronizePrologue( ze_fence_handle_t hFence, uint64_t timeout ) override;
@@ -196,6 +205,22 @@ namespace validation_layer
         ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) override;
         ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) override;
         ze_result_t zeMemGetIpcHandleWithPropertiesPrologue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle ) override;
+        ze_result_t zeGraphCreateExtPrologue( ze_context_handle_t hContext, const void* pNext, ze_graph_handle_t* phGraph ) override;
+        ze_result_t zeCommandListBeginGraphCaptureExtPrologue( ze_command_list_handle_t hCommandList, const void* pNext ) override;
+        ze_result_t zeCommandListBeginCaptureIntoGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_graph_handle_t hGraph, const void* pNext ) override;
+        ze_result_t zeCommandListIsGraphCaptureEnabledExtPrologue( ze_command_list_handle_t hCommandList ) override;
+        ze_result_t zeCommandListEndGraphCaptureExtPrologue( ze_command_list_handle_t hCommandList, const void* pNext, ze_graph_handle_t* phGraph ) override;
+        ze_result_t zeCommandListGetGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_graph_handle_t* phGraph ) override;
+        ze_result_t zeGraphGetPrimaryCommandListExtPrologue( ze_graph_handle_t hGraph, ze_command_list_handle_t* phCommandList ) override;
+        ze_result_t zeGraphSetDestructionCallbackExtPrologue( ze_graph_handle_t hGraph, zex_mem_graph_free_callback_fn_t pfnCallback, void* pUserData, const void* pNext ) override;
+        ze_result_t zeGraphInstantiateExtPrologue( ze_graph_handle_t hGraph, const void* pNext, ze_executable_graph_handle_t* phExecutableGraph ) override;
+        ze_result_t zeCommandListAppendGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_executable_graph_handle_t hGraph, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeExecutableGraphGetSourceGraphExtPrologue( ze_executable_graph_handle_t hGraph, ze_graph_handle_t* phSourceGraph ) override;
+        ze_result_t zeGraphIsEmptyExtPrologue( ze_graph_handle_t hGraph ) override;
+        ze_result_t zeGraphDumpContentsExtPrologue( ze_graph_handle_t hGraph, const char* filePath, const void* pNext ) override;
+        ze_result_t zeExecutableGraphDestroyExtPrologue( ze_executable_graph_handle_t hGraph ) override;
+        ze_result_t zeGraphDestroyExtPrologue( ze_graph_handle_t hGraph ) override;
+        ze_result_t zeCommandListAppendHostFunctionPrologue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) override;
         ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) override;
         ze_result_t zeEventQueryTimestampsExpPrologue( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_kernel_timestamp_result_t* pTimestamps ) override;
@@ -235,6 +260,7 @@ namespace validation_layer
         ze_result_t zeCommandListGetNextCommandIdExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint64_t* pCommandId ) override;
         ze_result_t zeCommandListGetNextCommandIdWithKernelsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint32_t numKernels, ze_kernel_handle_t* phKernels, uint64_t* pCommandId ) override;
         ze_result_t zeCommandListUpdateMutableCommandsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_exp_desc_t* desc ) override;
+        ze_result_t zeCommandListIsMutableExpPrologue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsMutable ) override;
         ze_result_t zeCommandListUpdateMutableCommandSignalEventExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override;
         ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListUpdateMutableCommandKernelsExpPrologue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels ) override;
