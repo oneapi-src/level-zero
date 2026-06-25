@@ -15,6 +15,7 @@ if(BUILD_STATIC OR NOT WIN32)
   target_sources(tests PRIVATE
     driver_ordering_unit_tests.cpp
     driver_teardown_unit_tests.cpp
+    ddi_driver_path_unit_tests.cpp
   )
 endif()
 
@@ -943,6 +944,10 @@ endif()
 # Driver Ordering Unit Tests
 add_test(NAME driver_ordering_unit_tests COMMAND tests --gtest_filter=DriverOrderingUnitTest.*)
 set_property(TEST driver_ordering_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
+# Driver DDI Handles extension path Unit Tests (legacy extension check + implied >= 1.17 support)
+add_test(NAME ddi_driver_path_unit_tests COMMAND tests --gtest_filter=DdiDriverPathUnitTest.*)
+set_property(TEST ddi_driver_path_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
 # Individual Driver Ordering Unit Tests for better granular reporting
 add_test(NAME driver_ordering_no_env COMMAND tests --gtest_filter=DriverOrderingUnitTest.NoEnvironmentVariable_ShouldNotChangeOrder)
