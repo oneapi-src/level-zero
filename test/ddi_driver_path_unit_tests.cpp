@@ -171,7 +171,7 @@ protected:
 // A pre-1.17 driver that advertises DDI Handles Ext v1.1 and reports the
 // supported flag is treated as DDI-capable.
 TEST_F(DdiDriverPathUnitTest, LegacyDriverWithExtV1_1AndSupportedFlagIsDDISupported) {
-    g_mock.apiVersion = ZE_API_VERSION_CURRENT; // 1.16
+    g_mock.apiVersion = ZE_API_VERSION_1_16; // pre-1.17 forces the legacy extension-property path
     g_mock.reportDdiHandlesExt = true;
     g_mock.ddiExtVersion = ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1;
     g_mock.reportDdiSupportedFlag = true;
@@ -191,7 +191,7 @@ TEST_F(DdiDriverPathUnitTest, LegacyDriverWithExtV1_1AndSupportedFlagIsDDISuppor
 // A pre-1.17 driver that advertises only DDI Handles Ext v1.0 does not meet the
 // minimum version for the ZER (runtime) APIs, so DDI support is disabled.
 TEST_F(DdiDriverPathUnitTest, LegacyDriverWithExtV1_0IsNotDDISupported) {
-    g_mock.apiVersion = ZE_API_VERSION_CURRENT; // 1.16
+    g_mock.apiVersion = ZE_API_VERSION_1_16; // pre-1.17 forces the legacy extension-property path
     g_mock.reportDdiHandlesExt = true;
     g_mock.ddiExtVersion = ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_0;
     g_mock.reportDdiSupportedFlag = true;
