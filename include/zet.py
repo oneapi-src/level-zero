@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.16-r1.16.24
+ @version v1.17-r1.17.24
 
  """
 import platform
@@ -603,170 +603,6 @@ class zet_tracer_exp_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief Concurrent Metric Groups Experimental Extension Name
-ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME = "ZET_experimental_concurrent_metric_groups"
-
-###############################################################################
-## @brief Concurrent Metric Groups Experimental Extension Version(s)
-class zet_concurrent_metric_groups_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zet_concurrent_metric_groups_exp_version_t(c_int):
-    def __str__(self):
-        return str(zet_concurrent_metric_groups_exp_version_v(self.value))
-
-
-###############################################################################
-## @brief Metric Tracer Experimental Extension Name
-ZET_METRICS_TRACER_EXP_NAME = "ZET_experimental_metric_tracer"
-
-###############################################################################
-## @brief Metric Tracer Experimental Extension Version(s)
-class zet_metric_tracer_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zet_metric_tracer_exp_version_t(c_int):
-    def __str__(self):
-        return str(zet_metric_tracer_exp_version_v(self.value))
-
-
-###############################################################################
-## @brief Handle of metric tracer's object
-class zet_metric_tracer_exp_handle_t(c_void_p):
-    pass
-
-###############################################################################
-## @brief Handle of metric decoder's object
-class zet_metric_decoder_exp_handle_t(c_void_p):
-    pass
-
-###############################################################################
-## @brief Metric tracer descriptor
-class zet_metric_tracer_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("notifyEveryNBytes", c_ulong)                                  ## [in,out] number of collected bytes after which notification event will
-                                                                        ## be signaled. If the requested value is not supported exactly, then the
-                                                                        ## driver may use a value that is the closest supported approximation and
-                                                                        ## shall update this member during ::zetMetricTracerCreateExp.
-    ]
-
-###############################################################################
-## @brief Decoded metric entry
-class zet_metric_entry_exp_t(Structure):
-    _fields_ = [
-        ("value", zet_value_t),                                         ## [out] value of the decodable metric entry or event. Number is
-                                                                        ## meaningful based on the metric type.
-        ("timeStamp", c_ulonglong),                                     ## [out] timestamp at which the event happened.
-        ("metricIndex", c_ulong),                                       ## [out] index to the decodable metric handle in the input array
-                                                                        ## (phMetric) in ::zetMetricTracerDecodeExp().
-        ("onSubdevice", ze_bool_t),                                     ## [out] True if the event occurred on a sub-device; false means the
-                                                                        ## device on which the metric tracer was opened does not have
-                                                                        ## sub-devices.
-        ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device.
-    ]
-
-###############################################################################
-## @brief Metric Export Memory Experimental Extension Name
-ZET_METRIC_EXPORT_MEMORY_EXP_NAME = "ZET_experimental_metric_export_memory"
-
-###############################################################################
-## @brief Metric Export Memory Experimental Extension Version(s)
-class zet_metric_export_memory_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zet_metric_export_memory_exp_version_t(c_int):
-    def __str__(self):
-        return str(zet_metric_export_memory_exp_version_v(self.value))
-
-
-###############################################################################
-## @brief Metric group type
-class zet_metric_group_type_exp_flags_v(IntEnum):
-    EXPORT_DMA_BUF = ZE_BIT(0)                                              ## Metric group and metrics exports memory using linux dma-buf, which
-                                                                            ## could be imported/mapped to the host process. Properties of the
-                                                                            ## dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
-    USER_CREATED = ZE_BIT(1)                                                ## Metric group created using ::zetDeviceCreateMetricGroupsFromMetricsExp
-    OTHER = ZE_BIT(2)                                                       ## Metric group which has a collection of metrics
-    MARKER = ZE_BIT(3)                                                      ## Metric group is capable of generating Marker metric
-
-class zet_metric_group_type_exp_flags_t(c_int):
-    def __str__(self):
-        return hex(self.value)
-
-
-###############################################################################
-## @brief Query the metric group type using `pNext` of
-##        ::zet_metric_group_properties_t
-class zet_metric_group_type_exp_t(Structure):
-    _fields_ = [
-        ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("type", zet_metric_group_type_exp_flags_t)                     ## [out] metric group type.
-                                                                        ## returns a combination of ::zet_metric_group_type_exp_flags_t.
-    ]
-
-###############################################################################
-## @brief Exported dma_buf properties queried using `pNext` of
-##        ::zet_metric_group_properties_t or ::zet_metric_properties_t
-class zet_export_dma_buf_exp_properties_t(Structure):
-    _fields_ = [
-        ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("fd", c_int),                                                  ## [out] the file descriptor handle that could be used to import the
-                                                                        ## memory by the host process.
-        ("size", c_size_t)                                              ## [out] size in bytes of the dma_buf
-    ]
-
-###############################################################################
-## @brief Marker Support Using MetricGroup Experimental Extension Name
-ZET_METRIC_GROUP_MARKER_EXP_NAME = "ZET_experimental_metric_group_marker"
-
-###############################################################################
-## @brief Marker Support Using MetricGroup Experimental Extension Version(s)
-class zet_metric_group_marker_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zet_metric_group_marker_exp_version_t(c_int):
-    def __str__(self):
-        return str(zet_metric_group_marker_exp_version_v(self.value))
-
-
-###############################################################################
-## @brief Query the metric source unique identifier using `pNext` of
-##        ::zet_metric_group_properties_t
-class zet_metric_source_id_exp_t(Structure):
-    _fields_ = [
-        ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
-    ]
-
-###############################################################################
-## @brief Runtime Enabling and Disabling Metrics Extension Name
-ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME = "ZET_experimental_metrics_runtime_enable_disable"
-
-###############################################################################
-## @brief Runtime Enabling and Disabling Metrics Extension Version(s)
-class zet_metrics_runtime_enable_disable_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zet_metrics_runtime_enable_disable_exp_version_t(c_int):
-    def __str__(self):
-        return str(zet_metrics_runtime_enable_disable_exp_version_v(self.value))
-
-
-###############################################################################
 ## @brief Calculating Multiple Metrics Experimental Extension Name
 ZET_MULTI_METRICS_EXP_NAME = "ZET_experimental_calculate_multiple_metrics"
 
@@ -810,7 +646,10 @@ class zet_metric_global_timestamps_resolution_exp_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of metrics timer (used for timestamps) in
                                                                         ## cycles/sec.
-        ("timestampValidBits", c_ulonglong)                             ## [out] Returns the number of valid bits in the timestamp value.
+        ("timestampValidBits", c_ulonglong)                             ## [out] Returns the number of valid bits in the timestamp value. (i.e
+                                                                        ## can be used to calculate the max value of the hardware timestamp
+                                                                        ## register or can be use to generate the mask of valid bits in the
+                                                                        ## timestamp value)
     ]
 
 ###############################################################################
@@ -1019,6 +858,170 @@ class zet_metric_programmable_param_value_exp_t(Structure):
     _fields_ = [
         ("value", zet_value_t)                                          ## [in] parameter value
     ]
+
+###############################################################################
+## @brief Concurrent Metric Groups Experimental Extension Name
+ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME = "ZET_experimental_concurrent_metric_groups"
+
+###############################################################################
+## @brief Concurrent Metric Groups Experimental Extension Version(s)
+class zet_concurrent_metric_groups_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_concurrent_metric_groups_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_concurrent_metric_groups_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Metric Tracer Experimental Extension Name
+ZET_METRICS_TRACER_EXP_NAME = "ZET_experimental_metric_tracer"
+
+###############################################################################
+## @brief Metric Tracer Experimental Extension Version(s)
+class zet_metric_tracer_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_tracer_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_tracer_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Handle of metric tracer's object
+class zet_metric_tracer_exp_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Handle of metric decoder's object
+class zet_metric_decoder_exp_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Metric tracer descriptor
+class zet_metric_tracer_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("notifyEveryNBytes", c_ulong)                                  ## [in,out] number of collected bytes after which notification event will
+                                                                        ## be signaled. If the requested value is not supported exactly, then the
+                                                                        ## driver may use a value that is the closest supported approximation and
+                                                                        ## shall update this member during ::zetMetricTracerCreateExp.
+    ]
+
+###############################################################################
+## @brief Decoded metric entry
+class zet_metric_entry_exp_t(Structure):
+    _fields_ = [
+        ("value", zet_value_t),                                         ## [out] value of the decodable metric entry or event. Number is
+                                                                        ## meaningful based on the metric type.
+        ("timeStamp", c_ulonglong),                                     ## [out] timestamp at which the event happened.
+        ("metricIndex", c_ulong),                                       ## [out] index to the decodable metric handle in the input array
+                                                                        ## (phMetric) in ::zetMetricTracerDecodeExp().
+        ("onSubdevice", ze_bool_t),                                     ## [out] True if the event occurred on a sub-device; false means the
+                                                                        ## device on which the metric tracer was opened does not have
+                                                                        ## sub-devices.
+        ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device.
+    ]
+
+###############################################################################
+## @brief Metric Export Memory Experimental Extension Name
+ZET_METRIC_EXPORT_MEMORY_EXP_NAME = "ZET_experimental_metric_export_memory"
+
+###############################################################################
+## @brief Metric Export Memory Experimental Extension Version(s)
+class zet_metric_export_memory_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_export_memory_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_export_memory_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Metric group type
+class zet_metric_group_type_exp_flags_v(IntEnum):
+    EXPORT_DMA_BUF = ZE_BIT(0)                                              ## Metric group and metrics exports memory using linux dma-buf, which
+                                                                            ## could be imported/mapped to the host process. Properties of the
+                                                                            ## dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
+    USER_CREATED = ZE_BIT(1)                                                ## Metric group created using ::zetDeviceCreateMetricGroupsFromMetricsExp
+    OTHER = ZE_BIT(2)                                                       ## Metric group which has a collection of metrics
+    MARKER = ZE_BIT(3)                                                      ## Metric group is capable of generating Marker metric
+
+class zet_metric_group_type_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Query the metric group type using `pNext` of
+##        ::zet_metric_group_properties_t
+class zet_metric_group_type_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("type", zet_metric_group_type_exp_flags_t)                     ## [out] metric group type.
+                                                                        ## returns a combination of ::zet_metric_group_type_exp_flags_t.
+    ]
+
+###############################################################################
+## @brief Exported dma_buf properties queried using `pNext` of
+##        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+class zet_export_dma_buf_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("fd", c_int),                                                  ## [out] the file descriptor handle that could be used to import the
+                                                                        ## memory by the host process.
+        ("size", c_size_t)                                              ## [out] size in bytes of the dma_buf
+    ]
+
+###############################################################################
+## @brief Marker Support Using MetricGroup Experimental Extension Name
+ZET_METRIC_GROUP_MARKER_EXP_NAME = "ZET_experimental_metric_group_marker"
+
+###############################################################################
+## @brief Marker Support Using MetricGroup Experimental Extension Version(s)
+class zet_metric_group_marker_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_group_marker_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_group_marker_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Query the metric source unique identifier using `pNext` of
+##        ::zet_metric_group_properties_t
+class zet_metric_source_id_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
+    ]
+
+###############################################################################
+## @brief Runtime Enabling and Disabling Metrics Extension Name
+ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME = "ZET_experimental_metrics_runtime_enable_disable"
+
+###############################################################################
+## @brief Runtime Enabling and Disabling Metrics Extension Version(s)
+class zet_metrics_runtime_enable_disable_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metrics_runtime_enable_disable_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metrics_runtime_enable_disable_exp_version_v(self.value))
+
 
 ###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]

@@ -95,32 +95,6 @@ public:
     virtual ze_result_t zetTracerExpSetEpiloguesEpilogue( zet_tracer_exp_handle_t hTracer, zet_core_callbacks_t* pCoreCbs , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetTracerExpSetEnabledPrologue( zet_tracer_exp_handle_t hTracer, ze_bool_t enable ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetTracerExpSetEnabledEpilogue( zet_tracer_exp_handle_t hTracer, ze_bool_t enable , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetDeviceGetConcurrentMetricGroupsExpPrologue( zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t * phMetricGroups, uint32_t * pMetricGroupsCountPerConcurrentGroup, uint32_t * pConcurrentGroupCount ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetDeviceGetConcurrentMetricGroupsExpEpilogue( zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t * phMetricGroups, uint32_t * pMetricGroupsCountPerConcurrentGroup, uint32_t * pConcurrentGroupCount , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerCreateExpPrologue( zet_context_handle_t hContext, zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t* phMetricGroups, zet_metric_tracer_exp_desc_t* desc, ze_event_handle_t hNotificationEvent, zet_metric_tracer_exp_handle_t* phMetricTracer ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerCreateExpEpilogue( zet_context_handle_t hContext, zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t* phMetricGroups, zet_metric_tracer_exp_desc_t* desc, ze_event_handle_t hNotificationEvent, zet_metric_tracer_exp_handle_t* phMetricTracer , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerDestroyExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerDestroyExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerEnableExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerEnableExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerDisableExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerDisableExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerReadDataExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, size_t* pRawDataSize, uint8_t* pRawData ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerReadDataExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, size_t* pRawDataSize, uint8_t* pRawData , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricDecoderCreateExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, zet_metric_decoder_exp_handle_t* phMetricDecoder ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricDecoderCreateExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, zet_metric_decoder_exp_handle_t* phMetricDecoder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricDecoderDestroyExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricDecoderDestroyExpEpilogue( zet_metric_decoder_exp_handle_t phMetricDecoder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricDecoderGetDecodableMetricsExpPrologue( zet_metric_decoder_exp_handle_t hMetricDecoder, uint32_t* pCount, zet_metric_handle_t* phMetrics ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricDecoderGetDecodableMetricsExpEpilogue( zet_metric_decoder_exp_handle_t hMetricDecoder, uint32_t* pCount, zet_metric_handle_t* phMetrics , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerDecodeExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder, size_t* pRawDataSize, uint8_t* pRawData, uint32_t metricsCount, zet_metric_handle_t* phMetrics, uint32_t* pSetCount, uint32_t* pMetricEntriesCountPerSet, uint32_t* pMetricEntriesCount, zet_metric_entry_exp_t* pMetricEntries ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetMetricTracerDecodeExpEpilogue( zet_metric_decoder_exp_handle_t phMetricDecoder, size_t* pRawDataSize, uint8_t* pRawData, uint32_t metricsCount, zet_metric_handle_t* phMetrics, uint32_t* pSetCount, uint32_t* pMetricEntriesCountPerSet, uint32_t* pMetricEntriesCount, zet_metric_entry_exp_t* pMetricEntries , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetCommandListAppendMarkerExpPrologue( zet_command_list_handle_t hCommandList, zet_metric_group_handle_t hMetricGroup, uint32_t value ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetCommandListAppendMarkerExpEpilogue( zet_command_list_handle_t hCommandList, zet_metric_group_handle_t hMetricGroup, uint32_t value , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetDeviceEnableMetricsExpPrologue( zet_device_handle_t hDevice ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetDeviceEnableMetricsExpEpilogue( zet_device_handle_t hDevice , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetDeviceDisableMetricsExpPrologue( zet_device_handle_t hDevice ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zetDeviceDisableMetricsExpEpilogue( zet_device_handle_t hDevice , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricGroupCalculateMultipleMetricValuesExpPrologue( zet_metric_group_handle_t hMetricGroup, zet_metric_group_calculation_type_t type, size_t rawDataSize, const uint8_t* pRawData, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricGroupCalculateMultipleMetricValuesExpEpilogue( zet_metric_group_handle_t hMetricGroup, zet_metric_group_calculation_type_t type, size_t rawDataSize, const uint8_t* pRawData, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricGroupGetGlobalTimestampsExpPrologue( zet_metric_group_handle_t hMetricGroup, ze_bool_t synchronizedWithHost, uint64_t* globalTimestamp, uint64_t* metricTimestamp ) {return ZE_RESULT_SUCCESS;}
@@ -155,6 +129,32 @@ public:
     virtual ze_result_t zetMetricGroupDestroyExpEpilogue( zet_metric_group_handle_t hMetricGroup , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricDestroyExpPrologue( zet_metric_handle_t hMetric ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricDestroyExpEpilogue( zet_metric_handle_t hMetric , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetDeviceGetConcurrentMetricGroupsExpPrologue( zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t * phMetricGroups, uint32_t * pMetricGroupsCountPerConcurrentGroup, uint32_t * pConcurrentGroupCount ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetDeviceGetConcurrentMetricGroupsExpEpilogue( zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t * phMetricGroups, uint32_t * pMetricGroupsCountPerConcurrentGroup, uint32_t * pConcurrentGroupCount , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerCreateExpPrologue( zet_context_handle_t hContext, zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t* phMetricGroups, zet_metric_tracer_exp_desc_t* desc, ze_event_handle_t hNotificationEvent, zet_metric_tracer_exp_handle_t* phMetricTracer ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerCreateExpEpilogue( zet_context_handle_t hContext, zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t* phMetricGroups, zet_metric_tracer_exp_desc_t* desc, ze_event_handle_t hNotificationEvent, zet_metric_tracer_exp_handle_t* phMetricTracer , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerDestroyExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerDestroyExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerEnableExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerEnableExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerDisableExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerDisableExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerReadDataExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, size_t* pRawDataSize, uint8_t* pRawData ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerReadDataExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, size_t* pRawDataSize, uint8_t* pRawData , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricDecoderCreateExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, zet_metric_decoder_exp_handle_t* phMetricDecoder ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricDecoderCreateExpEpilogue( zet_metric_tracer_exp_handle_t hMetricTracer, zet_metric_decoder_exp_handle_t* phMetricDecoder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricDecoderDestroyExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricDecoderDestroyExpEpilogue( zet_metric_decoder_exp_handle_t phMetricDecoder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricDecoderGetDecodableMetricsExpPrologue( zet_metric_decoder_exp_handle_t hMetricDecoder, uint32_t* pCount, zet_metric_handle_t* phMetrics ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricDecoderGetDecodableMetricsExpEpilogue( zet_metric_decoder_exp_handle_t hMetricDecoder, uint32_t* pCount, zet_metric_handle_t* phMetrics , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerDecodeExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder, size_t* pRawDataSize, uint8_t* pRawData, uint32_t metricsCount, zet_metric_handle_t* phMetrics, uint32_t* pSetCount, uint32_t* pMetricEntriesCountPerSet, uint32_t* pMetricEntriesCount, zet_metric_entry_exp_t* pMetricEntries ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricTracerDecodeExpEpilogue( zet_metric_decoder_exp_handle_t phMetricDecoder, size_t* pRawDataSize, uint8_t* pRawData, uint32_t metricsCount, zet_metric_handle_t* phMetrics, uint32_t* pSetCount, uint32_t* pMetricEntriesCountPerSet, uint32_t* pMetricEntriesCount, zet_metric_entry_exp_t* pMetricEntries , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetCommandListAppendMarkerExpPrologue( zet_command_list_handle_t hCommandList, zet_metric_group_handle_t hMetricGroup, uint32_t value ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetCommandListAppendMarkerExpEpilogue( zet_command_list_handle_t hCommandList, zet_metric_group_handle_t hMetricGroup, uint32_t value , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetDeviceEnableMetricsExpPrologue( zet_device_handle_t hDevice ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetDeviceEnableMetricsExpEpilogue( zet_device_handle_t hDevice , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetDeviceDisableMetricsExpPrologue( zet_device_handle_t hDevice ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetDeviceDisableMetricsExpEpilogue( zet_device_handle_t hDevice , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ~ZETValidationEntryPoints() {}
 };
 }

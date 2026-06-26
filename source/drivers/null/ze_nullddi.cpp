@@ -803,10 +803,15 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetGlobalTimestamps(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                        ///< Device's global timestamp value.
-        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                        ///< Host's global timestamp value.
+        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp in nanoseconds at the time
+                                                        ///< of invoking the function.
+        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp in tick counts at the
+                                                        ///< time of invoking the function.
+                                                        ///< To get the devicetime stamp in nanoseconds, resolve the tick counts
+                                                        ///< using the timestampValidBits as mask together with timerResolution
+                                                        ///< members of the ::ze_device_properties_t structure.
+                                                        ///< For example: deviceTimestampinNS = (deviceTimestamp &
+                                                        ///< timestampValidBits) * 1/timerResolution.(when timer resolution is in cycle/sec)
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -876,6 +881,35 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeDeviceGetAggregatedCopyOffloadIncrementValue", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetCounterBasedEventMaxValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetCounterBasedEventMaxValue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint64_t* maxValue                              ///< [out] maximum value that may appear under externally managed counter
+                                                        ///< storage and that may be passed as `completionValue` when creating a
+                                                        ///< Counter Based Event
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetCounterBasedEventMaxValue = context.zeDdiTable.Device.pfnGetCounterBasedEventMaxValue;
+        if( nullptr != pfnGetCounterBasedEventMaxValue )
+        {
+            result = pfnGetCounterBasedEventMaxValue( hDevice, maxValue );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetCounterBasedEventMaxValue", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1267,6 +1301,87 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetFlags
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetFlags(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command queue creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFlags = context.zeDdiTable.CommandQueue.pfnGetFlags;
+        if( nullptr != pfnGetFlags )
+        {
+            result = pfnGetFlags( hCmdQueue, pFlags );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueGetFlags", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetMode
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetMode(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command queue creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetMode = context.zeDdiTable.CommandQueue.pfnGetMode;
+        if( nullptr != pfnGetMode )
+        {
+            result = pfnGetMode( hCmdQueue, pMode );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueGetMode", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetPriority
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetPriority(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command queue creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPriority = context.zeDdiTable.CommandQueue.pfnGetPriority;
+        if( nullptr != pfnGetPriority )
+        {
+            result = pfnGetPriority( hCmdQueue, pPriority );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueGetPriority", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListCreate(
@@ -1609,6 +1724,114 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeCommandListIsImmediate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetFlags
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetFlags(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_list_flags_t* pFlags                 ///< [out] pointer to flags used during command list creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFlags = context.zeDdiTable.CommandList.pfnGetFlags;
+        if( nullptr != pfnGetFlags )
+        {
+            result = pfnGetFlags( hCommandList, pFlags );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListGetFlags", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateGetFlags
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateGetFlags(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command list creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnImmediateGetFlags = context.zeDdiTable.CommandList.pfnImmediateGetFlags;
+        if( nullptr != pfnImmediateGetFlags )
+        {
+            result = pfnImmediateGetFlags( hCommandList, pFlags );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListImmediateGetFlags", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateGetMode
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateGetMode(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command list creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnImmediateGetMode = context.zeDdiTable.CommandList.pfnImmediateGetMode;
+        if( nullptr != pfnImmediateGetMode )
+        {
+            result = pfnImmediateGetMode( hCommandList, pMode );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListImmediateGetMode", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateGetPriority
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateGetPriority(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command list creation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnImmediateGetPriority = context.zeDdiTable.CommandList.pfnImmediateGetPriority;
+        if( nullptr != pfnImmediateGetPriority )
+        {
+            result = pfnImmediateGetPriority( hCommandList, pPriority );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListImmediateGetPriority", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2893,6 +3116,34 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeEventPoolGetFlags", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventGetCounterBasedFlags
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventGetCounterBasedFlags(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_counter_based_flags_t* pFlags          ///< [out] flags used during creation of a counter based event; may be 0 or
+                                                        ///< a valid combination of ::ze_event_counter_based_flag_t
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetCounterBasedFlags = context.zeDdiTable.Event.pfnGetCounterBasedFlags;
+        if( nullptr != pfnGetCounterBasedFlags )
+        {
+            result = pfnGetCounterBasedFlags( hEvent, pFlags );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventGetCounterBasedFlags", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -4896,558 +5147,6 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeKernelGetBinaryExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeKernelGetBinaryExp(
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
-        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetBinaryExp = context.zeDdiTable.KernelExp.pfnGetBinaryExp;
-        if( nullptr != pfnGetBinaryExp )
-        {
-            result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeKernelGetBinaryExp", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDeviceImportExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDeviceImportExternalSemaphoreExt(
-        ze_device_handle_t hDevice,                     ///< [in] The device handle.
-        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
-        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnImportExternalSemaphoreExt = context.zeDdiTable.Device.pfnImportExternalSemaphoreExt;
-        if( nullptr != pfnImportExternalSemaphoreExt )
-        {
-            result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
-        }
-        else
-        {
-            // generic implementation
-            *phSemaphore = reinterpret_cast<ze_external_semaphore_ext_handle_t>( context.get() );
-
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeDeviceImportExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDeviceReleaseExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDeviceReleaseExternalSemaphoreExt(
-        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnReleaseExternalSemaphoreExt = context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt;
-        if( nullptr != pfnReleaseExternalSemaphoreExt )
-        {
-            result = pfnReleaseExternalSemaphoreExt( hSemaphore );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeDeviceReleaseExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListAppendSignalExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListAppendSignalExternalSemaphoreExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to be appended into command list.
-        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore signal parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnAppendSignalExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt;
-        if( nullptr != pfnAppendSignalExternalSemaphoreExt )
-        {
-            result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendSignalExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListAppendWaitExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListAppendWaitExternalSemaphoreExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to append into command list.
-        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore wait parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnAppendWaitExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt;
-        if( nullptr != pfnAppendWaitExternalSemaphoreExt )
-        {
-            result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendWaitExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderCreateExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderCreateExt(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
-        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnCreateExt = context.zeDdiTable.RTASBuilder.pfnCreateExt;
-        if( nullptr != pfnCreateExt )
-        {
-            result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
-        }
-        else
-        {
-            // generic implementation
-            *phBuilder = reinterpret_cast<ze_rtas_builder_ext_handle_t>( context.get() );
-
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderCreateExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderGetBuildPropertiesExt(
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetBuildPropertiesExt = context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt;
-        if( nullptr != pfnGetBuildPropertiesExt )
-        {
-            result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderGetBuildPropertiesExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDriverRTASFormatCompatibilityCheckExt(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
-        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnRTASFormatCompatibilityCheckExt = context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt;
-        if( nullptr != pfnRTASFormatCompatibilityCheckExt )
-        {
-            result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeDriverRTASFormatCompatibilityCheckExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderBuildExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderBuildExt(
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
-                                                        ///< during acceleration structure construction
-        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
-        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
-        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
-        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
-        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
-                                                        ///< structure bounds
-        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
-                                                        ///< bytes
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnBuildExt = context.zeDdiTable.RTASBuilder.pfnBuildExt;
-        if( nullptr != pfnBuildExt )
-        {
-            result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderBuildExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderCommandListAppendCopyExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
-        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
-                                                        ///< acceleration structure to
-        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
-                                                        ///< host memory to copy from
-        size_t size,                                    ///< [in] size in bytes to copy
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnCommandListAppendCopyExt = context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt;
-        if( nullptr != pfnCommandListAppendCopyExt )
-        {
-            result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderCommandListAppendCopyExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderDestroyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderDestroyExt(
-        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnDestroyExt = context.zeDdiTable.RTASBuilder.pfnDestroyExt;
-        if( nullptr != pfnDestroyExt )
-        {
-            result = pfnDestroyExt( hBuilder );
-        }
-        else
-        {
-            // generic implementation
-
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderDestroyExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationCreateExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationCreateExt(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnCreateExt = context.zeDdiTable.RTASParallelOperation.pfnCreateExt;
-        if( nullptr != pfnCreateExt )
-        {
-            result = pfnCreateExt( hDriver, phParallelOperation );
-        }
-        else
-        {
-            // generic implementation
-            *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_ext_handle_t>( context.get() );
-
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationCreateExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationGetPropertiesExt(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
-        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetPropertiesExt = context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt;
-        if( nullptr != pfnGetPropertiesExt )
-        {
-            result = pfnGetPropertiesExt( hParallelOperation, pProperties );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationGetPropertiesExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationJoinExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationJoinExt(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnJoinExt = context.zeDdiTable.RTASParallelOperation.pfnJoinExt;
-        if( nullptr != pfnJoinExt )
-        {
-            result = pfnJoinExt( hParallelOperation );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationJoinExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationDestroyExt(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnDestroyExt = context.zeDdiTable.RTASParallelOperation.pfnDestroyExt;
-        if( nullptr != pfnDestroyExt )
-        {
-            result = pfnDestroyExt( hParallelOperation );
-        }
-        else
-        {
-            // generic implementation
-
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationDestroyExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDeviceGetVectorWidthPropertiesExt(
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of vector width properties available.
-                                                        ///< if count is greater than the number of vector width properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of vector width properties available.
-        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
-                                                        ///< if count is less than the number of properties available, then the
-                                                        ///< driver will return only the number requested.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetVectorWidthPropertiesExt = context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt;
-        if( nullptr != pfnGetVectorWidthPropertiesExt )
-        {
-            result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetVectorWidthPropertiesExt", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeKernelGetAllocationPropertiesExp(
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of kernel allocation properties available.
-                                                        ///< if count is greater than the number of kernel allocation properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of kernel allocation properties.
-        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
-                                                        ///< if count is less than the number of kernel allocation properties
-                                                        ///< available, then driver shall only retrieve that number of kernel
-                                                        ///< allocation properties.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetAllocationPropertiesExp = context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp;
-        if( nullptr != pfnGetAllocationPropertiesExp )
-        {
-            result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeKernelGetAllocationPropertiesExp", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeMemGetIpcHandleWithProperties
-    __zedlllocal ze_result_t ZE_APICALL
-    zeMemGetIpcHandleWithProperties(
-        ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const void* ptr,                                ///< [in] pointer to the device memory allocation
-        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
-        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetIpcHandleWithProperties = context.zeDdiTable.Mem.pfnGetIpcHandleWithProperties;
-        if( nullptr != pfnGetIpcHandleWithProperties )
-        {
-            result = pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
-        }
-        else
-        {
-            // generic implementation
-        }
-        
-        char *env_str = context.setenv_var_with_driver_id("zeMemGetIpcHandleWithProperties", ZEL_NULL_DRIVER_ID);
-        context.env_vars.push_back(env_str);
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceReserveCacheExt
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(
@@ -6664,6 +6363,34 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListIsMutableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListIsMutableExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                        ///< mutable extension
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnIsMutableExp = context.zeDdiTable.CommandListExp.pfnIsMutableExp;
+        if( nullptr != pfnIsMutableExp )
+        {
+            result = pfnIsMutableExp( hCommandList, pIsMutable );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListIsMutableExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExp
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListUpdateMutableCommandSignalEventExp(
@@ -6746,6 +6473,1031 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeCommandListUpdateMutableCommandKernelsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetBinaryExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetBinaryExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetBinaryExp = context.zeDdiTable.KernelExp.pfnGetBinaryExp;
+        if( nullptr != pfnGetBinaryExp )
+        {
+            result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetBinaryExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceImportExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceImportExternalSemaphoreExt(
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnImportExternalSemaphoreExt = context.zeDdiTable.Device.pfnImportExternalSemaphoreExt;
+        if( nullptr != pfnImportExternalSemaphoreExt )
+        {
+            result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
+        }
+        else
+        {
+            // generic implementation
+            *phSemaphore = reinterpret_cast<ze_external_semaphore_ext_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceImportExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReleaseExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReleaseExternalSemaphoreExt(
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnReleaseExternalSemaphoreExt = context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt;
+        if( nullptr != pfnReleaseExternalSemaphoreExt )
+        {
+            result = pfnReleaseExternalSemaphoreExt( hSemaphore );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceReleaseExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendSignalExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt;
+        if( nullptr != pfnAppendSignalExternalSemaphoreExt )
+        {
+            result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendSignalExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendWaitExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt;
+        if( nullptr != pfnAppendWaitExternalSemaphoreExt )
+        {
+            result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendWaitExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExt = context.zeDdiTable.RTASBuilder.pfnCreateExt;
+        if( nullptr != pfnCreateExt )
+        {
+            result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
+        }
+        else
+        {
+            // generic implementation
+            *phBuilder = reinterpret_cast<ze_rtas_builder_ext_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderCreateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetBuildPropertiesExt = context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt;
+        if( nullptr != pfnGetBuildPropertiesExt )
+        {
+            result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderGetBuildPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnRTASFormatCompatibilityCheckExt = context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt;
+        if( nullptr != pfnRTASFormatCompatibilityCheckExt )
+        {
+            result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverRTASFormatCompatibilityCheckExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnBuildExt = context.zeDdiTable.RTASBuilder.pfnBuildExt;
+        if( nullptr != pfnBuildExt )
+        {
+            result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderBuildExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCommandListAppendCopyExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCommandListAppendCopyExt = context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt;
+        if( nullptr != pfnCommandListAppendCopyExt )
+        {
+            result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderCommandListAppendCopyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExt(
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExt = context.zeDdiTable.RTASBuilder.pfnDestroyExt;
+        if( nullptr != pfnDestroyExt )
+        {
+            result = pfnDestroyExt( hBuilder );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderDestroyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExt = context.zeDdiTable.RTASParallelOperation.pfnCreateExt;
+        if( nullptr != pfnCreateExt )
+        {
+            result = pfnCreateExt( hDriver, phParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+            *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_ext_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationCreateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPropertiesExt = context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt;
+        if( nullptr != pfnGetPropertiesExt )
+        {
+            result = pfnGetPropertiesExt( hParallelOperation, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationGetPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnJoinExt = context.zeDdiTable.RTASParallelOperation.pfnJoinExt;
+        if( nullptr != pfnJoinExt )
+        {
+            result = pfnJoinExt( hParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationJoinExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExt = context.zeDdiTable.RTASParallelOperation.pfnDestroyExt;
+        if( nullptr != pfnDestroyExt )
+        {
+            result = pfnDestroyExt( hParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationDestroyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetVectorWidthPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetVectorWidthPropertiesExt = context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt;
+        if( nullptr != pfnGetVectorWidthPropertiesExt )
+        {
+            result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetVectorWidthPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetAllocationPropertiesExp = context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp;
+        if( nullptr != pfnGetAllocationPropertiesExp )
+        {
+            result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetAllocationPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleWithProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleWithProperties(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const void* ptr,                                ///< [in] pointer to the device memory allocation
+        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetIpcHandleWithProperties = context.zeDdiTable.Mem.pfnGetIpcHandleWithProperties;
+        if( nullptr != pfnGetIpcHandleWithProperties )
+        {
+            result = pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetIpcHandleWithProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphCreateExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExt = context.zeDdiTable.Graph.pfnCreateExt;
+        if( nullptr != pfnCreateExt )
+        {
+            result = pfnCreateExt( hContext, pNext, phGraph );
+        }
+        else
+        {
+            // generic implementation
+            *phGraph = reinterpret_cast<ze_graph_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeGraphCreateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListBeginGraphCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListBeginGraphCaptureExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnBeginGraphCaptureExt = context.zeDdiTable.CommandList.pfnBeginGraphCaptureExt;
+        if( nullptr != pfnBeginGraphCaptureExt )
+        {
+            result = pfnBeginGraphCaptureExt( hCommandList, pNext );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListBeginGraphCaptureExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListBeginCaptureIntoGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListBeginCaptureIntoGraphExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnBeginCaptureIntoGraphExt = context.zeDdiTable.CommandList.pfnBeginCaptureIntoGraphExt;
+        if( nullptr != pfnBeginCaptureIntoGraphExt )
+        {
+            result = pfnBeginCaptureIntoGraphExt( hCommandList, hGraph, pNext );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListBeginCaptureIntoGraphExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListIsGraphCaptureEnabledExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListIsGraphCaptureEnabledExt(
+        ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnIsGraphCaptureEnabledExt = context.zeDdiTable.CommandList.pfnIsGraphCaptureEnabledExt;
+        if( nullptr != pfnIsGraphCaptureEnabledExt )
+        {
+            result = pfnIsGraphCaptureEnabledExt( hCommandList );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListIsGraphCaptureEnabledExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListEndGraphCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListEndGraphCaptureExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnEndGraphCaptureExt = context.zeDdiTable.CommandList.pfnEndGraphCaptureExt;
+        if( nullptr != pfnEndGraphCaptureExt )
+        {
+            result = pfnEndGraphCaptureExt( hCommandList, pNext, phGraph );
+        }
+        else
+        {
+            // generic implementation
+            *phGraph = reinterpret_cast<ze_graph_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListEndGraphCaptureExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetGraphExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetGraphExt = context.zeDdiTable.CommandList.pfnGetGraphExt;
+        if( nullptr != pfnGetGraphExt )
+        {
+            result = pfnGetGraphExt( hCommandList, phGraph );
+        }
+        else
+        {
+            // generic implementation
+            *phGraph = reinterpret_cast<ze_graph_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListGetGraphExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphGetPrimaryCommandListExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphGetPrimaryCommandListExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
+                                                        ///< graph
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPrimaryCommandListExt = context.zeDdiTable.Graph.pfnGetPrimaryCommandListExt;
+        if( nullptr != pfnGetPrimaryCommandListExt )
+        {
+            result = pfnGetPrimaryCommandListExt( hGraph, phCommandList );
+        }
+        else
+        {
+            // generic implementation
+            *phCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeGraphGetPrimaryCommandListExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphSetDestructionCallbackExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphSetDestructionCallbackExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
+        void* pUserData,                                ///< [in][optional] user data to pass to the callback
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetDestructionCallbackExt = context.zeDdiTable.Graph.pfnSetDestructionCallbackExt;
+        if( nullptr != pfnSetDestructionCallbackExt )
+        {
+            result = pfnSetDestructionCallbackExt( hGraph, pfnCallback, pUserData, pNext );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeGraphSetDestructionCallbackExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphInstantiateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphInstantiateExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnInstantiateExt = context.zeDdiTable.Graph.pfnInstantiateExt;
+        if( nullptr != pfnInstantiateExt )
+        {
+            result = pfnInstantiateExt( hGraph, pNext, phExecutableGraph );
+        }
+        else
+        {
+            // generic implementation
+            *phExecutableGraph = reinterpret_cast<ze_executable_graph_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeGraphInstantiateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendGraphExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendGraphExt = context.zeDdiTable.CommandList.pfnAppendGraphExt;
+        if( nullptr != pfnAppendGraphExt )
+        {
+            result = pfnAppendGraphExt( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendGraphExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeExecutableGraphGetSourceGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeExecutableGraphGetSourceGraphExt(
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetSourceGraphExt = context.zeDdiTable.ExecutableGraph.pfnGetSourceGraphExt;
+        if( nullptr != pfnGetSourceGraphExt )
+        {
+            result = pfnGetSourceGraphExt( hGraph, phSourceGraph );
+        }
+        else
+        {
+            // generic implementation
+            *phSourceGraph = reinterpret_cast<ze_graph_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeExecutableGraphGetSourceGraphExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphIsEmptyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphIsEmptyExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnIsEmptyExt = context.zeDdiTable.Graph.pfnIsEmptyExt;
+        if( nullptr != pfnIsEmptyExt )
+        {
+            result = pfnIsEmptyExt( hGraph );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeGraphIsEmptyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphDumpContentsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphDumpContentsExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        const char* filePath,                           ///< [in] path where the DOT file is written
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDumpContentsExt = context.zeDdiTable.Graph.pfnDumpContentsExt;
+        if( nullptr != pfnDumpContentsExt )
+        {
+            result = pfnDumpContentsExt( hGraph, filePath, pNext );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeGraphDumpContentsExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeExecutableGraphDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeExecutableGraphDestroyExt(
+        ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExt = context.zeDdiTable.ExecutableGraph.pfnDestroyExt;
+        if( nullptr != pfnDestroyExt )
+        {
+            result = pfnDestroyExt( hGraph );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeExecutableGraphDestroyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphDestroyExt(
+        ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExt = context.zeDdiTable.Graph.pfnDestroyExt;
+        if( nullptr != pfnDestroyExt )
+        {
+            result = pfnDestroyExt( hGraph );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeGraphDestroyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendHostFunction
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendHostFunction(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
+                                                        ///< non-blocking
+        void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
+                                                        ///< neither the runtime nor the device will dereference it
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
+                                                        ///< phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendHostFunction = context.zeDdiTable.CommandList.pfnAppendHostFunction;
+        if( nullptr != pfnAppendHostFunction )
+        {
+            result = pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendHostFunction", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -7166,6 +7918,10 @@ zeGetDeviceProcAddrTable(
     pDdiTable->pfnValidateRuntimeRequirements            = driver::zeDeviceValidateRuntimeRequirements;
     }
 
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetCounterBasedEventMaxValue           = driver::zeDeviceGetCounterBasedEventMaxValue;
+    }
+
     if (version >= ZE_API_VERSION_1_2) {
     pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
     }
@@ -7311,6 +8067,18 @@ zeGetCommandQueueProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_0) {
     pDdiTable->pfnSynchronize                            = driver::zeCommandQueueSynchronize;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetFlags                               = driver::zeCommandQueueGetFlags;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetMode                                = driver::zeCommandQueueGetMode;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetPriority                            = driver::zeCommandQueueGetPriority;
     }
 
     if (version >= ZE_API_VERSION_1_9) {
@@ -7478,6 +8246,50 @@ zeGetCommandListProcAddrTable(
     pDdiTable->pfnImmediateAppendCommandListsWithParameters  = driver::zeCommandListImmediateAppendCommandListsWithParameters;
     }
 
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetFlags                               = driver::zeCommandListGetFlags;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnImmediateGetFlags                      = driver::zeCommandListImmediateGetFlags;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnImmediateGetMode                       = driver::zeCommandListImmediateGetMode;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnImmediateGetPriority                   = driver::zeCommandListImmediateGetPriority;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnBeginGraphCaptureExt                   = driver::zeCommandListBeginGraphCaptureExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnBeginCaptureIntoGraphExt               = driver::zeCommandListBeginCaptureIntoGraphExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnIsGraphCaptureEnabledExt               = driver::zeCommandListIsGraphCaptureEnabledExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnEndGraphCaptureExt                     = driver::zeCommandListEndGraphCaptureExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetGraphExt                            = driver::zeCommandListGetGraphExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnAppendGraphExt                         = driver::zeCommandListAppendGraphExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnAppendHostFunction                     = driver::zeCommandListAppendHostFunction;
+    }
+
     if (version >= ZE_API_VERSION_1_3) {
     pDdiTable->pfnAppendImageCopyToMemoryExt             = driver::zeCommandListAppendImageCopyToMemoryExt;
     }
@@ -7541,6 +8353,10 @@ zeGetCommandListExpProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_10) {
     pDdiTable->pfnUpdateMutableCommandKernelsExp         = driver::zeCommandListUpdateMutableCommandKernelsExp;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnIsMutableExp                           = driver::zeCommandListIsMutableExp;
     }
 
     if (version >= ZE_API_VERSION_1_9) {
@@ -7638,6 +8454,10 @@ zeGetEventProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnCounterBasedGetDeviceAddress           = driver::zeEventCounterBasedGetDeviceAddress;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetCounterBasedFlags                   = driver::zeEventGetCounterBasedFlags;
     }
 
     if (version >= ZE_API_VERSION_1_6) {
@@ -8394,6 +9214,92 @@ zeGetFabricVertexExpProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_4) {
     pDdiTable->pfnGetDeviceExp                           = driver::zeFabricVertexGetDeviceExp;
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ExecutableGraph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetExecutableGraphProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_executable_graph_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetSourceGraphExt                      = driver::zeExecutableGraphGetSourceGraphExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnDestroyExt                             = driver::zeExecutableGraphDestroyExt;
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Graph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetGraphProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_graph_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnCreateExt                              = driver::zeGraphCreateExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetPrimaryCommandListExt               = driver::zeGraphGetPrimaryCommandListExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnSetDestructionCallbackExt              = driver::zeGraphSetDestructionCallbackExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnInstantiateExt                         = driver::zeGraphInstantiateExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnIsEmptyExt                             = driver::zeGraphIsEmptyExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnDumpContentsExt                        = driver::zeGraphDumpContentsExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnDestroyExt                             = driver::zeGraphDestroyExt;
     }
 
     return result;

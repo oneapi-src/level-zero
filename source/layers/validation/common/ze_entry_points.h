@@ -73,6 +73,8 @@ public:
     virtual ze_result_t zeDeviceSynchronizeEpilogue( ze_device_handle_t hDevice , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetAggregatedCopyOffloadIncrementValuePrologue( ze_device_handle_t hDevice, uint32_t* incrementValue ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetAggregatedCopyOffloadIncrementValueEpilogue( ze_device_handle_t hDevice, uint32_t* incrementValue , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceGetCounterBasedEventMaxValuePrologue( ze_device_handle_t hDevice, uint64_t* maxValue ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceGetCounterBasedEventMaxValueEpilogue( ze_device_handle_t hDevice, uint64_t* maxValue , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const void* pObjDesc, size_t* pSize, char* pRequirements ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetRuntimeRequirementsEpilogue( ze_device_handle_t hDevice, const void* pObjDesc, size_t* pSize, char* pRequirements , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetRuntimeRequirementsKeyPrologue( ze_device_handle_t hDevice, const char** pKey ) {return ZE_RESULT_SUCCESS;}
@@ -99,6 +101,12 @@ public:
     virtual ze_result_t zeCommandQueueGetOrdinalEpilogue( ze_command_queue_handle_t hCommandQueue, uint32_t* pOrdinal , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandQueueGetIndexPrologue( ze_command_queue_handle_t hCommandQueue, uint32_t* pIndex ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandQueueGetIndexEpilogue( ze_command_queue_handle_t hCommandQueue, uint32_t* pIndex , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetFlagsPrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_flags_t* pFlags ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetFlagsEpilogue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_flags_t* pFlags , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetModePrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_mode_t* pMode ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetModeEpilogue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_mode_t* pMode , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetPriorityPrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_priority_t* pPriority ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetPriorityEpilogue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_priority_t* pPriority , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListCreatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_list_desc_t* desc, ze_command_list_handle_t* phCommandList ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListCreateEpilogue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_list_desc_t* desc, ze_command_list_handle_t* phCommandList , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListCreateImmediatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_queue_desc_t* altdesc, ze_command_list_handle_t* phCommandList ) {return ZE_RESULT_SUCCESS;}
@@ -123,6 +131,14 @@ public:
     virtual ze_result_t zeCommandListImmediateGetIndexEpilogue( ze_command_list_handle_t hCommandListImmediate, uint32_t* pIndex , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListIsImmediatePrologue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsImmediate ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListIsImmediateEpilogue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsImmediate , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetFlagsPrologue( ze_command_list_handle_t hCommandList, ze_command_list_flags_t* pFlags ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetFlagsEpilogue( ze_command_list_handle_t hCommandList, ze_command_list_flags_t* pFlags , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateGetFlagsPrologue( ze_command_list_handle_t hCommandList, ze_command_queue_flags_t* pFlags ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateGetFlagsEpilogue( ze_command_list_handle_t hCommandList, ze_command_queue_flags_t* pFlags , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateGetModePrologue( ze_command_list_handle_t hCommandList, ze_command_queue_mode_t* pMode ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateGetModeEpilogue( ze_command_list_handle_t hCommandList, ze_command_queue_mode_t* pMode , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateGetPriorityPrologue( ze_command_list_handle_t hCommandList, ze_command_queue_priority_t* pPriority ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateGetPriorityEpilogue( ze_command_list_handle_t hCommandList, ze_command_queue_priority_t* pPriority , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendBarrierPrologue( ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendBarrierEpilogue( ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendMemoryRangesBarrierPrologue( ze_command_list_handle_t hCommandList, uint32_t numRanges, const size_t* pRangeSizes, const void** pRanges, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
@@ -207,6 +223,8 @@ public:
     virtual ze_result_t zeEventPoolGetContextHandleEpilogue( ze_event_pool_handle_t hEventPool, ze_context_handle_t* phContext , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeEventPoolGetFlagsPrologue( ze_event_pool_handle_t hEventPool, ze_event_pool_flags_t* pFlags ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeEventPoolGetFlagsEpilogue( ze_event_pool_handle_t hEventPool, ze_event_pool_flags_t* pFlags , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventGetCounterBasedFlagsPrologue( ze_event_handle_t hEvent, ze_event_counter_based_flags_t* pFlags ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventGetCounterBasedFlagsEpilogue( ze_event_handle_t hEvent, ze_event_counter_based_flags_t* pFlags , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFenceCreatePrologue( ze_command_queue_handle_t hCommandQueue, const ze_fence_desc_t* desc, ze_fence_handle_t* phFence ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFenceCreateEpilogue( ze_command_queue_handle_t hCommandQueue, const ze_fence_desc_t* desc, ze_fence_handle_t* phFence , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFenceDestroyPrologue( ze_fence_handle_t hFence ) {return ZE_RESULT_SUCCESS;}
@@ -341,42 +359,6 @@ public:
     virtual ze_result_t zeVirtualMemGetAccessAttributeEpilogue( ze_context_handle_t hContext, const void* ptr, size_t size, ze_memory_access_attribute_t* access, size_t* outSize , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeKernelSetGlobalOffsetExpPrologue( ze_kernel_handle_t hKernel, uint32_t offsetX, uint32_t offsetY, uint32_t offsetZ ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeKernelSetGlobalOffsetExpEpilogue( ze_kernel_handle_t hKernel, uint32_t offsetX, uint32_t offsetY, uint32_t offsetZ , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeKernelGetBinaryExpPrologue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeKernelGetBinaryExpEpilogue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDeviceImportExternalSemaphoreExtPrologue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDeviceImportExternalSemaphoreExtEpilogue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtPrologue( ze_external_semaphore_ext_handle_t hSemaphore ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtEpilogue( ze_external_semaphore_ext_handle_t hSemaphore , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderCreateExtPrologue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderCreateExtEpilogue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtPrologue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderBuildExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderBuildExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtEpilogue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderDestroyExtPrologue( ze_rtas_builder_ext_handle_t hBuilder ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASBuilderDestroyExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationCreateExtPrologue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationCreateExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationJoinExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationJoinExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationDestroyExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeRTASParallelOperationDestroyExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtEpilogue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeKernelGetAllocationPropertiesExpEpilogue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeMemGetIpcHandleWithPropertiesPrologue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zeMemGetIpcHandleWithPropertiesEpilogue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceReserveCacheExtEpilogue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) {return ZE_RESULT_SUCCESS;}
@@ -455,12 +437,82 @@ public:
     virtual ze_result_t zeCommandListGetNextCommandIdWithKernelsExpEpilogue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint32_t numKernels, ze_kernel_handle_t* phKernels, uint64_t* pCommandId , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_exp_desc_t* desc ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandsExpEpilogue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_exp_desc_t* desc , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListIsMutableExpPrologue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsMutable ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListIsMutableExpEpilogue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsMutable , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandSignalEventExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandSignalEventExpEpilogue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpEpilogue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandKernelsExpPrologue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandKernelsExpEpilogue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeKernelGetBinaryExpPrologue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeKernelGetBinaryExpEpilogue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceImportExternalSemaphoreExtPrologue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceImportExternalSemaphoreExtEpilogue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtPrologue( ze_external_semaphore_ext_handle_t hSemaphore ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtEpilogue( ze_external_semaphore_ext_handle_t hSemaphore , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderCreateExtPrologue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderCreateExtEpilogue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtPrologue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderBuildExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderBuildExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtEpilogue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderDestroyExtPrologue( ze_rtas_builder_ext_handle_t hBuilder ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderDestroyExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationCreateExtPrologue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationCreateExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationJoinExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationJoinExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationDestroyExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationDestroyExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtEpilogue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeKernelGetAllocationPropertiesExpEpilogue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemGetIpcHandleWithPropertiesPrologue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemGetIpcHandleWithPropertiesEpilogue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphCreateExtPrologue( ze_context_handle_t hContext, const void* pNext, ze_graph_handle_t* phGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphCreateExtEpilogue( ze_context_handle_t hContext, const void* pNext, ze_graph_handle_t* phGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListBeginGraphCaptureExtPrologue( ze_command_list_handle_t hCommandList, const void* pNext ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListBeginGraphCaptureExtEpilogue( ze_command_list_handle_t hCommandList, const void* pNext , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListBeginCaptureIntoGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_graph_handle_t hGraph, const void* pNext ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListBeginCaptureIntoGraphExtEpilogue( ze_command_list_handle_t hCommandList, ze_graph_handle_t hGraph, const void* pNext , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListIsGraphCaptureEnabledExtPrologue( ze_command_list_handle_t hCommandList ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListIsGraphCaptureEnabledExtEpilogue( ze_command_list_handle_t hCommandList , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListEndGraphCaptureExtPrologue( ze_command_list_handle_t hCommandList, const void* pNext, ze_graph_handle_t* phGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListEndGraphCaptureExtEpilogue( ze_command_list_handle_t hCommandList, const void* pNext, ze_graph_handle_t* phGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_graph_handle_t* phGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetGraphExtEpilogue( ze_command_list_handle_t hCommandList, ze_graph_handle_t* phGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphGetPrimaryCommandListExtPrologue( ze_graph_handle_t hGraph, ze_command_list_handle_t* phCommandList ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphGetPrimaryCommandListExtEpilogue( ze_graph_handle_t hGraph, ze_command_list_handle_t* phCommandList , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphSetDestructionCallbackExtPrologue( ze_graph_handle_t hGraph, zex_mem_graph_free_callback_fn_t pfnCallback, void* pUserData, const void* pNext ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphSetDestructionCallbackExtEpilogue( ze_graph_handle_t hGraph, zex_mem_graph_free_callback_fn_t pfnCallback, void* pUserData, const void* pNext , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphInstantiateExtPrologue( ze_graph_handle_t hGraph, const void* pNext, ze_executable_graph_handle_t* phExecutableGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphInstantiateExtEpilogue( ze_graph_handle_t hGraph, const void* pNext, ze_executable_graph_handle_t* phExecutableGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_executable_graph_handle_t hGraph, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendGraphExtEpilogue( ze_command_list_handle_t hCommandList, ze_executable_graph_handle_t hGraph, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeExecutableGraphGetSourceGraphExtPrologue( ze_executable_graph_handle_t hGraph, ze_graph_handle_t* phSourceGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeExecutableGraphGetSourceGraphExtEpilogue( ze_executable_graph_handle_t hGraph, ze_graph_handle_t* phSourceGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphIsEmptyExtPrologue( ze_graph_handle_t hGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphIsEmptyExtEpilogue( ze_graph_handle_t hGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphDumpContentsExtPrologue( ze_graph_handle_t hGraph, const char* filePath, const void* pNext ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphDumpContentsExtEpilogue( ze_graph_handle_t hGraph, const char* filePath, const void* pNext , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeExecutableGraphDestroyExtPrologue( ze_executable_graph_handle_t hGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeExecutableGraphDestroyExtEpilogue( ze_executable_graph_handle_t hGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphDestroyExtPrologue( ze_graph_handle_t hGraph ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeGraphDestroyExtEpilogue( ze_graph_handle_t hGraph , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendHostFunctionPrologue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendHostFunctionEpilogue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     // Experimental Intel extension for counter-based events
     virtual ze_result_t zexCounterBasedEventCreate2Prologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zexCounterBasedEventCreate2Epilogue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent , ze_result_t result) {return ZE_RESULT_SUCCESS;}

@@ -1255,468 +1255,6 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(
-        ze_result_t result,
-        zet_device_handle_t hDevice,                    ///< [in] handle of the device
-        uint32_t metricGroupCount,                      ///< [in] metric group count
-        zet_metric_group_handle_t * phMetricGroups,     ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
-                                                        ///< groups
-        uint32_t * pMetricGroupsCountPerConcurrentGroup,///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
-                                                        ///< concurrent group.
-        uint32_t * pConcurrentGroupCount                ///< [out] number of concurrent groups.
-                                                        ///< The value of this parameter could be used to determine the number of
-                                                        ///< replays necessary.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetDeviceGetConcurrentMetricGroupsExp(";
-        
-        
-        oss << "hDevice=";
-        oss << loader::to_string(hDevice);
-        
-        oss << ", ";
-        oss << "metricGroupCount=";
-        oss << loader::to_string(metricGroupCount);
-        
-        oss << ", ";
-        oss << "phMetricGroups=";
-        oss << loader::to_string(phMetricGroups);
-        
-        oss << ", ";
-        oss << "pMetricGroupsCountPerConcurrentGroup=";
-        oss << loader::to_string(pMetricGroupsCountPerConcurrentGroup);
-        
-        oss << ", ";
-        oss << "pConcurrentGroupCount=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && pConcurrentGroupCount != nullptr) {
-            oss << loader::to_string(*pConcurrentGroupCount);
-        } else {
-            oss << loader::to_string(pConcurrentGroupCount);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerCreateExp(
-        ze_result_t result,
-        zet_context_handle_t hContext,                  ///< [in] handle of the context object
-        zet_device_handle_t hDevice,                    ///< [in] handle of the device
-        uint32_t metricGroupCount,                      ///< [in] metric group count
-        zet_metric_group_handle_t* phMetricGroups,      ///< [in][range(0, metricGroupCount )] handles of the metric groups to
-                                                        ///< trace
-        zet_metric_tracer_exp_desc_t* desc,             ///< [in,out] metric tracer descriptor
-        ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification. Note:
-                                                        ///< If buffer is not drained when the event it flagged, there is a risk of
-                                                        ///< HW event buffer being overrun
-        zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerCreateExp(";
-        
-        
-        oss << "hContext=";
-        oss << loader::to_string(hContext);
-        
-        oss << ", ";
-        oss << "hDevice=";
-        oss << loader::to_string(hDevice);
-        
-        oss << ", ";
-        oss << "metricGroupCount=";
-        oss << loader::to_string(metricGroupCount);
-        
-        oss << ", ";
-        oss << "phMetricGroups=";
-        oss << loader::to_string(phMetricGroups);
-        
-        oss << ", ";
-        oss << "desc=";
-        oss << loader::to_string(desc);
-        
-        oss << ", ";
-        oss << "hNotificationEvent=";
-        oss << loader::to_string(hNotificationEvent);
-        
-        oss << ", ";
-        oss << "phMetricTracer=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phMetricTracer != nullptr) {
-            oss << loader::to_string(*phMetricTracer);
-        } else {
-            oss << loader::to_string(phMetricTracer);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerDestroyExp(
-        ze_result_t result,
-        zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerDestroyExp(";
-        
-        
-        oss << "hMetricTracer=";
-        oss << loader::to_string(hMetricTracer);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerEnableExp(
-        ze_result_t result,
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
-                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                        ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
-                                                        ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
-                                                        ///< when the tracer is active.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerEnableExp(";
-        
-        
-        oss << "hMetricTracer=";
-        oss << loader::to_string(hMetricTracer);
-        
-        oss << ", ";
-        oss << "synchronous=";
-        oss << loader::to_string(synchronous);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerDisableExp(
-        ze_result_t result,
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
-                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                        ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
-                                                        ///< when the tracer is active or when it is inactive but still has data. 
-                                                        ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
-                                                        ///< has no more data to be retrieved.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerDisableExp(";
-        
-        
-        oss << "hMetricTracer=";
-        oss << loader::to_string(hMetricTracer);
-        
-        oss << ", ";
-        oss << "synchronous=";
-        oss << loader::to_string(synchronous);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerReadDataExp(
-        ze_result_t result,
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
-                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
-                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
-                                                        ///< number of bytes written into the buffer.
-                                                        ///< If the size returns the full size requested, the application may need
-                                                        ///< to issue additional reads to
-                                                        ///< retrieve any remaining reports that did not fit into the buffer.
-        uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                        ///< data in raw format
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerReadDataExp(";
-        
-        
-        oss << "hMetricTracer=";
-        oss << loader::to_string(hMetricTracer);
-        
-        oss << ", ";
-        oss << "pRawDataSize=";
-        oss << loader::to_string(pRawDataSize);
-        
-        oss << ", ";
-        oss << "pRawData=";
-        oss << loader::to_string(pRawData);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricDecoderCreateExp(
-        ze_result_t result,
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricDecoderCreateExp(";
-        
-        
-        oss << "hMetricTracer=";
-        oss << loader::to_string(hMetricTracer);
-        
-        oss << ", ";
-        oss << "phMetricDecoder=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phMetricDecoder != nullptr) {
-            oss << loader::to_string(*phMetricDecoder);
-        } else {
-            oss << loader::to_string(phMetricDecoder);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricDecoderDestroyExp(
-        ze_result_t result,
-        zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricDecoderDestroyExp(";
-        
-        
-        oss << "phMetricDecoder=";
-        oss << loader::to_string(phMetricDecoder);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(
-        ze_result_t result,
-        zet_metric_decoder_exp_handle_t hMetricDecoder, ///< [in] handle of the metric decoder object
-        uint32_t* pCount,                               ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
-                                                        ///< handle. If count is zero, then the driver shall 
-                                                        ///< update the value with the total number of decodable metrics available
-                                                        ///< in the decoder. if count is greater than zero 
-                                                        ///< but less than the total number of decodable metrics available in the
-                                                        ///< decoder, then only that number will be returned. 
-                                                        ///< if count is greater than the number of decodable metrics available in
-                                                        ///< the decoder, then the driver shall update the 
-                                                        ///< value with the actual number of decodable metrics available. 
-        zet_metric_handle_t* phMetrics                  ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
-                                                        ///< the hMetricDecoder handle provided.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricDecoderGetDecodableMetricsExp(";
-        
-        
-        oss << "hMetricDecoder=";
-        oss << loader::to_string(hMetricDecoder);
-        
-        oss << ", ";
-        oss << "pCount=";
-        oss << loader::to_string(pCount);
-        
-        oss << ", ";
-        oss << "phMetrics=";
-        oss << loader::to_string(phMetrics);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerDecodeExp(
-        ze_result_t result,
-        zet_metric_decoder_exp_handle_t phMetricDecoder,///< [in] handle of the metric decoder object
-        size_t* pRawDataSize,                           ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
-                                                        ///< greater than zero but less than total number of 
-                                                        ///< decodable metrics available in the raw data buffer, then driver shall
-                                                        ///< update this value with actual number of raw 
-                                                        ///< data bytes processed.
-        uint8_t* pRawData,                              ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                        ///< data in raw format
-        uint32_t metricsCount,                          ///< [in] number of decodable metrics in the tracer for which the
-                                                        ///< hMetricDecoder handle was provided. See 
-                                                        ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
-                                                        ///< than zero but less than the number decodable 
-                                                        ///< metrics available in the raw data buffer, then driver shall only
-                                                        ///< decode those.
-        zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
-                                                        ///< the decoder for which the hMetricDecoder handle was 
-                                                        ///< provided. Metrics handles are expected to be for decodable metrics,
-                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
-        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
-                                                        ///< driver shall update the value with the total
-                                                        ///< number of metric sets to be decoded. If count is greater than the
-                                                        ///< number available in the raw data buffer, then the
-                                                        ///< driver shall update the value with the actual number of metric sets to
-                                                        ///< be decoded. There is a 1:1 relation between
-                                                        ///< the number of sets and sub-devices returned in the decoded entries.
-        uint32_t* pMetricEntriesCountPerSet,            ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
-                                                        ///< counts per metric set, one value per set.
-        uint32_t* pMetricEntriesCount,                  ///< [in,out]  pointer to the total number of metric entries decoded, for
-                                                        ///< all metric sets. If count is zero, then the
-                                                        ///< driver shall update the value with the total number of metric entries
-                                                        ///< to be decoded. If count is greater than zero
-                                                        ///< but less than the total number of metric entries available in the raw
-                                                        ///< data, then user provided number will be decoded.
-                                                        ///< If count is greater than the number available in the raw data buffer,
-                                                        ///< then the driver shall update the value with
-                                                        ///< the actual number of decodable metric entries decoded. If set to null,
-                                                        ///< then driver will only update the value of
-                                                        ///< pSetCount.
-        zet_metric_entry_exp_t* pMetricEntries          ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
-                                                        ///< decoded metric entries
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerDecodeExp(";
-        
-        
-        oss << "phMetricDecoder=";
-        oss << loader::to_string(phMetricDecoder);
-        
-        oss << ", ";
-        oss << "pRawDataSize=";
-        oss << loader::to_string(pRawDataSize);
-        
-        oss << ", ";
-        oss << "pRawData=";
-        oss << loader::to_string(pRawData);
-        
-        oss << ", ";
-        oss << "metricsCount=";
-        oss << loader::to_string(metricsCount);
-        
-        oss << ", ";
-        oss << "phMetrics=";
-        oss << loader::to_string(phMetrics);
-        
-        oss << ", ";
-        oss << "pSetCount=";
-        oss << loader::to_string(pSetCount);
-        
-        oss << ", ";
-        oss << "pMetricEntriesCountPerSet=";
-        oss << loader::to_string(pMetricEntriesCountPerSet);
-        
-        oss << ", ";
-        oss << "pMetricEntriesCount=";
-        oss << loader::to_string(pMetricEntriesCount);
-        
-        oss << ", ";
-        oss << "pMetricEntries=";
-        oss << loader::to_string(pMetricEntries);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetCommandListAppendMarkerExp(
-        ze_result_t result,
-        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
-        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
-                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
-                                                        ///< marker is supoported by the metric group.
-        uint32_t value                                  ///< [in] marker value
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetCommandListAppendMarkerExp(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "hMetricGroup=";
-        oss << loader::to_string(hMetricGroup);
-        
-        oss << ", ";
-        oss << "value=";
-        oss << loader::to_string(value);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetDeviceEnableMetricsExp(
-        ze_result_t result,
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetDeviceEnableMetricsExp(";
-        
-        
-        oss << "hDevice=";
-        oss << loader::to_string(hDevice);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetDeviceDisableMetricsExp(
-        ze_result_t result,
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zetDeviceDisableMetricsExp(";
-        
-        
-        oss << "hDevice=";
-        oss << loader::to_string(hDevice);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricGroupCalculateMultipleMetricValuesExp(
         ze_result_t result,
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
@@ -1789,9 +1327,11 @@ namespace validation_layer
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricGroupGetGlobalTimestampsExp(
         ze_result_t result,
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
-        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
-        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
-        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        ze_bool_t synchronizedWithHost,                 ///< [in] if set to true, the globalTimestamp will reflect the host
+                                                        ///< timestamp, else will reflect the device timestamp.
+        uint64_t* globalTimestamp,                      ///< [out] if synchronizedWithHost is false, timestamp is in tick counts.
+                                                        ///< [out] if synchronizedWithHost is true, the timestamp is in nanoseconds.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp in tick counts.
 ) {
         // Only log success results if verbose logging is enabled
         if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
@@ -2420,6 +1960,468 @@ namespace validation_layer
         
         oss << "hMetric=";
         oss << loader::to_string(hMetric);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(
+        ze_result_t result,
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t * phMetricGroups,     ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
+                                                        ///< groups
+        uint32_t * pMetricGroupsCountPerConcurrentGroup,///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
+                                                        ///< concurrent group.
+        uint32_t * pConcurrentGroupCount                ///< [out] number of concurrent groups.
+                                                        ///< The value of this parameter could be used to determine the number of
+                                                        ///< replays necessary.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetDeviceGetConcurrentMetricGroupsExp(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "metricGroupCount=";
+        oss << loader::to_string(metricGroupCount);
+        
+        oss << ", ";
+        oss << "phMetricGroups=";
+        oss << loader::to_string(phMetricGroups);
+        
+        oss << ", ";
+        oss << "pMetricGroupsCountPerConcurrentGroup=";
+        oss << loader::to_string(pMetricGroupsCountPerConcurrentGroup);
+        
+        oss << ", ";
+        oss << "pConcurrentGroupCount=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pConcurrentGroupCount != nullptr) {
+            oss << loader::to_string(*pConcurrentGroupCount);
+        } else {
+            oss << loader::to_string(pConcurrentGroupCount);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerCreateExp(
+        ze_result_t result,
+        zet_context_handle_t hContext,                  ///< [in] handle of the context object
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t* phMetricGroups,      ///< [in][range(0, metricGroupCount )] handles of the metric groups to
+                                                        ///< trace
+        zet_metric_tracer_exp_desc_t* desc,             ///< [in,out] metric tracer descriptor
+        ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification. Note:
+                                                        ///< If buffer is not drained when the event it flagged, there is a risk of
+                                                        ///< HW event buffer being overrun
+        zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerCreateExp(";
+        
+        
+        oss << "hContext=";
+        oss << loader::to_string(hContext);
+        
+        oss << ", ";
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "metricGroupCount=";
+        oss << loader::to_string(metricGroupCount);
+        
+        oss << ", ";
+        oss << "phMetricGroups=";
+        oss << loader::to_string(phMetricGroups);
+        
+        oss << ", ";
+        oss << "desc=";
+        oss << loader::to_string(desc);
+        
+        oss << ", ";
+        oss << "hNotificationEvent=";
+        oss << loader::to_string(hNotificationEvent);
+        
+        oss << ", ";
+        oss << "phMetricTracer=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phMetricTracer != nullptr) {
+            oss << loader::to_string(*phMetricTracer);
+        } else {
+            oss << loader::to_string(phMetricTracer);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerDestroyExp(
+        ze_result_t result,
+        zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerDestroyExp(";
+        
+        
+        oss << "hMetricTracer=";
+        oss << loader::to_string(hMetricTracer);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerEnableExp(
+        ze_result_t result,
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
+                                                        ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
+                                                        ///< when the tracer is active.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerEnableExp(";
+        
+        
+        oss << "hMetricTracer=";
+        oss << loader::to_string(hMetricTracer);
+        
+        oss << ", ";
+        oss << "synchronous=";
+        oss << loader::to_string(synchronous);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerDisableExp(
+        ze_result_t result,
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
+                                                        ///< when the tracer is active or when it is inactive but still has data. 
+                                                        ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
+                                                        ///< has no more data to be retrieved.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerDisableExp(";
+        
+        
+        oss << "hMetricTracer=";
+        oss << loader::to_string(hMetricTracer);
+        
+        oss << ", ";
+        oss << "synchronous=";
+        oss << loader::to_string(synchronous);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerReadDataExp(
+        ze_result_t result,
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                        ///< number of bytes written into the buffer.
+                                                        ///< If the size returns the full size requested, the application may need
+                                                        ///< to issue additional reads to
+                                                        ///< retrieve any remaining reports that did not fit into the buffer.
+        uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerReadDataExp(";
+        
+        
+        oss << "hMetricTracer=";
+        oss << loader::to_string(hMetricTracer);
+        
+        oss << ", ";
+        oss << "pRawDataSize=";
+        oss << loader::to_string(pRawDataSize);
+        
+        oss << ", ";
+        oss << "pRawData=";
+        oss << loader::to_string(pRawData);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricDecoderCreateExp(
+        ze_result_t result,
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricDecoderCreateExp(";
+        
+        
+        oss << "hMetricTracer=";
+        oss << loader::to_string(hMetricTracer);
+        
+        oss << ", ";
+        oss << "phMetricDecoder=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phMetricDecoder != nullptr) {
+            oss << loader::to_string(*phMetricDecoder);
+        } else {
+            oss << loader::to_string(phMetricDecoder);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricDecoderDestroyExp(
+        ze_result_t result,
+        zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricDecoderDestroyExp(";
+        
+        
+        oss << "phMetricDecoder=";
+        oss << loader::to_string(phMetricDecoder);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(
+        ze_result_t result,
+        zet_metric_decoder_exp_handle_t hMetricDecoder, ///< [in] handle of the metric decoder object
+        uint32_t* pCount,                               ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
+                                                        ///< handle. If count is zero, then the driver shall 
+                                                        ///< update the value with the total number of decodable metrics available
+                                                        ///< in the decoder. if count is greater than zero 
+                                                        ///< but less than the total number of decodable metrics available in the
+                                                        ///< decoder, then only that number will be returned. 
+                                                        ///< if count is greater than the number of decodable metrics available in
+                                                        ///< the decoder, then the driver shall update the 
+                                                        ///< value with the actual number of decodable metrics available. 
+        zet_metric_handle_t* phMetrics                  ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
+                                                        ///< the hMetricDecoder handle provided.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricDecoderGetDecodableMetricsExp(";
+        
+        
+        oss << "hMetricDecoder=";
+        oss << loader::to_string(hMetricDecoder);
+        
+        oss << ", ";
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
+        oss << ", ";
+        oss << "phMetrics=";
+        oss << loader::to_string(phMetrics);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetMetricTracerDecodeExp(
+        ze_result_t result,
+        zet_metric_decoder_exp_handle_t phMetricDecoder,///< [in] handle of the metric decoder object
+        size_t* pRawDataSize,                           ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
+                                                        ///< greater than zero but less than total number of 
+                                                        ///< decodable metrics available in the raw data buffer, then driver shall
+                                                        ///< update this value with actual number of raw 
+                                                        ///< data bytes processed.
+        uint8_t* pRawData,                              ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+        uint32_t metricsCount,                          ///< [in] number of decodable metrics in the tracer for which the
+                                                        ///< hMetricDecoder handle was provided. See 
+                                                        ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
+                                                        ///< than zero but less than the number decodable 
+                                                        ///< metrics available in the raw data buffer, then driver shall only
+                                                        ///< decode those.
+        zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
+                                                        ///< the decoder for which the hMetricDecoder handle was 
+                                                        ///< provided. Metrics handles are expected to be for decodable metrics,
+                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
+        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total
+                                                        ///< number of metric sets to be decoded. If count is greater than the
+                                                        ///< number available in the raw data buffer, then the
+                                                        ///< driver shall update the value with the actual number of metric sets to
+                                                        ///< be decoded. There is a 1:1 relation between
+                                                        ///< the number of sets and sub-devices returned in the decoded entries.
+        uint32_t* pMetricEntriesCountPerSet,            ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
+                                                        ///< counts per metric set, one value per set.
+        uint32_t* pMetricEntriesCount,                  ///< [in,out]  pointer to the total number of metric entries decoded, for
+                                                        ///< all metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total number of metric entries
+                                                        ///< to be decoded. If count is greater than zero
+                                                        ///< but less than the total number of metric entries available in the raw
+                                                        ///< data, then user provided number will be decoded.
+                                                        ///< If count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with
+                                                        ///< the actual number of decodable metric entries decoded. If set to null,
+                                                        ///< then driver will only update the value of
+                                                        ///< pSetCount.
+        zet_metric_entry_exp_t* pMetricEntries          ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
+                                                        ///< decoded metric entries
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetMetricTracerDecodeExp(";
+        
+        
+        oss << "phMetricDecoder=";
+        oss << loader::to_string(phMetricDecoder);
+        
+        oss << ", ";
+        oss << "pRawDataSize=";
+        oss << loader::to_string(pRawDataSize);
+        
+        oss << ", ";
+        oss << "pRawData=";
+        oss << loader::to_string(pRawData);
+        
+        oss << ", ";
+        oss << "metricsCount=";
+        oss << loader::to_string(metricsCount);
+        
+        oss << ", ";
+        oss << "phMetrics=";
+        oss << loader::to_string(phMetrics);
+        
+        oss << ", ";
+        oss << "pSetCount=";
+        oss << loader::to_string(pSetCount);
+        
+        oss << ", ";
+        oss << "pMetricEntriesCountPerSet=";
+        oss << loader::to_string(pMetricEntriesCountPerSet);
+        
+        oss << ", ";
+        oss << "pMetricEntriesCount=";
+        oss << loader::to_string(pMetricEntriesCount);
+        
+        oss << ", ";
+        oss << "pMetricEntries=";
+        oss << loader::to_string(pMetricEntries);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetCommandListAppendMarkerExp(
+        ze_result_t result,
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetCommandListAppendMarkerExp(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "hMetricGroup=";
+        oss << loader::to_string(hMetricGroup);
+        
+        oss << ", ";
+        oss << "value=";
+        oss << loader::to_string(value);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetDeviceEnableMetricsExp(
+        ze_result_t result,
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetDeviceEnableMetricsExp(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zetDeviceDisableMetricsExp(
+        ze_result_t result,
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zetDeviceDisableMetricsExp(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -4222,663 +4224,6 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceGetConcurrentMetricGroupsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceGetConcurrentMetricGroupsExp(
-        zet_device_handle_t hDevice,                    ///< [in] handle of the device
-        uint32_t metricGroupCount,                      ///< [in] metric group count
-        zet_metric_group_handle_t * phMetricGroups,     ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
-                                                        ///< groups
-        uint32_t * pMetricGroupsCountPerConcurrentGroup,///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
-                                                        ///< concurrent group.
-        uint32_t * pConcurrentGroupCount                ///< [out] number of concurrent groups.
-                                                        ///< The value of this parameter could be used to determine the number of
-                                                        ///< replays necessary.
-        )
-    {
-        context.logger->log_trace("zetDeviceGetConcurrentMetricGroupsExp(hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount)");
-
-        auto pfnGetConcurrentMetricGroupsExp = context.zetDdiTable.DeviceExp.pfnGetConcurrentMetricGroupsExp;
-
-        if( nullptr == pfnGetConcurrentMetricGroupsExp )
-            return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetDeviceGetConcurrentMetricGroupsExpPrologue( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceGetConcurrentMetricGroupsExpPrologue( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
-        }
-
-        auto driver_result = pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetDeviceGetConcurrentMetricGroupsExpEpilogue( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-        }
-        return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(driver_result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerCreateExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerCreateExp(
-        zet_context_handle_t hContext,                  ///< [in] handle of the context object
-        zet_device_handle_t hDevice,                    ///< [in] handle of the device
-        uint32_t metricGroupCount,                      ///< [in] metric group count
-        zet_metric_group_handle_t* phMetricGroups,      ///< [in][range(0, metricGroupCount )] handles of the metric groups to
-                                                        ///< trace
-        zet_metric_tracer_exp_desc_t* desc,             ///< [in,out] metric tracer descriptor
-        ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification. Note:
-                                                        ///< If buffer is not drained when the event it flagged, there is a risk of
-                                                        ///< HW event buffer being overrun
-        zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
-        )
-    {
-        context.logger->log_trace("zetMetricTracerCreateExp(hContext, hDevice, metricGroupCount, phMetricGroupsLocal, desc, hNotificationEvent, phMetricTracer)");
-
-        auto pfnCreateExp = context.zetDdiTable.MetricTracerExp.pfnCreateExp;
-
-        if( nullptr == pfnCreateExp )
-            return logAndPropagateResult_zetMetricTracerCreateExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerCreateExpPrologue( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerCreateExp(result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerCreateExpPrologue( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerCreateExp(result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
-        }
-
-        auto driver_result = pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerCreateExpEpilogue( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerCreateExp(result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-            if (phMetricTracer){
-                context.handleLifetime->addHandle( *phMetricTracer );
-                context.handleLifetime->addDependent( hContext, *phMetricTracer );
-
-            }
-        }
-        return logAndPropagateResult_zetMetricTracerCreateExp(driver_result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerDestroyExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerDestroyExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
-        )
-    {
-        context.logger->log_trace("zetMetricTracerDestroyExp(hMetricTracer)");
-
-        auto pfnDestroyExp = context.zetDdiTable.MetricTracerExp.pfnDestroyExp;
-
-        if( nullptr == pfnDestroyExp )
-            return logAndPropagateResult_zetMetricTracerDestroyExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDestroyExpPrologue( hMetricTracer );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDestroyExp(result, hMetricTracer);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerDestroyExpPrologue( hMetricTracer );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDestroyExp(result, hMetricTracer);
-        }
-
-        auto driver_result = pfnDestroyExp( hMetricTracer );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDestroyExpEpilogue( hMetricTracer ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDestroyExp(result, hMetricTracer);
-        }
-
-        return logAndPropagateResult_zetMetricTracerDestroyExp(driver_result, hMetricTracer);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerEnableExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerEnableExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
-                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                        ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
-                                                        ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
-                                                        ///< when the tracer is active.
-        )
-    {
-        context.logger->log_trace("zetMetricTracerEnableExp(hMetricTracer, synchronous)");
-
-        auto pfnEnableExp = context.zetDdiTable.MetricTracerExp.pfnEnableExp;
-
-        if( nullptr == pfnEnableExp )
-            return logAndPropagateResult_zetMetricTracerEnableExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, synchronous);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerEnableExpPrologue( hMetricTracer, synchronous );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerEnableExp(result, hMetricTracer, synchronous);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerEnableExpPrologue( hMetricTracer, synchronous );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerEnableExp(result, hMetricTracer, synchronous);
-        }
-
-        auto driver_result = pfnEnableExp( hMetricTracer, synchronous );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerEnableExpEpilogue( hMetricTracer, synchronous ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerEnableExp(result, hMetricTracer, synchronous);
-        }
-
-        return logAndPropagateResult_zetMetricTracerEnableExp(driver_result, hMetricTracer, synchronous);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerDisableExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerDisableExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
-                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                        ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
-                                                        ///< when the tracer is active or when it is inactive but still has data. 
-                                                        ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
-                                                        ///< has no more data to be retrieved.
-        )
-    {
-        context.logger->log_trace("zetMetricTracerDisableExp(hMetricTracer, synchronous)");
-
-        auto pfnDisableExp = context.zetDdiTable.MetricTracerExp.pfnDisableExp;
-
-        if( nullptr == pfnDisableExp )
-            return logAndPropagateResult_zetMetricTracerDisableExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, synchronous);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDisableExpPrologue( hMetricTracer, synchronous );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDisableExp(result, hMetricTracer, synchronous);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerDisableExpPrologue( hMetricTracer, synchronous );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDisableExp(result, hMetricTracer, synchronous);
-        }
-
-        auto driver_result = pfnDisableExp( hMetricTracer, synchronous );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDisableExpEpilogue( hMetricTracer, synchronous ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDisableExp(result, hMetricTracer, synchronous);
-        }
-
-        return logAndPropagateResult_zetMetricTracerDisableExp(driver_result, hMetricTracer, synchronous);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerReadDataExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerReadDataExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
-                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
-                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
-                                                        ///< number of bytes written into the buffer.
-                                                        ///< If the size returns the full size requested, the application may need
-                                                        ///< to issue additional reads to
-                                                        ///< retrieve any remaining reports that did not fit into the buffer.
-        uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                        ///< data in raw format
-        )
-    {
-        context.logger->log_trace("zetMetricTracerReadDataExp(hMetricTracer, pRawDataSize, pRawData)");
-
-        auto pfnReadDataExp = context.zetDdiTable.MetricTracerExp.pfnReadDataExp;
-
-        if( nullptr == pfnReadDataExp )
-            return logAndPropagateResult_zetMetricTracerReadDataExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, pRawDataSize, pRawData);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerReadDataExpPrologue( hMetricTracer, pRawDataSize, pRawData );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerReadDataExp(result, hMetricTracer, pRawDataSize, pRawData);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerReadDataExpPrologue( hMetricTracer, pRawDataSize, pRawData );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerReadDataExp(result, hMetricTracer, pRawDataSize, pRawData);
-        }
-
-        auto driver_result = pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerReadDataExpEpilogue( hMetricTracer, pRawDataSize, pRawData ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerReadDataExp(result, hMetricTracer, pRawDataSize, pRawData);
-        }
-
-        return logAndPropagateResult_zetMetricTracerReadDataExp(driver_result, hMetricTracer, pRawDataSize, pRawData);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricDecoderCreateExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricDecoderCreateExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
-        )
-    {
-        context.logger->log_trace("zetMetricDecoderCreateExp(hMetricTracer, phMetricDecoder)");
-
-        auto pfnCreateExp = context.zetDdiTable.MetricDecoderExp.pfnCreateExp;
-
-        if( nullptr == pfnCreateExp )
-            return logAndPropagateResult_zetMetricDecoderCreateExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, phMetricDecoder);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderCreateExpPrologue( hMetricTracer, phMetricDecoder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderCreateExp(result, hMetricTracer, phMetricDecoder);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDecoderCreateExpPrologue( hMetricTracer, phMetricDecoder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderCreateExp(result, hMetricTracer, phMetricDecoder);
-        }
-
-        auto driver_result = pfnCreateExp( hMetricTracer, phMetricDecoder );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderCreateExpEpilogue( hMetricTracer, phMetricDecoder ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderCreateExp(result, hMetricTracer, phMetricDecoder);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-            if (phMetricDecoder){
-                context.handleLifetime->addHandle( *phMetricDecoder );
-                context.handleLifetime->addDependent( hMetricTracer, *phMetricDecoder );
-
-            }
-        }
-        return logAndPropagateResult_zetMetricDecoderCreateExp(driver_result, hMetricTracer, phMetricDecoder);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricDecoderDestroyExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricDecoderDestroyExp(
-        zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
-        )
-    {
-        context.logger->log_trace("zetMetricDecoderDestroyExp(phMetricDecoder)");
-
-        auto pfnDestroyExp = context.zetDdiTable.MetricDecoderExp.pfnDestroyExp;
-
-        if( nullptr == pfnDestroyExp )
-            return logAndPropagateResult_zetMetricDecoderDestroyExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, phMetricDecoder);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderDestroyExpPrologue( phMetricDecoder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderDestroyExp(result, phMetricDecoder);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDecoderDestroyExpPrologue( phMetricDecoder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderDestroyExp(result, phMetricDecoder);
-        }
-
-        auto driver_result = pfnDestroyExp( phMetricDecoder );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderDestroyExpEpilogue( phMetricDecoder ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderDestroyExp(result, phMetricDecoder);
-        }
-
-        return logAndPropagateResult_zetMetricDecoderDestroyExp(driver_result, phMetricDecoder);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricDecoderGetDecodableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricDecoderGetDecodableMetricsExp(
-        zet_metric_decoder_exp_handle_t hMetricDecoder, ///< [in] handle of the metric decoder object
-        uint32_t* pCount,                               ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
-                                                        ///< handle. If count is zero, then the driver shall 
-                                                        ///< update the value with the total number of decodable metrics available
-                                                        ///< in the decoder. if count is greater than zero 
-                                                        ///< but less than the total number of decodable metrics available in the
-                                                        ///< decoder, then only that number will be returned. 
-                                                        ///< if count is greater than the number of decodable metrics available in
-                                                        ///< the decoder, then the driver shall update the 
-                                                        ///< value with the actual number of decodable metrics available. 
-        zet_metric_handle_t* phMetrics                  ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
-                                                        ///< the hMetricDecoder handle provided.
-        )
-    {
-        context.logger->log_trace("zetMetricDecoderGetDecodableMetricsExp(hMetricDecoder, pCount, phMetrics)");
-
-        auto pfnGetDecodableMetricsExp = context.zetDdiTable.MetricDecoderExp.pfnGetDecodableMetricsExp;
-
-        if( nullptr == pfnGetDecodableMetricsExp )
-            return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricDecoder, pCount, phMetrics);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderGetDecodableMetricsExpPrologue( hMetricDecoder, pCount, phMetrics );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(result, hMetricDecoder, pCount, phMetrics);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDecoderGetDecodableMetricsExpPrologue( hMetricDecoder, pCount, phMetrics );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(result, hMetricDecoder, pCount, phMetrics);
-        }
-
-        auto driver_result = pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderGetDecodableMetricsExpEpilogue( hMetricDecoder, pCount, phMetrics ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(result, hMetricDecoder, pCount, phMetrics);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-            for (size_t i = 0; ( nullptr != phMetrics) && (i < *pCount); ++i){
-                if (phMetrics[i]){
-                    context.handleLifetime->addHandle( phMetrics[i] );
-                    context.handleLifetime->addDependent( hMetricDecoder, phMetrics[i] );
-                }
-            }
-        }
-        return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(driver_result, hMetricDecoder, pCount, phMetrics);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerDecodeExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerDecodeExp(
-        zet_metric_decoder_exp_handle_t phMetricDecoder,///< [in] handle of the metric decoder object
-        size_t* pRawDataSize,                           ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
-                                                        ///< greater than zero but less than total number of 
-                                                        ///< decodable metrics available in the raw data buffer, then driver shall
-                                                        ///< update this value with actual number of raw 
-                                                        ///< data bytes processed.
-        uint8_t* pRawData,                              ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                        ///< data in raw format
-        uint32_t metricsCount,                          ///< [in] number of decodable metrics in the tracer for which the
-                                                        ///< hMetricDecoder handle was provided. See 
-                                                        ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
-                                                        ///< than zero but less than the number decodable 
-                                                        ///< metrics available in the raw data buffer, then driver shall only
-                                                        ///< decode those.
-        zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
-                                                        ///< the decoder for which the hMetricDecoder handle was 
-                                                        ///< provided. Metrics handles are expected to be for decodable metrics,
-                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
-        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
-                                                        ///< driver shall update the value with the total
-                                                        ///< number of metric sets to be decoded. If count is greater than the
-                                                        ///< number available in the raw data buffer, then the
-                                                        ///< driver shall update the value with the actual number of metric sets to
-                                                        ///< be decoded. There is a 1:1 relation between
-                                                        ///< the number of sets and sub-devices returned in the decoded entries.
-        uint32_t* pMetricEntriesCountPerSet,            ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
-                                                        ///< counts per metric set, one value per set.
-        uint32_t* pMetricEntriesCount,                  ///< [in,out]  pointer to the total number of metric entries decoded, for
-                                                        ///< all metric sets. If count is zero, then the
-                                                        ///< driver shall update the value with the total number of metric entries
-                                                        ///< to be decoded. If count is greater than zero
-                                                        ///< but less than the total number of metric entries available in the raw
-                                                        ///< data, then user provided number will be decoded.
-                                                        ///< If count is greater than the number available in the raw data buffer,
-                                                        ///< then the driver shall update the value with
-                                                        ///< the actual number of decodable metric entries decoded. If set to null,
-                                                        ///< then driver will only update the value of
-                                                        ///< pSetCount.
-        zet_metric_entry_exp_t* pMetricEntries          ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
-                                                        ///< decoded metric entries
-        )
-    {
-        context.logger->log_trace("zetMetricTracerDecodeExp(phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetricsLocal, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries)");
-
-        auto pfnDecodeExp = context.zetDdiTable.MetricTracerExp.pfnDecodeExp;
-
-        if( nullptr == pfnDecodeExp )
-            return logAndPropagateResult_zetMetricTracerDecodeExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDecodeExpPrologue( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDecodeExp(result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerDecodeExpPrologue( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDecodeExp(result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
-        }
-
-        auto driver_result = pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDecodeExpEpilogue( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDecodeExp(result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
-        }
-
-        return logAndPropagateResult_zetMetricTracerDecodeExp(driver_result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetCommandListAppendMarkerExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetCommandListAppendMarkerExp(
-        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
-        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
-                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
-                                                        ///< marker is supoported by the metric group.
-        uint32_t value                                  ///< [in] marker value
-        )
-    {
-        context.logger->log_trace("zetCommandListAppendMarkerExp(hCommandList, hMetricGroup, value)");
-
-        auto pfnAppendMarkerExp = context.zetDdiTable.CommandListExp.pfnAppendMarkerExp;
-
-        if( nullptr == pfnAppendMarkerExp )
-            return logAndPropagateResult_zetCommandListAppendMarkerExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, hMetricGroup, value);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetCommandListAppendMarkerExpPrologue( hCommandList, hMetricGroup, value );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetCommandListAppendMarkerExp(result, hCommandList, hMetricGroup, value);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMarkerExpPrologue( hCommandList, hMetricGroup, value );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetCommandListAppendMarkerExp(result, hCommandList, hMetricGroup, value);
-        }
-
-        auto driver_result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetCommandListAppendMarkerExpEpilogue( hCommandList, hMetricGroup, value ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetCommandListAppendMarkerExp(result, hCommandList, hMetricGroup, value);
-        }
-
-        return logAndPropagateResult_zetCommandListAppendMarkerExp(driver_result, hCommandList, hMetricGroup, value);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceEnableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceEnableMetricsExp(
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
-        )
-    {
-        context.logger->log_trace("zetDeviceEnableMetricsExp(hDevice)");
-
-        auto pfnEnableMetricsExp = context.zetDdiTable.DeviceExp.pfnEnableMetricsExp;
-
-        if( nullptr == pfnEnableMetricsExp )
-            return logAndPropagateResult_zetDeviceEnableMetricsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetDeviceEnableMetricsExpPrologue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceEnableMetricsExp(result, hDevice);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceEnableMetricsExpPrologue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceEnableMetricsExp(result, hDevice);
-        }
-
-        auto driver_result = pfnEnableMetricsExp( hDevice );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetDeviceEnableMetricsExpEpilogue( hDevice ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceEnableMetricsExp(result, hDevice);
-        }
-
-        return logAndPropagateResult_zetDeviceEnableMetricsExp(driver_result, hDevice);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceDisableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceDisableMetricsExp(
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
-        )
-    {
-        context.logger->log_trace("zetDeviceDisableMetricsExp(hDevice)");
-
-        auto pfnDisableMetricsExp = context.zetDdiTable.DeviceExp.pfnDisableMetricsExp;
-
-        if( nullptr == pfnDisableMetricsExp )
-            return logAndPropagateResult_zetDeviceDisableMetricsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetDeviceDisableMetricsExpPrologue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceDisableMetricsExp(result, hDevice);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceDisableMetricsExpPrologue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceDisableMetricsExp(result, hDevice);
-        }
-
-        auto driver_result = pfnDisableMetricsExp( hDevice );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zetValidation->zetDeviceDisableMetricsExpEpilogue( hDevice ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceDisableMetricsExp(result, hDevice);
-        }
-
-        return logAndPropagateResult_zetDeviceDisableMetricsExp(driver_result, hDevice);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetMetricGroupCalculateMultipleMetricValuesExp
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupCalculateMultipleMetricValuesExp(
@@ -4946,9 +4291,11 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupGetGlobalTimestampsExp(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
-        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
-        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
-        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        ze_bool_t synchronizedWithHost,                 ///< [in] if set to true, the globalTimestamp will reflect the host
+                                                        ///< timestamp, else will reflect the device timestamp.
+        uint64_t* globalTimestamp,                      ///< [out] if synchronizedWithHost is false, timestamp is in tick counts.
+                                                        ///< [out] if synchronizedWithHost is true, the timestamp is in nanoseconds.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp in tick counts.
         )
     {
         context.logger->log_trace("zetMetricGroupGetGlobalTimestampsExp(hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp)");
@@ -5792,6 +5139,663 @@ namespace validation_layer
         }
 
         return logAndPropagateResult_zetMetricDestroyExp(driver_result, hMetric);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceGetConcurrentMetricGroupsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceGetConcurrentMetricGroupsExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t * phMetricGroups,     ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
+                                                        ///< groups
+        uint32_t * pMetricGroupsCountPerConcurrentGroup,///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
+                                                        ///< concurrent group.
+        uint32_t * pConcurrentGroupCount                ///< [out] number of concurrent groups.
+                                                        ///< The value of this parameter could be used to determine the number of
+                                                        ///< replays necessary.
+        )
+    {
+        context.logger->log_trace("zetDeviceGetConcurrentMetricGroupsExp(hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount)");
+
+        auto pfnGetConcurrentMetricGroupsExp = context.zetDdiTable.DeviceExp.pfnGetConcurrentMetricGroupsExp;
+
+        if( nullptr == pfnGetConcurrentMetricGroupsExp )
+            return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceGetConcurrentMetricGroupsExpPrologue( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceGetConcurrentMetricGroupsExpPrologue( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
+        }
+
+        auto driver_result = pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceGetConcurrentMetricGroupsExpEpilogue( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult_zetDeviceGetConcurrentMetricGroupsExp(driver_result, hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerCreateExp(
+        zet_context_handle_t hContext,                  ///< [in] handle of the context object
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t* phMetricGroups,      ///< [in][range(0, metricGroupCount )] handles of the metric groups to
+                                                        ///< trace
+        zet_metric_tracer_exp_desc_t* desc,             ///< [in,out] metric tracer descriptor
+        ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification. Note:
+                                                        ///< If buffer is not drained when the event it flagged, there is a risk of
+                                                        ///< HW event buffer being overrun
+        zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
+        )
+    {
+        context.logger->log_trace("zetMetricTracerCreateExp(hContext, hDevice, metricGroupCount, phMetricGroupsLocal, desc, hNotificationEvent, phMetricTracer)");
+
+        auto pfnCreateExp = context.zetDdiTable.MetricTracerExp.pfnCreateExp;
+
+        if( nullptr == pfnCreateExp )
+            return logAndPropagateResult_zetMetricTracerCreateExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerCreateExpPrologue( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerCreateExp(result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerCreateExpPrologue( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerCreateExp(result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
+        }
+
+        auto driver_result = pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerCreateExpEpilogue( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerCreateExp(result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phMetricTracer){
+                context.handleLifetime->addHandle( *phMetricTracer );
+                context.handleLifetime->addDependent( hContext, *phMetricTracer );
+
+            }
+        }
+        return logAndPropagateResult_zetMetricTracerCreateExp(driver_result, hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDestroyExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
+        )
+    {
+        context.logger->log_trace("zetMetricTracerDestroyExp(hMetricTracer)");
+
+        auto pfnDestroyExp = context.zetDdiTable.MetricTracerExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp )
+            return logAndPropagateResult_zetMetricTracerDestroyExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDestroyExpPrologue( hMetricTracer );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDestroyExp(result, hMetricTracer);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerDestroyExpPrologue( hMetricTracer );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDestroyExp(result, hMetricTracer);
+        }
+
+        auto driver_result = pfnDestroyExp( hMetricTracer );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDestroyExpEpilogue( hMetricTracer ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDestroyExp(result, hMetricTracer);
+        }
+
+        return logAndPropagateResult_zetMetricTracerDestroyExp(driver_result, hMetricTracer);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerEnableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerEnableExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
+                                                        ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
+                                                        ///< when the tracer is active.
+        )
+    {
+        context.logger->log_trace("zetMetricTracerEnableExp(hMetricTracer, synchronous)");
+
+        auto pfnEnableExp = context.zetDdiTable.MetricTracerExp.pfnEnableExp;
+
+        if( nullptr == pfnEnableExp )
+            return logAndPropagateResult_zetMetricTracerEnableExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, synchronous);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerEnableExpPrologue( hMetricTracer, synchronous );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerEnableExp(result, hMetricTracer, synchronous);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerEnableExpPrologue( hMetricTracer, synchronous );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerEnableExp(result, hMetricTracer, synchronous);
+        }
+
+        auto driver_result = pfnEnableExp( hMetricTracer, synchronous );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerEnableExpEpilogue( hMetricTracer, synchronous ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerEnableExp(result, hMetricTracer, synchronous);
+        }
+
+        return logAndPropagateResult_zetMetricTracerEnableExp(driver_result, hMetricTracer, synchronous);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDisableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDisableExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
+                                                        ///< when the tracer is active or when it is inactive but still has data. 
+                                                        ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
+                                                        ///< has no more data to be retrieved.
+        )
+    {
+        context.logger->log_trace("zetMetricTracerDisableExp(hMetricTracer, synchronous)");
+
+        auto pfnDisableExp = context.zetDdiTable.MetricTracerExp.pfnDisableExp;
+
+        if( nullptr == pfnDisableExp )
+            return logAndPropagateResult_zetMetricTracerDisableExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, synchronous);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDisableExpPrologue( hMetricTracer, synchronous );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDisableExp(result, hMetricTracer, synchronous);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerDisableExpPrologue( hMetricTracer, synchronous );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDisableExp(result, hMetricTracer, synchronous);
+        }
+
+        auto driver_result = pfnDisableExp( hMetricTracer, synchronous );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDisableExpEpilogue( hMetricTracer, synchronous ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDisableExp(result, hMetricTracer, synchronous);
+        }
+
+        return logAndPropagateResult_zetMetricTracerDisableExp(driver_result, hMetricTracer, synchronous);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerReadDataExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerReadDataExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                        ///< number of bytes written into the buffer.
+                                                        ///< If the size returns the full size requested, the application may need
+                                                        ///< to issue additional reads to
+                                                        ///< retrieve any remaining reports that did not fit into the buffer.
+        uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+        )
+    {
+        context.logger->log_trace("zetMetricTracerReadDataExp(hMetricTracer, pRawDataSize, pRawData)");
+
+        auto pfnReadDataExp = context.zetDdiTable.MetricTracerExp.pfnReadDataExp;
+
+        if( nullptr == pfnReadDataExp )
+            return logAndPropagateResult_zetMetricTracerReadDataExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, pRawDataSize, pRawData);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerReadDataExpPrologue( hMetricTracer, pRawDataSize, pRawData );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerReadDataExp(result, hMetricTracer, pRawDataSize, pRawData);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerReadDataExpPrologue( hMetricTracer, pRawDataSize, pRawData );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerReadDataExp(result, hMetricTracer, pRawDataSize, pRawData);
+        }
+
+        auto driver_result = pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerReadDataExpEpilogue( hMetricTracer, pRawDataSize, pRawData ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerReadDataExp(result, hMetricTracer, pRawDataSize, pRawData);
+        }
+
+        return logAndPropagateResult_zetMetricTracerReadDataExp(driver_result, hMetricTracer, pRawDataSize, pRawData);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderCreateExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
+        )
+    {
+        context.logger->log_trace("zetMetricDecoderCreateExp(hMetricTracer, phMetricDecoder)");
+
+        auto pfnCreateExp = context.zetDdiTable.MetricDecoderExp.pfnCreateExp;
+
+        if( nullptr == pfnCreateExp )
+            return logAndPropagateResult_zetMetricDecoderCreateExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricTracer, phMetricDecoder);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderCreateExpPrologue( hMetricTracer, phMetricDecoder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderCreateExp(result, hMetricTracer, phMetricDecoder);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDecoderCreateExpPrologue( hMetricTracer, phMetricDecoder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderCreateExp(result, hMetricTracer, phMetricDecoder);
+        }
+
+        auto driver_result = pfnCreateExp( hMetricTracer, phMetricDecoder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderCreateExpEpilogue( hMetricTracer, phMetricDecoder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderCreateExp(result, hMetricTracer, phMetricDecoder);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phMetricDecoder){
+                context.handleLifetime->addHandle( *phMetricDecoder );
+                context.handleLifetime->addDependent( hMetricTracer, *phMetricDecoder );
+
+            }
+        }
+        return logAndPropagateResult_zetMetricDecoderCreateExp(driver_result, hMetricTracer, phMetricDecoder);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderDestroyExp(
+        zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
+        )
+    {
+        context.logger->log_trace("zetMetricDecoderDestroyExp(phMetricDecoder)");
+
+        auto pfnDestroyExp = context.zetDdiTable.MetricDecoderExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp )
+            return logAndPropagateResult_zetMetricDecoderDestroyExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, phMetricDecoder);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderDestroyExpPrologue( phMetricDecoder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderDestroyExp(result, phMetricDecoder);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDecoderDestroyExpPrologue( phMetricDecoder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderDestroyExp(result, phMetricDecoder);
+        }
+
+        auto driver_result = pfnDestroyExp( phMetricDecoder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderDestroyExpEpilogue( phMetricDecoder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderDestroyExp(result, phMetricDecoder);
+        }
+
+        return logAndPropagateResult_zetMetricDecoderDestroyExp(driver_result, phMetricDecoder);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderGetDecodableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderGetDecodableMetricsExp(
+        zet_metric_decoder_exp_handle_t hMetricDecoder, ///< [in] handle of the metric decoder object
+        uint32_t* pCount,                               ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
+                                                        ///< handle. If count is zero, then the driver shall 
+                                                        ///< update the value with the total number of decodable metrics available
+                                                        ///< in the decoder. if count is greater than zero 
+                                                        ///< but less than the total number of decodable metrics available in the
+                                                        ///< decoder, then only that number will be returned. 
+                                                        ///< if count is greater than the number of decodable metrics available in
+                                                        ///< the decoder, then the driver shall update the 
+                                                        ///< value with the actual number of decodable metrics available. 
+        zet_metric_handle_t* phMetrics                  ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
+                                                        ///< the hMetricDecoder handle provided.
+        )
+    {
+        context.logger->log_trace("zetMetricDecoderGetDecodableMetricsExp(hMetricDecoder, pCount, phMetrics)");
+
+        auto pfnGetDecodableMetricsExp = context.zetDdiTable.MetricDecoderExp.pfnGetDecodableMetricsExp;
+
+        if( nullptr == pfnGetDecodableMetricsExp )
+            return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hMetricDecoder, pCount, phMetrics);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderGetDecodableMetricsExpPrologue( hMetricDecoder, pCount, phMetrics );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(result, hMetricDecoder, pCount, phMetrics);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDecoderGetDecodableMetricsExpPrologue( hMetricDecoder, pCount, phMetrics );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(result, hMetricDecoder, pCount, phMetrics);
+        }
+
+        auto driver_result = pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricDecoderGetDecodableMetricsExpEpilogue( hMetricDecoder, pCount, phMetrics ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(result, hMetricDecoder, pCount, phMetrics);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phMetrics) && (i < *pCount); ++i){
+                if (phMetrics[i]){
+                    context.handleLifetime->addHandle( phMetrics[i] );
+                    context.handleLifetime->addDependent( hMetricDecoder, phMetrics[i] );
+                }
+            }
+        }
+        return logAndPropagateResult_zetMetricDecoderGetDecodableMetricsExp(driver_result, hMetricDecoder, pCount, phMetrics);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDecodeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDecodeExp(
+        zet_metric_decoder_exp_handle_t phMetricDecoder,///< [in] handle of the metric decoder object
+        size_t* pRawDataSize,                           ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
+                                                        ///< greater than zero but less than total number of 
+                                                        ///< decodable metrics available in the raw data buffer, then driver shall
+                                                        ///< update this value with actual number of raw 
+                                                        ///< data bytes processed.
+        uint8_t* pRawData,                              ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+        uint32_t metricsCount,                          ///< [in] number of decodable metrics in the tracer for which the
+                                                        ///< hMetricDecoder handle was provided. See 
+                                                        ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
+                                                        ///< than zero but less than the number decodable 
+                                                        ///< metrics available in the raw data buffer, then driver shall only
+                                                        ///< decode those.
+        zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
+                                                        ///< the decoder for which the hMetricDecoder handle was 
+                                                        ///< provided. Metrics handles are expected to be for decodable metrics,
+                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
+        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total
+                                                        ///< number of metric sets to be decoded. If count is greater than the
+                                                        ///< number available in the raw data buffer, then the
+                                                        ///< driver shall update the value with the actual number of metric sets to
+                                                        ///< be decoded. There is a 1:1 relation between
+                                                        ///< the number of sets and sub-devices returned in the decoded entries.
+        uint32_t* pMetricEntriesCountPerSet,            ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
+                                                        ///< counts per metric set, one value per set.
+        uint32_t* pMetricEntriesCount,                  ///< [in,out]  pointer to the total number of metric entries decoded, for
+                                                        ///< all metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total number of metric entries
+                                                        ///< to be decoded. If count is greater than zero
+                                                        ///< but less than the total number of metric entries available in the raw
+                                                        ///< data, then user provided number will be decoded.
+                                                        ///< If count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with
+                                                        ///< the actual number of decodable metric entries decoded. If set to null,
+                                                        ///< then driver will only update the value of
+                                                        ///< pSetCount.
+        zet_metric_entry_exp_t* pMetricEntries          ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
+                                                        ///< decoded metric entries
+        )
+    {
+        context.logger->log_trace("zetMetricTracerDecodeExp(phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetricsLocal, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries)");
+
+        auto pfnDecodeExp = context.zetDdiTable.MetricTracerExp.pfnDecodeExp;
+
+        if( nullptr == pfnDecodeExp )
+            return logAndPropagateResult_zetMetricTracerDecodeExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDecodeExpPrologue( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDecodeExp(result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricTracerDecodeExpPrologue( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDecodeExp(result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
+        }
+
+        auto driver_result = pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetMetricTracerDecodeExpEpilogue( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetMetricTracerDecodeExp(result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
+        }
+
+        return logAndPropagateResult_zetMetricTracerDecodeExp(driver_result, phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetCommandListAppendMarkerExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetCommandListAppendMarkerExp(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        )
+    {
+        context.logger->log_trace("zetCommandListAppendMarkerExp(hCommandList, hMetricGroup, value)");
+
+        auto pfnAppendMarkerExp = context.zetDdiTable.CommandListExp.pfnAppendMarkerExp;
+
+        if( nullptr == pfnAppendMarkerExp )
+            return logAndPropagateResult_zetCommandListAppendMarkerExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, hMetricGroup, value);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetCommandListAppendMarkerExpPrologue( hCommandList, hMetricGroup, value );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetCommandListAppendMarkerExp(result, hCommandList, hMetricGroup, value);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMarkerExpPrologue( hCommandList, hMetricGroup, value );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetCommandListAppendMarkerExp(result, hCommandList, hMetricGroup, value);
+        }
+
+        auto driver_result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetCommandListAppendMarkerExpEpilogue( hCommandList, hMetricGroup, value ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetCommandListAppendMarkerExp(result, hCommandList, hMetricGroup, value);
+        }
+
+        return logAndPropagateResult_zetCommandListAppendMarkerExp(driver_result, hCommandList, hMetricGroup, value);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceEnableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceEnableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        )
+    {
+        context.logger->log_trace("zetDeviceEnableMetricsExp(hDevice)");
+
+        auto pfnEnableMetricsExp = context.zetDdiTable.DeviceExp.pfnEnableMetricsExp;
+
+        if( nullptr == pfnEnableMetricsExp )
+            return logAndPropagateResult_zetDeviceEnableMetricsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceEnableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceEnableMetricsExp(result, hDevice);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceEnableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceEnableMetricsExp(result, hDevice);
+        }
+
+        auto driver_result = pfnEnableMetricsExp( hDevice );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceEnableMetricsExpEpilogue( hDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceEnableMetricsExp(result, hDevice);
+        }
+
+        return logAndPropagateResult_zetDeviceEnableMetricsExp(driver_result, hDevice);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceDisableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceDisableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        )
+    {
+        context.logger->log_trace("zetDeviceDisableMetricsExp(hDevice)");
+
+        auto pfnDisableMetricsExp = context.zetDdiTable.DeviceExp.pfnDisableMetricsExp;
+
+        if( nullptr == pfnDisableMetricsExp )
+            return logAndPropagateResult_zetDeviceDisableMetricsExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceDisableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceDisableMetricsExp(result, hDevice);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceDisableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceDisableMetricsExp(result, hDevice);
+        }
+
+        auto driver_result = pfnDisableMetricsExp( hDevice );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceDisableMetricsExpEpilogue( hDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zetDeviceDisableMetricsExp(result, hDevice);
+        }
+
+        return logAndPropagateResult_zetDeviceDisableMetricsExp(driver_result, hDevice);
     }
 
 } // namespace validation_layer

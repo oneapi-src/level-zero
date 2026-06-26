@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.16-r1.16.24
+ * @version v1.17-r1.17.24
  *
  */
 #ifndef _ZE_DDI_H
@@ -672,6 +672,13 @@ typedef ze_result_t (ZE_APICALL *ze_pfnDeviceValidateRuntimeRequirements_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceGetCounterBasedEventMaxValue 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetCounterBasedEventMaxValue_t)(
+    ze_device_handle_t,
+    uint64_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _ze_device_dditable_t
 {
@@ -702,6 +709,7 @@ typedef struct _ze_device_dditable_t
     ze_pfnDeviceGetRuntimeRequirements_t                        pfnGetRuntimeRequirements;
     ze_pfnDeviceGetRuntimeRequirementsKey_t                     pfnGetRuntimeRequirementsKey;
     ze_pfnDeviceValidateRuntimeRequirements_t                   pfnValidateRuntimeRequirements;
+    ze_pfnDeviceGetCounterBasedEventMaxValue_t                  pfnGetCounterBasedEventMaxValue;
 } ze_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -916,6 +924,27 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueGetIndex_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandQueueGetFlags 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueGetFlags_t)(
+    ze_command_queue_handle_t,
+    ze_command_queue_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandQueueGetMode 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueGetMode_t)(
+    ze_command_queue_handle_t,
+    ze_command_queue_mode_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandQueueGetPriority 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueGetPriority_t)(
+    ze_command_queue_handle_t,
+    ze_command_queue_priority_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandQueue functions pointers
 typedef struct _ze_command_queue_dditable_t
 {
@@ -925,6 +954,9 @@ typedef struct _ze_command_queue_dditable_t
     ze_pfnCommandQueueSynchronize_t                             pfnSynchronize;
     ze_pfnCommandQueueGetOrdinal_t                              pfnGetOrdinal;
     ze_pfnCommandQueueGetIndex_t                                pfnGetIndex;
+    ze_pfnCommandQueueGetFlags_t                                pfnGetFlags;
+    ze_pfnCommandQueueGetMode_t                                 pfnGetMode;
+    ze_pfnCommandQueueGetPriority_t                             pfnGetPriority;
 } ze_command_queue_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1378,6 +1410,93 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsWit
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListGetFlags 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetFlags_t)(
+    ze_command_list_handle_t,
+    ze_command_list_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListImmediateGetFlags 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateGetFlags_t)(
+    ze_command_list_handle_t,
+    ze_command_queue_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListImmediateGetMode 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateGetMode_t)(
+    ze_command_list_handle_t,
+    ze_command_queue_mode_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListImmediateGetPriority 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateGetPriority_t)(
+    ze_command_list_handle_t,
+    ze_command_queue_priority_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListBeginGraphCaptureExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListBeginGraphCaptureExt_t)(
+    ze_command_list_handle_t,
+    const void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListBeginCaptureIntoGraphExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListBeginCaptureIntoGraphExt_t)(
+    ze_command_list_handle_t,
+    ze_graph_handle_t,
+    const void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListIsGraphCaptureEnabledExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListIsGraphCaptureEnabledExt_t)(
+    ze_command_list_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListEndGraphCaptureExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListEndGraphCaptureExt_t)(
+    ze_command_list_handle_t,
+    const void*,
+    ze_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListGetGraphExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetGraphExt_t)(
+    ze_command_list_handle_t,
+    ze_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListAppendGraphExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendGraphExt_t)(
+    ze_command_list_handle_t,
+    ze_executable_graph_handle_t,
+    const void*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListAppendHostFunction 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendHostFunction_t)(
+    ze_command_list_handle_t,
+    ze_host_function_callback_t,
+    void*,
+    const void*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandList functions pointers
 typedef struct _ze_command_list_dditable_t
 {
@@ -1422,6 +1541,17 @@ typedef struct _ze_command_list_dditable_t
     ze_pfnCommandListAppendMemoryCopyWithParameters_t           pfnAppendMemoryCopyWithParameters;
     ze_pfnCommandListAppendMemoryFillWithParameters_t           pfnAppendMemoryFillWithParameters;
     ze_pfnCommandListImmediateAppendCommandListsWithParameters_t    pfnImmediateAppendCommandListsWithParameters;
+    ze_pfnCommandListGetFlags_t                                 pfnGetFlags;
+    ze_pfnCommandListImmediateGetFlags_t                        pfnImmediateGetFlags;
+    ze_pfnCommandListImmediateGetMode_t                         pfnImmediateGetMode;
+    ze_pfnCommandListImmediateGetPriority_t                     pfnImmediateGetPriority;
+    ze_pfnCommandListBeginGraphCaptureExt_t                     pfnBeginGraphCaptureExt;
+    ze_pfnCommandListBeginCaptureIntoGraphExt_t                 pfnBeginCaptureIntoGraphExt;
+    ze_pfnCommandListIsGraphCaptureEnabledExt_t                 pfnIsGraphCaptureEnabledExt;
+    ze_pfnCommandListEndGraphCaptureExt_t                       pfnEndGraphCaptureExt;
+    ze_pfnCommandListGetGraphExt_t                              pfnGetGraphExt;
+    ze_pfnCommandListAppendGraphExt_t                           pfnAppendGraphExt;
+    ze_pfnCommandListAppendHostFunction_t                       pfnAppendHostFunction;
 } ze_command_list_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1516,6 +1646,13 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandKernelsExp
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListIsMutableExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListIsMutableExp_t)(
+    ze_command_list_handle_t,
+    ze_bool_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandListExp functions pointers
 typedef struct _ze_command_list_exp_dditable_t
 {
@@ -1527,6 +1664,7 @@ typedef struct _ze_command_list_exp_dditable_t
     ze_pfnCommandListUpdateMutableCommandWaitEventsExp_t        pfnUpdateMutableCommandWaitEventsExp;
     ze_pfnCommandListGetNextCommandIdWithKernelsExp_t           pfnGetNextCommandIdWithKernelsExp;
     ze_pfnCommandListUpdateMutableCommandKernelsExp_t           pfnUpdateMutableCommandKernelsExp;
+    ze_pfnCommandListIsMutableExp_t                             pfnIsMutableExp;
 } ze_command_list_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2182,6 +2320,13 @@ typedef ze_result_t (ZE_APICALL *ze_pfnEventCounterBasedGetDeviceAddress_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeEventGetCounterBasedFlags 
+typedef ze_result_t (ZE_APICALL *ze_pfnEventGetCounterBasedFlags_t)(
+    ze_event_handle_t,
+    ze_event_counter_based_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Event functions pointers
 typedef struct _ze_event_dditable_t
 {
@@ -2201,6 +2346,7 @@ typedef struct _ze_event_dditable_t
     ze_pfnEventCounterBasedOpenIpcHandle_t                      pfnCounterBasedOpenIpcHandle;
     ze_pfnEventCounterBasedCloseIpcHandle_t                     pfnCounterBasedCloseIpcHandle;
     ze_pfnEventCounterBasedGetDeviceAddress_t                   pfnCounterBasedGetDeviceAddress;
+    ze_pfnEventGetCounterBasedFlags_t                           pfnGetCounterBasedFlags;
 } ze_event_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2933,6 +3079,136 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetFabricEdgeExpProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphCreateExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphCreateExt_t)(
+    ze_context_handle_t,
+    const void*,
+    ze_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphGetPrimaryCommandListExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphGetPrimaryCommandListExt_t)(
+    ze_graph_handle_t,
+    ze_command_list_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphSetDestructionCallbackExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphSetDestructionCallbackExt_t)(
+    ze_graph_handle_t,
+    zex_mem_graph_free_callback_fn_t,
+    void*,
+    const void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphInstantiateExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphInstantiateExt_t)(
+    ze_graph_handle_t,
+    const void*,
+    ze_executable_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphIsEmptyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphIsEmptyExt_t)(
+    ze_graph_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphDumpContentsExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphDumpContentsExt_t)(
+    ze_graph_handle_t,
+    const char*,
+    const void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphDestroyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphDestroyExt_t)(
+    ze_graph_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Graph functions pointers
+typedef struct _ze_graph_dditable_t
+{
+    ze_pfnGraphCreateExt_t                                      pfnCreateExt;
+    ze_pfnGraphGetPrimaryCommandListExt_t                       pfnGetPrimaryCommandListExt;
+    ze_pfnGraphSetDestructionCallbackExt_t                      pfnSetDestructionCallbackExt;
+    ze_pfnGraphInstantiateExt_t                                 pfnInstantiateExt;
+    ze_pfnGraphIsEmptyExt_t                                     pfnIsEmptyExt;
+    ze_pfnGraphDumpContentsExt_t                                pfnDumpContentsExt;
+    ze_pfnGraphDestroyExt_t                                     pfnDestroyExt;
+} ze_graph_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Graph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetGraphProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_graph_dditable_t* pDdiTable                                          ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetGraphProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetGraphProcAddrTable_t)(
+    ze_api_version_t,
+    ze_graph_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeExecutableGraphGetSourceGraphExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnExecutableGraphGetSourceGraphExt_t)(
+    ze_executable_graph_handle_t,
+    ze_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeExecutableGraphDestroyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnExecutableGraphDestroyExt_t)(
+    ze_executable_graph_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of ExecutableGraph functions pointers
+typedef struct _ze_executable_graph_dditable_t
+{
+    ze_pfnExecutableGraphGetSourceGraphExt_t                    pfnGetSourceGraphExt;
+    ze_pfnExecutableGraphDestroyExt_t                           pfnDestroyExt;
+} ze_executable_graph_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ExecutableGraph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetExecutableGraphProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_executable_graph_dditable_t* pDdiTable                               ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetExecutableGraphProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetExecutableGraphProcAddrTable_t)(
+    ze_api_version_t,
+    ze_executable_graph_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all DDI tables
 typedef struct _ze_dditable_t
 {
@@ -2966,6 +3242,8 @@ typedef struct _ze_dditable_t
     ze_virtual_mem_dditable_t           VirtualMem;
     ze_fabric_vertex_exp_dditable_t     FabricVertexExp;
     ze_fabric_edge_exp_dditable_t       FabricEdgeExp;
+    ze_graph_dditable_t                 Graph;
+    ze_executable_graph_dditable_t      ExecutableGraph;
 } ze_dditable_t;
 /// @brief Container for all DDI tables with version and tables set by the Driver
 typedef struct _ze_dditable_driver_t
@@ -3002,6 +3280,8 @@ typedef struct _ze_dditable_driver_t
     ze_virtual_mem_dditable_t *         VirtualMem;
     ze_fabric_vertex_exp_dditable_t *   FabricVertexExp;
     ze_fabric_edge_exp_dditable_t *     FabricEdgeExp;
+    ze_graph_dditable_t *               Graph;
+    ze_executable_graph_dditable_t *    ExecutableGraph;
 } ze_dditable_driver_t;
 
 #if defined(__cplusplus)

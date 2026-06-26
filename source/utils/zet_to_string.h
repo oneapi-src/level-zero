@@ -324,80 +324,6 @@ inline std::string to_string(const zet_tracer_exp_desc_t& desc) {
     return to_string(&desc);
 }
 
-inline std::string to_string(const zet_metric_tracer_exp_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", notifyEveryNBytes=" << to_string(desc->notifyEveryNBytes);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zet_metric_tracer_exp_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const zet_metric_entry_exp_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "value=" << to_string(&desc->value);
-    oss << ", timeStamp=" << to_string(desc->timeStamp);
-    oss << ", metricIndex=" << to_string(desc->metricIndex);
-    oss << ", onSubdevice=" << to_string(&desc->onSubdevice);
-    oss << ", subdeviceId=" << to_string(desc->subdeviceId);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zet_metric_entry_exp_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const zet_metric_group_type_exp_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", type=" << to_string(&desc->type);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zet_metric_group_type_exp_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const zet_export_dma_buf_exp_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", fd=" << to_string(desc->fd);
-    oss << ", size=" << to_string(desc->size);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zet_export_dma_buf_exp_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const zet_metric_source_id_exp_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", sourceId=" << to_string(desc->sourceId);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zet_metric_source_id_exp_t& desc) {
-    return to_string(&desc);
-}
-
 inline std::string to_string(const zet_metric_global_timestamps_resolution_exp_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -519,6 +445,80 @@ inline std::string to_string(const zet_metric_programmable_param_value_exp_t* de
 }
 
 inline std::string to_string(const zet_metric_programmable_param_value_exp_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zet_metric_tracer_exp_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", notifyEveryNBytes=" << to_string(desc->notifyEveryNBytes);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zet_metric_tracer_exp_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zet_metric_entry_exp_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "value=" << to_string(&desc->value);
+    oss << ", timeStamp=" << to_string(desc->timeStamp);
+    oss << ", metricIndex=" << to_string(desc->metricIndex);
+    oss << ", onSubdevice=" << to_string(&desc->onSubdevice);
+    oss << ", subdeviceId=" << to_string(desc->subdeviceId);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zet_metric_entry_exp_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zet_metric_group_type_exp_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", type=" << to_string(&desc->type);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zet_metric_group_type_exp_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zet_export_dma_buf_exp_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", fd=" << to_string(desc->fd);
+    oss << ", size=" << to_string(desc->size);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zet_export_dma_buf_exp_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zet_metric_source_id_exp_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", sourceId=" << to_string(desc->sourceId);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zet_metric_source_id_exp_t& desc) {
     return to_string(&desc);
 }
 

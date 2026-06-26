@@ -343,10 +343,15 @@ namespace validation_layer
     ze_result_t
     ZEHandleLifetimeValidation::zeDeviceGetGlobalTimestampsPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                        ///< Device's global timestamp value.
-        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                        ///< Host's global timestamp value.
+        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp in nanoseconds at the time
+                                                        ///< of invoking the function.
+        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp in tick counts at the
+                                                        ///< time of invoking the function.
+                                                        ///< To get the devicetime stamp in nanoseconds, resolve the tick counts
+                                                        ///< using the timestampValidBits as mask together with timerResolution
+                                                        ///< members of the ::ze_device_properties_t structure.
+                                                        ///< For example: deviceTimestampinNS = (deviceTimestamp &
+                                                        ///< timestampValidBits) * 1/timerResolution.(when timer resolution is in cycle/sec)
         )
     { 
         
@@ -370,6 +375,20 @@ namespace validation_layer
     ZEHandleLifetimeValidation::zeDeviceGetAggregatedCopyOffloadIncrementValuePrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* incrementValue                        ///< [out] increment value that can be used for Event creation
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetCounterBasedEventMaxValuePrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint64_t* maxValue                              ///< [out] maximum value that may appear under externally managed counter
+                                                        ///< storage and that may be passed as `completionValue` when creating a
+                                                        ///< Counter Based Event
         )
     { 
         
@@ -594,6 +613,42 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueGetFlagsPrologue(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command queue creation
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCmdQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueGetModePrologue(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command queue creation
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCmdQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueGetPriorityPrologue(
+        ze_command_queue_handle_t hCmdQueue,            ///< [in] handle of the command queue
+        ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command queue creation
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCmdQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandListCreatePrologue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
@@ -769,6 +824,54 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_bool_t* pIsImmediate                         ///< [out] Boolean indicating whether the command list is an immediate
                                                         ///< command list (true) or not (false)
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListGetFlagsPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_list_flags_t* pFlags                 ///< [out] pointer to flags used during command list creation
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListImmediateGetFlagsPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_flags_t* pFlags                ///< [out] pointer to flags used during command list creation
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListImmediateGetModePrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_mode_t* pMode                  ///< [out] pointer to mode used during command list creation
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListImmediateGetPriorityPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_command_queue_priority_t* pPriority          ///< [out] pointer to priority used during command list creation
         )
     { 
         
@@ -1630,6 +1733,19 @@ namespace validation_layer
     { 
         
         if ( !context.handleLifetime->isHandleValid( hEventPool )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeEventGetCounterBasedFlagsPrologue(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_counter_based_flags_t* pFlags          ///< [out] flags used during creation of a counter based event; may be 0 or
+                                                        ///< a valid combination of ::ze_event_counter_based_flag_t
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hEvent )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;
@@ -2795,326 +2911,6 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelGetBinaryExpPrologue(
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
-        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hKernel )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceImportExternalSemaphoreExtPrologue(
-        ze_device_handle_t hDevice,                     ///< [in] The device handle.
-        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
-        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hDevice )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceReleaseExternalSemaphoreExtPrologue(
-        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hSemaphore )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendSignalExternalSemaphoreExtPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to be appended into command list.
-        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore signal parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hCommandList )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        if (!context.handleLifetime->isOpen( hCommandList )){
-            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
-        }
-        for (size_t i = 0; ( nullptr != phSemaphores) && (i < numSemaphores); ++i){
-            if (!context.handleLifetime->isHandleValid( phSemaphores[i] )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-            }
-        }
-        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
-            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-            }
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendWaitExternalSemaphoreExtPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to append into command list.
-        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore wait parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hCommandList )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        if (!context.handleLifetime->isOpen( hCommandList )){
-            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
-        }
-        for (size_t i = 0; ( nullptr != phSemaphores) && (i < numSemaphores); ++i){
-            if (!context.handleLifetime->isHandleValid( phSemaphores[i] )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-            }
-        }
-        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
-            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-            }
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderCreateExtPrologue(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
-        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hDriver )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderGetBuildPropertiesExtPrologue(
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hBuilder )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeDriverRTASFormatCompatibilityCheckExtPrologue(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
-        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hDriver )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderBuildExtPrologue(
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
-                                                        ///< during acceleration structure construction
-        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
-        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
-        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
-        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
-        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
-                                                        ///< structure bounds
-        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
-                                                        ///< bytes
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hBuilder )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        if (hParallelOperation && !context.handleLifetime->isHandleValid( hParallelOperation )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderCommandListAppendCopyExtPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
-        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
-                                                        ///< acceleration structure to
-        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
-                                                        ///< host memory to copy from
-        size_t size,                                    ///< [in] size in bytes to copy
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hCommandList )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        if (!context.handleLifetime->isOpen( hCommandList )){
-            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
-        }
-        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
-            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-            }
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderDestroyExtPrologue(
-        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hBuilder )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationCreateExtPrologue(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hDriver )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationGetPropertiesExtPrologue(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
-        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationJoinExtPrologue(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationDestroyExtPrologue(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetVectorWidthPropertiesExtPrologue(
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of vector width properties available.
-                                                        ///< if count is greater than the number of vector width properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of vector width properties available.
-        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
-                                                        ///< if count is less than the number of properties available, then the
-                                                        ///< driver will return only the number requested.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hDevice )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeKernelGetAllocationPropertiesExpPrologue(
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of kernel allocation properties available.
-                                                        ///< if count is greater than the number of kernel allocation properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of kernel allocation properties.
-        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
-                                                        ///< if count is less than the number of kernel allocation properties
-                                                        ///< available, then driver shall only retrieve that number of kernel
-                                                        ///< allocation properties.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hKernel )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetIpcHandleWithPropertiesPrologue(
-        ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const void* ptr,                                ///< [in] pointer to the device memory allocation
-        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
-        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hContext )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
     ZEHandleLifetimeValidation::zeDeviceReserveCacheExtPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
@@ -3806,6 +3602,19 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListIsMutableExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                        ///< mutable extension
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandSignalEventExpPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint64_t commandId,                             ///< [in] command identifier
@@ -3856,6 +3665,573 @@ namespace validation_layer
         }
         for (size_t i = 0; ( nullptr != phKernels) && (i < numKernels); ++i){
             if (!context.handleLifetime->isHandleValid( phKernels[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeKernelGetBinaryExpPrologue(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceImportExternalSemaphoreExtPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceReleaseExternalSemaphoreExtPrologue(
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hSemaphore )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendSignalExternalSemaphoreExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        for (size_t i = 0; ( nullptr != phSemaphores) && (i < numSemaphores); ++i){
+            if (!context.handleLifetime->isHandleValid( phSemaphores[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendWaitExternalSemaphoreExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        for (size_t i = 0; ( nullptr != phSemaphores) && (i < numSemaphores); ++i){
+            if (!context.handleLifetime->isHandleValid( phSemaphores[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderCreateExtPrologue(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderGetBuildPropertiesExtPrologue(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hBuilder )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDriverRTASFormatCompatibilityCheckExtPrologue(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderBuildExtPrologue(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hBuilder )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hParallelOperation && !context.handleLifetime->isHandleValid( hParallelOperation )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderCommandListAppendCopyExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderDestroyExtPrologue(
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hBuilder )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationCreateExtPrologue(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationGetPropertiesExtPrologue(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationJoinExtPrologue(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationDestroyExtPrologue(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetVectorWidthPropertiesExtPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeKernelGetAllocationPropertiesExpPrologue(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeMemGetIpcHandleWithPropertiesPrologue(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const void* ptr,                                ///< [in] pointer to the device memory allocation
+        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphCreateExtPrologue(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListBeginGraphCaptureExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListBeginCaptureIntoGraphExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListIsGraphCaptureEnabledExtPrologue(
+        ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListEndGraphCaptureExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListGetGraphExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphGetPrimaryCommandListExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
+                                                        ///< graph
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphSetDestructionCallbackExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
+        void* pUserData,                                ///< [in][optional] user data to pass to the callback
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphInstantiateExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendGraphExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeExecutableGraphGetSourceGraphExtPrologue(
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphIsEmptyExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphDumpContentsExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        const char* filePath,                           ///< [in] path where the DOT file is written
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeExecutableGraphDestroyExtPrologue(
+        ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphDestroyExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendHostFunctionPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
+                                                        ///< non-blocking
+        void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
+                                                        ///< neither the runtime nor the device will dereference it
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
+                                                        ///< phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
             }
         }

@@ -147,7 +147,6 @@ namespace validation_layer
         ze_result_t zesTemperatureGetConfigPrologue( zes_temp_handle_t hTemperature, zes_temp_config_t* pConfig ) override;
         ze_result_t zesTemperatureSetConfigPrologue( zes_temp_handle_t hTemperature, const zes_temp_config_t* pConfig ) override;
         ze_result_t zesTemperatureGetStatePrologue( zes_temp_handle_t hTemperature, double* pTemperature ) override;
-        ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) override;
         ze_result_t zesPowerGetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) override;
         ze_result_t zesPowerSetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) override;
         ze_result_t zesPowerGetLimitsExt2Prologue( zes_pwr_handle_t hPower, uint32_t* pLimit ) override;
@@ -174,6 +173,7 @@ namespace validation_layer
         ze_result_t zesVFManagementGetVFMemoryUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp2_t* pMemUtil ) override;
         ze_result_t zesVFManagementGetVFEngineUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil ) override;
         ze_result_t zesVFManagementGetVFCapabilitiesExp2Prologue( zes_vf_handle_t hVFhandle, zes_vf_exp2_capabilities_t* pCapability ) override;
+        ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) override;
     };
 
 }

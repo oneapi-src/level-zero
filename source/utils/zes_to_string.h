@@ -1192,49 +1192,6 @@ inline std::string to_string(const zes_temp_config_t& desc) {
     return to_string(&desc);
 }
 
-inline std::string to_string(const zes_device_ecc_default_properties_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", defaultState=" << to_string(&desc->defaultState);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zes_device_ecc_default_properties_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const zes_pci_link_speed_downgrade_ext_state_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", pciLinkSpeedDowngradeStatus=" << to_string(&desc->pciLinkSpeedDowngradeStatus);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zes_pci_link_speed_downgrade_ext_state_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const zes_pci_link_speed_downgrade_ext_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", pciLinkSpeedUpdateCapable=" << to_string(&desc->pciLinkSpeedUpdateCapable);
-    oss << ", maxPciGenSupported=" << to_string(desc->maxPciGenSupported);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zes_pci_link_speed_downgrade_ext_properties_t& desc) {
-    return to_string(&desc);
-}
-
 inline std::string to_string(const zes_power_limit_ext_desc_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -1497,6 +1454,78 @@ inline std::string to_string(const zes_vf_util_engine_exp2_t* desc) {
 }
 
 inline std::string to_string(const zes_vf_util_engine_exp2_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_device_ecc_default_properties_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", defaultState=" << to_string(&desc->defaultState);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_device_ecc_default_properties_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_pci_link_speed_downgrade_ext_state_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", pciLinkSpeedDowngradeStatus=" << to_string(&desc->pciLinkSpeedDowngradeStatus);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_pci_link_speed_downgrade_ext_state_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_pci_link_speed_downgrade_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", pciLinkSpeedUpdateCapable=" << to_string(&desc->pciLinkSpeedUpdateCapable);
+    oss << ", maxPciGenSupported=" << to_string(desc->maxPciGenSupported);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_pci_link_speed_downgrade_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_device_ext_state_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_device_ext_state_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_oem_serial_id_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", length=" << to_string(desc->length);
+    oss << ", oemSerialId=" << to_string(desc->oemSerialId);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_oem_serial_id_ext_properties_t& desc) {
     return to_string(&desc);
 }
 

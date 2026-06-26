@@ -104,6 +104,14 @@ inline std::string to_string(ze_fabric_edge_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
 
+inline std::string to_string(ze_rtas_builder_exp_handle_t handle) {
+    return to_string(reinterpret_cast<const void*>(handle));
+}
+
+inline std::string to_string(ze_rtas_parallel_operation_exp_handle_t handle) {
+    return to_string(reinterpret_cast<const void*>(handle));
+}
+
 inline std::string to_string(ze_external_semaphore_ext_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
@@ -116,20 +124,24 @@ inline std::string to_string(ze_rtas_parallel_operation_ext_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
 
-inline std::string to_string(ze_rtas_builder_exp_handle_t handle) {
-    return to_string(reinterpret_cast<const void*>(handle));
-}
-
-inline std::string to_string(ze_rtas_parallel_operation_exp_handle_t handle) {
+inline std::string to_string(ze_executable_graph_handle_t handle) {
     return to_string(reinterpret_cast<const void*>(handle));
 }
 
 // Callback to_string functions (function pointers)
+// Multiple callback typedefs can resolve to the same underlying function-pointer
+// type (e.g. void(*)(void*)). Since typedefs are aliases rather than distinct
+// types in C++, emit only one to_string overload per unique signature
+// (returntype + parameter types) to avoid redefinition errors.
+inline std::string to_string(ze_rtas_geometry_aabbs_cb_exp_t ptr) {
+    return to_string(reinterpret_cast<const void*>(ptr));
+}
+
 inline std::string to_string(ze_rtas_geometry_aabbs_cb_ext_t ptr) {
     return to_string(reinterpret_cast<const void*>(ptr));
 }
 
-inline std::string to_string(ze_rtas_geometry_aabbs_cb_exp_t ptr) {
+inline std::string to_string(zex_mem_graph_free_callback_fn_t ptr) {
     return to_string(reinterpret_cast<const void*>(ptr));
 }
 
@@ -1321,6 +1333,20 @@ inline std::string to_string(const ze_float_atomic_ext_properties_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const ze_relaxed_allocation_limits_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_relaxed_allocation_limits_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const ze_relaxed_allocation_limits_exp_desc_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -1332,539 +1358,6 @@ inline std::string to_string(const ze_relaxed_allocation_limits_exp_desc_t* desc
 }
 
 inline std::string to_string(const ze_relaxed_allocation_limits_exp_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_driver_ddi_handles_ext_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", flags=" << to_string(&desc->flags);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_driver_ddi_handles_ext_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_external_semaphore_ext_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", flags=" << to_string(&desc->flags);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_external_semaphore_ext_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_external_semaphore_win32_ext_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", handle=" << to_string(desc->handle);
-    oss << ", name=" << to_string(desc->name);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_external_semaphore_win32_ext_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_external_semaphore_fd_ext_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", fd=" << to_string(desc->fd);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_external_semaphore_fd_ext_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_external_semaphore_signal_params_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", value=" << to_string(desc->value);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_external_semaphore_signal_params_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_external_semaphore_wait_params_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", value=" << to_string(desc->value);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_external_semaphore_wait_params_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_device_cache_line_size_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", cacheLineSize=" << to_string(desc->cacheLineSize);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_device_cache_line_size_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_ext_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", builderVersion=" << to_string(&desc->builderVersion);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_ext_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_ext_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", flags=" << to_string(&desc->flags);
-    oss << ", rtasBufferSizeBytesExpected=" << to_string(desc->rtasBufferSizeBytesExpected);
-    oss << ", rtasBufferSizeBytesMaxRequired=" << to_string(desc->rtasBufferSizeBytesMaxRequired);
-    oss << ", scratchBufferSizeBytes=" << to_string(desc->scratchBufferSizeBytes);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_ext_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_parallel_operation_ext_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", flags=" << to_string(&desc->flags);
-    oss << ", maxConcurrency=" << to_string(desc->maxConcurrency);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_parallel_operation_ext_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_device_ext_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", flags=" << to_string(&desc->flags);
-    oss << ", rtasFormat=" << to_string(&desc->rtasFormat);
-    oss << ", rtasBufferAlignment=" << to_string(desc->rtasBufferAlignment);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_device_ext_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_float3_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "x=" << to_string(desc->x);
-    oss << ", y=" << to_string(desc->y);
-    oss << ", z=" << to_string(desc->z);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_float3_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_transform_float3x4_column_major_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "vx_x=" << to_string(desc->vx_x);
-    oss << ", vx_y=" << to_string(desc->vx_y);
-    oss << ", vx_z=" << to_string(desc->vx_z);
-    oss << ", vy_x=" << to_string(desc->vy_x);
-    oss << ", vy_y=" << to_string(desc->vy_y);
-    oss << ", vy_z=" << to_string(desc->vy_z);
-    oss << ", vz_x=" << to_string(desc->vz_x);
-    oss << ", vz_y=" << to_string(desc->vz_y);
-    oss << ", vz_z=" << to_string(desc->vz_z);
-    oss << ", p_x=" << to_string(desc->p_x);
-    oss << ", p_y=" << to_string(desc->p_y);
-    oss << ", p_z=" << to_string(desc->p_z);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_transform_float3x4_column_major_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_transform_float3x4_aligned_column_major_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "vx_x=" << to_string(desc->vx_x);
-    oss << ", vx_y=" << to_string(desc->vx_y);
-    oss << ", vx_z=" << to_string(desc->vx_z);
-    oss << ", pad0=" << to_string(desc->pad0);
-    oss << ", vy_x=" << to_string(desc->vy_x);
-    oss << ", vy_y=" << to_string(desc->vy_y);
-    oss << ", vy_z=" << to_string(desc->vy_z);
-    oss << ", pad1=" << to_string(desc->pad1);
-    oss << ", vz_x=" << to_string(desc->vz_x);
-    oss << ", vz_y=" << to_string(desc->vz_y);
-    oss << ", vz_z=" << to_string(desc->vz_z);
-    oss << ", pad2=" << to_string(desc->pad2);
-    oss << ", p_x=" << to_string(desc->p_x);
-    oss << ", p_y=" << to_string(desc->p_y);
-    oss << ", p_z=" << to_string(desc->p_z);
-    oss << ", pad3=" << to_string(desc->pad3);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_transform_float3x4_aligned_column_major_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_transform_float3x4_row_major_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "vx_x=" << to_string(desc->vx_x);
-    oss << ", vy_x=" << to_string(desc->vy_x);
-    oss << ", vz_x=" << to_string(desc->vz_x);
-    oss << ", p_x=" << to_string(desc->p_x);
-    oss << ", vx_y=" << to_string(desc->vx_y);
-    oss << ", vy_y=" << to_string(desc->vy_y);
-    oss << ", vz_y=" << to_string(desc->vz_y);
-    oss << ", p_y=" << to_string(desc->p_y);
-    oss << ", vx_z=" << to_string(desc->vx_z);
-    oss << ", vy_z=" << to_string(desc->vy_z);
-    oss << ", vz_z=" << to_string(desc->vz_z);
-    oss << ", p_z=" << to_string(desc->p_z);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_transform_float3x4_row_major_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_aabb_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "lower=" << to_string(&desc->lower);
-    oss << ", upper=" << to_string(&desc->upper);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_aabb_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_triangle_indices_uint32_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "v0=" << to_string(desc->v0);
-    oss << ", v1=" << to_string(desc->v1);
-    oss << ", v2=" << to_string(desc->v2);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_triangle_indices_uint32_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_quad_indices_uint32_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "v0=" << to_string(desc->v0);
-    oss << ", v1=" << to_string(desc->v1);
-    oss << ", v2=" << to_string(desc->v2);
-    oss << ", v3=" << to_string(desc->v3);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_quad_indices_uint32_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_geometry_info_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "geometryType=" << to_string(&desc->geometryType);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_geometry_info_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_triangles_geometry_info_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "geometryType=" << to_string(&desc->geometryType);
-    oss << ", geometryFlags=" << to_string(&desc->geometryFlags);
-    oss << ", geometryMask=" << to_string(desc->geometryMask);
-    oss << ", triangleFormat=" << to_string(&desc->triangleFormat);
-    oss << ", vertexFormat=" << to_string(&desc->vertexFormat);
-    oss << ", triangleCount=" << to_string(desc->triangleCount);
-    oss << ", vertexCount=" << to_string(desc->vertexCount);
-    oss << ", triangleStride=" << to_string(desc->triangleStride);
-    oss << ", vertexStride=" << to_string(desc->vertexStride);
-    oss << ", pTriangleBuffer=" << to_string(desc->pTriangleBuffer);
-    oss << ", pVertexBuffer=" << to_string(desc->pVertexBuffer);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_triangles_geometry_info_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_quads_geometry_info_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "geometryType=" << to_string(&desc->geometryType);
-    oss << ", geometryFlags=" << to_string(&desc->geometryFlags);
-    oss << ", geometryMask=" << to_string(desc->geometryMask);
-    oss << ", quadFormat=" << to_string(&desc->quadFormat);
-    oss << ", vertexFormat=" << to_string(&desc->vertexFormat);
-    oss << ", quadCount=" << to_string(desc->quadCount);
-    oss << ", vertexCount=" << to_string(desc->vertexCount);
-    oss << ", quadStride=" << to_string(desc->quadStride);
-    oss << ", vertexStride=" << to_string(desc->vertexStride);
-    oss << ", pQuadBuffer=" << to_string(desc->pQuadBuffer);
-    oss << ", pVertexBuffer=" << to_string(desc->pVertexBuffer);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_quads_geometry_info_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_geometry_aabbs_ext_cb_params_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", primID=" << to_string(desc->primID);
-    oss << ", primIDCount=" << to_string(desc->primIDCount);
-    oss << ", pGeomUserPtr=" << to_string(desc->pGeomUserPtr);
-    oss << ", pBuildUserPtr=" << to_string(desc->pBuildUserPtr);
-    oss << ", pBoundsOut=" << to_string(desc->pBoundsOut);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_geometry_aabbs_ext_cb_params_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_procedural_geometry_info_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "geometryType=" << to_string(&desc->geometryType);
-    oss << ", geometryFlags=" << to_string(&desc->geometryFlags);
-    oss << ", geometryMask=" << to_string(desc->geometryMask);
-    oss << ", reserved=" << to_string(desc->reserved);
-    oss << ", primCount=" << to_string(desc->primCount);
-    oss << ", pfnGetBoundsCb=" << to_string(&desc->pfnGetBoundsCb);
-    oss << ", pGeomUserPtr=" << to_string(desc->pGeomUserPtr);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_procedural_geometry_info_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_instance_geometry_info_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "geometryType=" << to_string(&desc->geometryType);
-    oss << ", instanceFlags=" << to_string(&desc->instanceFlags);
-    oss << ", geometryMask=" << to_string(desc->geometryMask);
-    oss << ", transformFormat=" << to_string(&desc->transformFormat);
-    oss << ", instanceUserID=" << to_string(desc->instanceUserID);
-    oss << ", pTransform=" << to_string(desc->pTransform);
-    oss << ", pBounds=" << to_string(desc->pBounds);
-    oss << ", pAccelerationStructure=" << to_string(desc->pAccelerationStructure);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_instance_geometry_info_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_rtas_builder_build_op_ext_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", rtasFormat=" << to_string(&desc->rtasFormat);
-    oss << ", buildQuality=" << to_string(desc->buildQuality);
-    oss << ", buildFlags=" << to_string(&desc->buildFlags);
-    oss << ", ppGeometries=" << to_string(desc->ppGeometries);
-    oss << ", numGeometries=" << to_string(desc->numGeometries);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_rtas_builder_build_op_ext_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_device_vector_width_properties_ext_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", vector_width_size=" << to_string(desc->vector_width_size);
-    oss << ", preferred_vector_width_char=" << to_string(desc->preferred_vector_width_char);
-    oss << ", preferred_vector_width_short=" << to_string(desc->preferred_vector_width_short);
-    oss << ", preferred_vector_width_int=" << to_string(desc->preferred_vector_width_int);
-    oss << ", preferred_vector_width_long=" << to_string(desc->preferred_vector_width_long);
-    oss << ", preferred_vector_width_float=" << to_string(desc->preferred_vector_width_float);
-    oss << ", preferred_vector_width_double=" << to_string(desc->preferred_vector_width_double);
-    oss << ", preferred_vector_width_half=" << to_string(desc->preferred_vector_width_half);
-    oss << ", native_vector_width_char=" << to_string(desc->native_vector_width_char);
-    oss << ", native_vector_width_short=" << to_string(desc->native_vector_width_short);
-    oss << ", native_vector_width_int=" << to_string(desc->native_vector_width_int);
-    oss << ", native_vector_width_long=" << to_string(desc->native_vector_width_long);
-    oss << ", native_vector_width_float=" << to_string(desc->native_vector_width_float);
-    oss << ", native_vector_width_double=" << to_string(desc->native_vector_width_double);
-    oss << ", native_vector_width_half=" << to_string(desc->native_vector_width_half);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_device_vector_width_properties_ext_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_external_memmap_sysmem_ext_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", pSystemMemory=" << to_string(desc->pSystemMemory);
-    oss << ", size=" << to_string(desc->size);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_external_memmap_sysmem_ext_desc_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_kernel_allocation_exp_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", base=" << to_string(desc->base);
-    oss << ", size=" << to_string(desc->size);
-    oss << ", type=" << to_string(&desc->type);
-    oss << ", argIndex=" << to_string(desc->argIndex);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_kernel_allocation_exp_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_device_usablemem_size_ext_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", currUsableMemSize=" << to_string(desc->currUsableMemSize);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_device_usablemem_size_ext_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_image_format_support_ext_properties_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", supported=" << to_string(&desc->supported);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_image_format_support_ext_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const ze_ipc_mem_handle_type_ext_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", typeFlags=" << to_string(&desc->typeFlags);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_ipc_mem_handle_type_ext_desc_t& desc) {
     return to_string(&desc);
 }
 
@@ -2914,6 +2407,581 @@ inline std::string to_string(const ze_mutable_graph_argument_exp_desc_t* desc) {
 }
 
 inline std::string to_string(const ze_mutable_graph_argument_exp_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_driver_ddi_handles_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_driver_ddi_handles_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_external_semaphore_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_external_semaphore_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_external_semaphore_win32_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", handle=" << to_string(desc->handle);
+    oss << ", name=" << to_string(desc->name);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_external_semaphore_win32_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_external_semaphore_fd_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", fd=" << to_string(desc->fd);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_external_semaphore_fd_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_external_semaphore_signal_params_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", value=" << to_string(desc->value);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_external_semaphore_signal_params_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_external_semaphore_wait_params_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", value=" << to_string(desc->value);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_external_semaphore_wait_params_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_device_cache_line_size_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", cacheLineSize=" << to_string(desc->cacheLineSize);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_device_cache_line_size_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", builderVersion=" << to_string(&desc->builderVersion);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << ", rtasBufferSizeBytesExpected=" << to_string(desc->rtasBufferSizeBytesExpected);
+    oss << ", rtasBufferSizeBytesMaxRequired=" << to_string(desc->rtasBufferSizeBytesMaxRequired);
+    oss << ", scratchBufferSizeBytes=" << to_string(desc->scratchBufferSizeBytes);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_parallel_operation_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << ", maxConcurrency=" << to_string(desc->maxConcurrency);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_parallel_operation_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_device_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << ", rtasFormat=" << to_string(&desc->rtasFormat);
+    oss << ", rtasBufferAlignment=" << to_string(desc->rtasBufferAlignment);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_device_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_float3_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "x=" << to_string(desc->x);
+    oss << ", y=" << to_string(desc->y);
+    oss << ", z=" << to_string(desc->z);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_float3_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_transform_float3x4_column_major_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "vx_x=" << to_string(desc->vx_x);
+    oss << ", vx_y=" << to_string(desc->vx_y);
+    oss << ", vx_z=" << to_string(desc->vx_z);
+    oss << ", vy_x=" << to_string(desc->vy_x);
+    oss << ", vy_y=" << to_string(desc->vy_y);
+    oss << ", vy_z=" << to_string(desc->vy_z);
+    oss << ", vz_x=" << to_string(desc->vz_x);
+    oss << ", vz_y=" << to_string(desc->vz_y);
+    oss << ", vz_z=" << to_string(desc->vz_z);
+    oss << ", p_x=" << to_string(desc->p_x);
+    oss << ", p_y=" << to_string(desc->p_y);
+    oss << ", p_z=" << to_string(desc->p_z);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_transform_float3x4_column_major_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_transform_float3x4_aligned_column_major_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "vx_x=" << to_string(desc->vx_x);
+    oss << ", vx_y=" << to_string(desc->vx_y);
+    oss << ", vx_z=" << to_string(desc->vx_z);
+    oss << ", pad0=" << to_string(desc->pad0);
+    oss << ", vy_x=" << to_string(desc->vy_x);
+    oss << ", vy_y=" << to_string(desc->vy_y);
+    oss << ", vy_z=" << to_string(desc->vy_z);
+    oss << ", pad1=" << to_string(desc->pad1);
+    oss << ", vz_x=" << to_string(desc->vz_x);
+    oss << ", vz_y=" << to_string(desc->vz_y);
+    oss << ", vz_z=" << to_string(desc->vz_z);
+    oss << ", pad2=" << to_string(desc->pad2);
+    oss << ", p_x=" << to_string(desc->p_x);
+    oss << ", p_y=" << to_string(desc->p_y);
+    oss << ", p_z=" << to_string(desc->p_z);
+    oss << ", pad3=" << to_string(desc->pad3);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_transform_float3x4_aligned_column_major_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_transform_float3x4_row_major_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "vx_x=" << to_string(desc->vx_x);
+    oss << ", vy_x=" << to_string(desc->vy_x);
+    oss << ", vz_x=" << to_string(desc->vz_x);
+    oss << ", p_x=" << to_string(desc->p_x);
+    oss << ", vx_y=" << to_string(desc->vx_y);
+    oss << ", vy_y=" << to_string(desc->vy_y);
+    oss << ", vz_y=" << to_string(desc->vz_y);
+    oss << ", p_y=" << to_string(desc->p_y);
+    oss << ", vx_z=" << to_string(desc->vx_z);
+    oss << ", vy_z=" << to_string(desc->vy_z);
+    oss << ", vz_z=" << to_string(desc->vz_z);
+    oss << ", p_z=" << to_string(desc->p_z);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_transform_float3x4_row_major_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_aabb_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "lower=" << to_string(&desc->lower);
+    oss << ", upper=" << to_string(&desc->upper);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_aabb_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_triangle_indices_uint32_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "v0=" << to_string(desc->v0);
+    oss << ", v1=" << to_string(desc->v1);
+    oss << ", v2=" << to_string(desc->v2);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_triangle_indices_uint32_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_quad_indices_uint32_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "v0=" << to_string(desc->v0);
+    oss << ", v1=" << to_string(desc->v1);
+    oss << ", v2=" << to_string(desc->v2);
+    oss << ", v3=" << to_string(desc->v3);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_quad_indices_uint32_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_geometry_info_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "geometryType=" << to_string(&desc->geometryType);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_geometry_info_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_triangles_geometry_info_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "geometryType=" << to_string(&desc->geometryType);
+    oss << ", geometryFlags=" << to_string(&desc->geometryFlags);
+    oss << ", geometryMask=" << to_string(desc->geometryMask);
+    oss << ", triangleFormat=" << to_string(&desc->triangleFormat);
+    oss << ", vertexFormat=" << to_string(&desc->vertexFormat);
+    oss << ", triangleCount=" << to_string(desc->triangleCount);
+    oss << ", vertexCount=" << to_string(desc->vertexCount);
+    oss << ", triangleStride=" << to_string(desc->triangleStride);
+    oss << ", vertexStride=" << to_string(desc->vertexStride);
+    oss << ", pTriangleBuffer=" << to_string(desc->pTriangleBuffer);
+    oss << ", pVertexBuffer=" << to_string(desc->pVertexBuffer);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_triangles_geometry_info_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_quads_geometry_info_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "geometryType=" << to_string(&desc->geometryType);
+    oss << ", geometryFlags=" << to_string(&desc->geometryFlags);
+    oss << ", geometryMask=" << to_string(desc->geometryMask);
+    oss << ", quadFormat=" << to_string(&desc->quadFormat);
+    oss << ", vertexFormat=" << to_string(&desc->vertexFormat);
+    oss << ", quadCount=" << to_string(desc->quadCount);
+    oss << ", vertexCount=" << to_string(desc->vertexCount);
+    oss << ", quadStride=" << to_string(desc->quadStride);
+    oss << ", vertexStride=" << to_string(desc->vertexStride);
+    oss << ", pQuadBuffer=" << to_string(desc->pQuadBuffer);
+    oss << ", pVertexBuffer=" << to_string(desc->pVertexBuffer);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_quads_geometry_info_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_geometry_aabbs_ext_cb_params_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", primID=" << to_string(desc->primID);
+    oss << ", primIDCount=" << to_string(desc->primIDCount);
+    oss << ", pGeomUserPtr=" << to_string(desc->pGeomUserPtr);
+    oss << ", pBuildUserPtr=" << to_string(desc->pBuildUserPtr);
+    oss << ", pBoundsOut=" << to_string(desc->pBoundsOut);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_geometry_aabbs_ext_cb_params_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_procedural_geometry_info_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "geometryType=" << to_string(&desc->geometryType);
+    oss << ", geometryFlags=" << to_string(&desc->geometryFlags);
+    oss << ", geometryMask=" << to_string(desc->geometryMask);
+    oss << ", reserved=" << to_string(desc->reserved);
+    oss << ", primCount=" << to_string(desc->primCount);
+    oss << ", pfnGetBoundsCb=" << to_string(&desc->pfnGetBoundsCb);
+    oss << ", pGeomUserPtr=" << to_string(desc->pGeomUserPtr);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_procedural_geometry_info_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_instance_geometry_info_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "geometryType=" << to_string(&desc->geometryType);
+    oss << ", instanceFlags=" << to_string(&desc->instanceFlags);
+    oss << ", geometryMask=" << to_string(desc->geometryMask);
+    oss << ", transformFormat=" << to_string(&desc->transformFormat);
+    oss << ", instanceUserID=" << to_string(desc->instanceUserID);
+    oss << ", pTransform=" << to_string(desc->pTransform);
+    oss << ", pBounds=" << to_string(desc->pBounds);
+    oss << ", pAccelerationStructure=" << to_string(desc->pAccelerationStructure);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_instance_geometry_info_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_rtas_builder_build_op_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", rtasFormat=" << to_string(&desc->rtasFormat);
+    oss << ", buildQuality=" << to_string(desc->buildQuality);
+    oss << ", buildFlags=" << to_string(&desc->buildFlags);
+    oss << ", ppGeometries=" << to_string(desc->ppGeometries);
+    oss << ", numGeometries=" << to_string(desc->numGeometries);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_rtas_builder_build_op_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_device_vector_width_properties_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", vector_width_size=" << to_string(desc->vector_width_size);
+    oss << ", preferred_vector_width_char=" << to_string(desc->preferred_vector_width_char);
+    oss << ", preferred_vector_width_short=" << to_string(desc->preferred_vector_width_short);
+    oss << ", preferred_vector_width_int=" << to_string(desc->preferred_vector_width_int);
+    oss << ", preferred_vector_width_long=" << to_string(desc->preferred_vector_width_long);
+    oss << ", preferred_vector_width_float=" << to_string(desc->preferred_vector_width_float);
+    oss << ", preferred_vector_width_double=" << to_string(desc->preferred_vector_width_double);
+    oss << ", preferred_vector_width_half=" << to_string(desc->preferred_vector_width_half);
+    oss << ", native_vector_width_char=" << to_string(desc->native_vector_width_char);
+    oss << ", native_vector_width_short=" << to_string(desc->native_vector_width_short);
+    oss << ", native_vector_width_int=" << to_string(desc->native_vector_width_int);
+    oss << ", native_vector_width_long=" << to_string(desc->native_vector_width_long);
+    oss << ", native_vector_width_float=" << to_string(desc->native_vector_width_float);
+    oss << ", native_vector_width_double=" << to_string(desc->native_vector_width_double);
+    oss << ", native_vector_width_half=" << to_string(desc->native_vector_width_half);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_device_vector_width_properties_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_external_memmap_sysmem_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", pSystemMemory=" << to_string(desc->pSystemMemory);
+    oss << ", size=" << to_string(desc->size);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_external_memmap_sysmem_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_kernel_allocation_exp_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", base=" << to_string(desc->base);
+    oss << ", size=" << to_string(desc->size);
+    oss << ", type=" << to_string(&desc->type);
+    oss << ", argIndex=" << to_string(desc->argIndex);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_kernel_allocation_exp_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_device_usablemem_size_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", currUsableMemSize=" << to_string(desc->currUsableMemSize);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_device_usablemem_size_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_image_format_support_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", supported=" << to_string(&desc->supported);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_image_format_support_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_ipc_mem_handle_type_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", typeFlags=" << to_string(&desc->typeFlags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_ipc_mem_handle_type_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", graphFlags=" << to_string(&desc->graphFlags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_dump_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", mode=" << to_string(&desc->mode);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_record_replay_graph_ext_dump_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_device_readonly_memory_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", readonlyCapability=" << to_string(&desc->readonlyCapability);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_device_readonly_memory_ext_properties_t& desc) {
     return to_string(&desc);
 }
 

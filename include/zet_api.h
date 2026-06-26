@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.16-r1.16.24
+ * @version v1.17-r1.17.24
  *
  */
 #ifndef _ZET_API_H
@@ -255,26 +255,6 @@ typedef struct _zet_profile_register_sequence_t zet_profile_register_sequence_t;
 typedef struct _zet_tracer_exp_desc_t zet_tracer_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zet_metric_tracer_exp_desc_t
-typedef struct _zet_metric_tracer_exp_desc_t zet_metric_tracer_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zet_metric_entry_exp_t
-typedef struct _zet_metric_entry_exp_t zet_metric_entry_exp_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zet_metric_group_type_exp_t
-typedef struct _zet_metric_group_type_exp_t zet_metric_group_type_exp_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zet_export_dma_buf_exp_properties_t
-typedef struct _zet_export_dma_buf_exp_properties_t zet_export_dma_buf_exp_properties_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zet_metric_source_id_exp_t
-typedef struct _zet_metric_source_id_exp_t zet_metric_source_id_exp_t;
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_metric_global_timestamps_resolution_exp_t
 typedef struct _zet_metric_global_timestamps_resolution_exp_t zet_metric_global_timestamps_resolution_exp_t;
 
@@ -305,6 +285,26 @@ typedef struct _zet_metric_programmable_param_value_info_exp_t zet_metric_progra
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_metric_programmable_param_value_exp_t
 typedef struct _zet_metric_programmable_param_value_exp_t zet_metric_programmable_param_value_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_tracer_exp_desc_t
+typedef struct _zet_metric_tracer_exp_desc_t zet_metric_tracer_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_entry_exp_t
+typedef struct _zet_metric_entry_exp_t zet_metric_entry_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_group_type_exp_t
+typedef struct _zet_metric_group_type_exp_t zet_metric_group_type_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_export_dma_buf_exp_properties_t
+typedef struct _zet_export_dma_buf_exp_properties_t zet_export_dma_buf_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_source_id_exp_t
+typedef struct _zet_metric_source_id_exp_t zet_metric_source_id_exp_t;
 
 
 #if !defined(__GNUC__)
@@ -2204,718 +2204,6 @@ zetTracerExpSetEnabled(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
-// Intel 'oneAPI' Level-Zero Tool Experimental Extension to get Concurrent Metric Groups
-#if !defined(__GNUC__)
-#pragma region concurrentMetricGroup
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME
-/// @brief Concurrent Metric Groups Experimental Extension Name
-#define ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME  "ZET_experimental_concurrent_metric_groups"
-#endif // ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Concurrent Metric Groups Experimental Extension Version(s)
-typedef enum _zet_concurrent_metric_groups_exp_version_t
-{
-    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
-    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_* ENUMs
-
-} zet_concurrent_metric_groups_exp_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Get sets of metric groups which could be collected concurrently.
-/// 
-/// @details
-///     - Re-arrange the input metric groups to provide sets of concurrent
-///       metric groups.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hDevice`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetDeviceGetConcurrentMetricGroupsExp(
-    zet_device_handle_t hDevice,                                            ///< [in] handle of the device
-    uint32_t metricGroupCount,                                              ///< [in] metric group count
-    zet_metric_group_handle_t * phMetricGroups,                             ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
-                                                                            ///< groups
-    uint32_t * pMetricGroupsCountPerConcurrentGroup,                        ///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
-                                                                            ///< concurrent group.
-    uint32_t * pConcurrentGroupCount                                        ///< [out] number of concurrent groups.
-                                                                            ///< The value of this parameter could be used to determine the number of
-                                                                            ///< replays necessary.
-    );
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Metrics Tracer
-#if !defined(__GNUC__)
-#pragma region metricTracer
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZET_METRICS_TRACER_EXP_NAME
-/// @brief Metric Tracer Experimental Extension Name
-#define ZET_METRICS_TRACER_EXP_NAME  "ZET_experimental_metric_tracer"
-#endif // ZET_METRICS_TRACER_EXP_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Metric Tracer Experimental Extension Version(s)
-typedef enum _zet_metric_tracer_exp_version_t
-{
-    ZET_METRIC_TRACER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
-    ZET_METRIC_TRACER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
-    ZET_METRIC_TRACER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_TRACER_EXP_VERSION_* ENUMs
-
-} zet_metric_tracer_exp_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Handle of metric tracer's object
-typedef struct _zet_metric_tracer_exp_handle_t *zet_metric_tracer_exp_handle_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Handle of metric decoder's object
-typedef struct _zet_metric_decoder_exp_handle_t *zet_metric_decoder_exp_handle_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Metric tracer descriptor
-typedef struct _zet_metric_tracer_exp_desc_t
-{
-    zet_structure_type_t stype;                                             ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint32_t notifyEveryNBytes;                                             ///< [in,out] number of collected bytes after which notification event will
-                                                                            ///< be signaled. If the requested value is not supported exactly, then the
-                                                                            ///< driver may use a value that is the closest supported approximation and
-                                                                            ///< shall update this member during ::zetMetricTracerCreateExp.
-
-} zet_metric_tracer_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Decoded metric entry
-typedef struct _zet_metric_entry_exp_t
-{
-    zet_value_t value;                                                      ///< [out] value of the decodable metric entry or event. Number is
-                                                                            ///< meaningful based on the metric type.
-    uint64_t timeStamp;                                                     ///< [out] timestamp at which the event happened.
-    uint32_t metricIndex;                                                   ///< [out] index to the decodable metric handle in the input array
-                                                                            ///< (phMetric) in ::zetMetricTracerDecodeExp().
-    ze_bool_t onSubdevice;                                                  ///< [out] True if the event occurred on a sub-device; false means the
-                                                                            ///< device on which the metric tracer was opened does not have
-                                                                            ///< sub-devices.
-    uint32_t subdeviceId;                                                   ///< [out] If onSubdevice is true, this gives the ID of the sub-device.
-
-} zet_metric_entry_exp_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Create a metric tracer for a device.
-/// 
-/// @details
-///     - The notification event must have been created from an event pool that
-///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
-///     - The duration of the signal event created from an event pool that was
-///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
-///       However, for consistency and orthogonality the event will report
-///       correctly as signaled when used by other event API functionality.
-///     - The application must **not** call this function from simultaneous
-///       threads with the same device handle.
-///     - The metric tracer is created in disabled state
-///     - Metric groups must support sampling type
-///       ZET_METRIC_SAMPLING_TYPE_EXP_FLAG_TRACER_BASED
-///     - All metric groups must be first activated
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hContext`
-///         + `nullptr == hDevice`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == phMetricGroups`
-///         + `nullptr == desc`
-///         + `nullptr == phMetricTracer`
-///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricTracerCreateExp(
-    zet_context_handle_t hContext,                                          ///< [in] handle of the context object
-    zet_device_handle_t hDevice,                                            ///< [in] handle of the device
-    uint32_t metricGroupCount,                                              ///< [in] metric group count
-    zet_metric_group_handle_t* phMetricGroups,                              ///< [in][range(0, metricGroupCount )] handles of the metric groups to
-                                                                            ///< trace
-    zet_metric_tracer_exp_desc_t* desc,                                     ///< [in,out] metric tracer descriptor
-    ze_event_handle_t hNotificationEvent,                                   ///< [in][optional] event used for report availability notification. Note:
-                                                                            ///< If buffer is not drained when the event it flagged, there is a risk of
-                                                                            ///< HW event buffer being overrun
-    zet_metric_tracer_exp_handle_t* phMetricTracer                          ///< [out] handle of the metric tracer
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Destroy a metric tracer.
-/// 
-/// @details
-///     - The application must **not** call this function from simultaneous
-///       threads with the same metric tracer handle.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hMetricTracer`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricTracerDestroyExp(
-    zet_metric_tracer_exp_handle_t hMetricTracer                            ///< [in] handle of the metric tracer
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Start events collection
-/// 
-/// @details
-///     - Driver implementations must make this API call have as minimal
-///       overhead as possible, to allow applications start/stop event
-///       collection at any point during execution
-///     - The application must **not** call this function from simultaneous
-///       threads with the same metric tracer handle.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hMetricTracer`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricTracerEnableExp(
-    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
-    ze_bool_t synchronous                                                   ///< [in] request synchronous behavior. Confirmation of successful
-                                                                            ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                                            ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
-                                                                            ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
-                                                                            ///< when the tracer is active.
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Stop events collection
-/// 
-/// @details
-///     - Driver implementations must make this API call have as minimal
-///       overhead as possible, to allow applications start/stop event
-///       collection at any point during execution
-///     - The application must **not** call this function from simultaneous
-///       threads with the same metric tracer handle.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hMetricTracer`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricTracerDisableExp(
-    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
-    ze_bool_t synchronous                                                   ///< [in] request synchronous behavior. Confirmation of successful
-                                                                            ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                                            ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
-                                                                            ///< when the tracer is active or when it is inactive but still has data. 
-                                                                            ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
-                                                                            ///< has no more data to be retrieved.
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Read data from the metric tracer
-/// 
-/// @details
-///     - The application must **not** call this function from simultaneous
-///       threads with the same metric tracer handle.
-///     - Data can be retrieved after tracer is disabled. When buffers are
-///       drained ::ZE_RESULT_NOT_READY will be returned
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hMetricTracer`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pRawDataSize`
-///     - ::ZE_RESULT_WARNING_DROPPED_DATA
-///         + Metric tracer data may have been dropped.
-///     - ::ZE_RESULT_NOT_READY
-///         + Metric tracer is disabled and no data is available to read.
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricTracerReadDataExp(
-    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
-    size_t* pRawDataSize,                                                   ///< [in,out] pointer to the size in bytes of raw data requested to read.
-                                                                            ///< The driver will only retrieve the number of reports that fit into the buffer.
-                                                                            ///< pRawDataSize will be updated by the driver to reflect the actual
-                                                                            ///< number of bytes written into the buffer.
-                                                                            ///< If the size returns the full size requested, the application may need
-                                                                            ///< to issue additional reads to
-                                                                            ///< retrieve any remaining reports that did not fit into the buffer.
-    uint8_t* pRawData                                                       ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                                            ///< data in raw format
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Create a metric decoder for a given metric tracer.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hMetricTracer`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == phMetricDecoder`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricDecoderCreateExp(
-    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
-    zet_metric_decoder_exp_handle_t* phMetricDecoder                        ///< [out] handle of the metric decoder object
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Destroy a metric decoder.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == phMetricDecoder`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricDecoderDestroyExp(
-    zet_metric_decoder_exp_handle_t phMetricDecoder                         ///< [in] handle of the metric decoder object
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Return the list of the decodable metrics from the decoder.
-/// 
-/// @details
-///     - The decodable metrics handles returned by this API are defined by the
-///       metric groups in the tracer on which the decoder was created.
-///     - The decodable metrics handles returned by this API are only valid to
-///       decode metrics raw data with ::zetMetricTracerDecodeExp(). Decodable
-///       metric handles are not valid to compare with metrics handles included
-///       in metric groups.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hMetricDecoder`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pCount`
-///         + `nullptr == phMetrics`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricDecoderGetDecodableMetricsExp(
-    zet_metric_decoder_exp_handle_t hMetricDecoder,                         ///< [in] handle of the metric decoder object
-    uint32_t* pCount,                                                       ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
-                                                                            ///< handle. If count is zero, then the driver shall 
-                                                                            ///< update the value with the total number of decodable metrics available
-                                                                            ///< in the decoder. if count is greater than zero 
-                                                                            ///< but less than the total number of decodable metrics available in the
-                                                                            ///< decoder, then only that number will be returned. 
-                                                                            ///< if count is greater than the number of decodable metrics available in
-                                                                            ///< the decoder, then the driver shall update the 
-                                                                            ///< value with the actual number of decodable metrics available. 
-    zet_metric_handle_t* phMetrics                                          ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
-                                                                            ///< the hMetricDecoder handle provided.
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Decode raw events collected from a tracer.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == phMetricDecoder`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pRawDataSize`
-///         + `nullptr == phMetrics`
-///         + `nullptr == pSetCount`
-///         + `nullptr == pMetricEntriesCount`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricTracerDecodeExp(
-    zet_metric_decoder_exp_handle_t phMetricDecoder,                        ///< [in] handle of the metric decoder object
-    size_t* pRawDataSize,                                                   ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
-                                                                            ///< greater than zero but less than total number of 
-                                                                            ///< decodable metrics available in the raw data buffer, then driver shall
-                                                                            ///< update this value with actual number of raw 
-                                                                            ///< data bytes processed.
-    uint8_t* pRawData,                                                      ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                                            ///< data in raw format
-    uint32_t metricsCount,                                                  ///< [in] number of decodable metrics in the tracer for which the
-                                                                            ///< hMetricDecoder handle was provided. See 
-                                                                            ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
-                                                                            ///< than zero but less than the number decodable 
-                                                                            ///< metrics available in the raw data buffer, then driver shall only
-                                                                            ///< decode those.
-    zet_metric_handle_t* phMetrics,                                         ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
-                                                                            ///< the decoder for which the hMetricDecoder handle was 
-                                                                            ///< provided. Metrics handles are expected to be for decodable metrics,
-                                                                            ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
-    uint32_t* pSetCount,                                                    ///< [in,out] pointer to number of metric sets. If count is zero, then the
-                                                                            ///< driver shall update the value with the total
-                                                                            ///< number of metric sets to be decoded. If count is greater than the
-                                                                            ///< number available in the raw data buffer, then the
-                                                                            ///< driver shall update the value with the actual number of metric sets to
-                                                                            ///< be decoded. There is a 1:1 relation between
-                                                                            ///< the number of sets and sub-devices returned in the decoded entries.
-    uint32_t* pMetricEntriesCountPerSet,                                    ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
-                                                                            ///< counts per metric set, one value per set.
-    uint32_t* pMetricEntriesCount,                                          ///< [in,out]  pointer to the total number of metric entries decoded, for
-                                                                            ///< all metric sets. If count is zero, then the
-                                                                            ///< driver shall update the value with the total number of metric entries
-                                                                            ///< to be decoded. If count is greater than zero
-                                                                            ///< but less than the total number of metric entries available in the raw
-                                                                            ///< data, then user provided number will be decoded.
-                                                                            ///< If count is greater than the number available in the raw data buffer,
-                                                                            ///< then the driver shall update the value with
-                                                                            ///< the actual number of decodable metric entries decoded. If set to null,
-                                                                            ///< then driver will only update the value of
-                                                                            ///< pSetCount.
-    zet_metric_entry_exp_t* pMetricEntries                                  ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
-                                                                            ///< decoded metric entries
-    );
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Metrics/Metric Groups which export Memory
-#if !defined(__GNUC__)
-#pragma region metricExportMemory
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZET_METRIC_EXPORT_MEMORY_EXP_NAME
-/// @brief Metric Export Memory Experimental Extension Name
-#define ZET_METRIC_EXPORT_MEMORY_EXP_NAME  "ZET_experimental_metric_export_memory"
-#endif // ZET_METRIC_EXPORT_MEMORY_EXP_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Metric Export Memory Experimental Extension Version(s)
-typedef enum _zet_metric_export_memory_exp_version_t
-{
-    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),     ///< version 1.0
-    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_* ENUMs
-
-} zet_metric_export_memory_exp_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Metric group type
-typedef uint32_t zet_metric_group_type_exp_flags_t;
-typedef enum _zet_metric_group_type_exp_flag_t
-{
-    ZET_METRIC_GROUP_TYPE_EXP_FLAG_EXPORT_DMA_BUF = ZE_BIT(0),              ///< Metric group and metrics exports memory using linux dma-buf, which
-                                                                            ///< could be imported/mapped to the host process. Properties of the
-                                                                            ///< dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
-    ZET_METRIC_GROUP_TYPE_EXP_FLAG_USER_CREATED = ZE_BIT(1),                ///< Metric group created using ::zetDeviceCreateMetricGroupsFromMetricsExp
-    ZET_METRIC_GROUP_TYPE_EXP_FLAG_OTHER = ZE_BIT(2),                       ///< Metric group which has a collection of metrics
-    ZET_METRIC_GROUP_TYPE_EXP_FLAG_MARKER = ZE_BIT(3),                      ///< Metric group is capable of generating Marker metric
-    ZET_METRIC_GROUP_TYPE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_TYPE_EXP_FLAG_* ENUMs
-
-} zet_metric_group_type_exp_flag_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Query the metric group type using `pNext` of
-///        ::zet_metric_group_properties_t
-typedef struct _zet_metric_group_type_exp_t
-{
-    zet_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    zet_metric_group_type_exp_flags_t type;                                 ///< [out] metric group type.
-                                                                            ///< returns a combination of ::zet_metric_group_type_exp_flags_t.
-
-} zet_metric_group_type_exp_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported dma_buf properties queried using `pNext` of
-///        ::zet_metric_group_properties_t or ::zet_metric_properties_t
-typedef struct _zet_export_dma_buf_exp_properties_t
-{
-    zet_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    int fd;                                                                 ///< [out] the file descriptor handle that could be used to import the
-                                                                            ///< memory by the host process.
-    size_t size;                                                            ///< [out] size in bytes of the dma_buf
-
-} zet_export_dma_buf_exp_properties_t;
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Tool Experimental Extension to support Markers using MetricGroup
-#if !defined(__GNUC__)
-#pragma region metricGroupMarker
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZET_METRIC_GROUP_MARKER_EXP_NAME
-/// @brief Marker Support Using MetricGroup Experimental Extension Name
-#define ZET_METRIC_GROUP_MARKER_EXP_NAME  "ZET_experimental_metric_group_marker"
-#endif // ZET_METRIC_GROUP_MARKER_EXP_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Marker Support Using MetricGroup Experimental Extension Version(s)
-typedef enum _zet_metric_group_marker_exp_version_t
-{
-    ZET_METRIC_GROUP_MARKER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
-    ZET_METRIC_GROUP_MARKER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZET_METRIC_GROUP_MARKER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_MARKER_EXP_VERSION_* ENUMs
-
-} zet_metric_group_marker_exp_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Query the metric source unique identifier using `pNext` of
-///        ::zet_metric_group_properties_t
-typedef struct _zet_metric_source_id_exp_t
-{
-    zet_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint32_t sourceId;                                                      ///< [out] unique number representing the Metric Source.
-
-} zet_metric_source_id_exp_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Append a Marker based on the Metric source of the Metric Group, to a
-///        Command List.
-/// 
-/// @details
-///     - This function appends a Marker based on the Metric source of the
-///       Metric Group, to Command List.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///         + `nullptr == hMetricGroup`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetCommandListAppendMarkerExp(
-    zet_command_list_handle_t hCommandList,                                 ///< [in] handle to the command list
-    zet_metric_group_handle_t hMetricGroup,                                 ///< [in] handle to the marker metric group.
-                                                                            ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
-                                                                            ///< marker is supoported by the metric group.
-    uint32_t value                                                          ///< [in] marker value
-    );
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Runtime Enabling and Disabling metrics
-#if !defined(__GNUC__)
-#pragma region metricRuntimeEnableDisable
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME
-/// @brief Runtime Enabling and Disabling Metrics Extension Name
-#define ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME  "ZET_experimental_metrics_runtime_enable_disable"
-#endif // ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Runtime Enabling and Disabling Metrics Extension Version(s)
-typedef enum _zet_metrics_runtime_enable_disable_exp_version_t
-{
-    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),   ///< version 1.0
-    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
-    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_* ENUMs
-
-} zet_metrics_runtime_enable_disable_exp_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Enable Metrics collection during runtime.
-/// 
-/// @details
-///     - This API enables metric collection for a device/sub-device if not
-///       already enabled.
-///     - if ZET_ENABLE_METRICS=1 was already set, then calling this api would
-///       be a NOP.
-///     - This api should be called after calling zeInit().
-///     - If device is a root-device handle, then its sub-devices are also
-///       enabled.
-///     - ::zetDeviceDisableMetricsExp need not be called if if this api returns
-///       error.
-///     - This API can be used as runtime alternative to setting
-///       ZET_ENABLE_METRICS=1.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hDevice`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetDeviceEnableMetricsExp(
-    zet_device_handle_t hDevice                                             ///< [in] handle of the device where metrics collection has to be enabled.
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Disable Metrics collection during runtime, if it was already enabled.
-/// 
-/// @details
-///     - This API disables metrics collection for a device/sub-device, if it
-///       was previously enabled.
-///     - If device is a root-device handle, then its sub-devices are also
-///       disabled.
-///     - The application has to ensure that all metric operations are complete
-///       and all metric resources are released before this API is called.
-///     - If there are metric operations in progress or metric resources are not
-///       released, then ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE is returned.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hDevice`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zetDeviceDisableMetricsExp(
-    zet_device_handle_t hDevice                                             ///< [in] handle of the device where metrics collection has to be disabled
-    );
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
 // Intel 'oneAPI' Level-Zero Tool Experimental Extension for Calculating Multiple Metrics
 #if !defined(__GNUC__)
 #pragma region multiMetricValues
@@ -3037,18 +2325,19 @@ typedef struct _zet_metric_global_timestamps_resolution_exp_t
                                                                             ///< structure (i.e. contains stype and pNext).
     uint64_t timerResolution;                                               ///< [out] Returns the resolution of metrics timer (used for timestamps) in
                                                                             ///< cycles/sec.
-    uint64_t timestampValidBits;                                            ///< [out] Returns the number of valid bits in the timestamp value.
+    uint64_t timestampValidBits;                                            ///< [out] Returns the number of valid bits in the timestamp value. (i.e
+                                                                            ///< can be used to calculate the max value of the hardware timestamp
+                                                                            ///< register or can be use to generate the mask of valid bits in the
+                                                                            ///< timestamp value)
 
 } zet_metric_global_timestamps_resolution_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Returns metric timestamps synchronized with global device timestamps,
-///        optionally synchronized with host
+/// @brief Returns metric timestamps synchronized with either host or device
+///        timestamps at the time of invoking the function
 /// 
 /// @details
 ///     - The application may call this function from simultaneous threads.
-///     - By default, the global and metrics timestamps are synchronized to the
-///       device.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3072,9 +2361,11 @@ typedef struct _zet_metric_global_timestamps_resolution_exp_t
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetMetricGroupGetGlobalTimestampsExp(
     zet_metric_group_handle_t hMetricGroup,                                 ///< [in] handle of the metric group
-    ze_bool_t synchronizedWithHost,                                         ///< [in] Returns the timestamps synchronized to the host or the device.
-    uint64_t* globalTimestamp,                                              ///< [out] Device timestamp.
-    uint64_t* metricTimestamp                                               ///< [out] Metric timestamp.
+    ze_bool_t synchronizedWithHost,                                         ///< [in] if set to true, the globalTimestamp will reflect the host
+                                                                            ///< timestamp, else will reflect the device timestamp.
+    uint64_t* globalTimestamp,                                              ///< [out] if synchronizedWithHost is false, timestamp is in tick counts.
+                                                                            ///< [out] if synchronizedWithHost is true, the timestamp is in nanoseconds.
+    uint64_t* metricTimestamp                                               ///< [out] Metric timestamp in tick counts.
     );
 
 #if !defined(__GNUC__)
@@ -3979,6 +3270,718 @@ zetMetricGroupDestroyExp(
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetMetricDestroyExp(
     zet_metric_handle_t hMetric                                             ///< [in] Handle of the metric to destroy
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension to get Concurrent Metric Groups
+#if !defined(__GNUC__)
+#pragma region concurrentMetricGroup
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME
+/// @brief Concurrent Metric Groups Experimental Extension Name
+#define ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME  "ZET_experimental_concurrent_metric_groups"
+#endif // ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Concurrent Metric Groups Experimental Extension Version(s)
+typedef enum _zet_concurrent_metric_groups_exp_version_t
+{
+    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
+    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_* ENUMs
+
+} zet_concurrent_metric_groups_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get sets of metric groups which could be collected concurrently.
+/// 
+/// @details
+///     - Re-arrange the input metric groups to provide sets of concurrent
+///       metric groups.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetDeviceGetConcurrentMetricGroupsExp(
+    zet_device_handle_t hDevice,                                            ///< [in] handle of the device
+    uint32_t metricGroupCount,                                              ///< [in] metric group count
+    zet_metric_group_handle_t * phMetricGroups,                             ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
+                                                                            ///< groups
+    uint32_t * pMetricGroupsCountPerConcurrentGroup,                        ///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
+                                                                            ///< concurrent group.
+    uint32_t * pConcurrentGroupCount                                        ///< [out] number of concurrent groups.
+                                                                            ///< The value of this parameter could be used to determine the number of
+                                                                            ///< replays necessary.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Metrics Tracer
+#if !defined(__GNUC__)
+#pragma region metricTracer
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_METRICS_TRACER_EXP_NAME
+/// @brief Metric Tracer Experimental Extension Name
+#define ZET_METRICS_TRACER_EXP_NAME  "ZET_experimental_metric_tracer"
+#endif // ZET_METRICS_TRACER_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Tracer Experimental Extension Version(s)
+typedef enum _zet_metric_tracer_exp_version_t
+{
+    ZET_METRIC_TRACER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
+    ZET_METRIC_TRACER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
+    ZET_METRIC_TRACER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_TRACER_EXP_VERSION_* ENUMs
+
+} zet_metric_tracer_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of metric tracer's object
+typedef struct _zet_metric_tracer_exp_handle_t *zet_metric_tracer_exp_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of metric decoder's object
+typedef struct _zet_metric_decoder_exp_handle_t *zet_metric_decoder_exp_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric tracer descriptor
+typedef struct _zet_metric_tracer_exp_desc_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t notifyEveryNBytes;                                             ///< [in,out] number of collected bytes after which notification event will
+                                                                            ///< be signaled. If the requested value is not supported exactly, then the
+                                                                            ///< driver may use a value that is the closest supported approximation and
+                                                                            ///< shall update this member during ::zetMetricTracerCreateExp.
+
+} zet_metric_tracer_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Decoded metric entry
+typedef struct _zet_metric_entry_exp_t
+{
+    zet_value_t value;                                                      ///< [out] value of the decodable metric entry or event. Number is
+                                                                            ///< meaningful based on the metric type.
+    uint64_t timeStamp;                                                     ///< [out] timestamp at which the event happened.
+    uint32_t metricIndex;                                                   ///< [out] index to the decodable metric handle in the input array
+                                                                            ///< (phMetric) in ::zetMetricTracerDecodeExp().
+    ze_bool_t onSubdevice;                                                  ///< [out] True if the event occurred on a sub-device; false means the
+                                                                            ///< device on which the metric tracer was opened does not have
+                                                                            ///< sub-devices.
+    uint32_t subdeviceId;                                                   ///< [out] If onSubdevice is true, this gives the ID of the sub-device.
+
+} zet_metric_entry_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create a metric tracer for a device.
+/// 
+/// @details
+///     - The notification event must have been created from an event pool that
+///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
+///     - The duration of the signal event created from an event pool that was
+///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       However, for consistency and orthogonality the event will report
+///       correctly as signaled when used by other event API functionality.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same device handle.
+///     - The metric tracer is created in disabled state
+///     - Metric groups must support sampling type
+///       ZET_METRIC_SAMPLING_TYPE_EXP_FLAG_TRACER_BASED
+///     - All metric groups must be first activated
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phMetricGroups`
+///         + `nullptr == desc`
+///         + `nullptr == phMetricTracer`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricTracerCreateExp(
+    zet_context_handle_t hContext,                                          ///< [in] handle of the context object
+    zet_device_handle_t hDevice,                                            ///< [in] handle of the device
+    uint32_t metricGroupCount,                                              ///< [in] metric group count
+    zet_metric_group_handle_t* phMetricGroups,                              ///< [in][range(0, metricGroupCount )] handles of the metric groups to
+                                                                            ///< trace
+    zet_metric_tracer_exp_desc_t* desc,                                     ///< [in,out] metric tracer descriptor
+    ze_event_handle_t hNotificationEvent,                                   ///< [in][optional] event used for report availability notification. Note:
+                                                                            ///< If buffer is not drained when the event it flagged, there is a risk of
+                                                                            ///< HW event buffer being overrun
+    zet_metric_tracer_exp_handle_t* phMetricTracer                          ///< [out] handle of the metric tracer
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroy a metric tracer.
+/// 
+/// @details
+///     - The application must **not** call this function from simultaneous
+///       threads with the same metric tracer handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricTracer`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricTracerDestroyExp(
+    zet_metric_tracer_exp_handle_t hMetricTracer                            ///< [in] handle of the metric tracer
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Start events collection
+/// 
+/// @details
+///     - Driver implementations must make this API call have as minimal
+///       overhead as possible, to allow applications start/stop event
+///       collection at any point during execution
+///     - The application must **not** call this function from simultaneous
+///       threads with the same metric tracer handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricTracer`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricTracerEnableExp(
+    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
+    ze_bool_t synchronous                                                   ///< [in] request synchronous behavior. Confirmation of successful
+                                                                            ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                                            ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
+                                                                            ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
+                                                                            ///< when the tracer is active.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Stop events collection
+/// 
+/// @details
+///     - Driver implementations must make this API call have as minimal
+///       overhead as possible, to allow applications start/stop event
+///       collection at any point during execution
+///     - The application must **not** call this function from simultaneous
+///       threads with the same metric tracer handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricTracer`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricTracerDisableExp(
+    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
+    ze_bool_t synchronous                                                   ///< [in] request synchronous behavior. Confirmation of successful
+                                                                            ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                                            ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
+                                                                            ///< when the tracer is active or when it is inactive but still has data. 
+                                                                            ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
+                                                                            ///< has no more data to be retrieved.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Read data from the metric tracer
+/// 
+/// @details
+///     - The application must **not** call this function from simultaneous
+///       threads with the same metric tracer handle.
+///     - Data can be retrieved after tracer is disabled. When buffers are
+///       drained ::ZE_RESULT_NOT_READY will be returned
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricTracer`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pRawDataSize`
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA
+///         + Metric tracer data may have been dropped.
+///     - ::ZE_RESULT_NOT_READY
+///         + Metric tracer is disabled and no data is available to read.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricTracerReadDataExp(
+    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
+    size_t* pRawDataSize,                                                   ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                                            ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                                            ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                                            ///< number of bytes written into the buffer.
+                                                                            ///< If the size returns the full size requested, the application may need
+                                                                            ///< to issue additional reads to
+                                                                            ///< retrieve any remaining reports that did not fit into the buffer.
+    uint8_t* pRawData                                                       ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                                            ///< data in raw format
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create a metric decoder for a given metric tracer.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricTracer`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phMetricDecoder`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricDecoderCreateExp(
+    zet_metric_tracer_exp_handle_t hMetricTracer,                           ///< [in] handle of the metric tracer
+    zet_metric_decoder_exp_handle_t* phMetricDecoder                        ///< [out] handle of the metric decoder object
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroy a metric decoder.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == phMetricDecoder`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricDecoderDestroyExp(
+    zet_metric_decoder_exp_handle_t phMetricDecoder                         ///< [in] handle of the metric decoder object
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Return the list of the decodable metrics from the decoder.
+/// 
+/// @details
+///     - The decodable metrics handles returned by this API are defined by the
+///       metric groups in the tracer on which the decoder was created.
+///     - The decodable metrics handles returned by this API are only valid to
+///       decode metrics raw data with ::zetMetricTracerDecodeExp(). Decodable
+///       metric handles are not valid to compare with metrics handles included
+///       in metric groups.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricDecoder`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+///         + `nullptr == phMetrics`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricDecoderGetDecodableMetricsExp(
+    zet_metric_decoder_exp_handle_t hMetricDecoder,                         ///< [in] handle of the metric decoder object
+    uint32_t* pCount,                                                       ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
+                                                                            ///< handle. If count is zero, then the driver shall 
+                                                                            ///< update the value with the total number of decodable metrics available
+                                                                            ///< in the decoder. if count is greater than zero 
+                                                                            ///< but less than the total number of decodable metrics available in the
+                                                                            ///< decoder, then only that number will be returned. 
+                                                                            ///< if count is greater than the number of decodable metrics available in
+                                                                            ///< the decoder, then the driver shall update the 
+                                                                            ///< value with the actual number of decodable metrics available. 
+    zet_metric_handle_t* phMetrics                                          ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
+                                                                            ///< the hMetricDecoder handle provided.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Decode raw events collected from a tracer.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == phMetricDecoder`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pRawDataSize`
+///         + `nullptr == phMetrics`
+///         + `nullptr == pSetCount`
+///         + `nullptr == pMetricEntriesCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricTracerDecodeExp(
+    zet_metric_decoder_exp_handle_t phMetricDecoder,                        ///< [in] handle of the metric decoder object
+    size_t* pRawDataSize,                                                   ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
+                                                                            ///< greater than zero but less than total number of 
+                                                                            ///< decodable metrics available in the raw data buffer, then driver shall
+                                                                            ///< update this value with actual number of raw 
+                                                                            ///< data bytes processed.
+    uint8_t* pRawData,                                                      ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                                            ///< data in raw format
+    uint32_t metricsCount,                                                  ///< [in] number of decodable metrics in the tracer for which the
+                                                                            ///< hMetricDecoder handle was provided. See 
+                                                                            ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
+                                                                            ///< than zero but less than the number decodable 
+                                                                            ///< metrics available in the raw data buffer, then driver shall only
+                                                                            ///< decode those.
+    zet_metric_handle_t* phMetrics,                                         ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
+                                                                            ///< the decoder for which the hMetricDecoder handle was 
+                                                                            ///< provided. Metrics handles are expected to be for decodable metrics,
+                                                                            ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
+    uint32_t* pSetCount,                                                    ///< [in,out] pointer to number of metric sets. If count is zero, then the
+                                                                            ///< driver shall update the value with the total
+                                                                            ///< number of metric sets to be decoded. If count is greater than the
+                                                                            ///< number available in the raw data buffer, then the
+                                                                            ///< driver shall update the value with the actual number of metric sets to
+                                                                            ///< be decoded. There is a 1:1 relation between
+                                                                            ///< the number of sets and sub-devices returned in the decoded entries.
+    uint32_t* pMetricEntriesCountPerSet,                                    ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
+                                                                            ///< counts per metric set, one value per set.
+    uint32_t* pMetricEntriesCount,                                          ///< [in,out]  pointer to the total number of metric entries decoded, for
+                                                                            ///< all metric sets. If count is zero, then the
+                                                                            ///< driver shall update the value with the total number of metric entries
+                                                                            ///< to be decoded. If count is greater than zero
+                                                                            ///< but less than the total number of metric entries available in the raw
+                                                                            ///< data, then user provided number will be decoded.
+                                                                            ///< If count is greater than the number available in the raw data buffer,
+                                                                            ///< then the driver shall update the value with
+                                                                            ///< the actual number of decodable metric entries decoded. If set to null,
+                                                                            ///< then driver will only update the value of
+                                                                            ///< pSetCount.
+    zet_metric_entry_exp_t* pMetricEntries                                  ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
+                                                                            ///< decoded metric entries
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Metrics/Metric Groups which export Memory
+#if !defined(__GNUC__)
+#pragma region metricExportMemory
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_METRIC_EXPORT_MEMORY_EXP_NAME
+/// @brief Metric Export Memory Experimental Extension Name
+#define ZET_METRIC_EXPORT_MEMORY_EXP_NAME  "ZET_experimental_metric_export_memory"
+#endif // ZET_METRIC_EXPORT_MEMORY_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Export Memory Experimental Extension Version(s)
+typedef enum _zet_metric_export_memory_exp_version_t
+{
+    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),     ///< version 1.0
+    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_EXPORT_MEMORY_EXP_VERSION_* ENUMs
+
+} zet_metric_export_memory_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric group type
+typedef uint32_t zet_metric_group_type_exp_flags_t;
+typedef enum _zet_metric_group_type_exp_flag_t
+{
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_EXPORT_DMA_BUF = ZE_BIT(0),              ///< Metric group and metrics exports memory using linux dma-buf, which
+                                                                            ///< could be imported/mapped to the host process. Properties of the
+                                                                            ///< dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_USER_CREATED = ZE_BIT(1),                ///< Metric group created using ::zetDeviceCreateMetricGroupsFromMetricsExp
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_OTHER = ZE_BIT(2),                       ///< Metric group which has a collection of metrics
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_MARKER = ZE_BIT(3),                      ///< Metric group is capable of generating Marker metric
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_TYPE_EXP_FLAG_* ENUMs
+
+} zet_metric_group_type_exp_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query the metric group type using `pNext` of
+///        ::zet_metric_group_properties_t
+typedef struct _zet_metric_group_type_exp_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zet_metric_group_type_exp_flags_t type;                                 ///< [out] metric group type.
+                                                                            ///< returns a combination of ::zet_metric_group_type_exp_flags_t.
+
+} zet_metric_group_type_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported dma_buf properties queried using `pNext` of
+///        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+typedef struct _zet_export_dma_buf_exp_properties_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    int fd;                                                                 ///< [out] the file descriptor handle that could be used to import the
+                                                                            ///< memory by the host process.
+    size_t size;                                                            ///< [out] size in bytes of the dma_buf
+
+} zet_export_dma_buf_exp_properties_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension to support Markers using MetricGroup
+#if !defined(__GNUC__)
+#pragma region metricGroupMarker
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_METRIC_GROUP_MARKER_EXP_NAME
+/// @brief Marker Support Using MetricGroup Experimental Extension Name
+#define ZET_METRIC_GROUP_MARKER_EXP_NAME  "ZET_experimental_metric_group_marker"
+#endif // ZET_METRIC_GROUP_MARKER_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Marker Support Using MetricGroup Experimental Extension Version(s)
+typedef enum _zet_metric_group_marker_exp_version_t
+{
+    ZET_METRIC_GROUP_MARKER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
+    ZET_METRIC_GROUP_MARKER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZET_METRIC_GROUP_MARKER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_MARKER_EXP_VERSION_* ENUMs
+
+} zet_metric_group_marker_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query the metric source unique identifier using `pNext` of
+///        ::zet_metric_group_properties_t
+typedef struct _zet_metric_source_id_exp_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t sourceId;                                                      ///< [out] unique number representing the Metric Source.
+
+} zet_metric_source_id_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Append a Marker based on the Metric source of the Metric Group, to a
+///        Command List.
+/// 
+/// @details
+///     - This function appends a Marker based on the Metric source of the
+///       Metric Group, to Command List.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hMetricGroup`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetCommandListAppendMarkerExp(
+    zet_command_list_handle_t hCommandList,                                 ///< [in] handle to the command list
+    zet_metric_group_handle_t hMetricGroup,                                 ///< [in] handle to the marker metric group.
+                                                                            ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                                            ///< marker is supoported by the metric group.
+    uint32_t value                                                          ///< [in] marker value
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Runtime Enabling and Disabling metrics
+#if !defined(__GNUC__)
+#pragma region metricRuntimeEnableDisable
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME
+/// @brief Runtime Enabling and Disabling Metrics Extension Name
+#define ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME  "ZET_experimental_metrics_runtime_enable_disable"
+#endif // ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Runtime Enabling and Disabling Metrics Extension Version(s)
+typedef enum _zet_metrics_runtime_enable_disable_exp_version_t
+{
+    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),   ///< version 1.0
+    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
+    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_* ENUMs
+
+} zet_metrics_runtime_enable_disable_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Enable Metrics collection during runtime.
+/// 
+/// @details
+///     - This API enables metric collection for a device/sub-device if not
+///       already enabled.
+///     - if ZET_ENABLE_METRICS=1 was already set, then calling this api would
+///       be a NOP.
+///     - This api should be called after calling zeInit().
+///     - If device is a root-device handle, then its sub-devices are also
+///       enabled.
+///     - ::zetDeviceDisableMetricsExp need not be called if if this api returns
+///       error.
+///     - This API can be used as runtime alternative to setting
+///       ZET_ENABLE_METRICS=1.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetDeviceEnableMetricsExp(
+    zet_device_handle_t hDevice                                             ///< [in] handle of the device where metrics collection has to be enabled.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Disable Metrics collection during runtime, if it was already enabled.
+/// 
+/// @details
+///     - This API disables metrics collection for a device/sub-device, if it
+///       was previously enabled.
+///     - If device is a root-device handle, then its sub-devices are also
+///       disabled.
+///     - The application has to ensure that all metric operations are complete
+///       and all metric resources are released before this API is called.
+///     - If there are metric operations in progress or metric resources are not
+///       released, then ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE is returned.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetDeviceDisableMetricsExp(
+    zet_device_handle_t hDevice                                             ///< [in] handle of the device where metrics collection has to be disabled
     );
 
 #if !defined(__GNUC__)

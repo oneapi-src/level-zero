@@ -9033,74 +9033,6 @@ zesTemperatureGetState(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Update PCI Link Speed (Downgrade or Upgrade (restore to its default
-///        speed))
-/// 
-/// @details
-///     - This function allows updating the PCI link speed to downgrade or
-///       upgrade (restore to its default speed) the connection.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hDevice`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pendingAction`
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///         + User does not have permissions to perform this operation.
-ze_result_t ZE_APICALL
-zesDevicePciLinkSpeedUpdateExt(
-    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
-    ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
-                                                    ///< or set to default speed(false)
-    zes_device_action_t* pendingAction              ///< [out] Pending action
-    )
-{
-    #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
-    if(ze_lib::destruction) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-    static const zes_pfnDevicePciLinkSpeedUpdateExt_t pfnPciLinkSpeedUpdateExt = [&result] {
-        auto pfnPciLinkSpeedUpdateExt = ze_lib::context->zesDdiTable.load()->Device.pfnPciLinkSpeedUpdateExt;
-        if( nullptr == pfnPciLinkSpeedUpdateExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnPciLinkSpeedUpdateExt;
-    }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
-    }
-    return pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
-    #else
-    if(ze_lib::destruction) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnPciLinkSpeedUpdateExt = ze_lib::context->zesDdiTable.load()->Device.pfnPciLinkSpeedUpdateExt;
-    if( nullptr == pfnPciLinkSpeedUpdateExt ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
-    #endif
-}
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Get power limits
 /// 
 /// @details
@@ -10961,6 +10893,74 @@ zesVFManagementGetVFCapabilitiesExp2(
     }
 
     return pfnGetVFCapabilitiesExp2( hVFhandle, pCapability );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Update PCI Link Speed (Downgrade or Upgrade (restore to its default
+///        speed))
+/// 
+/// @details
+///     - This function allows updating the PCI link speed to downgrade or
+///       upgrade (restore to its default speed) the connection.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pendingAction`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to perform this operation.
+ze_result_t ZE_APICALL
+zesDevicePciLinkSpeedUpdateExt(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                    ///< or set to default speed(false)
+    zes_device_action_t* pendingAction              ///< [out] Pending action
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDevicePciLinkSpeedUpdateExt_t pfnPciLinkSpeedUpdateExt = [&result] {
+        auto pfnPciLinkSpeedUpdateExt = ze_lib::context->zesDdiTable.load()->Device.pfnPciLinkSpeedUpdateExt;
+        if( nullptr == pfnPciLinkSpeedUpdateExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnPciLinkSpeedUpdateExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnPciLinkSpeedUpdateExt = ze_lib::context->zesDdiTable.load()->Device.pfnPciLinkSpeedUpdateExt;
+    if( nullptr == pfnPciLinkSpeedUpdateExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
     #endif
 }
 
