@@ -28,6 +28,17 @@ namespace driver
         #endif
         std::string null_driver_id_str = std::to_string(ZEL_NULL_DRIVER_ID);
         ddiExtensionSupported = (ddi_test_disable != null_driver_id_str && ddi_test_disable != "3");
+
+        // Drivers reporting API version >= 1.17 are required by the spec to support the Driver
+        // DDI Handles extension at version 1.1, and the loader relies on that contract to skip
+        // the extension-property query for them. When this test driver is configured to simulate
+        // a driver that does NOT provide DDI Handles ext v1.1 (the extension is disabled, or only
+        // v1.0 is advertised), it must report a pre-1.17 API version so the loader exercises the
+        // legacy extension-property detection path instead of assuming support.
+        auto ddi_version_env = getenv_string( "ZEL_TEST_DDI_HANDLES_EXT_VERSION" );
+        if (!ddiExtensionSupported || ddi_version_env == "1_0") {
+            version = ZE_API_VERSION_1_16;
+        }
         
         zesDdiTable.Driver.pfnGet = [](
             uint32_t* pCount,
