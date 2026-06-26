@@ -36,7 +36,7 @@ To generate the code from the scripts, run the following commands:
 * Clone the specification repo: `git clone https://github.com/oneapi-src/level-zero-spec.git level-zero-spec`
 * Checkout the specification version in the specification repo, for example:
   * `cd level-zero-spec`
-  * `git checkout v1.17.23`
+  * `git checkout v1.17.24`
 * Generate the specification JSON file and Headers:
   * `cd level-zero-spec/scripts`
   * `python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver 1.16`

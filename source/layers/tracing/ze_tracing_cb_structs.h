@@ -27,27 +27,6 @@ typedef struct _zel_ze_global_callbacks_t
 } zel_ze_global_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of ExecutableGraph callback functions pointers
-typedef struct _zel_ze_executable_graph_callbacks_t
-{
-    ze_pfnExecutableGraphGetSourceGraphExtCb_t                      pfnGetSourceGraphExtCb;
-    ze_pfnExecutableGraphDestroyExtCb_t                             pfnDestroyExtCb;
-} zel_ze_executable_graph_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Graph callback functions pointers
-typedef struct _zel_ze_graph_callbacks_t
-{
-    ze_pfnGraphCreateExtCb_t                                        pfnCreateExtCb;
-    ze_pfnGraphGetPrimaryCommandListExtCb_t                         pfnGetPrimaryCommandListExtCb;
-    ze_pfnGraphSetDestructionCallbackExtCb_t                        pfnSetDestructionCallbackExtCb;
-    ze_pfnGraphInstantiateExtCb_t                                   pfnInstantiateExtCb;
-    ze_pfnGraphIsEmptyExtCb_t                                       pfnIsEmptyExtCb;
-    ze_pfnGraphDumpContentsExtCb_t                                  pfnDumpContentsExtCb;
-    ze_pfnGraphDestroyExtCb_t                                       pfnDestroyExtCb;
-} zel_ze_graph_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of RTASBuilder callback functions pointers
 typedef struct _zel_ze_rtas_builder_callbacks_t
 {
@@ -200,6 +179,7 @@ typedef struct _zel_ze_command_list_callbacks_t
     ze_pfnCommandListImmediateGetFlagsCb_t                          pfnImmediateGetFlagsCb;
     ze_pfnCommandListImmediateGetModeCb_t                           pfnImmediateGetModeCb;
     ze_pfnCommandListImmediateGetPriorityCb_t                       pfnImmediateGetPriorityCb;
+    ze_pfnCommandListIsMutableExpCb_t                               pfnIsMutableExpCb;
     ze_pfnCommandListBeginGraphCaptureExtCb_t                       pfnBeginGraphCaptureExtCb;
     ze_pfnCommandListBeginCaptureIntoGraphExtCb_t                   pfnBeginCaptureIntoGraphExtCb;
     ze_pfnCommandListIsGraphCaptureEnabledExtCb_t                   pfnIsGraphCaptureEnabledExtCb;
@@ -207,7 +187,6 @@ typedef struct _zel_ze_command_list_callbacks_t
     ze_pfnCommandListGetGraphExtCb_t                                pfnGetGraphExtCb;
     ze_pfnCommandListAppendGraphExtCb_t                             pfnAppendGraphExtCb;
     ze_pfnCommandListAppendHostFunctionCb_t                         pfnAppendHostFunctionCb;
-    ze_pfnCommandListIsMutableExpCb_t                               pfnIsMutableExpCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
     ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;
@@ -405,12 +384,31 @@ typedef struct _zel_ze_fabric_vertex_callbacks_t
 } zel_ze_fabric_vertex_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of ExecutableGraph callback functions pointers
+typedef struct _zel_ze_executable_graph_callbacks_t
+{
+    ze_pfnExecutableGraphGetSourceGraphExtCb_t                      pfnGetSourceGraphExtCb;
+    ze_pfnExecutableGraphDestroyExtCb_t                             pfnDestroyExtCb;
+} zel_ze_executable_graph_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Graph callback functions pointers
+typedef struct _zel_ze_graph_callbacks_t
+{
+    ze_pfnGraphCreateExtCb_t                                        pfnCreateExtCb;
+    ze_pfnGraphGetPrimaryCommandListExtCb_t                         pfnGetPrimaryCommandListExtCb;
+    ze_pfnGraphSetDestructionCallbackExtCb_t                        pfnSetDestructionCallbackExtCb;
+    ze_pfnGraphInstantiateExtCb_t                                   pfnInstantiateExtCb;
+    ze_pfnGraphIsEmptyExtCb_t                                       pfnIsEmptyExtCb;
+    ze_pfnGraphDumpContentsExtCb_t                                  pfnDumpContentsExtCb;
+    ze_pfnGraphDestroyExtCb_t                                       pfnDestroyExtCb;
+} zel_ze_graph_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all callbacks
 typedef struct _zel_ze_all_callbacks_t
 {
     zel_ze_global_callbacks_t           Global;
-    zel_ze_executable_graph_callbacks_t ExecutableGraph;
-    zel_ze_graph_callbacks_t            Graph;
     zel_ze_rtas_builder_callbacks_t     RTASBuilder;
     zel_ze_rtas_parallel_operation_callbacks_t  RTASParallelOperation;
     zel_ze_driver_callbacks_t           Driver;
@@ -431,6 +429,8 @@ typedef struct _zel_ze_all_callbacks_t
     zel_ze_virtual_mem_callbacks_t      VirtualMem;
     zel_ze_fabric_edge_callbacks_t      FabricEdge;
     zel_ze_fabric_vertex_callbacks_t    FabricVertex;
+    zel_ze_executable_graph_callbacks_t ExecutableGraph;
+    zel_ze_graph_callbacks_t            Graph;
 } zel_ze_all_callbacks_t;
 
 

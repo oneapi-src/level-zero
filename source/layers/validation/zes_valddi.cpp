@@ -3860,41 +3860,6 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(
-        ze_result_t result,
-        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
-        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
-                                                        ///< or set to default speed(false)
-        zes_device_action_t* pendingAction              ///< [out] Pending action
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zesDevicePciLinkSpeedUpdateExt(";
-        
-        
-        oss << "hDevice=";
-        oss << loader::to_string(hDevice);
-        
-        oss << ", ";
-        oss << "shouldDowngrade=";
-        oss << loader::to_string(shouldDowngrade);
-        
-        oss << ", ";
-        oss << "pendingAction=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && pendingAction != nullptr) {
-            oss << loader::to_string(*pendingAction);
-        } else {
-            oss << loader::to_string(pendingAction);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesPowerGetLimitsExt(
         ze_result_t result,
         zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
@@ -4744,6 +4709,41 @@ namespace validation_layer
         oss << ", ";
         oss << "pCapability=";
         oss << loader::to_string(pCapability);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(
+        ze_result_t result,
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                        ///< or set to default speed(false)
+        zes_device_action_t* pendingAction              ///< [out] Pending action
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesDevicePciLinkSpeedUpdateExt(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "shouldDowngrade=";
+        oss << loader::to_string(shouldDowngrade);
+        
+        oss << ", ";
+        oss << "pendingAction=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pendingAction != nullptr) {
+            oss << loader::to_string(*pendingAction);
+        } else {
+            oss << loader::to_string(pendingAction);
+        }
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -10574,50 +10574,6 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesDevicePciLinkSpeedUpdateExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zesDevicePciLinkSpeedUpdateExt(
-        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
-        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
-                                                        ///< or set to default speed(false)
-        zes_device_action_t* pendingAction              ///< [out] Pending action
-        )
-    {
-        context.logger->log_trace("zesDevicePciLinkSpeedUpdateExt(hDevice, shouldDowngrade, pendingAction)");
-
-        auto pfnPciLinkSpeedUpdateExt = context.zesDdiTable.Device.pfnPciLinkSpeedUpdateExt;
-
-        if( nullptr == pfnPciLinkSpeedUpdateExt )
-            return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, shouldDowngrade, pendingAction);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesDevicePciLinkSpeedUpdateExtPrologue( hDevice, shouldDowngrade, pendingAction );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(result, hDevice, shouldDowngrade, pendingAction);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zesHandleLifetime.zesDevicePciLinkSpeedUpdateExtPrologue( hDevice, shouldDowngrade, pendingAction );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(result, hDevice, shouldDowngrade, pendingAction);
-        }
-
-        auto driver_result = pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesDevicePciLinkSpeedUpdateExtEpilogue( hDevice, shouldDowngrade, pendingAction ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(result, hDevice, shouldDowngrade, pendingAction);
-        }
-
-        return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(driver_result, hDevice, shouldDowngrade, pendingAction);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesPowerGetLimitsExt
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetLimitsExt(
@@ -11876,6 +11832,50 @@ namespace validation_layer
         }
 
         return logAndPropagateResult_zesVFManagementGetVFCapabilitiesExp2(driver_result, hVFhandle, pCapability);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDevicePciLinkSpeedUpdateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDevicePciLinkSpeedUpdateExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                        ///< or set to default speed(false)
+        zes_device_action_t* pendingAction              ///< [out] Pending action
+        )
+    {
+        context.logger->log_trace("zesDevicePciLinkSpeedUpdateExt(hDevice, shouldDowngrade, pendingAction)");
+
+        auto pfnPciLinkSpeedUpdateExt = context.zesDdiTable.Device.pfnPciLinkSpeedUpdateExt;
+
+        if( nullptr == pfnPciLinkSpeedUpdateExt )
+            return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, shouldDowngrade, pendingAction);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDevicePciLinkSpeedUpdateExtPrologue( hDevice, shouldDowngrade, pendingAction );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(result, hDevice, shouldDowngrade, pendingAction);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDevicePciLinkSpeedUpdateExtPrologue( hDevice, shouldDowngrade, pendingAction );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(result, hDevice, shouldDowngrade, pendingAction);
+        }
+
+        auto driver_result = pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDevicePciLinkSpeedUpdateExtEpilogue( hDevice, shouldDowngrade, pendingAction ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(result, hDevice, shouldDowngrade, pendingAction);
+        }
+
+        return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(driver_result, hDevice, shouldDowngrade, pendingAction);
     }
 
 } // namespace validation_layer

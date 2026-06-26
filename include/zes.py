@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.17-r1.17.23
+ @version v1.17-r1.17.24
 
  """
 import platform
@@ -2173,155 +2173,6 @@ class zes_temp_config_t(Structure):
     ]
 
 ###############################################################################
-## @brief Device ECC default properties Extension Name
-ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME = "ZES_extension_device_ecc_default_properties"
-
-###############################################################################
-## @brief Device ECC default properties Extension Version(s)
-class zes_device_ecc_default_properties_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zes_device_ecc_default_properties_ext_version_t(c_int):
-    def __str__(self):
-        return str(zes_device_ecc_default_properties_ext_version_v(self.value))
-
-
-###############################################################################
-## @brief This structure may be passed to ::zesDeviceGetEccState as pNext member
-##        of ::zes_device_ecc_properties_t.
-class zes_device_ecc_default_properties_ext_t(Structure):
-    _fields_ = [
-        ("stype", zes_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("defaultState", zes_device_ecc_state_t)                        ## [out] Default ECC state
-    ]
-
-###############################################################################
-## @brief PCI Link Speed Downgrade Extension Name
-ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME = "ZES_extension_pci_link_speed_downgrade"
-
-###############################################################################
-## @brief PCI Link Speed Downgrade Extension Version(s)
-class zes_pci_link_speed_downgrade_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zes_pci_link_speed_downgrade_ext_version_t(c_int):
-    def __str__(self):
-        return str(zes_pci_link_speed_downgrade_ext_version_v(self.value))
-
-
-###############################################################################
-## @brief Query PCIe downgrade status.
-## 
-## @details
-##     - This structure can be passed in the 'pNext' of ::zes_pci_state_t
-class zes_pci_link_speed_downgrade_ext_state_t(Structure):
-    _fields_ = [
-        ("stype", zes_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("pciLinkSpeedDowngradeStatus", ze_bool_t)                      ## [out] Returns the current PCIe downgrade status.
-    ]
-
-###############################################################################
-## @brief Query PCIe downgrade capability.
-## 
-## @details
-##     - This structure can be passed in the 'pNext' of ::zes_pci_properties_t
-class zes_pci_link_speed_downgrade_ext_properties_t(Structure):
-    _fields_ = [
-        ("stype", zes_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("pciLinkSpeedUpdateCapable", ze_bool_t),                       ## [out] Returns if PCIe downgrade capability is available.
-        ("maxPciGenSupported", c_int32_t)                               ## [out] Returns the max supported PCIe generation of the device. -1
-                                                                        ## indicates the information is not available
-    ]
-
-###############################################################################
-## @brief Device State Extension Name
-ZES_DEVICE_EXT_STATE_NAME = "ZES_extension_device_state"
-
-###############################################################################
-## @brief Device State Extension Version(s)
-class zes_device_ext_state_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zes_device_ext_state_version_t(c_int):
-    def __str__(self):
-        return str(zes_device_ext_state_version_v(self.value))
-
-
-###############################################################################
-## @brief Device state flags
-class zes_device_state_ext_flags_v(IntEnum):
-    NORMAL = ZE_BIT(0)                                                      ## The device is operating normally
-    WEDGED = ZE_BIT(1)                                                      ## The device is wedged
-    SURVIVABILITY = ZE_BIT(2)                                               ## The device is in survivability mode
-    FLASH_OVERRIDE = ZE_BIT(3)                                              ## The device has flash override enabled
-
-class zes_device_state_ext_flags_t(c_int):
-    def __str__(self):
-        return hex(self.value)
-
-
-###############################################################################
-## @brief Extension properties for Device State
-## 
-## @details
-##     - This structure may be returned from ::zesDeviceGetState via the
-##       `pNext` member of ::zes_device_state_t
-##     - Provides extended device state information including wedged state,
-##       survivability mode, and flash override status
-class zes_device_ext_state_t(Structure):
-    _fields_ = [
-        ("stype", zes_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("flags", zes_device_state_ext_flags_t)                         ## [out] Device state flags. Returns 0 (if state cannot be determined) or
-                                                                        ## a combination of ::zes_device_state_ext_flags_t
-    ]
-
-###############################################################################
-## @brief OEM Serial ID Extension Name
-ZES_OEM_SERIAL_ID_EXT_NAME = "ZES_extension_oem_serial_id"
-
-###############################################################################
-## @brief OEM Serial ID Extension Version(s)
-class zes_oem_serial_id_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
-
-class zes_oem_serial_id_ext_version_t(c_int):
-    def __str__(self):
-        return str(zes_oem_serial_id_ext_version_v(self.value))
-
-
-###############################################################################
-## @brief Maximum OEM serial ID string size
-ZES_OEM_SERIAL_ID_SIZE = 1024
-
-###############################################################################
-## @brief OEM Serial ID Properties structure
-## 
-## @details
-##     - This structure can be passed as an extension structure to
-##       ::zesDeviceGetProperties via pNext member
-##     - Returns the OEM serial ID of the device
-class zes_oem_serial_id_ext_properties_t(Structure):
-    _fields_ = [
-        ("stype", zes_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("length", c_ushort),                                           ## [out] OEM serial ID length
-        ("oemSerialId", c_char * ZES_OEM_SERIAL_ID_SIZE)                ## [out] OEM serial ID for the device.
-    ]
-
-###############################################################################
 ## @brief Power Limits Extension Name
 ZES_POWER_LIMITS_EXT_NAME = "ZES_extension_power_limits"
 
@@ -2762,6 +2613,155 @@ class zes_vf_util_engine_exp2_t(Structure):
         ("activeCounterValue", c_ulonglong),                            ## [out] Represents active counter.
         ("samplingCounterValue", c_ulonglong)                           ## [out] Represents counter value when activeCounterValue was sampled.
                                                                         ## Refer to the formulae above for calculating the utilization percent
+    ]
+
+###############################################################################
+## @brief Device ECC default properties Extension Name
+ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME = "ZES_extension_device_ecc_default_properties"
+
+###############################################################################
+## @brief Device ECC default properties Extension Version(s)
+class zes_device_ecc_default_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_ecc_default_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_ecc_default_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief This structure may be passed to ::zesDeviceGetEccState as pNext member
+##        of ::zes_device_ecc_properties_t.
+class zes_device_ecc_default_properties_ext_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("defaultState", zes_device_ecc_state_t)                        ## [out] Default ECC state
+    ]
+
+###############################################################################
+## @brief PCI Link Speed Downgrade Extension Name
+ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME = "ZES_extension_pci_link_speed_downgrade"
+
+###############################################################################
+## @brief PCI Link Speed Downgrade Extension Version(s)
+class zes_pci_link_speed_downgrade_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_pci_link_speed_downgrade_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_pci_link_speed_downgrade_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Query PCIe downgrade status.
+## 
+## @details
+##     - This structure can be passed in the 'pNext' of ::zes_pci_state_t
+class zes_pci_link_speed_downgrade_ext_state_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("pciLinkSpeedDowngradeStatus", ze_bool_t)                      ## [out] Returns the current PCIe downgrade status.
+    ]
+
+###############################################################################
+## @brief Query PCIe downgrade capability.
+## 
+## @details
+##     - This structure can be passed in the 'pNext' of ::zes_pci_properties_t
+class zes_pci_link_speed_downgrade_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("pciLinkSpeedUpdateCapable", ze_bool_t),                       ## [out] Returns if PCIe downgrade capability is available.
+        ("maxPciGenSupported", c_int32_t)                               ## [out] Returns the max supported PCIe generation of the device. -1
+                                                                        ## indicates the information is not available
+    ]
+
+###############################################################################
+## @brief Device State Extension Name
+ZES_DEVICE_EXT_STATE_NAME = "ZES_extension_device_state"
+
+###############################################################################
+## @brief Device State Extension Version(s)
+class zes_device_ext_state_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_ext_state_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_ext_state_version_v(self.value))
+
+
+###############################################################################
+## @brief Device state flags
+class zes_device_state_ext_flags_v(IntEnum):
+    NORMAL = ZE_BIT(0)                                                      ## The device is operating normally
+    WEDGED = ZE_BIT(1)                                                      ## The device is wedged
+    SURVIVABILITY = ZE_BIT(2)                                               ## The device is in survivability mode
+    FLASH_OVERRIDE = ZE_BIT(3)                                              ## The device has flash override enabled
+
+class zes_device_state_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Extension properties for Device State
+## 
+## @details
+##     - This structure may be returned from ::zesDeviceGetState via the
+##       `pNext` member of ::zes_device_state_t
+##     - Provides extended device state information including wedged state,
+##       survivability mode, and flash override status
+class zes_device_ext_state_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", zes_device_state_ext_flags_t)                         ## [out] Device state flags. Returns 0 (if state cannot be determined) or
+                                                                        ## a combination of ::zes_device_state_ext_flags_t
+    ]
+
+###############################################################################
+## @brief OEM Serial ID Extension Name
+ZES_OEM_SERIAL_ID_EXT_NAME = "ZES_extension_oem_serial_id"
+
+###############################################################################
+## @brief OEM Serial ID Extension Version(s)
+class zes_oem_serial_id_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_oem_serial_id_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_oem_serial_id_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Maximum OEM serial ID string size
+ZES_OEM_SERIAL_ID_SIZE = 1024
+
+###############################################################################
+## @brief OEM Serial ID Properties structure
+## 
+## @details
+##     - This structure can be passed as an extension structure to
+##       ::zesDeviceGetProperties via pNext member
+##     - Returns the OEM serial ID of the device
+class zes_oem_serial_id_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("length", c_ushort),                                           ## [out] OEM serial ID length
+        ("oemSerialId", c_char * ZES_OEM_SERIAL_ID_SIZE)                ## [out] OEM serial ID for the device.
     ]
 
 ###############################################################################

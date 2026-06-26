@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.17-r1.17.23
+ * @version v1.17-r1.17.24
  *
  */
 #ifndef _ZES_API_H
@@ -516,26 +516,6 @@ typedef struct _zes_temp_threshold_t zes_temp_threshold_t;
 typedef struct _zes_temp_config_t zes_temp_config_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zes_device_ecc_default_properties_ext_t
-typedef struct _zes_device_ecc_default_properties_ext_t zes_device_ecc_default_properties_ext_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zes_pci_link_speed_downgrade_ext_state_t
-typedef struct _zes_pci_link_speed_downgrade_ext_state_t zes_pci_link_speed_downgrade_ext_state_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zes_pci_link_speed_downgrade_ext_properties_t
-typedef struct _zes_pci_link_speed_downgrade_ext_properties_t zes_pci_link_speed_downgrade_ext_properties_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zes_device_ext_state_t
-typedef struct _zes_device_ext_state_t zes_device_ext_state_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zes_oem_serial_id_ext_properties_t
-typedef struct _zes_oem_serial_id_ext_properties_t zes_oem_serial_id_ext_properties_t;
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_power_limit_ext_desc_t
 typedef struct _zes_power_limit_ext_desc_t zes_power_limit_ext_desc_t;
 
@@ -602,6 +582,26 @@ typedef struct _zes_vf_util_mem_exp2_t zes_vf_util_mem_exp2_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_vf_util_engine_exp2_t
 typedef struct _zes_vf_util_engine_exp2_t zes_vf_util_engine_exp2_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_device_ecc_default_properties_ext_t
+typedef struct _zes_device_ecc_default_properties_ext_t zes_device_ecc_default_properties_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_pci_link_speed_downgrade_ext_state_t
+typedef struct _zes_pci_link_speed_downgrade_ext_state_t zes_pci_link_speed_downgrade_ext_state_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_pci_link_speed_downgrade_ext_properties_t
+typedef struct _zes_pci_link_speed_downgrade_ext_properties_t zes_pci_link_speed_downgrade_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_device_ext_state_t
+typedef struct _zes_device_ext_state_t zes_device_ext_state_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_oem_serial_id_ext_properties_t
+typedef struct _zes_oem_serial_id_ext_properties_t zes_oem_serial_id_ext_properties_t;
 
 
 #if !defined(__GNUC__)
@@ -7469,229 +7469,6 @@ zesTemperatureGetState(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
-// Intel 'oneAPI' Level-Zero Sysman Extension APIs Device-ECC default properties
-#if !defined(__GNUC__)
-#pragma region eccState
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME
-/// @brief Device ECC default properties Extension Name
-#define ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME  "ZES_extension_device_ecc_default_properties"
-#endif // ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Device ECC default properties Extension Version(s)
-typedef enum _zes_device_ecc_default_properties_ext_version_t
-{
-    ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),///< version 1.0
-    ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
-    ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_* ENUMs
-
-} zes_device_ecc_default_properties_ext_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief This structure may be passed to ::zesDeviceGetEccState as pNext member
-///        of ::zes_device_ecc_properties_t.
-typedef struct _zes_device_ecc_default_properties_ext_t
-{
-    zes_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    zes_device_ecc_state_t defaultState;                                    ///< [out] Default ECC state
-
-} zes_device_ecc_default_properties_ext_t;
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Sysman Extension APIs for PCI Link Speed Downgrade
-#if !defined(__GNUC__)
-#pragma region pciLinkSpeedDowngrade
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME
-/// @brief PCI Link Speed Downgrade Extension Name
-#define ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME  "ZES_extension_pci_link_speed_downgrade"
-#endif // ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief PCI Link Speed Downgrade Extension Version(s)
-typedef enum _zes_pci_link_speed_downgrade_ext_version_t
-{
-    ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
-    ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_* ENUMs
-
-} zes_pci_link_speed_downgrade_ext_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Query PCIe downgrade status.
-/// 
-/// @details
-///     - This structure can be passed in the 'pNext' of ::zes_pci_state_t
-typedef struct _zes_pci_link_speed_downgrade_ext_state_t
-{
-    zes_structure_type_t stype;                                             ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    ze_bool_t pciLinkSpeedDowngradeStatus;                                  ///< [out] Returns the current PCIe downgrade status.
-
-} zes_pci_link_speed_downgrade_ext_state_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Query PCIe downgrade capability.
-/// 
-/// @details
-///     - This structure can be passed in the 'pNext' of ::zes_pci_properties_t
-typedef struct _zes_pci_link_speed_downgrade_ext_properties_t
-{
-    zes_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    ze_bool_t pciLinkSpeedUpdateCapable;                                    ///< [out] Returns if PCIe downgrade capability is available.
-    int32_t maxPciGenSupported;                                             ///< [out] Returns the max supported PCIe generation of the device. -1
-                                                                            ///< indicates the information is not available
-
-} zes_pci_link_speed_downgrade_ext_properties_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Update PCI Link Speed (Downgrade or Upgrade (restore to its default
-///        speed))
-/// 
-/// @details
-///     - This function allows updating the PCI link speed to downgrade or
-///       upgrade (restore to its default speed) the connection.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
-///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
-///     - ::ZE_RESULT_ERROR_UNKNOWN
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hDevice`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pendingAction`
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///         + User does not have permissions to perform this operation.
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zesDevicePciLinkSpeedUpdateExt(
-    zes_device_handle_t hDevice,                                            ///< [in] Sysman handle of the device.
-    ze_bool_t shouldDowngrade,                                              ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
-                                                                            ///< or set to default speed(false)
-    zes_device_action_t* pendingAction                                      ///< [out] Pending action
-    );
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Device State
-#if !defined(__GNUC__)
-#pragma region deviceState
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZES_DEVICE_EXT_STATE_NAME
-/// @brief Device State Extension Name
-#define ZES_DEVICE_EXT_STATE_NAME  "ZES_extension_device_state"
-#endif // ZES_DEVICE_EXT_STATE_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Device State Extension Version(s)
-typedef enum _zes_device_ext_state_version_t
-{
-    ZES_DEVICE_EXT_STATE_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),             ///< version 1.0
-    ZES_DEVICE_EXT_STATE_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),         ///< latest known version
-    ZES_DEVICE_EXT_STATE_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_EXT_STATE_VERSION_* ENUMs
-
-} zes_device_ext_state_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Device state flags
-typedef uint32_t zes_device_state_ext_flags_t;
-typedef enum _zes_device_state_ext_flag_t
-{
-    ZES_DEVICE_STATE_EXT_FLAG_NORMAL = ZE_BIT(0),                           ///< The device is operating normally
-    ZES_DEVICE_STATE_EXT_FLAG_WEDGED = ZE_BIT(1),                           ///< The device is wedged
-    ZES_DEVICE_STATE_EXT_FLAG_SURVIVABILITY = ZE_BIT(2),                    ///< The device is in survivability mode
-    ZES_DEVICE_STATE_EXT_FLAG_FLASH_OVERRIDE = ZE_BIT(3),                   ///< The device has flash override enabled
-    ZES_DEVICE_STATE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_STATE_EXT_FLAG_* ENUMs
-
-} zes_device_state_ext_flag_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Extension properties for Device State
-/// 
-/// @details
-///     - This structure may be returned from ::zesDeviceGetState via the
-///       `pNext` member of ::zes_device_state_t
-///     - Provides extended device state information including wedged state,
-///       survivability mode, and flash override status
-typedef struct _zes_device_ext_state_t
-{
-    zes_structure_type_t stype;                                             ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    zes_device_state_ext_flags_t flags;                                     ///< [out] Device state flags. Returns 0 (if state cannot be determined) or
-                                                                            ///< a combination of ::zes_device_state_ext_flags_t
-
-} zes_device_ext_state_t;
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Sysman Extension APIs for OEM Serial ID
-#if !defined(__GNUC__)
-#pragma region oemSerialId
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZES_OEM_SERIAL_ID_EXT_NAME
-/// @brief OEM Serial ID Extension Name
-#define ZES_OEM_SERIAL_ID_EXT_NAME  "ZES_extension_oem_serial_id"
-#endif // ZES_OEM_SERIAL_ID_EXT_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief OEM Serial ID Extension Version(s)
-typedef enum _zes_oem_serial_id_ext_version_t
-{
-    ZES_OEM_SERIAL_ID_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
-    ZES_OEM_SERIAL_ID_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
-    ZES_OEM_SERIAL_ID_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_OEM_SERIAL_ID_EXT_VERSION_* ENUMs
-
-} zes_oem_serial_id_ext_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZES_OEM_SERIAL_ID_SIZE
-/// @brief Maximum OEM serial ID string size
-#define ZES_OEM_SERIAL_ID_SIZE  1024
-#endif // ZES_OEM_SERIAL_ID_SIZE
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief OEM Serial ID Properties structure
-/// 
-/// @details
-///     - This structure can be passed as an extension structure to
-///       ::zesDeviceGetProperties via pNext member
-///     - Returns the OEM serial ID of the device
-typedef struct _zes_oem_serial_id_ext_properties_t
-{
-    zes_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint16_t length;                                                        ///< [out] OEM serial ID length
-    char oemSerialId[ZES_OEM_SERIAL_ID_SIZE];                               ///< [out] OEM serial ID for the device.
-
-} zes_oem_serial_id_ext_properties_t;
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
 // Intel 'oneAPI' Level-Zero Sysman Extension APIs for Power Limits
 #if !defined(__GNUC__)
 #pragma region powerLimits
@@ -9225,6 +9002,229 @@ zesVFManagementGetVFCapabilitiesExp2(
     zes_vf_handle_t hVFhandle,                                              ///< [in] Sysman handle for the VF component.
     zes_vf_exp2_capabilities_t* pCapability                                 ///< [in,out] Will contain VF capability.
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs Device-ECC default properties
+#if !defined(__GNUC__)
+#pragma region eccState
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME
+/// @brief Device ECC default properties Extension Name
+#define ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME  "ZES_extension_device_ecc_default_properties"
+#endif // ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device ECC default properties Extension Version(s)
+typedef enum _zes_device_ecc_default_properties_ext_version_t
+{
+    ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),///< version 1.0
+    ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
+    ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_VERSION_* ENUMs
+
+} zes_device_ecc_default_properties_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief This structure may be passed to ::zesDeviceGetEccState as pNext member
+///        of ::zes_device_ecc_properties_t.
+typedef struct _zes_device_ecc_default_properties_ext_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_device_ecc_state_t defaultState;                                    ///< [out] Default ECC state
+
+} zes_device_ecc_default_properties_ext_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for PCI Link Speed Downgrade
+#if !defined(__GNUC__)
+#pragma region pciLinkSpeedDowngrade
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME
+/// @brief PCI Link Speed Downgrade Extension Name
+#define ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME  "ZES_extension_pci_link_speed_downgrade"
+#endif // ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief PCI Link Speed Downgrade Extension Version(s)
+typedef enum _zes_pci_link_speed_downgrade_ext_version_t
+{
+    ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
+    ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_PCI_LINK_SPEED_DOWNGRADE_EXT_VERSION_* ENUMs
+
+} zes_pci_link_speed_downgrade_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query PCIe downgrade status.
+/// 
+/// @details
+///     - This structure can be passed in the 'pNext' of ::zes_pci_state_t
+typedef struct _zes_pci_link_speed_downgrade_ext_state_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_bool_t pciLinkSpeedDowngradeStatus;                                  ///< [out] Returns the current PCIe downgrade status.
+
+} zes_pci_link_speed_downgrade_ext_state_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query PCIe downgrade capability.
+/// 
+/// @details
+///     - This structure can be passed in the 'pNext' of ::zes_pci_properties_t
+typedef struct _zes_pci_link_speed_downgrade_ext_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_bool_t pciLinkSpeedUpdateCapable;                                    ///< [out] Returns if PCIe downgrade capability is available.
+    int32_t maxPciGenSupported;                                             ///< [out] Returns the max supported PCIe generation of the device. -1
+                                                                            ///< indicates the information is not available
+
+} zes_pci_link_speed_downgrade_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Update PCI Link Speed (Downgrade or Upgrade (restore to its default
+///        speed))
+/// 
+/// @details
+///     - This function allows updating the PCI link speed to downgrade or
+///       upgrade (restore to its default speed) the connection.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pendingAction`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to perform this operation.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDevicePciLinkSpeedUpdateExt(
+    zes_device_handle_t hDevice,                                            ///< [in] Sysman handle of the device.
+    ze_bool_t shouldDowngrade,                                              ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
+                                                                            ///< or set to default speed(false)
+    zes_device_action_t* pendingAction                                      ///< [out] Pending action
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Device State
+#if !defined(__GNUC__)
+#pragma region deviceState
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_DEVICE_EXT_STATE_NAME
+/// @brief Device State Extension Name
+#define ZES_DEVICE_EXT_STATE_NAME  "ZES_extension_device_state"
+#endif // ZES_DEVICE_EXT_STATE_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device State Extension Version(s)
+typedef enum _zes_device_ext_state_version_t
+{
+    ZES_DEVICE_EXT_STATE_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),             ///< version 1.0
+    ZES_DEVICE_EXT_STATE_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),         ///< latest known version
+    ZES_DEVICE_EXT_STATE_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_EXT_STATE_VERSION_* ENUMs
+
+} zes_device_ext_state_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device state flags
+typedef uint32_t zes_device_state_ext_flags_t;
+typedef enum _zes_device_state_ext_flag_t
+{
+    ZES_DEVICE_STATE_EXT_FLAG_NORMAL = ZE_BIT(0),                           ///< The device is operating normally
+    ZES_DEVICE_STATE_EXT_FLAG_WEDGED = ZE_BIT(1),                           ///< The device is wedged
+    ZES_DEVICE_STATE_EXT_FLAG_SURVIVABILITY = ZE_BIT(2),                    ///< The device is in survivability mode
+    ZES_DEVICE_STATE_EXT_FLAG_FLASH_OVERRIDE = ZE_BIT(3),                   ///< The device has flash override enabled
+    ZES_DEVICE_STATE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_STATE_EXT_FLAG_* ENUMs
+
+} zes_device_state_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties for Device State
+/// 
+/// @details
+///     - This structure may be returned from ::zesDeviceGetState via the
+///       `pNext` member of ::zes_device_state_t
+///     - Provides extended device state information including wedged state,
+///       survivability mode, and flash override status
+typedef struct _zes_device_ext_state_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_device_state_ext_flags_t flags;                                     ///< [out] Device state flags. Returns 0 (if state cannot be determined) or
+                                                                            ///< a combination of ::zes_device_state_ext_flags_t
+
+} zes_device_ext_state_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for OEM Serial ID
+#if !defined(__GNUC__)
+#pragma region oemSerialId
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_OEM_SERIAL_ID_EXT_NAME
+/// @brief OEM Serial ID Extension Name
+#define ZES_OEM_SERIAL_ID_EXT_NAME  "ZES_extension_oem_serial_id"
+#endif // ZES_OEM_SERIAL_ID_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief OEM Serial ID Extension Version(s)
+typedef enum _zes_oem_serial_id_ext_version_t
+{
+    ZES_OEM_SERIAL_ID_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
+    ZES_OEM_SERIAL_ID_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
+    ZES_OEM_SERIAL_ID_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_OEM_SERIAL_ID_EXT_VERSION_* ENUMs
+
+} zes_oem_serial_id_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_OEM_SERIAL_ID_SIZE
+/// @brief Maximum OEM serial ID string size
+#define ZES_OEM_SERIAL_ID_SIZE  1024
+#endif // ZES_OEM_SERIAL_ID_SIZE
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief OEM Serial ID Properties structure
+/// 
+/// @details
+///     - This structure can be passed as an extension structure to
+///       ::zesDeviceGetProperties via pNext member
+///     - Returns the OEM serial ID of the device
+typedef struct _zes_oem_serial_id_ext_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint16_t length;                                                        ///< [out] OEM serial ID length
+    char oemSerialId[ZES_OEM_SERIAL_ID_SIZE];                               ///< [out] OEM serial ID for the device.
+
+} zes_oem_serial_id_ext_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

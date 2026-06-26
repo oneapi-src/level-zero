@@ -1368,474 +1368,6 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceGetConcurrentMetricGroupsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceGetConcurrentMetricGroupsExp(
-        zet_device_handle_t hDevice,                    ///< [in] handle of the device
-        uint32_t metricGroupCount,                      ///< [in] metric group count
-        zet_metric_group_handle_t * phMetricGroups,     ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
-                                                        ///< groups
-        uint32_t * pMetricGroupsCountPerConcurrentGroup,///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
-                                                        ///< concurrent group.
-        uint32_t * pConcurrentGroupCount                ///< [out] number of concurrent groups.
-                                                        ///< The value of this parameter could be used to determine the number of
-                                                        ///< replays necessary.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
-        auto pfnGetConcurrentMetricGroupsExp = dditable->zet.DeviceExp.pfnGetConcurrentMetricGroupsExp;
-        if( nullptr == pfnGetConcurrentMetricGroupsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
-
-        // forward to device-driver
-        result = pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerCreateExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerCreateExp(
-        zet_context_handle_t hContext,                  ///< [in] handle of the context object
-        zet_device_handle_t hDevice,                    ///< [in] handle of the device
-        uint32_t metricGroupCount,                      ///< [in] metric group count
-        zet_metric_group_handle_t* phMetricGroups,      ///< [in][range(0, metricGroupCount )] handles of the metric groups to
-                                                        ///< trace
-        zet_metric_tracer_exp_desc_t* desc,             ///< [in,out] metric tracer descriptor
-        ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification. Note:
-                                                        ///< If buffer is not drained when the event it flagged, there is a risk of
-                                                        ///< HW event buffer being overrun
-        zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
-        auto pfnCreateExp = dditable->zet.MetricTracerExp.pfnCreateExp;
-        if( nullptr == pfnCreateExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hContext = reinterpret_cast<zet_context_object_t*>( hContext )->handle;
-
-        // convert loader handle to driver handle
-        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
-
-        // convert loader handles to driver handles
-        auto phMetricGroupsLocal = new zet_metric_group_handle_t [metricGroupCount ];
-        for( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < metricGroupCount  ); ++i )
-            phMetricGroupsLocal[ i ] = reinterpret_cast<zet_metric_group_object_t*>( phMetricGroups[ i ] )->handle;
-
-        // convert loader handle to driver handle
-        hNotificationEvent = ( hNotificationEvent ) ? reinterpret_cast<ze_event_object_t*>( hNotificationEvent )->handle : nullptr;
-
-        // forward to device-driver
-        result = pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroupsLocal, desc, hNotificationEvent, phMetricTracer );
-        delete []phMetricGroupsLocal;
-
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
-        try
-        {
-            // convert driver handle to loader handle
-            *phMetricTracer = reinterpret_cast<zet_metric_tracer_exp_handle_t>(
-                context->zet_metric_tracer_exp_factory.getInstance( *phMetricTracer, dditable ) );
-        }
-        catch( std::bad_alloc& )
-        {
-            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
-        }
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerDestroyExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerDestroyExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
-        auto pfnDestroyExp = dditable->zet.MetricTracerExp.pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
-
-        // forward to device-driver
-        result = pfnDestroyExp( hMetricTracer );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerEnableExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerEnableExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
-                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                        ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
-                                                        ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
-                                                        ///< when the tracer is active.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
-        auto pfnEnableExp = dditable->zet.MetricTracerExp.pfnEnableExp;
-        if( nullptr == pfnEnableExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
-
-        // forward to device-driver
-        result = pfnEnableExp( hMetricTracer, synchronous );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerDisableExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerDisableExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
-                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
-                                                        ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
-                                                        ///< when the tracer is active or when it is inactive but still has data. 
-                                                        ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
-                                                        ///< has no more data to be retrieved.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
-        auto pfnDisableExp = dditable->zet.MetricTracerExp.pfnDisableExp;
-        if( nullptr == pfnDisableExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
-
-        // forward to device-driver
-        result = pfnDisableExp( hMetricTracer, synchronous );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerReadDataExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerReadDataExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
-                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
-                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
-                                                        ///< number of bytes written into the buffer.
-                                                        ///< If the size returns the full size requested, the application may need
-                                                        ///< to issue additional reads to
-                                                        ///< retrieve any remaining reports that did not fit into the buffer.
-        uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                        ///< data in raw format
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
-        auto pfnReadDataExp = dditable->zet.MetricTracerExp.pfnReadDataExp;
-        if( nullptr == pfnReadDataExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
-
-        // forward to device-driver
-        result = pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricDecoderCreateExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricDecoderCreateExp(
-        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
-        zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
-        auto pfnCreateExp = dditable->zet.MetricDecoderExp.pfnCreateExp;
-        if( nullptr == pfnCreateExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
-
-        // forward to device-driver
-        result = pfnCreateExp( hMetricTracer, phMetricDecoder );
-
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
-        try
-        {
-            // convert driver handle to loader handle
-            *phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_handle_t>(
-                context->zet_metric_decoder_exp_factory.getInstance( *phMetricDecoder, dditable ) );
-        }
-        catch( std::bad_alloc& )
-        {
-            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
-        }
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricDecoderDestroyExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricDecoderDestroyExp(
-        zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->dditable;
-        auto pfnDestroyExp = dditable->zet.MetricDecoderExp.pfnDestroyExp;
-        if( nullptr == pfnDestroyExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->handle;
-
-        // forward to device-driver
-        result = pfnDestroyExp( phMetricDecoder );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricDecoderGetDecodableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricDecoderGetDecodableMetricsExp(
-        zet_metric_decoder_exp_handle_t hMetricDecoder, ///< [in] handle of the metric decoder object
-        uint32_t* pCount,                               ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
-                                                        ///< handle. If count is zero, then the driver shall 
-                                                        ///< update the value with the total number of decodable metrics available
-                                                        ///< in the decoder. if count is greater than zero 
-                                                        ///< but less than the total number of decodable metrics available in the
-                                                        ///< decoder, then only that number will be returned. 
-                                                        ///< if count is greater than the number of decodable metrics available in
-                                                        ///< the decoder, then the driver shall update the 
-                                                        ///< value with the actual number of decodable metrics available. 
-        zet_metric_handle_t* phMetrics                  ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
-                                                        ///< the hMetricDecoder handle provided.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( hMetricDecoder )->dditable;
-        auto pfnGetDecodableMetricsExp = dditable->zet.MetricDecoderExp.pfnGetDecodableMetricsExp;
-        if( nullptr == pfnGetDecodableMetricsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_object_t*>( hMetricDecoder )->handle;
-
-        // forward to device-driver
-        result = pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
-
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
-        try
-        {
-            // convert driver handles to loader handles
-            for( size_t i = 0; ( nullptr != phMetrics ) && ( i < *pCount ); ++i )
-                phMetrics[ i ] = reinterpret_cast<zet_metric_handle_t>(
-                    context->zet_metric_factory.getInstance( phMetrics[ i ], dditable ) );
-        }
-        catch( std::bad_alloc& )
-        {
-            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
-        }
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetMetricTracerDecodeExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetMetricTracerDecodeExp(
-        zet_metric_decoder_exp_handle_t phMetricDecoder,///< [in] handle of the metric decoder object
-        size_t* pRawDataSize,                           ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
-                                                        ///< greater than zero but less than total number of 
-                                                        ///< decodable metrics available in the raw data buffer, then driver shall
-                                                        ///< update this value with actual number of raw 
-                                                        ///< data bytes processed.
-        uint8_t* pRawData,                              ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
-                                                        ///< data in raw format
-        uint32_t metricsCount,                          ///< [in] number of decodable metrics in the tracer for which the
-                                                        ///< hMetricDecoder handle was provided. See 
-                                                        ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
-                                                        ///< than zero but less than the number decodable 
-                                                        ///< metrics available in the raw data buffer, then driver shall only
-                                                        ///< decode those.
-        zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
-                                                        ///< the decoder for which the hMetricDecoder handle was 
-                                                        ///< provided. Metrics handles are expected to be for decodable metrics,
-                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
-        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
-                                                        ///< driver shall update the value with the total
-                                                        ///< number of metric sets to be decoded. If count is greater than the
-                                                        ///< number available in the raw data buffer, then the
-                                                        ///< driver shall update the value with the actual number of metric sets to
-                                                        ///< be decoded. There is a 1:1 relation between
-                                                        ///< the number of sets and sub-devices returned in the decoded entries.
-        uint32_t* pMetricEntriesCountPerSet,            ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
-                                                        ///< counts per metric set, one value per set.
-        uint32_t* pMetricEntriesCount,                  ///< [in,out]  pointer to the total number of metric entries decoded, for
-                                                        ///< all metric sets. If count is zero, then the
-                                                        ///< driver shall update the value with the total number of metric entries
-                                                        ///< to be decoded. If count is greater than zero
-                                                        ///< but less than the total number of metric entries available in the raw
-                                                        ///< data, then user provided number will be decoded.
-                                                        ///< If count is greater than the number available in the raw data buffer,
-                                                        ///< then the driver shall update the value with
-                                                        ///< the actual number of decodable metric entries decoded. If set to null,
-                                                        ///< then driver will only update the value of
-                                                        ///< pSetCount.
-        zet_metric_entry_exp_t* pMetricEntries          ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
-                                                        ///< decoded metric entries
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->dditable;
-        auto pfnDecodeExp = dditable->zet.MetricTracerExp.pfnDecodeExp;
-        if( nullptr == pfnDecodeExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->handle;
-
-        // convert loader handles to driver handles
-        auto phMetricsLocal = new zet_metric_handle_t [metricsCount];
-        for( size_t i = 0; ( nullptr != phMetrics ) && ( i < metricsCount ); ++i )
-            phMetricsLocal[ i ] = reinterpret_cast<zet_metric_object_t*>( phMetrics[ i ] )->handle;
-
-        // forward to device-driver
-        result = pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetricsLocal, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
-        delete []phMetricsLocal;
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetCommandListAppendMarkerExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetCommandListAppendMarkerExp(
-        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
-        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
-                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
-                                                        ///< marker is supoported by the metric group.
-        uint32_t value                                  ///< [in] marker value
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
-        auto pfnAppendMarkerExp = dditable->zet.CommandListExp.pfnAppendMarkerExp;
-        if( nullptr == pfnAppendMarkerExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hCommandList = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->handle;
-
-        // convert loader handle to driver handle
-        hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
-
-        // forward to device-driver
-        result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceEnableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceEnableMetricsExp(
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
-        auto pfnEnableMetricsExp = dditable->zet.DeviceExp.pfnEnableMetricsExp;
-        if( nullptr == pfnEnableMetricsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
-
-        // forward to device-driver
-        result = pfnEnableMetricsExp( hDevice );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceDisableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceDisableMetricsExp(
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-        
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
-        auto pfnDisableMetricsExp = dditable->zet.DeviceExp.pfnDisableMetricsExp;
-        if( nullptr == pfnDisableMetricsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
-
-        // forward to device-driver
-        result = pfnDisableMetricsExp( hDevice );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetMetricGroupCalculateMultipleMetricValuesExp
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupCalculateMultipleMetricValuesExp(
@@ -2471,6 +2003,474 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroyExp( hMetric );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceGetConcurrentMetricGroupsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceGetConcurrentMetricGroupsExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t * phMetricGroups,     ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
+                                                        ///< groups
+        uint32_t * pMetricGroupsCountPerConcurrentGroup,///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
+                                                        ///< concurrent group.
+        uint32_t * pConcurrentGroupCount                ///< [out] number of concurrent groups.
+                                                        ///< The value of this parameter could be used to determine the number of
+                                                        ///< replays necessary.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
+        auto pfnGetConcurrentMetricGroupsExp = dditable->zet.DeviceExp.pfnGetConcurrentMetricGroupsExp;
+        if( nullptr == pfnGetConcurrentMetricGroupsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerCreateExp(
+        zet_context_handle_t hContext,                  ///< [in] handle of the context object
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t* phMetricGroups,      ///< [in][range(0, metricGroupCount )] handles of the metric groups to
+                                                        ///< trace
+        zet_metric_tracer_exp_desc_t* desc,             ///< [in,out] metric tracer descriptor
+        ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification. Note:
+                                                        ///< If buffer is not drained when the event it flagged, there is a risk of
+                                                        ///< HW event buffer being overrun
+        zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
+        auto pfnCreateExp = dditable->zet.MetricTracerExp.pfnCreateExp;
+        if( nullptr == pfnCreateExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<zet_context_object_t*>( hContext )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
+
+        // convert loader handles to driver handles
+        auto phMetricGroupsLocal = new zet_metric_group_handle_t [metricGroupCount ];
+        for( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < metricGroupCount  ); ++i )
+            phMetricGroupsLocal[ i ] = reinterpret_cast<zet_metric_group_object_t*>( phMetricGroups[ i ] )->handle;
+
+        // convert loader handle to driver handle
+        hNotificationEvent = ( hNotificationEvent ) ? reinterpret_cast<ze_event_object_t*>( hNotificationEvent )->handle : nullptr;
+
+        // forward to device-driver
+        result = pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroupsLocal, desc, hNotificationEvent, phMetricTracer );
+        delete []phMetricGroupsLocal;
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phMetricTracer = reinterpret_cast<zet_metric_tracer_exp_handle_t>(
+                context->zet_metric_tracer_exp_factory.getInstance( *phMetricTracer, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDestroyExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
+        auto pfnDestroyExp = dditable->zet.MetricTracerExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
+
+        // forward to device-driver
+        result = pfnDestroyExp( hMetricTracer );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerEnableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerEnableExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
+                                                        ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
+                                                        ///< when the tracer is active.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
+        auto pfnEnableExp = dditable->zet.MetricTracerExp.pfnEnableExp;
+        if( nullptr == pfnEnableExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
+
+        // forward to device-driver
+        result = pfnEnableExp( hMetricTracer, synchronous );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDisableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDisableExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
+                                                        ///< when the tracer is active or when it is inactive but still has data. 
+                                                        ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
+                                                        ///< has no more data to be retrieved.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
+        auto pfnDisableExp = dditable->zet.MetricTracerExp.pfnDisableExp;
+        if( nullptr == pfnDisableExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
+
+        // forward to device-driver
+        result = pfnDisableExp( hMetricTracer, synchronous );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerReadDataExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerReadDataExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        size_t* pRawDataSize,                           ///< [in,out] pointer to the size in bytes of raw data requested to read.
+                                                        ///< The driver will only retrieve the number of reports that fit into the buffer.
+                                                        ///< pRawDataSize will be updated by the driver to reflect the actual
+                                                        ///< number of bytes written into the buffer.
+                                                        ///< If the size returns the full size requested, the application may need
+                                                        ///< to issue additional reads to
+                                                        ///< retrieve any remaining reports that did not fit into the buffer.
+        uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
+        auto pfnReadDataExp = dditable->zet.MetricTracerExp.pfnReadDataExp;
+        if( nullptr == pfnReadDataExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
+
+        // forward to device-driver
+        result = pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderCreateExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->dditable;
+        auto pfnCreateExp = dditable->zet.MetricDecoderExp.pfnCreateExp;
+        if( nullptr == pfnCreateExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricTracer = reinterpret_cast<zet_metric_tracer_exp_object_t*>( hMetricTracer )->handle;
+
+        // forward to device-driver
+        result = pfnCreateExp( hMetricTracer, phMetricDecoder );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_handle_t>(
+                context->zet_metric_decoder_exp_factory.getInstance( *phMetricDecoder, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderDestroyExp(
+        zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->dditable;
+        auto pfnDestroyExp = dditable->zet.MetricDecoderExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->handle;
+
+        // forward to device-driver
+        result = pfnDestroyExp( phMetricDecoder );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderGetDecodableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderGetDecodableMetricsExp(
+        zet_metric_decoder_exp_handle_t hMetricDecoder, ///< [in] handle of the metric decoder object
+        uint32_t* pCount,                               ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
+                                                        ///< handle. If count is zero, then the driver shall 
+                                                        ///< update the value with the total number of decodable metrics available
+                                                        ///< in the decoder. if count is greater than zero 
+                                                        ///< but less than the total number of decodable metrics available in the
+                                                        ///< decoder, then only that number will be returned. 
+                                                        ///< if count is greater than the number of decodable metrics available in
+                                                        ///< the decoder, then the driver shall update the 
+                                                        ///< value with the actual number of decodable metrics available. 
+        zet_metric_handle_t* phMetrics                  ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
+                                                        ///< the hMetricDecoder handle provided.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( hMetricDecoder )->dditable;
+        auto pfnGetDecodableMetricsExp = dditable->zet.MetricDecoderExp.pfnGetDecodableMetricsExp;
+        if( nullptr == pfnGetDecodableMetricsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_object_t*>( hMetricDecoder )->handle;
+
+        // forward to device-driver
+        result = pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phMetrics ) && ( i < *pCount ); ++i )
+                phMetrics[ i ] = reinterpret_cast<zet_metric_handle_t>(
+                    context->zet_metric_factory.getInstance( phMetrics[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDecodeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDecodeExp(
+        zet_metric_decoder_exp_handle_t phMetricDecoder,///< [in] handle of the metric decoder object
+        size_t* pRawDataSize,                           ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
+                                                        ///< greater than zero but less than total number of 
+                                                        ///< decodable metrics available in the raw data buffer, then driver shall
+                                                        ///< update this value with actual number of raw 
+                                                        ///< data bytes processed.
+        uint8_t* pRawData,                              ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+        uint32_t metricsCount,                          ///< [in] number of decodable metrics in the tracer for which the
+                                                        ///< hMetricDecoder handle was provided. See 
+                                                        ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
+                                                        ///< than zero but less than the number decodable 
+                                                        ///< metrics available in the raw data buffer, then driver shall only
+                                                        ///< decode those.
+        zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
+                                                        ///< the decoder for which the hMetricDecoder handle was 
+                                                        ///< provided. Metrics handles are expected to be for decodable metrics,
+                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
+        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total
+                                                        ///< number of metric sets to be decoded. If count is greater than the
+                                                        ///< number available in the raw data buffer, then the
+                                                        ///< driver shall update the value with the actual number of metric sets to
+                                                        ///< be decoded. There is a 1:1 relation between
+                                                        ///< the number of sets and sub-devices returned in the decoded entries.
+        uint32_t* pMetricEntriesCountPerSet,            ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
+                                                        ///< counts per metric set, one value per set.
+        uint32_t* pMetricEntriesCount,                  ///< [in,out]  pointer to the total number of metric entries decoded, for
+                                                        ///< all metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total number of metric entries
+                                                        ///< to be decoded. If count is greater than zero
+                                                        ///< but less than the total number of metric entries available in the raw
+                                                        ///< data, then user provided number will be decoded.
+                                                        ///< If count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with
+                                                        ///< the actual number of decodable metric entries decoded. If set to null,
+                                                        ///< then driver will only update the value of
+                                                        ///< pSetCount.
+        zet_metric_entry_exp_t* pMetricEntries          ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
+                                                        ///< decoded metric entries
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->dditable;
+        auto pfnDecodeExp = dditable->zet.MetricTracerExp.pfnDecodeExp;
+        if( nullptr == pfnDecodeExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->handle;
+
+        // convert loader handles to driver handles
+        auto phMetricsLocal = new zet_metric_handle_t [metricsCount];
+        for( size_t i = 0; ( nullptr != phMetrics ) && ( i < metricsCount ); ++i )
+            phMetricsLocal[ i ] = reinterpret_cast<zet_metric_object_t*>( phMetrics[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetricsLocal, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+        delete []phMetricsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetCommandListAppendMarkerExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetCommandListAppendMarkerExp(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendMarkerExp = dditable->zet.CommandListExp.pfnAppendMarkerExp;
+        if( nullptr == pfnAppendMarkerExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
+
+        // forward to device-driver
+        result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceEnableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceEnableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
+        auto pfnEnableMetricsExp = dditable->zet.DeviceExp.pfnEnableMetricsExp;
+        if( nullptr == pfnEnableMetricsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnEnableMetricsExp( hDevice );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceDisableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceDisableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
+        auto pfnDisableMetricsExp = dditable->zet.DeviceExp.pfnDisableMetricsExp;
+        if( nullptr == pfnDisableMetricsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnDisableMetricsExp( hDevice );
 
         return result;
     }

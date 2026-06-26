@@ -35,40 +35,6 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            auto getTable = reinterpret_cast<ze_pfnGetExecutableGraphProcAddrTable_t>(
-                GET_FUNCTION_PTR(loader, "zeGetExecutableGraphProcAddrTable") );
-            getTableWithCheck(getTable, version, &initialzeDdiTable.ExecutableGraph );
-            initialzeDdiTable.ExecutableGraph.pfnGetSourceGraphExt = reinterpret_cast<ze_pfnExecutableGraphGetSourceGraphExt_t>(
-                GET_FUNCTION_PTR(loader, "zeExecutableGraphGetSourceGraphExt") );
-            initialzeDdiTable.ExecutableGraph.pfnDestroyExt = reinterpret_cast<ze_pfnExecutableGraphDestroyExt_t>(
-                GET_FUNCTION_PTR(loader, "zeExecutableGraphDestroyExt") );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
-            auto getTable = reinterpret_cast<ze_pfnGetGraphProcAddrTable_t>(
-                GET_FUNCTION_PTR(loader, "zeGetGraphProcAddrTable") );
-            getTableWithCheck(getTable, version, &initialzeDdiTable.Graph );
-            initialzeDdiTable.Graph.pfnCreateExt = reinterpret_cast<ze_pfnGraphCreateExt_t>(
-                GET_FUNCTION_PTR(loader, "zeGraphCreateExt") );
-            initialzeDdiTable.Graph.pfnGetPrimaryCommandListExt = reinterpret_cast<ze_pfnGraphGetPrimaryCommandListExt_t>(
-                GET_FUNCTION_PTR(loader, "zeGraphGetPrimaryCommandListExt") );
-            initialzeDdiTable.Graph.pfnSetDestructionCallbackExt = reinterpret_cast<ze_pfnGraphSetDestructionCallbackExt_t>(
-                GET_FUNCTION_PTR(loader, "zeGraphSetDestructionCallbackExt") );
-            initialzeDdiTable.Graph.pfnInstantiateExt = reinterpret_cast<ze_pfnGraphInstantiateExt_t>(
-                GET_FUNCTION_PTR(loader, "zeGraphInstantiateExt") );
-            initialzeDdiTable.Graph.pfnIsEmptyExt = reinterpret_cast<ze_pfnGraphIsEmptyExt_t>(
-                GET_FUNCTION_PTR(loader, "zeGraphIsEmptyExt") );
-            initialzeDdiTable.Graph.pfnDumpContentsExt = reinterpret_cast<ze_pfnGraphDumpContentsExt_t>(
-                GET_FUNCTION_PTR(loader, "zeGraphDumpContentsExt") );
-            initialzeDdiTable.Graph.pfnDestroyExt = reinterpret_cast<ze_pfnGraphDestroyExt_t>(
-                GET_FUNCTION_PTR(loader, "zeGraphDestroyExt") );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetRTASBuilderProcAddrTable") );
             getTableWithCheck(getTable, version, &initialzeDdiTable.RTASBuilder );
@@ -756,6 +722,40 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeFabricVertexGetDeviceExp") );
         }
 
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            auto getTable = reinterpret_cast<ze_pfnGetExecutableGraphProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetExecutableGraphProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzeDdiTable.ExecutableGraph );
+            initialzeDdiTable.ExecutableGraph.pfnGetSourceGraphExt = reinterpret_cast<ze_pfnExecutableGraphGetSourceGraphExt_t>(
+                GET_FUNCTION_PTR(loader, "zeExecutableGraphGetSourceGraphExt") );
+            initialzeDdiTable.ExecutableGraph.pfnDestroyExt = reinterpret_cast<ze_pfnExecutableGraphDestroyExt_t>(
+                GET_FUNCTION_PTR(loader, "zeExecutableGraphDestroyExt") );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            auto getTable = reinterpret_cast<ze_pfnGetGraphProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetGraphProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzeDdiTable.Graph );
+            initialzeDdiTable.Graph.pfnCreateExt = reinterpret_cast<ze_pfnGraphCreateExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphCreateExt") );
+            initialzeDdiTable.Graph.pfnGetPrimaryCommandListExt = reinterpret_cast<ze_pfnGraphGetPrimaryCommandListExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphGetPrimaryCommandListExt") );
+            initialzeDdiTable.Graph.pfnSetDestructionCallbackExt = reinterpret_cast<ze_pfnGraphSetDestructionCallbackExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphSetDestructionCallbackExt") );
+            initialzeDdiTable.Graph.pfnInstantiateExt = reinterpret_cast<ze_pfnGraphInstantiateExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphInstantiateExt") );
+            initialzeDdiTable.Graph.pfnIsEmptyExt = reinterpret_cast<ze_pfnGraphIsEmptyExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphIsEmptyExt") );
+            initialzeDdiTable.Graph.pfnDumpContentsExt = reinterpret_cast<ze_pfnGraphDumpContentsExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphDumpContentsExt") );
+            initialzeDdiTable.Graph.pfnDestroyExt = reinterpret_cast<ze_pfnGraphDestroyExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphDestroyExt") );
+        }
+
         return result;
     }
 #else
@@ -766,18 +766,6 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zeGetGlobalProcAddrTable( version, &initialzeDdiTable.Global );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
-            zeGetExecutableGraphProcAddrTable( version, &initialzeDdiTable.ExecutableGraph );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
-            zeGetGraphProcAddrTable( version, &initialzeDdiTable.Graph );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -936,6 +924,18 @@ namespace ze_lib
         {
             // Optional
             zeGetFabricVertexExpProcAddrTable( version, &initialzeDdiTable.FabricVertexExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zeGetExecutableGraphProcAddrTable( version, &initialzeDdiTable.ExecutableGraph );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zeGetGraphProcAddrTable( version, &initialzeDdiTable.Graph );
         }
 
         return result;

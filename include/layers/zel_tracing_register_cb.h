@@ -59,242 +59,6 @@ typedef void (ZE_APICALL *ze_pfnInitDriversCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeExecutableGraphGetSourceGraphExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_executable_graph_get_source_graph_ext_params_t
-{
-    ze_executable_graph_handle_t* phGraph;
-    ze_graph_handle_t** pphSourceGraph;
-} ze_executable_graph_get_source_graph_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeExecutableGraphGetSourceGraphExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnExecutableGraphGetSourceGraphExtCb_t)(
-    ze_executable_graph_get_source_graph_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeExecutableGraphDestroyExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_executable_graph_destroy_ext_params_t
-{
-    ze_executable_graph_handle_t* phGraph;
-} ze_executable_graph_destroy_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeExecutableGraphDestroyExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnExecutableGraphDestroyExtCb_t)(
-    ze_executable_graph_destroy_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeGraphCreateExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_graph_create_ext_params_t
-{
-    ze_context_handle_t* phContext;
-    const void** ppNext;
-    ze_graph_handle_t** pphGraph;
-} ze_graph_create_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeGraphCreateExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnGraphCreateExtCb_t)(
-    ze_graph_create_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeGraphGetPrimaryCommandListExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_graph_get_primary_command_list_ext_params_t
-{
-    ze_graph_handle_t* phGraph;
-    ze_command_list_handle_t** pphCommandList;
-} ze_graph_get_primary_command_list_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeGraphGetPrimaryCommandListExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnGraphGetPrimaryCommandListExtCb_t)(
-    ze_graph_get_primary_command_list_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeGraphSetDestructionCallbackExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_graph_set_destruction_callback_ext_params_t
-{
-    ze_graph_handle_t* phGraph;
-    zex_mem_graph_free_callback_fn_t* ppfnCallback;
-    void** ppUserData;
-    const void** ppNext;
-} ze_graph_set_destruction_callback_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeGraphSetDestructionCallbackExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnGraphSetDestructionCallbackExtCb_t)(
-    ze_graph_set_destruction_callback_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeGraphInstantiateExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_graph_instantiate_ext_params_t
-{
-    ze_graph_handle_t* phGraph;
-    const void** ppNext;
-    ze_executable_graph_handle_t** pphExecutableGraph;
-} ze_graph_instantiate_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeGraphInstantiateExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnGraphInstantiateExtCb_t)(
-    ze_graph_instantiate_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeGraphIsEmptyExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_graph_is_empty_ext_params_t
-{
-    ze_graph_handle_t* phGraph;
-} ze_graph_is_empty_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeGraphIsEmptyExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnGraphIsEmptyExtCb_t)(
-    ze_graph_is_empty_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeGraphDumpContentsExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_graph_dump_contents_ext_params_t
-{
-    ze_graph_handle_t* phGraph;
-    const char** pfilePath;
-    const void** ppNext;
-} ze_graph_dump_contents_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeGraphDumpContentsExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnGraphDumpContentsExtCb_t)(
-    ze_graph_dump_contents_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeGraphDestroyExt
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_graph_destroy_ext_params_t
-{
-    ze_graph_handle_t* phGraph;
-} ze_graph_destroy_ext_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeGraphDestroyExt
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnGraphDestroyExtCb_t)(
-    ze_graph_destroy_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeRTASBuilderCreateExt
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -1827,6 +1591,32 @@ typedef void (ZE_APICALL *ze_pfnCommandListImmediateGetPriorityCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListIsMutableExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_is_mutable_exp_params_t
+{
+    ze_command_list_handle_t* phCommandList;
+    ze_bool_t** ppIsMutable;
+} ze_command_list_is_mutable_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListIsMutableExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListIsMutableExpCb_t)(
+    ze_command_list_is_mutable_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeCommandListBeginGraphCaptureExt
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -2013,32 +1803,6 @@ typedef struct _ze_command_list_append_host_function_params_t
 
 typedef void (ZE_APICALL *ze_pfnCommandListAppendHostFunctionCb_t)(
     ze_command_list_append_host_function_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeCommandListIsMutableExp
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_command_list_is_mutable_exp_params_t
-{
-    ze_command_list_handle_t* phCommandList;
-    ze_bool_t** ppIsMutable;
-} ze_command_list_is_mutable_exp_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeCommandListIsMutableExp
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnCommandListIsMutableExpCb_t)(
-    ze_command_list_is_mutable_exp_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -3506,6 +3270,242 @@ typedef struct _ze_fabric_vertex_get_device_exp_params_t
 
 typedef void (ZE_APICALL *ze_pfnFabricVertexGetDeviceExpCb_t)(
     ze_fabric_vertex_get_device_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeExecutableGraphGetSourceGraphExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_executable_graph_get_source_graph_ext_params_t
+{
+    ze_executable_graph_handle_t* phGraph;
+    ze_graph_handle_t** pphSourceGraph;
+} ze_executable_graph_get_source_graph_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeExecutableGraphGetSourceGraphExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnExecutableGraphGetSourceGraphExtCb_t)(
+    ze_executable_graph_get_source_graph_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeExecutableGraphDestroyExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_executable_graph_destroy_ext_params_t
+{
+    ze_executable_graph_handle_t* phGraph;
+} ze_executable_graph_destroy_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeExecutableGraphDestroyExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnExecutableGraphDestroyExtCb_t)(
+    ze_executable_graph_destroy_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeGraphCreateExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_graph_create_ext_params_t
+{
+    ze_context_handle_t* phContext;
+    const void** ppNext;
+    ze_graph_handle_t** pphGraph;
+} ze_graph_create_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeGraphCreateExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnGraphCreateExtCb_t)(
+    ze_graph_create_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeGraphGetPrimaryCommandListExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_graph_get_primary_command_list_ext_params_t
+{
+    ze_graph_handle_t* phGraph;
+    ze_command_list_handle_t** pphCommandList;
+} ze_graph_get_primary_command_list_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeGraphGetPrimaryCommandListExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnGraphGetPrimaryCommandListExtCb_t)(
+    ze_graph_get_primary_command_list_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeGraphSetDestructionCallbackExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_graph_set_destruction_callback_ext_params_t
+{
+    ze_graph_handle_t* phGraph;
+    zex_mem_graph_free_callback_fn_t* ppfnCallback;
+    void** ppUserData;
+    const void** ppNext;
+} ze_graph_set_destruction_callback_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeGraphSetDestructionCallbackExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnGraphSetDestructionCallbackExtCb_t)(
+    ze_graph_set_destruction_callback_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeGraphInstantiateExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_graph_instantiate_ext_params_t
+{
+    ze_graph_handle_t* phGraph;
+    const void** ppNext;
+    ze_executable_graph_handle_t** pphExecutableGraph;
+} ze_graph_instantiate_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeGraphInstantiateExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnGraphInstantiateExtCb_t)(
+    ze_graph_instantiate_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeGraphIsEmptyExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_graph_is_empty_ext_params_t
+{
+    ze_graph_handle_t* phGraph;
+} ze_graph_is_empty_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeGraphIsEmptyExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnGraphIsEmptyExtCb_t)(
+    ze_graph_is_empty_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeGraphDumpContentsExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_graph_dump_contents_ext_params_t
+{
+    ze_graph_handle_t* phGraph;
+    const char** pfilePath;
+    const void** ppNext;
+} ze_graph_dump_contents_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeGraphDumpContentsExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnGraphDumpContentsExtCb_t)(
+    ze_graph_dump_contents_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeGraphDestroyExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_graph_destroy_ext_params_t
+{
+    ze_graph_handle_t* phGraph;
+} ze_graph_destroy_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeGraphDestroyExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnGraphDestroyExtCb_t)(
+    ze_graph_destroy_ext_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -5002,278 +5002,6 @@ zelTracerKernelSetGlobalOffsetExpRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerKernelGetBinaryExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnKernelGetBinaryExpCb_t pfnGetBinaryExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerDeviceImportExternalSemaphoreExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnDeviceImportExternalSemaphoreExtCb_t pfnImportExternalSemaphoreExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerDeviceReleaseExternalSemaphoreExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnDeviceReleaseExternalSemaphoreExtCb_t pfnReleaseExternalSemaphoreExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListAppendSignalExternalSemaphoreExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListAppendSignalExternalSemaphoreExtCb_t pfnAppendSignalExternalSemaphoreExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListAppendWaitExternalSemaphoreExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t pfnAppendWaitExternalSemaphoreExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASBuilderCreateExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASBuilderCreateExtCb_t pfnCreateExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASBuilderGetBuildPropertiesExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASBuilderGetBuildPropertiesExtCb_t pfnGetBuildPropertiesExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerDriverRTASFormatCompatibilityCheckExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnDriverRTASFormatCompatibilityCheckExtCb_t pfnRTASFormatCompatibilityCheckExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASBuilderBuildExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASBuilderBuildExtCb_t pfnBuildExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASBuilderCommandListAppendCopyExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASBuilderCommandListAppendCopyExtCb_t pfnCommandListAppendCopyExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASBuilderDestroyExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASBuilderDestroyExtCb_t pfnDestroyExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASParallelOperationCreateExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASParallelOperationCreateExtCb_t pfnCreateExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASParallelOperationGetPropertiesExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASParallelOperationGetPropertiesExtCb_t pfnGetPropertiesExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASParallelOperationJoinExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASParallelOperationJoinExtCb_t pfnJoinExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerRTASParallelOperationDestroyExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnRTASParallelOperationDestroyExtCb_t pfnDestroyExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerDeviceGetVectorWidthPropertiesExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnDeviceGetVectorWidthPropertiesExtCb_t pfnGetVectorWidthPropertiesExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerKernelGetAllocationPropertiesExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnKernelGetAllocationPropertiesExpCb_t pfnGetAllocationPropertiesExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerMemGetIpcHandleWithPropertiesRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnMemGetIpcHandleWithPropertiesCb_t pfnGetIpcHandleWithPropertiesCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerGraphCreateExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnGraphCreateExtCb_t pfnCreateExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListBeginGraphCaptureExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListBeginGraphCaptureExtCb_t pfnBeginGraphCaptureExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListBeginCaptureIntoGraphExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListBeginCaptureIntoGraphExtCb_t pfnBeginCaptureIntoGraphExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListIsGraphCaptureEnabledExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListIsGraphCaptureEnabledExtCb_t pfnIsGraphCaptureEnabledExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListEndGraphCaptureExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListEndGraphCaptureExtCb_t pfnEndGraphCaptureExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListGetGraphExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListGetGraphExtCb_t pfnGetGraphExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerGraphGetPrimaryCommandListExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnGraphGetPrimaryCommandListExtCb_t pfnGetPrimaryCommandListExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerGraphSetDestructionCallbackExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnGraphSetDestructionCallbackExtCb_t pfnSetDestructionCallbackExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerGraphInstantiateExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnGraphInstantiateExtCb_t pfnInstantiateExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListAppendGraphExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListAppendGraphExtCb_t pfnAppendGraphExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerExecutableGraphGetSourceGraphExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnExecutableGraphGetSourceGraphExtCb_t pfnGetSourceGraphExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerGraphIsEmptyExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnGraphIsEmptyExtCb_t pfnIsEmptyExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerGraphDumpContentsExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnGraphDumpContentsExtCb_t pfnDumpContentsExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerExecutableGraphDestroyExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnExecutableGraphDestroyExtCb_t pfnDestroyExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerGraphDestroyExtRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnGraphDestroyExtCb_t pfnDestroyExtCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListAppendHostFunctionRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListAppendHostFunctionCb_t pfnAppendHostFunctionCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerDeviceReserveCacheExtRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -5614,6 +5342,278 @@ zelTracerCommandListUpdateMutableCommandKernelsExpRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t pfnUpdateMutableCommandKernelsExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerKernelGetBinaryExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnKernelGetBinaryExpCb_t pfnGetBinaryExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceImportExternalSemaphoreExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceImportExternalSemaphoreExtCb_t pfnImportExternalSemaphoreExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceReleaseExternalSemaphoreExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceReleaseExternalSemaphoreExtCb_t pfnReleaseExternalSemaphoreExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendSignalExternalSemaphoreExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendSignalExternalSemaphoreExtCb_t pfnAppendSignalExternalSemaphoreExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendWaitExternalSemaphoreExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t pfnAppendWaitExternalSemaphoreExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderCreateExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderCreateExtCb_t pfnCreateExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderGetBuildPropertiesExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderGetBuildPropertiesExtCb_t pfnGetBuildPropertiesExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDriverRTASFormatCompatibilityCheckExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDriverRTASFormatCompatibilityCheckExtCb_t pfnRTASFormatCompatibilityCheckExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderBuildExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderBuildExtCb_t pfnBuildExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderCommandListAppendCopyExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderCommandListAppendCopyExtCb_t pfnCommandListAppendCopyExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderDestroyExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderDestroyExtCb_t pfnDestroyExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationCreateExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationCreateExtCb_t pfnCreateExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationGetPropertiesExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationGetPropertiesExtCb_t pfnGetPropertiesExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationJoinExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationJoinExtCb_t pfnJoinExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationDestroyExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationDestroyExtCb_t pfnDestroyExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetVectorWidthPropertiesExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetVectorWidthPropertiesExtCb_t pfnGetVectorWidthPropertiesExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerKernelGetAllocationPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnKernelGetAllocationPropertiesExpCb_t pfnGetAllocationPropertiesExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerMemGetIpcHandleWithPropertiesRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnMemGetIpcHandleWithPropertiesCb_t pfnGetIpcHandleWithPropertiesCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerGraphCreateExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphCreateExtCb_t pfnCreateExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListBeginGraphCaptureExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListBeginGraphCaptureExtCb_t pfnBeginGraphCaptureExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListBeginCaptureIntoGraphExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListBeginCaptureIntoGraphExtCb_t pfnBeginCaptureIntoGraphExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListIsGraphCaptureEnabledExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListIsGraphCaptureEnabledExtCb_t pfnIsGraphCaptureEnabledExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListEndGraphCaptureExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListEndGraphCaptureExtCb_t pfnEndGraphCaptureExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListGetGraphExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListGetGraphExtCb_t pfnGetGraphExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerGraphGetPrimaryCommandListExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphGetPrimaryCommandListExtCb_t pfnGetPrimaryCommandListExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerGraphSetDestructionCallbackExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphSetDestructionCallbackExtCb_t pfnSetDestructionCallbackExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerGraphInstantiateExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphInstantiateExtCb_t pfnInstantiateExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendGraphExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendGraphExtCb_t pfnAppendGraphExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerExecutableGraphGetSourceGraphExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnExecutableGraphGetSourceGraphExtCb_t pfnGetSourceGraphExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerGraphIsEmptyExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphIsEmptyExtCb_t pfnIsEmptyExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerGraphDumpContentsExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphDumpContentsExtCb_t pfnDumpContentsExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerExecutableGraphDestroyExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnExecutableGraphDestroyExtCb_t pfnDestroyExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerGraphDestroyExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphDestroyExtCb_t pfnDestroyExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendHostFunctionRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendHostFunctionCb_t pfnAppendHostFunctionCb
     );
 
 ZE_APIEXPORT ze_result_t ZE_APICALL

@@ -1,6 +1,6 @@
 # Level zero loader changelog
 ## v1.32.0
- * Update to L0 Zero Spec v1.17.23: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-17-23
+ * Update to L0 Zero Spec v1.17.24: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-17-24
 * Fix: add .mako deduplication to prevent multiple to_string definitions
 * Fix: CONTRIBUTING.md minor updates to versioning and command lines
 ## v1.31.0

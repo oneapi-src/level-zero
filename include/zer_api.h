@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zer_api.h
- * @version v1.17-r1.17.23
+ * @version v1.17-r1.17.24
  *
  */
 #ifndef _ZER_API_H

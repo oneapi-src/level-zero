@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.17-r1.17.23
+ * @version v1.17-r1.17.24
  *
  */
 #ifndef _ZE_DDI_H
@@ -287,93 +287,6 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetRTASParallelOperationExpProcAddrTable_
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGraphCreateExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnGraphCreateExt_t)(
-    ze_context_handle_t,
-    const void*,
-    ze_graph_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGraphGetPrimaryCommandListExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnGraphGetPrimaryCommandListExt_t)(
-    ze_graph_handle_t,
-    ze_command_list_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGraphSetDestructionCallbackExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnGraphSetDestructionCallbackExt_t)(
-    ze_graph_handle_t,
-    zex_mem_graph_free_callback_fn_t,
-    void*,
-    const void*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGraphInstantiateExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnGraphInstantiateExt_t)(
-    ze_graph_handle_t,
-    const void*,
-    ze_executable_graph_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGraphIsEmptyExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnGraphIsEmptyExt_t)(
-    ze_graph_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGraphDumpContentsExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnGraphDumpContentsExt_t)(
-    ze_graph_handle_t,
-    const char*,
-    const void*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGraphDestroyExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnGraphDestroyExt_t)(
-    ze_graph_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Graph functions pointers
-typedef struct _ze_graph_dditable_t
-{
-    ze_pfnGraphCreateExt_t                                      pfnCreateExt;
-    ze_pfnGraphGetPrimaryCommandListExt_t                       pfnGetPrimaryCommandListExt;
-    ze_pfnGraphSetDestructionCallbackExt_t                      pfnSetDestructionCallbackExt;
-    ze_pfnGraphInstantiateExt_t                                 pfnInstantiateExt;
-    ze_pfnGraphIsEmptyExt_t                                     pfnIsEmptyExt;
-    ze_pfnGraphDumpContentsExt_t                                pfnDumpContentsExt;
-    ze_pfnGraphDestroyExt_t                                     pfnDestroyExt;
-} ze_graph_dditable_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Graph table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetGraphProcAddrTable(
-    ze_api_version_t version,                                               ///< [in] API version requested
-    ze_graph_dditable_t* pDdiTable                                          ///< [in,out] pointer to table of DDI function pointers
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGetGraphProcAddrTable
-typedef ze_result_t (ZE_APICALL *ze_pfnGetGraphProcAddrTable_t)(
-    ze_api_version_t,
-    ze_graph_dditable_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zeInit 
 typedef ze_result_t (ZE_APICALL *ze_pfnInit_t)(
     ze_init_flags_t
@@ -415,49 +328,6 @@ zeGetGlobalProcAddrTable(
 typedef ze_result_t (ZE_APICALL *ze_pfnGetGlobalProcAddrTable_t)(
     ze_api_version_t,
     ze_global_dditable_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeExecutableGraphGetSourceGraphExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnExecutableGraphGetSourceGraphExt_t)(
-    ze_executable_graph_handle_t,
-    ze_graph_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeExecutableGraphDestroyExt 
-typedef ze_result_t (ZE_APICALL *ze_pfnExecutableGraphDestroyExt_t)(
-    ze_executable_graph_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of ExecutableGraph functions pointers
-typedef struct _ze_executable_graph_dditable_t
-{
-    ze_pfnExecutableGraphGetSourceGraphExt_t                    pfnGetSourceGraphExt;
-    ze_pfnExecutableGraphDestroyExt_t                           pfnDestroyExt;
-} ze_executable_graph_dditable_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's ExecutableGraph table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetExecutableGraphProcAddrTable(
-    ze_api_version_t version,                                               ///< [in] API version requested
-    ze_executable_graph_dditable_t* pDdiTable                               ///< [in,out] pointer to table of DDI function pointers
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGetExecutableGraphProcAddrTable
-typedef ze_result_t (ZE_APICALL *ze_pfnGetExecutableGraphProcAddrTable_t)(
-    ze_api_version_t,
-    ze_executable_graph_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3209,6 +3079,136 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetFabricEdgeExpProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphCreateExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphCreateExt_t)(
+    ze_context_handle_t,
+    const void*,
+    ze_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphGetPrimaryCommandListExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphGetPrimaryCommandListExt_t)(
+    ze_graph_handle_t,
+    ze_command_list_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphSetDestructionCallbackExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphSetDestructionCallbackExt_t)(
+    ze_graph_handle_t,
+    zex_mem_graph_free_callback_fn_t,
+    void*,
+    const void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphInstantiateExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphInstantiateExt_t)(
+    ze_graph_handle_t,
+    const void*,
+    ze_executable_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphIsEmptyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphIsEmptyExt_t)(
+    ze_graph_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphDumpContentsExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphDumpContentsExt_t)(
+    ze_graph_handle_t,
+    const char*,
+    const void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphDestroyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphDestroyExt_t)(
+    ze_graph_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Graph functions pointers
+typedef struct _ze_graph_dditable_t
+{
+    ze_pfnGraphCreateExt_t                                      pfnCreateExt;
+    ze_pfnGraphGetPrimaryCommandListExt_t                       pfnGetPrimaryCommandListExt;
+    ze_pfnGraphSetDestructionCallbackExt_t                      pfnSetDestructionCallbackExt;
+    ze_pfnGraphInstantiateExt_t                                 pfnInstantiateExt;
+    ze_pfnGraphIsEmptyExt_t                                     pfnIsEmptyExt;
+    ze_pfnGraphDumpContentsExt_t                                pfnDumpContentsExt;
+    ze_pfnGraphDestroyExt_t                                     pfnDestroyExt;
+} ze_graph_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Graph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetGraphProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_graph_dditable_t* pDdiTable                                          ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetGraphProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetGraphProcAddrTable_t)(
+    ze_api_version_t,
+    ze_graph_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeExecutableGraphGetSourceGraphExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnExecutableGraphGetSourceGraphExt_t)(
+    ze_executable_graph_handle_t,
+    ze_graph_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeExecutableGraphDestroyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnExecutableGraphDestroyExt_t)(
+    ze_executable_graph_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of ExecutableGraph functions pointers
+typedef struct _ze_executable_graph_dditable_t
+{
+    ze_pfnExecutableGraphGetSourceGraphExt_t                    pfnGetSourceGraphExt;
+    ze_pfnExecutableGraphDestroyExt_t                           pfnDestroyExt;
+} ze_executable_graph_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ExecutableGraph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetExecutableGraphProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_executable_graph_dditable_t* pDdiTable                               ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetExecutableGraphProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetExecutableGraphProcAddrTable_t)(
+    ze_api_version_t,
+    ze_executable_graph_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all DDI tables
 typedef struct _ze_dditable_t
 {
@@ -3216,9 +3216,7 @@ typedef struct _ze_dditable_t
     ze_rtas_builder_exp_dditable_t      RTASBuilderExp;
     ze_rtas_parallel_operation_dditable_t   RTASParallelOperation;
     ze_rtas_parallel_operation_exp_dditable_t   RTASParallelOperationExp;
-    ze_graph_dditable_t                 Graph;
     ze_global_dditable_t                Global;
-    ze_executable_graph_dditable_t      ExecutableGraph;
     ze_driver_dditable_t                Driver;
     ze_driver_exp_dditable_t            DriverExp;
     ze_device_dditable_t                Device;
@@ -3244,6 +3242,8 @@ typedef struct _ze_dditable_t
     ze_virtual_mem_dditable_t           VirtualMem;
     ze_fabric_vertex_exp_dditable_t     FabricVertexExp;
     ze_fabric_edge_exp_dditable_t       FabricEdgeExp;
+    ze_graph_dditable_t                 Graph;
+    ze_executable_graph_dditable_t      ExecutableGraph;
 } ze_dditable_t;
 /// @brief Container for all DDI tables with version and tables set by the Driver
 typedef struct _ze_dditable_driver_t
@@ -3254,9 +3254,7 @@ typedef struct _ze_dditable_driver_t
     ze_rtas_builder_exp_dditable_t *    RTASBuilderExp;
     ze_rtas_parallel_operation_dditable_t * RTASParallelOperation;
     ze_rtas_parallel_operation_exp_dditable_t * RTASParallelOperationExp;
-    ze_graph_dditable_t *               Graph;
     ze_global_dditable_t *              Global;
-    ze_executable_graph_dditable_t *    ExecutableGraph;
     ze_driver_dditable_t *              Driver;
     ze_driver_exp_dditable_t *          DriverExp;
     ze_device_dditable_t *              Device;
@@ -3282,6 +3280,8 @@ typedef struct _ze_dditable_driver_t
     ze_virtual_mem_dditable_t *         VirtualMem;
     ze_fabric_vertex_exp_dditable_t *   FabricVertexExp;
     ze_fabric_edge_exp_dditable_t *     FabricEdgeExp;
+    ze_graph_dditable_t *               Graph;
+    ze_executable_graph_dditable_t *    ExecutableGraph;
 } ze_dditable_driver_t;
 
 #if defined(__cplusplus)

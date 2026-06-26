@@ -5722,1122 +5722,6 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeKernelGetBinaryExp(
-        ze_result_t result,
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
-        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeKernelGetBinaryExp(";
-        
-        
-        oss << "hKernel=";
-        oss << loader::to_string(hKernel);
-        
-        oss << ", ";
-        oss << "pSize=";
-        oss << loader::to_string(pSize);
-        
-        oss << ", ";
-        oss << "pKernelBinary=";
-        oss << loader::to_string(pKernelBinary);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(
-        ze_result_t result,
-        ze_device_handle_t hDevice,                     ///< [in] The device handle.
-        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
-        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeDeviceImportExternalSemaphoreExt(";
-        
-        
-        oss << "hDevice=";
-        oss << loader::to_string(hDevice);
-        
-        oss << ", ";
-        oss << "desc=";
-        oss << loader::to_string(desc);
-        
-        oss << ", ";
-        oss << "phSemaphore=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phSemaphore != nullptr) {
-            oss << loader::to_string(*phSemaphore);
-        } else {
-            oss << loader::to_string(phSemaphore);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(
-        ze_result_t result,
-        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeDeviceReleaseExternalSemaphoreExt(";
-        
-        
-        oss << "hSemaphore=";
-        oss << loader::to_string(hSemaphore);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to be appended into command list.
-        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore signal parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendSignalExternalSemaphoreExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "numSemaphores=";
-        oss << loader::to_string(numSemaphores);
-        
-        oss << ", ";
-        oss << "phSemaphores=";
-        oss << loader::to_string(phSemaphores);
-        
-        oss << ", ";
-        oss << "signalParams=";
-        oss << loader::to_string(signalParams);
-        
-        oss << ", ";
-        oss << "hSignalEvent=";
-        oss << loader::to_string(hSignalEvent);
-        
-        oss << ", ";
-        oss << "numWaitEvents=";
-        oss << loader::to_string(numWaitEvents);
-        
-        oss << ", ";
-        oss << "phWaitEvents=";
-        oss << loader::to_string(phWaitEvents);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to append into command list.
-        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore wait parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendWaitExternalSemaphoreExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "numSemaphores=";
-        oss << loader::to_string(numSemaphores);
-        
-        oss << ", ";
-        oss << "phSemaphores=";
-        oss << loader::to_string(phSemaphores);
-        
-        oss << ", ";
-        oss << "waitParams=";
-        oss << loader::to_string(waitParams);
-        
-        oss << ", ";
-        oss << "hSignalEvent=";
-        oss << loader::to_string(hSignalEvent);
-        
-        oss << ", ";
-        oss << "numWaitEvents=";
-        oss << loader::to_string(numWaitEvents);
-        
-        oss << ", ";
-        oss << "phWaitEvents=";
-        oss << loader::to_string(phWaitEvents);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderCreateExt(
-        ze_result_t result,
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
-        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderCreateExt(";
-        
-        
-        oss << "hDriver=";
-        oss << loader::to_string(hDriver);
-        
-        oss << ", ";
-        oss << "pDescriptor=";
-        oss << loader::to_string(pDescriptor);
-        
-        oss << ", ";
-        oss << "phBuilder=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phBuilder != nullptr) {
-            oss << loader::to_string(*phBuilder);
-        } else {
-            oss << loader::to_string(phBuilder);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(
-        ze_result_t result,
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderGetBuildPropertiesExt(";
-        
-        
-        oss << "hBuilder=";
-        oss << loader::to_string(hBuilder);
-        
-        oss << ", ";
-        oss << "pBuildOpDescriptor=";
-        oss << loader::to_string(pBuildOpDescriptor);
-        
-        oss << ", ";
-        oss << "pProperties=";
-        oss << loader::to_string(pProperties);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(
-        ze_result_t result,
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
-        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeDriverRTASFormatCompatibilityCheckExt(";
-        
-        
-        oss << "hDriver=";
-        oss << loader::to_string(hDriver);
-        
-        oss << ", ";
-        oss << "rtasFormatA=";
-        oss << loader::to_string(rtasFormatA);
-        
-        oss << ", ";
-        oss << "rtasFormatB=";
-        oss << loader::to_string(rtasFormatB);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderBuildExt(
-        ze_result_t result,
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
-                                                        ///< during acceleration structure construction
-        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
-        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
-        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
-        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
-        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
-                                                        ///< structure bounds
-        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
-                                                        ///< bytes
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderBuildExt(";
-        
-        
-        oss << "hBuilder=";
-        oss << loader::to_string(hBuilder);
-        
-        oss << ", ";
-        oss << "pBuildOpDescriptor=";
-        oss << loader::to_string(pBuildOpDescriptor);
-        
-        oss << ", ";
-        oss << "pScratchBuffer=";
-        oss << loader::to_string(pScratchBuffer);
-        
-        oss << ", ";
-        oss << "scratchBufferSizeBytes=";
-        oss << loader::to_string(scratchBufferSizeBytes);
-        
-        oss << ", ";
-        oss << "pRtasBuffer=";
-        oss << loader::to_string(pRtasBuffer);
-        
-        oss << ", ";
-        oss << "rtasBufferSizeBytes=";
-        oss << loader::to_string(rtasBufferSizeBytes);
-        
-        oss << ", ";
-        oss << "hParallelOperation=";
-        oss << loader::to_string(hParallelOperation);
-        
-        oss << ", ";
-        oss << "pBuildUserPtr=";
-        oss << loader::to_string(pBuildUserPtr);
-        
-        oss << ", ";
-        oss << "pBounds=";
-        oss << loader::to_string(pBounds);
-        
-        oss << ", ";
-        oss << "pRtasBufferSizeBytes=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && pRtasBufferSizeBytes != nullptr) {
-            oss << loader::to_string(*pRtasBufferSizeBytes);
-        } else {
-            oss << loader::to_string(pRtasBufferSizeBytes);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
-        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
-                                                        ///< acceleration structure to
-        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
-                                                        ///< host memory to copy from
-        size_t size,                                    ///< [in] size in bytes to copy
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderCommandListAppendCopyExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "dstptr=";
-        oss << loader::to_string(dstptr);
-        
-        oss << ", ";
-        oss << "srcptr=";
-        oss << loader::to_string(srcptr);
-        
-        oss << ", ";
-        oss << "size=";
-        oss << loader::to_string(size);
-        
-        oss << ", ";
-        oss << "hSignalEvent=";
-        oss << loader::to_string(hSignalEvent);
-        
-        oss << ", ";
-        oss << "numWaitEvents=";
-        oss << loader::to_string(numWaitEvents);
-        
-        oss << ", ";
-        oss << "phWaitEvents=";
-        oss << loader::to_string(phWaitEvents);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderDestroyExt(
-        ze_result_t result,
-        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderDestroyExt(";
-        
-        
-        oss << "hBuilder=";
-        oss << loader::to_string(hBuilder);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationCreateExt(
-        ze_result_t result,
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationCreateExt(";
-        
-        
-        oss << "hDriver=";
-        oss << loader::to_string(hDriver);
-        
-        oss << ", ";
-        oss << "phParallelOperation=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phParallelOperation != nullptr) {
-            oss << loader::to_string(*phParallelOperation);
-        } else {
-            oss << loader::to_string(phParallelOperation);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(
-        ze_result_t result,
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
-        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationGetPropertiesExt(";
-        
-        
-        oss << "hParallelOperation=";
-        oss << loader::to_string(hParallelOperation);
-        
-        oss << ", ";
-        oss << "pProperties=";
-        oss << loader::to_string(pProperties);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationJoinExt(
-        ze_result_t result,
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationJoinExt(";
-        
-        
-        oss << "hParallelOperation=";
-        oss << loader::to_string(hParallelOperation);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationDestroyExt(
-        ze_result_t result,
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationDestroyExt(";
-        
-        
-        oss << "hParallelOperation=";
-        oss << loader::to_string(hParallelOperation);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(
-        ze_result_t result,
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of vector width properties available.
-                                                        ///< if count is greater than the number of vector width properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of vector width properties available.
-        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
-                                                        ///< if count is less than the number of properties available, then the
-                                                        ///< driver will return only the number requested.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetVectorWidthPropertiesExt(";
-        
-        
-        oss << "hDevice=";
-        oss << loader::to_string(hDevice);
-        
-        oss << ", ";
-        oss << "pCount=";
-        oss << loader::to_string(pCount);
-        
-        oss << ", ";
-        oss << "pVectorWidthProperties=";
-        oss << loader::to_string(pVectorWidthProperties);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeKernelGetAllocationPropertiesExp(
-        ze_result_t result,
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of kernel allocation properties available.
-                                                        ///< if count is greater than the number of kernel allocation properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of kernel allocation properties.
-        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
-                                                        ///< if count is less than the number of kernel allocation properties
-                                                        ///< available, then driver shall only retrieve that number of kernel
-                                                        ///< allocation properties.
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeKernelGetAllocationPropertiesExp(";
-        
-        
-        oss << "hKernel=";
-        oss << loader::to_string(hKernel);
-        
-        oss << ", ";
-        oss << "pCount=";
-        oss << loader::to_string(pCount);
-        
-        oss << ", ";
-        oss << "pAllocationProperties=";
-        oss << loader::to_string(pAllocationProperties);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeMemGetIpcHandleWithProperties(
-        ze_result_t result,
-        ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const void* ptr,                                ///< [in] pointer to the device memory allocation
-        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
-        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeMemGetIpcHandleWithProperties(";
-        
-        
-        oss << "hContext=";
-        oss << loader::to_string(hContext);
-        
-        oss << ", ";
-        oss << "ptr=";
-        oss << loader::to_string(ptr);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        
-        oss << ", ";
-        oss << "pIpcHandle=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && pIpcHandle != nullptr) {
-            oss << loader::to_string(*pIpcHandle);
-        } else {
-            oss << loader::to_string(pIpcHandle);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphCreateExt(
-        ze_result_t result,
-        ze_context_handle_t hContext,                   ///< [in] handle of the context
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeGraphCreateExt(";
-        
-        
-        oss << "hContext=";
-        oss << loader::to_string(hContext);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        
-        oss << ", ";
-        oss << "phGraph=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phGraph != nullptr) {
-            oss << loader::to_string(*phGraph);
-        } else {
-            oss << loader::to_string(phGraph);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListBeginGraphCaptureExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListBeginGraphCaptureExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListBeginCaptureIntoGraphExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListIsGraphCaptureEnabledExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListEndGraphCaptureExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListEndGraphCaptureExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        
-        oss << ", ";
-        oss << "phGraph=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phGraph != nullptr) {
-            oss << loader::to_string(*phGraph);
-        } else {
-            oss << loader::to_string(phGraph);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListGetGraphExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
-        ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetGraphExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "phGraph=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phGraph != nullptr) {
-            oss << loader::to_string(*phGraph);
-        } else {
-            oss << loader::to_string(phGraph);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphGetPrimaryCommandListExt(
-        ze_result_t result,
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
-        ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
-                                                        ///< graph
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeGraphGetPrimaryCommandListExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        
-        oss << ", ";
-        oss << "phCommandList=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phCommandList != nullptr) {
-            oss << loader::to_string(*phCommandList);
-        } else {
-            oss << loader::to_string(phCommandList);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphSetDestructionCallbackExt(
-        ze_result_t result,
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
-        zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
-        void* pUserData,                                ///< [in][optional] user data to pass to the callback
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeGraphSetDestructionCallbackExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        
-        oss << ", ";
-        oss << "pfnCallback=";
-        oss << loader::to_string(pfnCallback);
-        
-        oss << ", ";
-        oss << "pUserData=";
-        oss << loader::to_string(pUserData);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphInstantiateExt(
-        ze_result_t result,
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeGraphInstantiateExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        
-        oss << ", ";
-        oss << "phExecutableGraph=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phExecutableGraph != nullptr) {
-            oss << loader::to_string(*phExecutableGraph);
-        } else {
-            oss << loader::to_string(phExecutableGraph);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendGraphExt(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
-        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendGraphExt(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        
-        oss << ", ";
-        oss << "hSignalEvent=";
-        oss << loader::to_string(hSignalEvent);
-        
-        oss << ", ";
-        oss << "numWaitEvents=";
-        oss << loader::to_string(numWaitEvents);
-        
-        oss << ", ";
-        oss << "phWaitEvents=";
-        oss << loader::to_string(phWaitEvents);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(
-        ze_result_t result,
-        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
-        ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeExecutableGraphGetSourceGraphExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        
-        oss << ", ";
-        oss << "phSourceGraph=";
-        // Dereference output parameter if not null and result is success
-        if (result == ZE_RESULT_SUCCESS && phSourceGraph != nullptr) {
-            oss << loader::to_string(*phSourceGraph);
-        } else {
-            oss << loader::to_string(phSourceGraph);
-        }
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphIsEmptyExt(
-        ze_result_t result,
-        ze_graph_handle_t hGraph                        ///< [in] handle of the graph
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeGraphIsEmptyExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphDumpContentsExt(
-        ze_result_t result,
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
-        const char* filePath,                           ///< [in] path where the DOT file is written
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeGraphDumpContentsExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        
-        oss << ", ";
-        oss << "filePath=";
-        oss << loader::to_string(filePath);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeExecutableGraphDestroyExt(
-        ze_result_t result,
-        ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeExecutableGraphDestroyExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphDestroyExt(
-        ze_result_t result,
-        ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeGraphDestroyExt(";
-        
-        
-        oss << "hGraph=";
-        oss << loader::to_string(hGraph);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
-        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendHostFunction(
-        ze_result_t result,
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
-                                                        ///< non-blocking
-        void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
-                                                        ///< neither the runtime nor the device will dereference it
-        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
-                                                        ///< phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-) {
-        // Only log success results if verbose logging is enabled
-        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
-            return result;
-        }
-        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
-        std::ostringstream oss;
-        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendHostFunction(";
-        
-        
-        oss << "hCommandList=";
-        oss << loader::to_string(hCommandList);
-        
-        oss << ", ";
-        oss << "pfnHostFunction=";
-        oss << loader::to_string(pfnHostFunction);
-        
-        oss << ", ";
-        oss << "pUserData=";
-        oss << loader::to_string(pUserData);
-        
-        oss << ", ";
-        oss << "pNext=";
-        oss << loader::to_string(pNext);
-        
-        oss << ", ";
-        oss << "hSignalEvent=";
-        oss << loader::to_string(hSignalEvent);
-        
-        oss << ", ";
-        oss << "numWaitEvents=";
-        oss << loader::to_string(numWaitEvents);
-        
-        oss << ", ";
-        oss << "phWaitEvents=";
-        oss << loader::to_string(phWaitEvents);
-        oss << ")";
-        context.logger->log_trace(oss.str());
-        return result;
-    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceReserveCacheExt(
         ze_result_t result,
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
@@ -8355,6 +7239,1122 @@ namespace validation_layer
         oss << ", ";
         oss << "phKernels=";
         oss << loader::to_string(phKernels);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeKernelGetBinaryExp(
+        ze_result_t result,
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeKernelGetBinaryExp(";
+        
+        
+        oss << "hKernel=";
+        oss << loader::to_string(hKernel);
+        
+        oss << ", ";
+        oss << "pSize=";
+        oss << loader::to_string(pSize);
+        
+        oss << ", ";
+        oss << "pKernelBinary=";
+        oss << loader::to_string(pKernelBinary);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(
+        ze_result_t result,
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDeviceImportExternalSemaphoreExt(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "desc=";
+        oss << loader::to_string(desc);
+        
+        oss << ", ";
+        oss << "phSemaphore=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phSemaphore != nullptr) {
+            oss << loader::to_string(*phSemaphore);
+        } else {
+            oss << loader::to_string(phSemaphore);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(
+        ze_result_t result,
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDeviceReleaseExternalSemaphoreExt(";
+        
+        
+        oss << "hSemaphore=";
+        oss << loader::to_string(hSemaphore);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendSignalExternalSemaphoreExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "numSemaphores=";
+        oss << loader::to_string(numSemaphores);
+        
+        oss << ", ";
+        oss << "phSemaphores=";
+        oss << loader::to_string(phSemaphores);
+        
+        oss << ", ";
+        oss << "signalParams=";
+        oss << loader::to_string(signalParams);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendWaitExternalSemaphoreExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "numSemaphores=";
+        oss << loader::to_string(numSemaphores);
+        
+        oss << ", ";
+        oss << "phSemaphores=";
+        oss << loader::to_string(phSemaphores);
+        
+        oss << ", ";
+        oss << "waitParams=";
+        oss << loader::to_string(waitParams);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderCreateExt(
+        ze_result_t result,
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderCreateExt(";
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
+        oss << ", ";
+        oss << "pDescriptor=";
+        oss << loader::to_string(pDescriptor);
+        
+        oss << ", ";
+        oss << "phBuilder=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phBuilder != nullptr) {
+            oss << loader::to_string(*phBuilder);
+        } else {
+            oss << loader::to_string(phBuilder);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(
+        ze_result_t result,
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderGetBuildPropertiesExt(";
+        
+        
+        oss << "hBuilder=";
+        oss << loader::to_string(hBuilder);
+        
+        oss << ", ";
+        oss << "pBuildOpDescriptor=";
+        oss << loader::to_string(pBuildOpDescriptor);
+        
+        oss << ", ";
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(
+        ze_result_t result,
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDriverRTASFormatCompatibilityCheckExt(";
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
+        oss << ", ";
+        oss << "rtasFormatA=";
+        oss << loader::to_string(rtasFormatA);
+        
+        oss << ", ";
+        oss << "rtasFormatB=";
+        oss << loader::to_string(rtasFormatB);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderBuildExt(
+        ze_result_t result,
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderBuildExt(";
+        
+        
+        oss << "hBuilder=";
+        oss << loader::to_string(hBuilder);
+        
+        oss << ", ";
+        oss << "pBuildOpDescriptor=";
+        oss << loader::to_string(pBuildOpDescriptor);
+        
+        oss << ", ";
+        oss << "pScratchBuffer=";
+        oss << loader::to_string(pScratchBuffer);
+        
+        oss << ", ";
+        oss << "scratchBufferSizeBytes=";
+        oss << loader::to_string(scratchBufferSizeBytes);
+        
+        oss << ", ";
+        oss << "pRtasBuffer=";
+        oss << loader::to_string(pRtasBuffer);
+        
+        oss << ", ";
+        oss << "rtasBufferSizeBytes=";
+        oss << loader::to_string(rtasBufferSizeBytes);
+        
+        oss << ", ";
+        oss << "hParallelOperation=";
+        oss << loader::to_string(hParallelOperation);
+        
+        oss << ", ";
+        oss << "pBuildUserPtr=";
+        oss << loader::to_string(pBuildUserPtr);
+        
+        oss << ", ";
+        oss << "pBounds=";
+        oss << loader::to_string(pBounds);
+        
+        oss << ", ";
+        oss << "pRtasBufferSizeBytes=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pRtasBufferSizeBytes != nullptr) {
+            oss << loader::to_string(*pRtasBufferSizeBytes);
+        } else {
+            oss << loader::to_string(pRtasBufferSizeBytes);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderCommandListAppendCopyExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "dstptr=";
+        oss << loader::to_string(dstptr);
+        
+        oss << ", ";
+        oss << "srcptr=";
+        oss << loader::to_string(srcptr);
+        
+        oss << ", ";
+        oss << "size=";
+        oss << loader::to_string(size);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASBuilderDestroyExt(
+        ze_result_t result,
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASBuilderDestroyExt(";
+        
+        
+        oss << "hBuilder=";
+        oss << loader::to_string(hBuilder);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationCreateExt(
+        ze_result_t result,
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationCreateExt(";
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
+        oss << ", ";
+        oss << "phParallelOperation=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phParallelOperation != nullptr) {
+            oss << loader::to_string(*phParallelOperation);
+        } else {
+            oss << loader::to_string(phParallelOperation);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(
+        ze_result_t result,
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationGetPropertiesExt(";
+        
+        
+        oss << "hParallelOperation=";
+        oss << loader::to_string(hParallelOperation);
+        
+        oss << ", ";
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationJoinExt(
+        ze_result_t result,
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationJoinExt(";
+        
+        
+        oss << "hParallelOperation=";
+        oss << loader::to_string(hParallelOperation);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeRTASParallelOperationDestroyExt(
+        ze_result_t result,
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeRTASParallelOperationDestroyExt(";
+        
+        
+        oss << "hParallelOperation=";
+        oss << loader::to_string(hParallelOperation);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(
+        ze_result_t result,
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetVectorWidthPropertiesExt(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
+        oss << ", ";
+        oss << "pVectorWidthProperties=";
+        oss << loader::to_string(pVectorWidthProperties);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeKernelGetAllocationPropertiesExp(
+        ze_result_t result,
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeKernelGetAllocationPropertiesExp(";
+        
+        
+        oss << "hKernel=";
+        oss << loader::to_string(hKernel);
+        
+        oss << ", ";
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
+        oss << ", ";
+        oss << "pAllocationProperties=";
+        oss << loader::to_string(pAllocationProperties);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeMemGetIpcHandleWithProperties(
+        ze_result_t result,
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const void* ptr,                                ///< [in] pointer to the device memory allocation
+        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeMemGetIpcHandleWithProperties(";
+        
+        
+        oss << "hContext=";
+        oss << loader::to_string(hContext);
+        
+        oss << ", ";
+        oss << "ptr=";
+        oss << loader::to_string(ptr);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "pIpcHandle=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pIpcHandle != nullptr) {
+            oss << loader::to_string(*pIpcHandle);
+        } else {
+            oss << loader::to_string(pIpcHandle);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphCreateExt(
+        ze_result_t result,
+        ze_context_handle_t hContext,                   ///< [in] handle of the context
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphCreateExt(";
+        
+        
+        oss << "hContext=";
+        oss << loader::to_string(hContext);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "phGraph=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phGraph != nullptr) {
+            oss << loader::to_string(*phGraph);
+        } else {
+            oss << loader::to_string(phGraph);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListBeginGraphCaptureExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListBeginGraphCaptureExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListBeginCaptureIntoGraphExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListIsGraphCaptureEnabledExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListEndGraphCaptureExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListEndGraphCaptureExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "phGraph=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phGraph != nullptr) {
+            oss << loader::to_string(*phGraph);
+        } else {
+            oss << loader::to_string(phGraph);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListGetGraphExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetGraphExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "phGraph=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phGraph != nullptr) {
+            oss << loader::to_string(*phGraph);
+        } else {
+            oss << loader::to_string(phGraph);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphGetPrimaryCommandListExt(
+        ze_result_t result,
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
+                                                        ///< graph
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphGetPrimaryCommandListExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "phCommandList=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phCommandList != nullptr) {
+            oss << loader::to_string(*phCommandList);
+        } else {
+            oss << loader::to_string(phCommandList);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphSetDestructionCallbackExt(
+        ze_result_t result,
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
+        void* pUserData,                                ///< [in][optional] user data to pass to the callback
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphSetDestructionCallbackExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "pfnCallback=";
+        oss << loader::to_string(pfnCallback);
+        
+        oss << ", ";
+        oss << "pUserData=";
+        oss << loader::to_string(pUserData);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphInstantiateExt(
+        ze_result_t result,
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphInstantiateExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "phExecutableGraph=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phExecutableGraph != nullptr) {
+            oss << loader::to_string(*phExecutableGraph);
+        } else {
+            oss << loader::to_string(phExecutableGraph);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendGraphExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendGraphExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(
+        ze_result_t result,
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeExecutableGraphGetSourceGraphExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "phSourceGraph=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phSourceGraph != nullptr) {
+            oss << loader::to_string(*phSourceGraph);
+        } else {
+            oss << loader::to_string(phSourceGraph);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphIsEmptyExt(
+        ze_result_t result,
+        ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphIsEmptyExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphDumpContentsExt(
+        ze_result_t result,
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        const char* filePath,                           ///< [in] path where the DOT file is written
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphDumpContentsExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "filePath=";
+        oss << loader::to_string(filePath);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeExecutableGraphDestroyExt(
+        ze_result_t result,
+        ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeExecutableGraphDestroyExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphDestroyExt(
+        ze_result_t result,
+        ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphDestroyExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListAppendHostFunction(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
+                                                        ///< non-blocking
+        void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
+                                                        ///< neither the runtime nor the device will dereference it
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
+                                                        ///< phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListAppendHostFunction(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "pfnHostFunction=";
+        oss << loader::to_string(pfnHostFunction);
+        
+        oss << ", ";
+        oss << "pUserData=";
+        oss << loader::to_string(pUserData);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -16190,1554 +16190,6 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeKernelGetBinaryExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeKernelGetBinaryExp(
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
-        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
-        )
-    {
-        context.logger->log_trace("zeKernelGetBinaryExp(hKernel, pSize, pKernelBinary)");
-
-        auto pfnGetBinaryExp = context.zeDdiTable.KernelExp.pfnGetBinaryExp;
-
-        if( nullptr == pfnGetBinaryExp )
-            return logAndPropagateResult_zeKernelGetBinaryExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hKernel, pSize, pKernelBinary);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetBinaryExpPrologue( hKernel, pSize, pKernelBinary );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetBinaryExp(result, hKernel, pSize, pKernelBinary);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetBinaryExpPrologue( hKernel, pSize, pKernelBinary );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetBinaryExp(result, hKernel, pSize, pKernelBinary);
-        }
-
-        auto driver_result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetBinaryExpEpilogue( hKernel, pSize, pKernelBinary ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetBinaryExp(result, hKernel, pSize, pKernelBinary);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-        }
-        return logAndPropagateResult_zeKernelGetBinaryExp(driver_result, hKernel, pSize, pKernelBinary);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDeviceImportExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDeviceImportExternalSemaphoreExt(
-        ze_device_handle_t hDevice,                     ///< [in] The device handle.
-        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
-        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
-        )
-    {
-        context.logger->log_trace("zeDeviceImportExternalSemaphoreExt(hDevice, desc, phSemaphore)");
-
-        auto pfnImportExternalSemaphoreExt = context.zeDdiTable.Device.pfnImportExternalSemaphoreExt;
-
-        if( nullptr == pfnImportExternalSemaphoreExt )
-            return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, desc, phSemaphore);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceImportExternalSemaphoreExtPrologue( hDevice, desc, phSemaphore );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(result, hDevice, desc, phSemaphore);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceImportExternalSemaphoreExtPrologue( hDevice, desc, phSemaphore );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(result, hDevice, desc, phSemaphore);
-        }
-
-        auto driver_result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceImportExternalSemaphoreExtEpilogue( hDevice, desc, phSemaphore ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(result, hDevice, desc, phSemaphore);
-        }
-
-        return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(driver_result, hDevice, desc, phSemaphore);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDeviceReleaseExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDeviceReleaseExternalSemaphoreExt(
-        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
-        )
-    {
-        context.logger->log_trace("zeDeviceReleaseExternalSemaphoreExt(hSemaphore)");
-
-        auto pfnReleaseExternalSemaphoreExt = context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt;
-
-        if( nullptr == pfnReleaseExternalSemaphoreExt )
-            return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hSemaphore);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReleaseExternalSemaphoreExtPrologue( hSemaphore );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(result, hSemaphore);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceReleaseExternalSemaphoreExtPrologue( hSemaphore );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(result, hSemaphore);
-        }
-
-        auto driver_result = pfnReleaseExternalSemaphoreExt( hSemaphore );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReleaseExternalSemaphoreExtEpilogue( hSemaphore ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(result, hSemaphore);
-        }
-
-        return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(driver_result, hSemaphore);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListAppendSignalExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListAppendSignalExternalSemaphoreExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to be appended into command list.
-        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
-                                                        ///< semaphore signal parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        context.logger->log_trace("zeCommandListAppendSignalExternalSemaphoreExt(hCommandList, numSemaphores, phSemaphoresLocal, signalParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
-
-        auto pfnAppendSignalExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt;
-
-        if( nullptr == pfnAppendSignalExternalSemaphoreExt )
-            return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendSignalExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        auto driver_result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalExternalSemaphoreExtEpilogue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(driver_result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListAppendWaitExternalSemaphoreExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListAppendWaitExternalSemaphoreExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
-        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
-        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore handles to append into command list.
-        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
-                                                        ///< semaphore wait parameters.
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        context.logger->log_trace("zeCommandListAppendWaitExternalSemaphoreExt(hCommandList, numSemaphores, phSemaphoresLocal, waitParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
-
-        auto pfnAppendWaitExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt;
-
-        if( nullptr == pfnAppendWaitExternalSemaphoreExt )
-            return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWaitExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        auto driver_result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitExternalSemaphoreExtEpilogue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(driver_result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderCreateExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderCreateExt(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
-        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
-        )
-    {
-        context.logger->log_trace("zeRTASBuilderCreateExt(hDriver, pDescriptor, phBuilder)");
-
-        auto pfnCreateExt = context.zeDdiTable.RTASBuilder.pfnCreateExt;
-
-        if( nullptr == pfnCreateExt )
-            return logAndPropagateResult_zeRTASBuilderCreateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, pDescriptor, phBuilder);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCreateExt(result, hDriver, pDescriptor, phBuilder);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCreateExt(result, hDriver, pDescriptor, phBuilder);
-        }
-
-        auto driver_result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtEpilogue( hDriver, pDescriptor, phBuilder ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCreateExt(result, hDriver, pDescriptor, phBuilder);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-            if (phBuilder){
-                context.handleLifetime->addHandle( *phBuilder );
-                context.handleLifetime->addDependent( hDriver, *phBuilder );
-
-            }
-        }
-        return logAndPropagateResult_zeRTASBuilderCreateExt(driver_result, hDriver, pDescriptor, phBuilder);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderGetBuildPropertiesExt(
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
-        )
-    {
-        context.logger->log_trace("zeRTASBuilderGetBuildPropertiesExt(hBuilder, pBuildOpDescriptor, pProperties)");
-
-        auto pfnGetBuildPropertiesExt = context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt;
-
-        if( nullptr == pfnGetBuildPropertiesExt )
-            return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hBuilder, pBuildOpDescriptor, pProperties);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(result, hBuilder, pBuildOpDescriptor, pProperties);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(result, hBuilder, pBuildOpDescriptor, pProperties);
-        }
-
-        auto driver_result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtEpilogue( hBuilder, pBuildOpDescriptor, pProperties ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(result, hBuilder, pBuildOpDescriptor, pProperties);
-        }
-
-        return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(driver_result, hBuilder, pBuildOpDescriptor, pProperties);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDriverRTASFormatCompatibilityCheckExt(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
-        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
-        )
-    {
-        context.logger->log_trace("zeDriverRTASFormatCompatibilityCheckExt(hDriver, rtasFormatA, rtasFormatB)");
-
-        auto pfnRTASFormatCompatibilityCheckExt = context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt;
-
-        if( nullptr == pfnRTASFormatCompatibilityCheckExt )
-            return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, rtasFormatA, rtasFormatB);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(result, hDriver, rtasFormatA, rtasFormatB);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(result, hDriver, rtasFormatA, rtasFormatB);
-        }
-
-        auto driver_result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtEpilogue( hDriver, rtasFormatA, rtasFormatB ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(result, hDriver, rtasFormatA, rtasFormatB);
-        }
-
-        return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(driver_result, hDriver, rtasFormatA, rtasFormatB);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderBuildExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderBuildExt(
-        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
-        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
-        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
-                                                        ///< during acceleration structure construction
-        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
-        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
-        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
-        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
-        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
-                                                        ///< structure bounds
-        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
-                                                        ///< bytes
-        )
-    {
-        context.logger->log_trace("zeRTASBuilderBuildExt(hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes)");
-
-        auto pfnBuildExt = context.zeDdiTable.RTASBuilder.pfnBuildExt;
-
-        if( nullptr == pfnBuildExt )
-            return logAndPropagateResult_zeRTASBuilderBuildExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderBuildExt(result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderBuildExt(result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
-        }
-
-        auto driver_result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderBuildExt(result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
-        }
-
-        return logAndPropagateResult_zeRTASBuilderBuildExt(driver_result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderCommandListAppendCopyExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
-        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
-                                                        ///< acceleration structure to
-        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
-                                                        ///< host memory to copy from
-        size_t size,                                    ///< [in] size in bytes to copy
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        context.logger->log_trace("zeRTASBuilderCommandListAppendCopyExt(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
-
-        auto pfnCommandListAppendCopyExt = context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt;
-
-        if( nullptr == pfnCommandListAppendCopyExt )
-            return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        auto driver_result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(driver_result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASBuilderDestroyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASBuilderDestroyExt(
-        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
-        )
-    {
-        context.logger->log_trace("zeRTASBuilderDestroyExt(hBuilder)");
-
-        auto pfnDestroyExt = context.zeDdiTable.RTASBuilder.pfnDestroyExt;
-
-        if( nullptr == pfnDestroyExt )
-            return logAndPropagateResult_zeRTASBuilderDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hBuilder);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtPrologue( hBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderDestroyExt(result, hBuilder);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExtPrologue( hBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderDestroyExt(result, hBuilder);
-        }
-
-        auto driver_result = pfnDestroyExt( hBuilder );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtEpilogue( hBuilder ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderDestroyExt(result, hBuilder);
-        }
-
-        return logAndPropagateResult_zeRTASBuilderDestroyExt(driver_result, hBuilder);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationCreateExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationCreateExt(
-        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
-        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
-        )
-    {
-        context.logger->log_trace("zeRTASParallelOperationCreateExt(hDriver, phParallelOperation)");
-
-        auto pfnCreateExt = context.zeDdiTable.RTASParallelOperation.pfnCreateExt;
-
-        if( nullptr == pfnCreateExt )
-            return logAndPropagateResult_zeRTASParallelOperationCreateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, phParallelOperation);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationCreateExt(result, hDriver, phParallelOperation);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationCreateExt(result, hDriver, phParallelOperation);
-        }
-
-        auto driver_result = pfnCreateExt( hDriver, phParallelOperation );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtEpilogue( hDriver, phParallelOperation ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationCreateExt(result, hDriver, phParallelOperation);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-            if (phParallelOperation){
-                context.handleLifetime->addHandle( *phParallelOperation );
-                context.handleLifetime->addDependent( hDriver, *phParallelOperation );
-
-            }
-        }
-        return logAndPropagateResult_zeRTASParallelOperationCreateExt(driver_result, hDriver, phParallelOperation);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationGetPropertiesExt(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
-        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
-        )
-    {
-        context.logger->log_trace("zeRTASParallelOperationGetPropertiesExt(hParallelOperation, pProperties)");
-
-        auto pfnGetPropertiesExt = context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt;
-
-        if( nullptr == pfnGetPropertiesExt )
-            return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hParallelOperation, pProperties);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(result, hParallelOperation, pProperties);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(result, hParallelOperation, pProperties);
-        }
-
-        auto driver_result = pfnGetPropertiesExt( hParallelOperation, pProperties );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtEpilogue( hParallelOperation, pProperties ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(result, hParallelOperation, pProperties);
-        }
-
-        return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(driver_result, hParallelOperation, pProperties);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationJoinExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationJoinExt(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
-        )
-    {
-        context.logger->log_trace("zeRTASParallelOperationJoinExt(hParallelOperation)");
-
-        auto pfnJoinExt = context.zeDdiTable.RTASParallelOperation.pfnJoinExt;
-
-        if( nullptr == pfnJoinExt )
-            return logAndPropagateResult_zeRTASParallelOperationJoinExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hParallelOperation);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationJoinExt(result, hParallelOperation);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationJoinExt(result, hParallelOperation);
-        }
-
-        auto driver_result = pfnJoinExt( hParallelOperation );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtEpilogue( hParallelOperation ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationJoinExt(result, hParallelOperation);
-        }
-
-        return logAndPropagateResult_zeRTASParallelOperationJoinExt(driver_result, hParallelOperation);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeRTASParallelOperationDestroyExt(
-        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
-        )
-    {
-        context.logger->log_trace("zeRTASParallelOperationDestroyExt(hParallelOperation)");
-
-        auto pfnDestroyExt = context.zeDdiTable.RTASParallelOperation.pfnDestroyExt;
-
-        if( nullptr == pfnDestroyExt )
-            return logAndPropagateResult_zeRTASParallelOperationDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hParallelOperation);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationDestroyExt(result, hParallelOperation);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationDestroyExt(result, hParallelOperation);
-        }
-
-        auto driver_result = pfnDestroyExt( hParallelOperation );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtEpilogue( hParallelOperation ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationDestroyExt(result, hParallelOperation);
-        }
-
-        return logAndPropagateResult_zeRTASParallelOperationDestroyExt(driver_result, hParallelOperation);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeDeviceGetVectorWidthPropertiesExt(
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of vector width properties available.
-                                                        ///< if count is greater than the number of vector width properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of vector width properties available.
-        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
-                                                        ///< if count is less than the number of properties available, then the
-                                                        ///< driver will return only the number requested.
-        )
-    {
-        context.logger->log_trace("zeDeviceGetVectorWidthPropertiesExt(hDevice, pCount, pVectorWidthProperties)");
-
-        auto pfnGetVectorWidthPropertiesExt = context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt;
-
-        if( nullptr == pfnGetVectorWidthPropertiesExt )
-            return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, pCount, pVectorWidthProperties);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(result, hDevice, pCount, pVectorWidthProperties);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(result, hDevice, pCount, pVectorWidthProperties);
-        }
-
-        auto driver_result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtEpilogue( hDevice, pCount, pVectorWidthProperties ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(result, hDevice, pCount, pVectorWidthProperties);
-        }
-
-        return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(driver_result, hDevice, pCount, pVectorWidthProperties);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeKernelGetAllocationPropertiesExp(
-        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
-                                                        ///< if count is zero, then the driver shall update the value with the
-                                                        ///< total number of kernel allocation properties available.
-                                                        ///< if count is greater than the number of kernel allocation properties
-                                                        ///< available, then the driver shall update the value with the correct
-                                                        ///< number of kernel allocation properties.
-        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
-                                                        ///< if count is less than the number of kernel allocation properties
-                                                        ///< available, then driver shall only retrieve that number of kernel
-                                                        ///< allocation properties.
-        )
-    {
-        context.logger->log_trace("zeKernelGetAllocationPropertiesExp(hKernel, pCount, pAllocationProperties)");
-
-        auto pfnGetAllocationPropertiesExp = context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp;
-
-        if( nullptr == pfnGetAllocationPropertiesExp )
-            return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hKernel, pCount, pAllocationProperties);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetAllocationPropertiesExpPrologue( hKernel, pCount, pAllocationProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(result, hKernel, pCount, pAllocationProperties);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetAllocationPropertiesExpPrologue( hKernel, pCount, pAllocationProperties );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(result, hKernel, pCount, pAllocationProperties);
-        }
-
-        auto driver_result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetAllocationPropertiesExpEpilogue( hKernel, pCount, pAllocationProperties ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(result, hKernel, pCount, pAllocationProperties);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-        }
-        return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(driver_result, hKernel, pCount, pAllocationProperties);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeMemGetIpcHandleWithProperties
-    __zedlllocal ze_result_t ZE_APICALL
-    zeMemGetIpcHandleWithProperties(
-        ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const void* ptr,                                ///< [in] pointer to the device memory allocation
-        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
-        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
-        )
-    {
-        context.logger->log_trace("zeMemGetIpcHandleWithProperties(hContext, ptr, pNext, pIpcHandle)");
-
-        auto pfnGetIpcHandleWithProperties = context.zeDdiTable.Mem.pfnGetIpcHandleWithProperties;
-
-        if( nullptr == pfnGetIpcHandleWithProperties )
-            return logAndPropagateResult_zeMemGetIpcHandleWithProperties(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hContext, ptr, pNext, pIpcHandle);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleWithPropertiesPrologue( hContext, ptr, pNext, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeMemGetIpcHandleWithProperties(result, hContext, ptr, pNext, pIpcHandle);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleWithPropertiesPrologue( hContext, ptr, pNext, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeMemGetIpcHandleWithProperties(result, hContext, ptr, pNext, pIpcHandle);
-        }
-
-        auto driver_result = pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleWithPropertiesEpilogue( hContext, ptr, pNext, pIpcHandle ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeMemGetIpcHandleWithProperties(result, hContext, ptr, pNext, pIpcHandle);
-        }
-
-        return logAndPropagateResult_zeMemGetIpcHandleWithProperties(driver_result, hContext, ptr, pNext, pIpcHandle);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeGraphCreateExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeGraphCreateExt(
-        ze_context_handle_t hContext,                   ///< [in] handle of the context
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
-        )
-    {
-        context.logger->log_trace("zeGraphCreateExt(hContext, pNext, phGraph)");
-
-        auto pfnCreateExt = context.zeDdiTable.Graph.pfnCreateExt;
-
-        if( nullptr == pfnCreateExt )
-            return logAndPropagateResult_zeGraphCreateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hContext, pNext, phGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphCreateExtPrologue( hContext, pNext, phGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphCreateExt(result, hContext, pNext, phGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeGraphCreateExtPrologue( hContext, pNext, phGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphCreateExt(result, hContext, pNext, phGraph);
-        }
-
-        auto driver_result = pfnCreateExt( hContext, pNext, phGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphCreateExtEpilogue( hContext, pNext, phGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphCreateExt(result, hContext, pNext, phGraph);
-        }
-
-
-        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
-            
-            if (phGraph){
-                context.handleLifetime->addHandle( *phGraph );
-                context.handleLifetime->addDependent( hContext, *phGraph );
-
-            }
-        }
-        return logAndPropagateResult_zeGraphCreateExt(driver_result, hContext, pNext, phGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListBeginGraphCaptureExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListBeginGraphCaptureExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        )
-    {
-        context.logger->log_trace("zeCommandListBeginGraphCaptureExt(hCommandList, pNext)");
-
-        auto pfnBeginGraphCaptureExt = context.zeDdiTable.CommandList.pfnBeginGraphCaptureExt;
-
-        if( nullptr == pfnBeginGraphCaptureExt )
-            return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pNext);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginGraphCaptureExtPrologue( hCommandList, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(result, hCommandList, pNext);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListBeginGraphCaptureExtPrologue( hCommandList, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(result, hCommandList, pNext);
-        }
-
-        auto driver_result = pfnBeginGraphCaptureExt( hCommandList, pNext );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginGraphCaptureExtEpilogue( hCommandList, pNext ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(result, hCommandList, pNext);
-        }
-
-        return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(driver_result, hCommandList, pNext);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListBeginCaptureIntoGraphExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListBeginCaptureIntoGraphExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        )
-    {
-        context.logger->log_trace("zeCommandListBeginCaptureIntoGraphExt(hCommandList, hGraph, pNext)");
-
-        auto pfnBeginCaptureIntoGraphExt = context.zeDdiTable.CommandList.pfnBeginCaptureIntoGraphExt;
-
-        if( nullptr == pfnBeginCaptureIntoGraphExt )
-            return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, hGraph, pNext);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginCaptureIntoGraphExtPrologue( hCommandList, hGraph, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(result, hCommandList, hGraph, pNext);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListBeginCaptureIntoGraphExtPrologue( hCommandList, hGraph, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(result, hCommandList, hGraph, pNext);
-        }
-
-        auto driver_result = pfnBeginCaptureIntoGraphExt( hCommandList, hGraph, pNext );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginCaptureIntoGraphExtEpilogue( hCommandList, hGraph, pNext ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(result, hCommandList, hGraph, pNext);
-        }
-
-        return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(driver_result, hCommandList, hGraph, pNext);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListIsGraphCaptureEnabledExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListIsGraphCaptureEnabledExt(
-        ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
-        )
-    {
-        context.logger->log_trace("zeCommandListIsGraphCaptureEnabledExt(hCommandList)");
-
-        auto pfnIsGraphCaptureEnabledExt = context.zeDdiTable.CommandList.pfnIsGraphCaptureEnabledExt;
-
-        if( nullptr == pfnIsGraphCaptureEnabledExt )
-            return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsGraphCaptureEnabledExtPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(result, hCommandList);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListIsGraphCaptureEnabledExtPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(result, hCommandList);
-        }
-
-        auto driver_result = pfnIsGraphCaptureEnabledExt( hCommandList );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsGraphCaptureEnabledExtEpilogue( hCommandList ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(result, hCommandList);
-        }
-
-        return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(driver_result, hCommandList);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListEndGraphCaptureExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListEndGraphCaptureExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
-        )
-    {
-        context.logger->log_trace("zeCommandListEndGraphCaptureExt(hCommandList, pNext, phGraph)");
-
-        auto pfnEndGraphCaptureExt = context.zeDdiTable.CommandList.pfnEndGraphCaptureExt;
-
-        if( nullptr == pfnEndGraphCaptureExt )
-            return logAndPropagateResult_zeCommandListEndGraphCaptureExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pNext, phGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListEndGraphCaptureExtPrologue( hCommandList, pNext, phGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListEndGraphCaptureExt(result, hCommandList, pNext, phGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListEndGraphCaptureExtPrologue( hCommandList, pNext, phGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListEndGraphCaptureExt(result, hCommandList, pNext, phGraph);
-        }
-
-        auto driver_result = pfnEndGraphCaptureExt( hCommandList, pNext, phGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListEndGraphCaptureExtEpilogue( hCommandList, pNext, phGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListEndGraphCaptureExt(result, hCommandList, pNext, phGraph);
-        }
-
-        return logAndPropagateResult_zeCommandListEndGraphCaptureExt(driver_result, hCommandList, pNext, phGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListGetGraphExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListGetGraphExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
-        ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
-        )
-    {
-        context.logger->log_trace("zeCommandListGetGraphExt(hCommandList, phGraph)");
-
-        auto pfnGetGraphExt = context.zeDdiTable.CommandList.pfnGetGraphExt;
-
-        if( nullptr == pfnGetGraphExt )
-            return logAndPropagateResult_zeCommandListGetGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, phGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetGraphExtPrologue( hCommandList, phGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetGraphExt(result, hCommandList, phGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetGraphExtPrologue( hCommandList, phGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetGraphExt(result, hCommandList, phGraph);
-        }
-
-        auto driver_result = pfnGetGraphExt( hCommandList, phGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetGraphExtEpilogue( hCommandList, phGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetGraphExt(result, hCommandList, phGraph);
-        }
-
-        return logAndPropagateResult_zeCommandListGetGraphExt(driver_result, hCommandList, phGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeGraphGetPrimaryCommandListExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeGraphGetPrimaryCommandListExt(
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
-        ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
-                                                        ///< graph
-        )
-    {
-        context.logger->log_trace("zeGraphGetPrimaryCommandListExt(hGraph, phCommandList)");
-
-        auto pfnGetPrimaryCommandListExt = context.zeDdiTable.Graph.pfnGetPrimaryCommandListExt;
-
-        if( nullptr == pfnGetPrimaryCommandListExt )
-            return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, phCommandList);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphGetPrimaryCommandListExtPrologue( hGraph, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(result, hGraph, phCommandList);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeGraphGetPrimaryCommandListExtPrologue( hGraph, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(result, hGraph, phCommandList);
-        }
-
-        auto driver_result = pfnGetPrimaryCommandListExt( hGraph, phCommandList );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphGetPrimaryCommandListExtEpilogue( hGraph, phCommandList ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(result, hGraph, phCommandList);
-        }
-
-        return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(driver_result, hGraph, phCommandList);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeGraphSetDestructionCallbackExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeGraphSetDestructionCallbackExt(
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
-        zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
-        void* pUserData,                                ///< [in][optional] user data to pass to the callback
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        )
-    {
-        context.logger->log_trace("zeGraphSetDestructionCallbackExt(hGraph, pfnCallback, pUserData, pNext)");
-
-        auto pfnSetDestructionCallbackExt = context.zeDdiTable.Graph.pfnSetDestructionCallbackExt;
-
-        if( nullptr == pfnSetDestructionCallbackExt )
-            return logAndPropagateResult_zeGraphSetDestructionCallbackExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, pfnCallback, pUserData, pNext);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphSetDestructionCallbackExtPrologue( hGraph, pfnCallback, pUserData, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphSetDestructionCallbackExt(result, hGraph, pfnCallback, pUserData, pNext);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeGraphSetDestructionCallbackExtPrologue( hGraph, pfnCallback, pUserData, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphSetDestructionCallbackExt(result, hGraph, pfnCallback, pUserData, pNext);
-        }
-
-        auto driver_result = pfnSetDestructionCallbackExt( hGraph, pfnCallback, pUserData, pNext );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphSetDestructionCallbackExtEpilogue( hGraph, pfnCallback, pUserData, pNext ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphSetDestructionCallbackExt(result, hGraph, pfnCallback, pUserData, pNext);
-        }
-
-        return logAndPropagateResult_zeGraphSetDestructionCallbackExt(driver_result, hGraph, pfnCallback, pUserData, pNext);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeGraphInstantiateExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeGraphInstantiateExt(
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
-        )
-    {
-        context.logger->log_trace("zeGraphInstantiateExt(hGraph, pNext, phExecutableGraph)");
-
-        auto pfnInstantiateExt = context.zeDdiTable.Graph.pfnInstantiateExt;
-
-        if( nullptr == pfnInstantiateExt )
-            return logAndPropagateResult_zeGraphInstantiateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, pNext, phExecutableGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphInstantiateExtPrologue( hGraph, pNext, phExecutableGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphInstantiateExt(result, hGraph, pNext, phExecutableGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeGraphInstantiateExtPrologue( hGraph, pNext, phExecutableGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphInstantiateExt(result, hGraph, pNext, phExecutableGraph);
-        }
-
-        auto driver_result = pfnInstantiateExt( hGraph, pNext, phExecutableGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphInstantiateExtEpilogue( hGraph, pNext, phExecutableGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphInstantiateExt(result, hGraph, pNext, phExecutableGraph);
-        }
-
-        return logAndPropagateResult_zeGraphInstantiateExt(driver_result, hGraph, pNext, phExecutableGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListAppendGraphExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListAppendGraphExt(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
-        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
-        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        context.logger->log_trace("zeCommandListAppendGraphExt(hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
-
-        auto pfnAppendGraphExt = context.zeDdiTable.CommandList.pfnAppendGraphExt;
-
-        if( nullptr == pfnAppendGraphExt )
-            return logAndPropagateResult_zeCommandListAppendGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendGraphExtPrologue( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendGraphExt(result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendGraphExtPrologue( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendGraphExt(result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        auto driver_result = pfnAppendGraphExt( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendGraphExtEpilogue( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendGraphExt(result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        return logAndPropagateResult_zeCommandListAppendGraphExt(driver_result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeExecutableGraphGetSourceGraphExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeExecutableGraphGetSourceGraphExt(
-        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
-        ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
-        )
-    {
-        context.logger->log_trace("zeExecutableGraphGetSourceGraphExt(hGraph, phSourceGraph)");
-
-        auto pfnGetSourceGraphExt = context.zeDdiTable.ExecutableGraph.pfnGetSourceGraphExt;
-
-        if( nullptr == pfnGetSourceGraphExt )
-            return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, phSourceGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphGetSourceGraphExtPrologue( hGraph, phSourceGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(result, hGraph, phSourceGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeExecutableGraphGetSourceGraphExtPrologue( hGraph, phSourceGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(result, hGraph, phSourceGraph);
-        }
-
-        auto driver_result = pfnGetSourceGraphExt( hGraph, phSourceGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphGetSourceGraphExtEpilogue( hGraph, phSourceGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(result, hGraph, phSourceGraph);
-        }
-
-        return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(driver_result, hGraph, phSourceGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeGraphIsEmptyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeGraphIsEmptyExt(
-        ze_graph_handle_t hGraph                        ///< [in] handle of the graph
-        )
-    {
-        context.logger->log_trace("zeGraphIsEmptyExt(hGraph)");
-
-        auto pfnIsEmptyExt = context.zeDdiTable.Graph.pfnIsEmptyExt;
-
-        if( nullptr == pfnIsEmptyExt )
-            return logAndPropagateResult_zeGraphIsEmptyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphIsEmptyExtPrologue( hGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphIsEmptyExt(result, hGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeGraphIsEmptyExtPrologue( hGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphIsEmptyExt(result, hGraph);
-        }
-
-        auto driver_result = pfnIsEmptyExt( hGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphIsEmptyExtEpilogue( hGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphIsEmptyExt(result, hGraph);
-        }
-
-        return logAndPropagateResult_zeGraphIsEmptyExt(driver_result, hGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeGraphDumpContentsExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeGraphDumpContentsExt(
-        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
-        const char* filePath,                           ///< [in] path where the DOT file is written
-        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
-                                                        ///< structure (i.e. contains stype and pNext)
-        )
-    {
-        context.logger->log_trace("zeGraphDumpContentsExt(hGraph, filePath, pNext)");
-
-        auto pfnDumpContentsExt = context.zeDdiTable.Graph.pfnDumpContentsExt;
-
-        if( nullptr == pfnDumpContentsExt )
-            return logAndPropagateResult_zeGraphDumpContentsExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, filePath, pNext);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphDumpContentsExtPrologue( hGraph, filePath, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDumpContentsExt(result, hGraph, filePath, pNext);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeGraphDumpContentsExtPrologue( hGraph, filePath, pNext );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDumpContentsExt(result, hGraph, filePath, pNext);
-        }
-
-        auto driver_result = pfnDumpContentsExt( hGraph, filePath, pNext );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphDumpContentsExtEpilogue( hGraph, filePath, pNext ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDumpContentsExt(result, hGraph, filePath, pNext);
-        }
-
-        return logAndPropagateResult_zeGraphDumpContentsExt(driver_result, hGraph, filePath, pNext);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeExecutableGraphDestroyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeExecutableGraphDestroyExt(
-        ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
-        )
-    {
-        context.logger->log_trace("zeExecutableGraphDestroyExt(hGraph)");
-
-        auto pfnDestroyExt = context.zeDdiTable.ExecutableGraph.pfnDestroyExt;
-
-        if( nullptr == pfnDestroyExt )
-            return logAndPropagateResult_zeExecutableGraphDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphDestroyExtPrologue( hGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphDestroyExt(result, hGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeExecutableGraphDestroyExtPrologue( hGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphDestroyExt(result, hGraph);
-        }
-
-        auto driver_result = pfnDestroyExt( hGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphDestroyExtEpilogue( hGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphDestroyExt(result, hGraph);
-        }
-
-        return logAndPropagateResult_zeExecutableGraphDestroyExt(driver_result, hGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeGraphDestroyExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zeGraphDestroyExt(
-        ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
-        )
-    {
-        context.logger->log_trace("zeGraphDestroyExt(hGraph)");
-
-        auto pfnDestroyExt = context.zeDdiTable.Graph.pfnDestroyExt;
-
-        if( nullptr == pfnDestroyExt )
-            return logAndPropagateResult_zeGraphDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphDestroyExtPrologue( hGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDestroyExt(result, hGraph);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeGraphDestroyExtPrologue( hGraph );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDestroyExt(result, hGraph);
-        }
-
-        auto driver_result = pfnDestroyExt( hGraph );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeGraphDestroyExtEpilogue( hGraph ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDestroyExt(result, hGraph);
-        }
-
-        return logAndPropagateResult_zeGraphDestroyExt(driver_result, hGraph);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListAppendHostFunction
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListAppendHostFunction(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
-                                                        ///< non-blocking
-        void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
-                                                        ///< neither the runtime nor the device will dereference it
-        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
-        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
-                                                        ///< phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        context.logger->log_trace("zeCommandListAppendHostFunction(hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
-
-        auto pfnAppendHostFunction = context.zeDdiTable.CommandList.pfnAppendHostFunction;
-
-        if( nullptr == pfnAppendHostFunction )
-            return logAndPropagateResult_zeCommandListAppendHostFunction(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendHostFunctionPrologue( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendHostFunction(result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendHostFunctionPrologue( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendHostFunction(result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        auto driver_result = pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendHostFunctionEpilogue( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
-            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendHostFunction(result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-        }
-
-        return logAndPropagateResult_zeCommandListAppendHostFunction(driver_result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceReserveCacheExt
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(
@@ -19823,6 +18275,1554 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetBinaryExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetBinaryExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+        )
+    {
+        context.logger->log_trace("zeKernelGetBinaryExp(hKernel, pSize, pKernelBinary)");
+
+        auto pfnGetBinaryExp = context.zeDdiTable.KernelExp.pfnGetBinaryExp;
+
+        if( nullptr == pfnGetBinaryExp )
+            return logAndPropagateResult_zeKernelGetBinaryExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hKernel, pSize, pKernelBinary);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetBinaryExpPrologue( hKernel, pSize, pKernelBinary );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetBinaryExp(result, hKernel, pSize, pKernelBinary);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetBinaryExpPrologue( hKernel, pSize, pKernelBinary );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetBinaryExp(result, hKernel, pSize, pKernelBinary);
+        }
+
+        auto driver_result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetBinaryExpEpilogue( hKernel, pSize, pKernelBinary ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetBinaryExp(result, hKernel, pSize, pKernelBinary);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult_zeKernelGetBinaryExp(driver_result, hKernel, pSize, pKernelBinary);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceImportExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceImportExternalSemaphoreExt(
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+        )
+    {
+        context.logger->log_trace("zeDeviceImportExternalSemaphoreExt(hDevice, desc, phSemaphore)");
+
+        auto pfnImportExternalSemaphoreExt = context.zeDdiTable.Device.pfnImportExternalSemaphoreExt;
+
+        if( nullptr == pfnImportExternalSemaphoreExt )
+            return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, desc, phSemaphore);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceImportExternalSemaphoreExtPrologue( hDevice, desc, phSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(result, hDevice, desc, phSemaphore);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceImportExternalSemaphoreExtPrologue( hDevice, desc, phSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(result, hDevice, desc, phSemaphore);
+        }
+
+        auto driver_result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceImportExternalSemaphoreExtEpilogue( hDevice, desc, phSemaphore ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(result, hDevice, desc, phSemaphore);
+        }
+
+        return logAndPropagateResult_zeDeviceImportExternalSemaphoreExt(driver_result, hDevice, desc, phSemaphore);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReleaseExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReleaseExternalSemaphoreExt(
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+        )
+    {
+        context.logger->log_trace("zeDeviceReleaseExternalSemaphoreExt(hSemaphore)");
+
+        auto pfnReleaseExternalSemaphoreExt = context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt;
+
+        if( nullptr == pfnReleaseExternalSemaphoreExt )
+            return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hSemaphore);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReleaseExternalSemaphoreExtPrologue( hSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(result, hSemaphore);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceReleaseExternalSemaphoreExtPrologue( hSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(result, hSemaphore);
+        }
+
+        auto driver_result = pfnReleaseExternalSemaphoreExt( hSemaphore );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReleaseExternalSemaphoreExtEpilogue( hSemaphore ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(result, hSemaphore);
+        }
+
+        return logAndPropagateResult_zeDeviceReleaseExternalSemaphoreExt(driver_result, hSemaphore);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendSignalExternalSemaphoreExt(hCommandList, numSemaphores, phSemaphoresLocal, signalParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendSignalExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt;
+
+        if( nullptr == pfnAppendSignalExternalSemaphoreExt )
+            return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendSignalExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalExternalSemaphoreExtEpilogue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListAppendSignalExternalSemaphoreExt(driver_result, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0,numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendWaitExternalSemaphoreExt(hCommandList, numSemaphores, phSemaphoresLocal, waitParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendWaitExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt;
+
+        if( nullptr == pfnAppendWaitExternalSemaphoreExt )
+            return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWaitExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitExternalSemaphoreExtEpilogue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(driver_result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderCreateExt(hDriver, pDescriptor, phBuilder)");
+
+        auto pfnCreateExt = context.zeDdiTable.RTASBuilder.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult_zeRTASBuilderCreateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, pDescriptor, phBuilder);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCreateExt(result, hDriver, pDescriptor, phBuilder);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCreateExt(result, hDriver, pDescriptor, phBuilder);
+        }
+
+        auto driver_result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtEpilogue( hDriver, pDescriptor, phBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCreateExt(result, hDriver, pDescriptor, phBuilder);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phBuilder){
+                context.handleLifetime->addHandle( *phBuilder );
+                context.handleLifetime->addDependent( hDriver, *phBuilder );
+
+            }
+        }
+        return logAndPropagateResult_zeRTASBuilderCreateExt(driver_result, hDriver, pDescriptor, phBuilder);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderGetBuildPropertiesExt(hBuilder, pBuildOpDescriptor, pProperties)");
+
+        auto pfnGetBuildPropertiesExt = context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt;
+
+        if( nullptr == pfnGetBuildPropertiesExt )
+            return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hBuilder, pBuildOpDescriptor, pProperties);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(result, hBuilder, pBuildOpDescriptor, pProperties);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(result, hBuilder, pBuildOpDescriptor, pProperties);
+        }
+
+        auto driver_result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtEpilogue( hBuilder, pBuildOpDescriptor, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(result, hBuilder, pBuildOpDescriptor, pProperties);
+        }
+
+        return logAndPropagateResult_zeRTASBuilderGetBuildPropertiesExt(driver_result, hBuilder, pBuildOpDescriptor, pProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        context.logger->log_trace("zeDriverRTASFormatCompatibilityCheckExt(hDriver, rtasFormatA, rtasFormatB)");
+
+        auto pfnRTASFormatCompatibilityCheckExt = context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt;
+
+        if( nullptr == pfnRTASFormatCompatibilityCheckExt )
+            return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, rtasFormatA, rtasFormatB);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(result, hDriver, rtasFormatA, rtasFormatB);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(result, hDriver, rtasFormatA, rtasFormatB);
+        }
+
+        auto driver_result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtEpilogue( hDriver, rtasFormatA, rtasFormatB ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(result, hDriver, rtasFormatA, rtasFormatB);
+        }
+
+        return logAndPropagateResult_zeDriverRTASFormatCompatibilityCheckExt(driver_result, hDriver, rtasFormatA, rtasFormatB);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderBuildExt(hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes)");
+
+        auto pfnBuildExt = context.zeDdiTable.RTASBuilder.pfnBuildExt;
+
+        if( nullptr == pfnBuildExt )
+            return logAndPropagateResult_zeRTASBuilderBuildExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderBuildExt(result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderBuildExt(result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
+        }
+
+        auto driver_result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderBuildExt(result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
+        }
+
+        return logAndPropagateResult_zeRTASBuilderBuildExt(driver_result, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCommandListAppendCopyExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderCommandListAppendCopyExt(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnCommandListAppendCopyExt = context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt;
+
+        if( nullptr == pfnCommandListAppendCopyExt )
+            return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeRTASBuilderCommandListAppendCopyExt(driver_result, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExt(
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderDestroyExt(hBuilder)");
+
+        auto pfnDestroyExt = context.zeDdiTable.RTASBuilder.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult_zeRTASBuilderDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hBuilder);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtPrologue( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderDestroyExt(result, hBuilder);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExtPrologue( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderDestroyExt(result, hBuilder);
+        }
+
+        auto driver_result = pfnDestroyExt( hBuilder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtEpilogue( hBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASBuilderDestroyExt(result, hBuilder);
+        }
+
+        return logAndPropagateResult_zeRTASBuilderDestroyExt(driver_result, hBuilder);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationCreateExt(hDriver, phParallelOperation)");
+
+        auto pfnCreateExt = context.zeDdiTable.RTASParallelOperation.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult_zeRTASParallelOperationCreateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, phParallelOperation);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationCreateExt(result, hDriver, phParallelOperation);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationCreateExt(result, hDriver, phParallelOperation);
+        }
+
+        auto driver_result = pfnCreateExt( hDriver, phParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtEpilogue( hDriver, phParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationCreateExt(result, hDriver, phParallelOperation);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phParallelOperation){
+                context.handleLifetime->addHandle( *phParallelOperation );
+                context.handleLifetime->addDependent( hDriver, *phParallelOperation );
+
+            }
+        }
+        return logAndPropagateResult_zeRTASParallelOperationCreateExt(driver_result, hDriver, phParallelOperation);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationGetPropertiesExt(hParallelOperation, pProperties)");
+
+        auto pfnGetPropertiesExt = context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt;
+
+        if( nullptr == pfnGetPropertiesExt )
+            return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hParallelOperation, pProperties);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(result, hParallelOperation, pProperties);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(result, hParallelOperation, pProperties);
+        }
+
+        auto driver_result = pfnGetPropertiesExt( hParallelOperation, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtEpilogue( hParallelOperation, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(result, hParallelOperation, pProperties);
+        }
+
+        return logAndPropagateResult_zeRTASParallelOperationGetPropertiesExt(driver_result, hParallelOperation, pProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationJoinExt(hParallelOperation)");
+
+        auto pfnJoinExt = context.zeDdiTable.RTASParallelOperation.pfnJoinExt;
+
+        if( nullptr == pfnJoinExt )
+            return logAndPropagateResult_zeRTASParallelOperationJoinExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hParallelOperation);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationJoinExt(result, hParallelOperation);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationJoinExt(result, hParallelOperation);
+        }
+
+        auto driver_result = pfnJoinExt( hParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationJoinExt(result, hParallelOperation);
+        }
+
+        return logAndPropagateResult_zeRTASParallelOperationJoinExt(driver_result, hParallelOperation);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationDestroyExt(hParallelOperation)");
+
+        auto pfnDestroyExt = context.zeDdiTable.RTASParallelOperation.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult_zeRTASParallelOperationDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hParallelOperation);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationDestroyExt(result, hParallelOperation);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationDestroyExt(result, hParallelOperation);
+        }
+
+        auto driver_result = pfnDestroyExt( hParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeRTASParallelOperationDestroyExt(result, hParallelOperation);
+        }
+
+        return logAndPropagateResult_zeRTASParallelOperationDestroyExt(driver_result, hParallelOperation);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetVectorWidthPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+        )
+    {
+        context.logger->log_trace("zeDeviceGetVectorWidthPropertiesExt(hDevice, pCount, pVectorWidthProperties)");
+
+        auto pfnGetVectorWidthPropertiesExt = context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt;
+
+        if( nullptr == pfnGetVectorWidthPropertiesExt )
+            return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, pCount, pVectorWidthProperties);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(result, hDevice, pCount, pVectorWidthProperties);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(result, hDevice, pCount, pVectorWidthProperties);
+        }
+
+        auto driver_result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtEpilogue( hDevice, pCount, pVectorWidthProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(result, hDevice, pCount, pVectorWidthProperties);
+        }
+
+        return logAndPropagateResult_zeDeviceGetVectorWidthPropertiesExt(driver_result, hDevice, pCount, pVectorWidthProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        context.logger->log_trace("zeKernelGetAllocationPropertiesExp(hKernel, pCount, pAllocationProperties)");
+
+        auto pfnGetAllocationPropertiesExp = context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp;
+
+        if( nullptr == pfnGetAllocationPropertiesExp )
+            return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hKernel, pCount, pAllocationProperties);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetAllocationPropertiesExpPrologue( hKernel, pCount, pAllocationProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(result, hKernel, pCount, pAllocationProperties);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetAllocationPropertiesExpPrologue( hKernel, pCount, pAllocationProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(result, hKernel, pCount, pAllocationProperties);
+        }
+
+        auto driver_result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetAllocationPropertiesExpEpilogue( hKernel, pCount, pAllocationProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(result, hKernel, pCount, pAllocationProperties);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult_zeKernelGetAllocationPropertiesExp(driver_result, hKernel, pCount, pAllocationProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleWithProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleWithProperties(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const void* ptr,                                ///< [in] pointer to the device memory allocation
+        void* pNext,                                    ///< [in][optional] Pointer to extension-specific structure.
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        context.logger->log_trace("zeMemGetIpcHandleWithProperties(hContext, ptr, pNext, pIpcHandle)");
+
+        auto pfnGetIpcHandleWithProperties = context.zeDdiTable.Mem.pfnGetIpcHandleWithProperties;
+
+        if( nullptr == pfnGetIpcHandleWithProperties )
+            return logAndPropagateResult_zeMemGetIpcHandleWithProperties(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hContext, ptr, pNext, pIpcHandle);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleWithPropertiesPrologue( hContext, ptr, pNext, pIpcHandle );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeMemGetIpcHandleWithProperties(result, hContext, ptr, pNext, pIpcHandle);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleWithPropertiesPrologue( hContext, ptr, pNext, pIpcHandle );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeMemGetIpcHandleWithProperties(result, hContext, ptr, pNext, pIpcHandle);
+        }
+
+        auto driver_result = pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleWithPropertiesEpilogue( hContext, ptr, pNext, pIpcHandle ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeMemGetIpcHandleWithProperties(result, hContext, ptr, pNext, pIpcHandle);
+        }
+
+        return logAndPropagateResult_zeMemGetIpcHandleWithProperties(driver_result, hContext, ptr, pNext, pIpcHandle);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphCreateExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of the graph object created
+        )
+    {
+        context.logger->log_trace("zeGraphCreateExt(hContext, pNext, phGraph)");
+
+        auto pfnCreateExt = context.zeDdiTable.Graph.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult_zeGraphCreateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hContext, pNext, phGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphCreateExtPrologue( hContext, pNext, phGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphCreateExt(result, hContext, pNext, phGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphCreateExtPrologue( hContext, pNext, phGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphCreateExt(result, hContext, pNext, phGraph);
+        }
+
+        auto driver_result = pfnCreateExt( hContext, pNext, phGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphCreateExtEpilogue( hContext, pNext, phGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphCreateExt(result, hContext, pNext, phGraph);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phGraph){
+                context.handleLifetime->addHandle( *phGraph );
+                context.handleLifetime->addDependent( hContext, *phGraph );
+
+            }
+        }
+        return logAndPropagateResult_zeGraphCreateExt(driver_result, hContext, pNext, phGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListBeginGraphCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListBeginGraphCaptureExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        context.logger->log_trace("zeCommandListBeginGraphCaptureExt(hCommandList, pNext)");
+
+        auto pfnBeginGraphCaptureExt = context.zeDdiTable.CommandList.pfnBeginGraphCaptureExt;
+
+        if( nullptr == pfnBeginGraphCaptureExt )
+            return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pNext);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginGraphCaptureExtPrologue( hCommandList, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(result, hCommandList, pNext);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListBeginGraphCaptureExtPrologue( hCommandList, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(result, hCommandList, pNext);
+        }
+
+        auto driver_result = pfnBeginGraphCaptureExt( hCommandList, pNext );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginGraphCaptureExtEpilogue( hCommandList, pNext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(result, hCommandList, pNext);
+        }
+
+        return logAndPropagateResult_zeCommandListBeginGraphCaptureExt(driver_result, hCommandList, pNext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListBeginCaptureIntoGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListBeginCaptureIntoGraphExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to start capture on
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph to capture into
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        context.logger->log_trace("zeCommandListBeginCaptureIntoGraphExt(hCommandList, hGraph, pNext)");
+
+        auto pfnBeginCaptureIntoGraphExt = context.zeDdiTable.CommandList.pfnBeginCaptureIntoGraphExt;
+
+        if( nullptr == pfnBeginCaptureIntoGraphExt )
+            return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, hGraph, pNext);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginCaptureIntoGraphExtPrologue( hCommandList, hGraph, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(result, hCommandList, hGraph, pNext);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListBeginCaptureIntoGraphExtPrologue( hCommandList, hGraph, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(result, hCommandList, hGraph, pNext);
+        }
+
+        auto driver_result = pfnBeginCaptureIntoGraphExt( hCommandList, hGraph, pNext );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListBeginCaptureIntoGraphExtEpilogue( hCommandList, hGraph, pNext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(result, hCommandList, hGraph, pNext);
+        }
+
+        return logAndPropagateResult_zeCommandListBeginCaptureIntoGraphExt(driver_result, hCommandList, hGraph, pNext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListIsGraphCaptureEnabledExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListIsGraphCaptureEnabledExt(
+        ze_command_list_handle_t hCommandList           ///< [in] handle of the command list
+        )
+    {
+        context.logger->log_trace("zeCommandListIsGraphCaptureEnabledExt(hCommandList)");
+
+        auto pfnIsGraphCaptureEnabledExt = context.zeDdiTable.CommandList.pfnIsGraphCaptureEnabledExt;
+
+        if( nullptr == pfnIsGraphCaptureEnabledExt )
+            return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsGraphCaptureEnabledExtPrologue( hCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(result, hCommandList);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListIsGraphCaptureEnabledExtPrologue( hCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(result, hCommandList);
+        }
+
+        auto driver_result = pfnIsGraphCaptureEnabledExt( hCommandList );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsGraphCaptureEnabledExtEpilogue( hCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(result, hCommandList);
+        }
+
+        return logAndPropagateResult_zeCommandListIsGraphCaptureEnabledExt(driver_result, hCommandList);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListEndGraphCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListEndGraphCaptureExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to end capture on
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the captured graph handle
+        )
+    {
+        context.logger->log_trace("zeCommandListEndGraphCaptureExt(hCommandList, pNext, phGraph)");
+
+        auto pfnEndGraphCaptureExt = context.zeDdiTable.CommandList.pfnEndGraphCaptureExt;
+
+        if( nullptr == pfnEndGraphCaptureExt )
+            return logAndPropagateResult_zeCommandListEndGraphCaptureExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pNext, phGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListEndGraphCaptureExtPrologue( hCommandList, pNext, phGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListEndGraphCaptureExt(result, hCommandList, pNext, phGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListEndGraphCaptureExtPrologue( hCommandList, pNext, phGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListEndGraphCaptureExt(result, hCommandList, pNext, phGraph);
+        }
+
+        auto driver_result = pfnEndGraphCaptureExt( hCommandList, pNext, phGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListEndGraphCaptureExtEpilogue( hCommandList, pNext, phGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListEndGraphCaptureExt(result, hCommandList, pNext, phGraph);
+        }
+
+        return logAndPropagateResult_zeCommandListEndGraphCaptureExt(driver_result, hCommandList, pNext, phGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetGraphExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list that is in capture mode
+        ze_graph_handle_t* phGraph                      ///< [out] pointer to the graph handle associated with the command list
+        )
+    {
+        context.logger->log_trace("zeCommandListGetGraphExt(hCommandList, phGraph)");
+
+        auto pfnGetGraphExt = context.zeDdiTable.CommandList.pfnGetGraphExt;
+
+        if( nullptr == pfnGetGraphExt )
+            return logAndPropagateResult_zeCommandListGetGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, phGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetGraphExtPrologue( hCommandList, phGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetGraphExt(result, hCommandList, phGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetGraphExtPrologue( hCommandList, phGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetGraphExt(result, hCommandList, phGraph);
+        }
+
+        auto driver_result = pfnGetGraphExt( hCommandList, phGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetGraphExtEpilogue( hCommandList, phGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetGraphExt(result, hCommandList, phGraph);
+        }
+
+        return logAndPropagateResult_zeCommandListGetGraphExt(driver_result, hCommandList, phGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphGetPrimaryCommandListExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphGetPrimaryCommandListExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        ze_command_list_handle_t* phCommandList         ///< [out] pointer to the primary command list handle associated with the
+                                                        ///< graph
+        )
+    {
+        context.logger->log_trace("zeGraphGetPrimaryCommandListExt(hGraph, phCommandList)");
+
+        auto pfnGetPrimaryCommandListExt = context.zeDdiTable.Graph.pfnGetPrimaryCommandListExt;
+
+        if( nullptr == pfnGetPrimaryCommandListExt )
+            return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, phCommandList);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphGetPrimaryCommandListExtPrologue( hGraph, phCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(result, hGraph, phCommandList);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphGetPrimaryCommandListExtPrologue( hGraph, phCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(result, hGraph, phCommandList);
+        }
+
+        auto driver_result = pfnGetPrimaryCommandListExt( hGraph, phCommandList );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphGetPrimaryCommandListExtEpilogue( hGraph, phCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(result, hGraph, phCommandList);
+        }
+
+        return logAndPropagateResult_zeGraphGetPrimaryCommandListExt(driver_result, hGraph, phCommandList);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphSetDestructionCallbackExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphSetDestructionCallbackExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        zex_mem_graph_free_callback_fn_t pfnCallback,   ///< [in] callback function to invoke when the graph is destroyed
+        void* pUserData,                                ///< [in][optional] user data to pass to the callback
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        context.logger->log_trace("zeGraphSetDestructionCallbackExt(hGraph, pfnCallback, pUserData, pNext)");
+
+        auto pfnSetDestructionCallbackExt = context.zeDdiTable.Graph.pfnSetDestructionCallbackExt;
+
+        if( nullptr == pfnSetDestructionCallbackExt )
+            return logAndPropagateResult_zeGraphSetDestructionCallbackExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, pfnCallback, pUserData, pNext);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphSetDestructionCallbackExtPrologue( hGraph, pfnCallback, pUserData, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphSetDestructionCallbackExt(result, hGraph, pfnCallback, pUserData, pNext);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphSetDestructionCallbackExtPrologue( hGraph, pfnCallback, pUserData, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphSetDestructionCallbackExt(result, hGraph, pfnCallback, pUserData, pNext);
+        }
+
+        auto driver_result = pfnSetDestructionCallbackExt( hGraph, pfnCallback, pUserData, pNext );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphSetDestructionCallbackExtEpilogue( hGraph, pfnCallback, pUserData, pNext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphSetDestructionCallbackExt(result, hGraph, pfnCallback, pUserData, pNext);
+        }
+
+        return logAndPropagateResult_zeGraphSetDestructionCallbackExt(driver_result, hGraph, pfnCallback, pUserData, pNext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphInstantiateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphInstantiateExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the recorded graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_executable_graph_handle_t* phExecutableGraph ///< [out] pointer to handle of the executable graph
+        )
+    {
+        context.logger->log_trace("zeGraphInstantiateExt(hGraph, pNext, phExecutableGraph)");
+
+        auto pfnInstantiateExt = context.zeDdiTable.Graph.pfnInstantiateExt;
+
+        if( nullptr == pfnInstantiateExt )
+            return logAndPropagateResult_zeGraphInstantiateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, pNext, phExecutableGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphInstantiateExtPrologue( hGraph, pNext, phExecutableGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphInstantiateExt(result, hGraph, pNext, phExecutableGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphInstantiateExtPrologue( hGraph, pNext, phExecutableGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphInstantiateExt(result, hGraph, pNext, phExecutableGraph);
+        }
+
+        auto driver_result = pfnInstantiateExt( hGraph, pNext, phExecutableGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphInstantiateExtEpilogue( hGraph, pNext, phExecutableGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphInstantiateExt(result, hGraph, pNext, phExecutableGraph);
+        }
+
+        return logAndPropagateResult_zeGraphInstantiateExt(driver_result, hGraph, pNext, phExecutableGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendGraphExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list to execute the graph on
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        const void* pNext,                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendGraphExt(hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendGraphExt = context.zeDdiTable.CommandList.pfnAppendGraphExt;
+
+        if( nullptr == pfnAppendGraphExt )
+            return logAndPropagateResult_zeCommandListAppendGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendGraphExtPrologue( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendGraphExt(result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendGraphExtPrologue( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendGraphExt(result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnAppendGraphExt( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendGraphExtEpilogue( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendGraphExt(result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListAppendGraphExt(driver_result, hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeExecutableGraphGetSourceGraphExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeExecutableGraphGetSourceGraphExt(
+        ze_executable_graph_handle_t hGraph,            ///< [in] handle of the executable graph
+        ze_graph_handle_t* phSourceGraph                ///< [out] pointer to the source recorded graph handle
+        )
+    {
+        context.logger->log_trace("zeExecutableGraphGetSourceGraphExt(hGraph, phSourceGraph)");
+
+        auto pfnGetSourceGraphExt = context.zeDdiTable.ExecutableGraph.pfnGetSourceGraphExt;
+
+        if( nullptr == pfnGetSourceGraphExt )
+            return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, phSourceGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphGetSourceGraphExtPrologue( hGraph, phSourceGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(result, hGraph, phSourceGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeExecutableGraphGetSourceGraphExtPrologue( hGraph, phSourceGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(result, hGraph, phSourceGraph);
+        }
+
+        auto driver_result = pfnGetSourceGraphExt( hGraph, phSourceGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphGetSourceGraphExtEpilogue( hGraph, phSourceGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(result, hGraph, phSourceGraph);
+        }
+
+        return logAndPropagateResult_zeExecutableGraphGetSourceGraphExt(driver_result, hGraph, phSourceGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphIsEmptyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphIsEmptyExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+        )
+    {
+        context.logger->log_trace("zeGraphIsEmptyExt(hGraph)");
+
+        auto pfnIsEmptyExt = context.zeDdiTable.Graph.pfnIsEmptyExt;
+
+        if( nullptr == pfnIsEmptyExt )
+            return logAndPropagateResult_zeGraphIsEmptyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphIsEmptyExtPrologue( hGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphIsEmptyExt(result, hGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphIsEmptyExtPrologue( hGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphIsEmptyExt(result, hGraph);
+        }
+
+        auto driver_result = pfnIsEmptyExt( hGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphIsEmptyExtEpilogue( hGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphIsEmptyExt(result, hGraph);
+        }
+
+        return logAndPropagateResult_zeGraphIsEmptyExt(driver_result, hGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphDumpContentsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphDumpContentsExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of the graph
+        const char* filePath,                           ///< [in] path where the DOT file is written
+        const void* pNext                               ///< [in][optional] must be null or a pointer to an extension-specific
+                                                        ///< structure (i.e. contains stype and pNext)
+        )
+    {
+        context.logger->log_trace("zeGraphDumpContentsExt(hGraph, filePath, pNext)");
+
+        auto pfnDumpContentsExt = context.zeDdiTable.Graph.pfnDumpContentsExt;
+
+        if( nullptr == pfnDumpContentsExt )
+            return logAndPropagateResult_zeGraphDumpContentsExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, filePath, pNext);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphDumpContentsExtPrologue( hGraph, filePath, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDumpContentsExt(result, hGraph, filePath, pNext);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphDumpContentsExtPrologue( hGraph, filePath, pNext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDumpContentsExt(result, hGraph, filePath, pNext);
+        }
+
+        auto driver_result = pfnDumpContentsExt( hGraph, filePath, pNext );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphDumpContentsExtEpilogue( hGraph, filePath, pNext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDumpContentsExt(result, hGraph, filePath, pNext);
+        }
+
+        return logAndPropagateResult_zeGraphDumpContentsExt(driver_result, hGraph, filePath, pNext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeExecutableGraphDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeExecutableGraphDestroyExt(
+        ze_executable_graph_handle_t hGraph             ///< [in][release] handle of the executable graph to destroy
+        )
+    {
+        context.logger->log_trace("zeExecutableGraphDestroyExt(hGraph)");
+
+        auto pfnDestroyExt = context.zeDdiTable.ExecutableGraph.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult_zeExecutableGraphDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphDestroyExtPrologue( hGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphDestroyExt(result, hGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeExecutableGraphDestroyExtPrologue( hGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphDestroyExt(result, hGraph);
+        }
+
+        auto driver_result = pfnDestroyExt( hGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeExecutableGraphDestroyExtEpilogue( hGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeExecutableGraphDestroyExt(result, hGraph);
+        }
+
+        return logAndPropagateResult_zeExecutableGraphDestroyExt(driver_result, hGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphDestroyExt(
+        ze_graph_handle_t hGraph                        ///< [in][release] handle of the graph to destroy
+        )
+    {
+        context.logger->log_trace("zeGraphDestroyExt(hGraph)");
+
+        auto pfnDestroyExt = context.zeDdiTable.Graph.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult_zeGraphDestroyExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphDestroyExtPrologue( hGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDestroyExt(result, hGraph);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphDestroyExtPrologue( hGraph );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDestroyExt(result, hGraph);
+        }
+
+        auto driver_result = pfnDestroyExt( hGraph );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphDestroyExtEpilogue( hGraph ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphDestroyExt(result, hGraph);
+        }
+
+        return logAndPropagateResult_zeGraphDestroyExt(driver_result, hGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendHostFunction
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendHostFunction(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
+                                                        ///< non-blocking
+        void* pUserData,                                ///< [in][optional] user specific data that would be passed to function;
+                                                        ///< neither the runtime nor the device will dereference it
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] count of phWaitEvents; must be 0 if `nullptr ==
+                                                        ///< phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendHostFunction(hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendHostFunction = context.zeDdiTable.CommandList.pfnAppendHostFunction;
+
+        if( nullptr == pfnAppendHostFunction )
+            return logAndPropagateResult_zeCommandListAppendHostFunction(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendHostFunctionPrologue( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendHostFunction(result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendHostFunctionPrologue( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendHostFunction(result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendHostFunctionEpilogue( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListAppendHostFunction(result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListAppendHostFunction(driver_result, hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zexCounterBasedEventCreate2
     __zedlllocal ze_result_t ZE_APICALL zexCounterBasedEventCreate2(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
@@ -19940,96 +19940,6 @@ zeGetGlobalProcAddrTable(
     if (version >= ZE_API_VERSION_1_10) {
         dditable.pfnInitDrivers                              = pDdiTable->pfnInitDrivers;
         pDdiTable->pfnInitDrivers                            = validation_layer::zeInitDrivers;
-    }
-    return result;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's ExecutableGraph table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetExecutableGraphProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_executable_graph_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
-    )
-{
-    auto& dditable = validation_layer::context.zeDdiTable.ExecutableGraph;
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if (validation_layer::context.version < version)
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnGetSourceGraphExt                        = pDdiTable->pfnGetSourceGraphExt;
-        pDdiTable->pfnGetSourceGraphExt                      = validation_layer::zeExecutableGraphGetSourceGraphExt;
-    }
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
-        pDdiTable->pfnDestroyExt                             = validation_layer::zeExecutableGraphDestroyExt;
-    }
-    return result;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Graph table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetGraphProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_graph_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
-    )
-{
-    auto& dditable = validation_layer::context.zeDdiTable.Graph;
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if (validation_layer::context.version < version)
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnCreateExt                                = pDdiTable->pfnCreateExt;
-        pDdiTable->pfnCreateExt                              = validation_layer::zeGraphCreateExt;
-    }
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnGetPrimaryCommandListExt                 = pDdiTable->pfnGetPrimaryCommandListExt;
-        pDdiTable->pfnGetPrimaryCommandListExt               = validation_layer::zeGraphGetPrimaryCommandListExt;
-    }
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnSetDestructionCallbackExt                = pDdiTable->pfnSetDestructionCallbackExt;
-        pDdiTable->pfnSetDestructionCallbackExt              = validation_layer::zeGraphSetDestructionCallbackExt;
-    }
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnInstantiateExt                           = pDdiTable->pfnInstantiateExt;
-        pDdiTable->pfnInstantiateExt                         = validation_layer::zeGraphInstantiateExt;
-    }
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnIsEmptyExt                               = pDdiTable->pfnIsEmptyExt;
-        pDdiTable->pfnIsEmptyExt                             = validation_layer::zeGraphIsEmptyExt;
-    }
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnDumpContentsExt                          = pDdiTable->pfnDumpContentsExt;
-        pDdiTable->pfnDumpContentsExt                        = validation_layer::zeGraphDumpContentsExt;
-    }
-    if (version >= ZE_API_VERSION_1_17) {
-        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
-        pDdiTable->pfnDestroyExt                             = validation_layer::zeGraphDestroyExt;
     }
     return result;
 }
@@ -21761,6 +21671,96 @@ zeGetFabricVertexExpProcAddrTable(
     if (version >= ZE_API_VERSION_1_4) {
         dditable.pfnGetDeviceExp                             = pDdiTable->pfnGetDeviceExp;
         pDdiTable->pfnGetDeviceExp                           = validation_layer::zeFabricVertexGetDeviceExp;
+    }
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ExecutableGraph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetExecutableGraphProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_executable_graph_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.ExecutableGraph;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnGetSourceGraphExt                        = pDdiTable->pfnGetSourceGraphExt;
+        pDdiTable->pfnGetSourceGraphExt                      = validation_layer::zeExecutableGraphGetSourceGraphExt;
+    }
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
+        pDdiTable->pfnDestroyExt                             = validation_layer::zeExecutableGraphDestroyExt;
+    }
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Graph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetGraphProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_graph_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.Graph;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnCreateExt                                = pDdiTable->pfnCreateExt;
+        pDdiTable->pfnCreateExt                              = validation_layer::zeGraphCreateExt;
+    }
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnGetPrimaryCommandListExt                 = pDdiTable->pfnGetPrimaryCommandListExt;
+        pDdiTable->pfnGetPrimaryCommandListExt               = validation_layer::zeGraphGetPrimaryCommandListExt;
+    }
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnSetDestructionCallbackExt                = pDdiTable->pfnSetDestructionCallbackExt;
+        pDdiTable->pfnSetDestructionCallbackExt              = validation_layer::zeGraphSetDestructionCallbackExt;
+    }
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnInstantiateExt                           = pDdiTable->pfnInstantiateExt;
+        pDdiTable->pfnInstantiateExt                         = validation_layer::zeGraphInstantiateExt;
+    }
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnIsEmptyExt                               = pDdiTable->pfnIsEmptyExt;
+        pDdiTable->pfnIsEmptyExt                             = validation_layer::zeGraphIsEmptyExt;
+    }
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnDumpContentsExt                          = pDdiTable->pfnDumpContentsExt;
+        pDdiTable->pfnDumpContentsExt                        = validation_layer::zeGraphDumpContentsExt;
+    }
+    if (version >= ZE_API_VERSION_1_17) {
+        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
+        pDdiTable->pfnDestroyExt                             = validation_layer::zeGraphDestroyExt;
     }
     return result;
 }
