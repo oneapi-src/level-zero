@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""
+Pre-commit hook to update copyright years in modified files.
+This script is cross-platform compatible (Linux, macOS, Windows).
+"""
+
+import subprocess
+import sys
+from pathlib import Path
+
+def main():
+    """Run the copyright update script and stage changes."""
+    try:
+        # Get the root directory of the repo
+        result = subprocess.run(
+            ['git', 'rev-parse', '--show-toplevel'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        repo_root = Path(result.stdout.strip())
+        
+        # Run the update copyright script
+        copyright_script = repo_root / 'scripts' / 'update_copyright.py'
+        
+        if not copyright_script.exists():
+            # Fallback to bash script if Python version doesn't exist
+            copyright_script = repo_root / 'scripts' / 'update_copyright.sh'
+            if copyright_script.exists():
+                subprocess.run(['bash', str(copyright_script)], check=True)
+            else:
+                print("Warning: Copyright update script not found", file=sys.stderr)
+                return 0
+        else:
+            # Run in interactive mode (will show preview and ask for confirmation)
+            result = subprocess.run([sys.executable, str(copyright_script)])
+            
+            # Check if there were any changes applied
+            result = subprocess.run(
+                ['git', 'diff', '--quiet'],
+                capture_output=True
+            )
+            
+            if result.returncode != 0:
+                # There are changes, stage them
+                print("\nStaging copyright updates...")
+                subprocess.run(['git', 'add', '-u'], check=True)
+        
+        return 0
+    
+    except subprocess.CalledProcessError as e:
+        print(f"Error running copyright update: {e}", file=sys.stderr)
+        return 0  # Don't fail the commit
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        return 0  # Don't fail the commit
+
+if __name__ == '__main__':
+    sys.exit(main())
