@@ -102,6 +102,17 @@ zelLoaderTranslateHandleInternal(
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelLoaderTracingLayerRegisterExtensionCallback();
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Proof-of-concept: unload a single driver identified by its handle.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelUnloadDriverInternal(
+   ze_driver_handle_t hDriver);           //Input: driver handle to unload
+
 
 #if defined(__cplusplus)
 }

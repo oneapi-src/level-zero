@@ -172,6 +172,36 @@ zelLoaderTranslateHandle(
    void **handleOut);
 
 /**
+ * @brief [PROOF OF CONCEPT] Unloads a single Level Zero driver identified by its handle.
+ *
+ * This function unloads a driver that was previously reported by zeDriverGet()/zeInitDrivers().
+ * The driver's shared library is freed, its DDI tables are cleared, and the driver is removed
+ * from the loader's internal driver lists so it is no longer reported by subsequent enumeration.
+ *
+ * Preconditions / limitations (proof of concept):
+ * - The driver handle must correspond to a currently loaded driver.
+ * - The driver must be unused: all child objects created through the driver (contexts, command
+ *   queues, command lists, events, event pools, modules, kernels, images, samplers, fences, and
+ *   physical memory) must have been destroyed first. If any remain live, the unload is rejected
+ *   as unsafe.
+ *
+ * After a successful unload, the supplied driver handle (and any handles derived from it) are
+ * invalid and must not be used.
+ *
+ * @param[in] hDriver
+ *   The driver handle to unload, as returned by zeDriverGet() or zeInitDrivers().
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS if the driver was successfully unloaded.
+ *   - ZE_RESULT_ERROR_INVALID_NULL_HANDLE if hDriver is NULL or does not match a loaded driver.
+ *   - ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE if the driver still owns live child objects.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if the loader has not been initialized.
+ */
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelUnloadDriver(
+   ze_driver_handle_t hDriver);
+
+/**
  * @brief Notifies the loader that a driver has been removed and forces prevention of subsequent API calls.
  *
  * This function is intended to be called ONLY by Level Zero drivers, not by applications.

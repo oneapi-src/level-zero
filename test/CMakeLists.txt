@@ -226,6 +226,15 @@ else()
   set_property(TEST tests_multi_driver_zeandzesdriverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
+# Proof of concept: unload one of two drivers and confirm the survivor still works.
+# Intercept + DDI-ext disabled so the loader wraps handles in its object factories.
+add_test(NAME tests_unload_driver_multi COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenTwoDriversWhenUnloadingSecondDriverThenFirstDriverStillExecutes)
+if (MSVC)
+  set_property(TEST tests_unload_driver_multi PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_unload_driver_multi PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
+endif()
+
 add_test(NAME tests_loader_teardown_check COMMAND tests --gtest_filter=*GivenLoaderNotInDestructionStateWhenCallingzelCheckIsLoaderInTearDownThenFalseIsReturned)
 set_property(TEST tests_loader_teardown_check PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 

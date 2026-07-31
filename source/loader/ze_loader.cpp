@@ -1031,6 +1031,137 @@ namespace loader
         }
     };
 
+    bool context_t::isDriverInUse(const dditable_t *dditable)
+    {
+        // Proof-of-concept "state machine" detection: a driver is considered in use if any
+        // child object created through it is still live in the loader's object factories.
+        // These are the primary stateful resources an application creates and must destroy
+        // before a driver can be safely unloaded.
+        return ze_context_factory.countByDditable(dditable) > 0
+            || ze_command_queue_factory.countByDditable(dditable) > 0
+            || ze_command_list_factory.countByDditable(dditable) > 0
+            || ze_event_pool_factory.countByDditable(dditable) > 0
+            || ze_event_factory.countByDditable(dditable) > 0
+            || ze_fence_factory.countByDditable(dditable) > 0
+            || ze_image_factory.countByDditable(dditable) > 0
+            || ze_sampler_factory.countByDditable(dditable) > 0
+            || ze_module_factory.countByDditable(dditable) > 0
+            || ze_kernel_factory.countByDditable(dditable) > 0
+            || ze_physical_mem_factory.countByDditable(dditable) > 0;
+    }
+
+    ze_result_t context_t::unloadDriver(ze_driver_handle_t hDriver)
+    {
+        if (nullptr == hDriver) {
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+
+        // Locate the driver_t backing this user-facing handle. When the loader intercepts
+        // handles, hDriver is a ze_driver_object_t whose dditable points into a zeDrivers entry.
+        // Otherwise (single-driver / DDI-handle path) the raw driver handle was stored in
+        // driver_t::zerDriverHandle.
+        dditable_t *targetDdiTable = nullptr;
+        HMODULE targetModule = nullptr;
+        std::string targetName;
+        ze_driver_handle_t rawHandle = nullptr;
+        bool found = false;
+
+        std::lock_guard<std::mutex> lock(sortMutex);
+
+        if (intercept_enabled) {
+            auto obj = reinterpret_cast<ze_driver_object_t *>(hDriver);
+            for (auto &drv : zeDrivers) {
+                if (&drv.dditable == obj->dditable) {
+                    targetDdiTable = &drv.dditable;
+                    targetModule = drv.handle;
+                    targetName = drv.name;
+                    rawHandle = obj->handle;
+                    found = true;
+                    break;
+                }
+            }
+        } else {
+            for (auto &drv : zeDrivers) {
+                if (drv.zerDriverHandle == hDriver) {
+                    targetDdiTable = &drv.dditable;
+                    targetModule = drv.handle;
+                    targetName = drv.name;
+                    rawHandle = hDriver;
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            if (debugTraceEnabled) {
+                debug_trace_message("zelUnloadDriver: driver handle not found", "");
+            }
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+
+        // Safety gate: refuse to unload a driver that still owns live child objects.
+        if (isDriverInUse(targetDdiTable)) {
+            if (debugTraceEnabled) {
+                debug_trace_message("zelUnloadDriver: driver still in use: ", targetName);
+            }
+            return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+        }
+
+        // Release the wrapper object for the driver handle so the factory no longer tracks it.
+        if (rawHandle) {
+            ze_driver_factory.release(rawHandle);
+        }
+
+        // Clear every copy of this driver across the loader's driver lists in place, zeroing its
+        // DDI tables and marking it uninitialized so it is no longer reported by enumeration.
+        // Entries are tombstoned rather than erased so that pointers held by other drivers'
+        // handles and their child objects (which reference driver_t::dditable by address) remain
+        // valid -- unloading one driver must not disturb another.
+        auto clearMatching = [&](driver_vector_t &vec) {
+            for (auto &drv : vec) {
+                if (drv.handle == targetModule && drv.name == targetName) {
+                    drv.dditable = {};
+                    drv.handle = nullptr;
+                    drv.ddiInitialized = false;
+                    drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                    drv.zerDriverHandle = nullptr;
+                }
+            }
+        };
+        clearMatching(zeDrivers);
+        clearMatching(zesDrivers);
+        clearMatching(allDrivers);
+
+        // Free the driver library. All copies were just cleared, so nothing else references it.
+        if (targetModule) {
+            auto free_result = FREE_DRIVER_LIBRARY(targetModule);
+            auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
+            if (debugTraceEnabled && failure) {
+                std::string freeLibraryErrorValue;
+                GET_LIBRARY_ERROR(freeLibraryErrorValue);
+                if (!freeLibraryErrorValue.empty()) {
+                    debug_trace_message("zelUnloadDriver: Free Library Failed for " + targetName + " with ", freeLibraryErrorValue);
+                }
+            }
+        }
+
+        // Keep the default ZER DDI table pointing at a driver that is still loaded, if any.
+        loader::defaultZerDdiTable = nullptr;
+        for (auto &drv : zeDrivers) {
+            if (drv.handle) {
+                loader::defaultZerDdiTable = &drv.dditable.zer;
+                break;
+            }
+        }
+
+        if (debugTraceEnabled) {
+            debug_trace_message("zelUnloadDriver: unloaded driver ", targetName);
+        }
+
+        return ZE_RESULT_SUCCESS;
+    }
+
     void context_t::add_loader_version(){
         zel_component_version_t compVersion = {};
         string_copy_s(compVersion.component_name, LOADER_COMP_NAME, ZEL_COMPONENT_STRING_SIZE - 1);

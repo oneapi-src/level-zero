@@ -71,6 +71,22 @@ public:
     }
 
     //////////////////////////////////////////////////////////////////////////
+    /// counts the live instances whose dditable pointer matches the argument.
+    /// used to detect whether a driver still owns outstanding child objects.
+    template<typename _dditable_t>
+    size_t countByDditable( const _dditable_t* dditable )
+    {
+        std::lock_guard<std::mutex> lk( mut );
+        size_t count = 0;
+        for( const auto& entry : map )
+        {
+            if( entry.second && entry.second->dditable == dditable )
+                ++count;
+        }
+        return count;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
     /// once the key is no longer valid, release the singleton
     void release( _key_t _key )
     {

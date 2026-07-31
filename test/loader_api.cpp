@@ -3997,4 +3997,72 @@ TEST_F(DriverOrderingTest,
     EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
   }
 
+// Proof of concept: unload one driver out of two and confirm the surviving driver
+// keeps working. Requires two drivers (ZE_ENABLE_ALT_DRIVERS) with loader intercept
+// enabled and the driver DDI-handle extension disabled so the loader wraps handles in
+// its object factories (which the unload safety check and reverse handle mapping rely on).
+TEST(
+    LoaderUnloadDriver,
+    GivenTwoDriversWhenUnloadingSecondDriverThenFirstDriverStillExecutes) {
+
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+
+  uint32_t driverCount = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&driverCount, nullptr, &desc));
+  ASSERT_GE(driverCount, 2u)
+      << "This test requires at least two drivers via ZE_ENABLE_ALT_DRIVERS";
+  std::vector<ze_driver_handle_t> drivers(driverCount);
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&driverCount, drivers.data(), &desc));
+
+  ze_driver_handle_t firstDriver = drivers[0];
+  ze_driver_handle_t secondDriver = drivers[1];
+
+  // Exercise a driver end-to-end: create a context and a module, then tear them down.
+  auto executeOnDriver = [](ze_driver_handle_t driver) {
+    ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
+    ze_context_handle_t context = nullptr;
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(driver, &contextDesc, &context));
+
+    uint32_t deviceCount = 0;
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(driver, &deviceCount, nullptr));
+    ASSERT_GT(deviceCount, 0u);
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(driver, &deviceCount, devices.data()));
+
+    ze_module_desc_t moduleDesc = {ZE_STRUCTURE_TYPE_MODULE_DESC};
+    ze_module_handle_t module = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS,
+              zeModuleCreate(context, devices[0], &moduleDesc, &module, nullptr));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeModuleDestroy(module));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+  };
+
+  // 1. Execute on the first driver.
+  executeOnDriver(firstDriver);
+
+  // 2. A driver that still owns a live child object cannot be unloaded.
+  ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
+  ze_context_handle_t liveContext = nullptr;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(secondDriver, &contextDesc, &liveContext));
+  EXPECT_EQ(ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE, zelUnloadDriver(secondDriver));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(liveContext));
+
+  // 3. Now idle, the second driver unloads successfully.
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(secondDriver));
+  // Note: secondDriver is invalid past this point and must not be reused.
+
+  // 4. A null handle is rejected.
+  EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_HANDLE, zelUnloadDriver(nullptr));
+
+  // 5. The loader now reports one fewer driver.
+  uint32_t driverGetCount = 0;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverGetCount, nullptr));
+  EXPECT_EQ(driverGetCount, driverCount - 1);
+
+  // 6. The first driver is completely unaffected and still executes.
+  executeOnDriver(firstDriver);
+}
+
 } // namespace

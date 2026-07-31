@@ -174,6 +174,11 @@ namespace loader
         void add_loader_version();
         bool driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly);
         void driverOrdering(driver_vector_t *drivers);
+
+        // Proof-of-concept: unload a single driver identified by its user-facing handle.
+        ze_result_t unloadDriver(ze_driver_handle_t hDriver);
+        // Returns true if the driver (identified by its dditable) still owns live child objects.
+        bool isDriverInUse(const dditable_t *dditable);
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;
