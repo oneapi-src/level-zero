@@ -75,6 +75,10 @@ namespace loader
         // it must pass a real driver handle -- drivers reject a null handle.
         ze_driver_handle_t enableTracingDriverHandle = nullptr;
         bool driverEnableTracingResolved = false;
+        // Set once the driver has been explicitly unloaded via zelUnloadDriver. Distinguishes a
+        // tombstoned slot from a not-yet-loaded one (both have handle==nullptr) so the loader
+        // never reloads it and skips it during ordering/enumeration.
+        bool unloaded = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;

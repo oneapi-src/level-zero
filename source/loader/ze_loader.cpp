@@ -107,6 +107,9 @@ namespace loader
         // Group drivers by type and track their original indices
         for (uint32_t i = 0; i < originalDrivers.size(); ++i) {
             const auto& driver = originalDrivers[i];
+            if (driver.unloaded) {
+                continue; // Tombstones are not eligible for type/index based ordering.
+            }
             switch (driver.driverType) {
                 case ZEL_DRIVER_TYPE_DISCRETE_GPU:
                     discreteGPUDrivers.push_back(driver);
@@ -148,6 +151,7 @@ namespace loader
             switch (spec.type) {
                 case DriverOrderSpecType::BY_GLOBAL_INDEX:
                     if (spec.globalIndex < originalDrivers.size() &&
+                        !originalDrivers[spec.globalIndex].unloaded &&
                         usedGlobalIndices.find(spec.globalIndex) == usedGlobalIndices.end()) {
                         orderedDrivers.push_back(originalDrivers[spec.globalIndex]);
                         usedGlobalIndices.insert(spec.globalIndex);
@@ -254,6 +258,9 @@ namespace loader
         for (auto &driver : *drivers) {
             uint32_t pCount = 0;
             std::vector<ze_driver_handle_t> driverHandles;
+            if (driver.unloaded) {
+                continue; // Skip tombstoned drivers; they must not be probed or re-typed.
+            }
             driver.pciOrderingRequested = loader::context->pciOrderingRequested;
             ze_result_t res = ZE_RESULT_SUCCESS;
             if (desc && driver.dditable.ze.Global.pfnInitDrivers) {
@@ -549,6 +556,11 @@ namespace loader
 
     ze_result_t context_t::init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc) {
         bool loadDriver = false;
+        // An unloaded driver must never be reloaded; doing so would re-dlopen the library and
+        // leave it mapped in the process with no way to reach it.
+        if (driver.unloaded) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         if (debugTraceEnabled) {
             std::string message = "Initializing driver " + driver.name + " with type " + std::to_string(driver.driverType);\
             debug_trace_message(message, "");
@@ -1121,11 +1133,24 @@ namespace loader
         auto clearMatching = [&](driver_vector_t &vec) {
             for (auto &drv : vec) {
                 if (drv.handle == targetModule && drv.name == targetName) {
+                    drv.unloaded = true;
                     drv.dditable = {};
+                    drv.properties = {};
                     drv.handle = nullptr;
-                    drv.ddiInitialized = false;
-                    drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                     drv.zerDriverHandle = nullptr;
+                    // Neutralize the sort key so the tombstone is never bucketed by ordering.
+                    drv.driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
+                    drv.driverInuse = false;
+                    drv.ddiInitialized = false;
+                    drv.legacyInitAttempted = false;
+                    drv.driverDDIHandleSupportQueried = false;
+                    drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                    drv.initSysManStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                    drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                    drv.zeddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+                    drv.zetddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+                    drv.zesddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+                    drv.zerddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
                 }
             }
         };

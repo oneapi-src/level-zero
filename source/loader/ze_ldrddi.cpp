@@ -362,6 +362,9 @@ namespace loader
         
         uint32_t total_driver_handle_count = 0;
         for( auto& drv : loader::context->zeDrivers ) {
+            if (drv.unloaded) {
+                continue; // Never reload an explicitly unloaded driver.
+            }
             if (!drv.handle || !drv.ddiInitialized) {
                 auto res = loader::context->init_driver( drv, 0, desc);
                 if (res != ZE_RESULT_SUCCESS || drv.zeddiInitResult != ZE_RESULT_SUCCESS) {
@@ -384,6 +387,9 @@ namespace loader
 
         for( auto& drv : loader::context->zeDrivers )
         {
+            if (drv.unloaded) {
+                continue; // Unloaded drivers are a hole in the list; do not enumerate them.
+            }
             if (!drv.ddiInitialized || !drv.dditable.ze.Global.pfnInitDrivers) {
                 drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 result = ZE_RESULT_ERROR_UNINITIALIZED;

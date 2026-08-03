@@ -4065,4 +4065,62 @@ TEST(
   executeOnDriver(firstDriver);
 }
 
+// Design probe: unload a driver, then attempt to bring it back via re-initialization.
+// Documents the CURRENT reload semantics: an unloaded driver is NOT restored by a
+// subsequent zeInit/zeInitDrivers/zeDriverGet -- it stays a tombstoned hole in the list
+// for the process lifetime. The tombstone's `unloaded` flag makes every reload path skip
+// it, so the library is never re-dlopen'd (no dangling mapping) and it is never re-sorted
+// or re-ordered.
+TEST(
+    LoaderUnloadDriver,
+    GivenUnloadedDriverWhenReinitializedThenDriverRemainsUnloaded) {
+
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+
+  uint32_t count = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&count, nullptr, &desc));
+  ASSERT_GE(count, 2u)
+      << "This test requires at least two drivers via ZE_ENABLE_ALT_DRIVERS";
+  const uint32_t originalCount = count;
+  std::vector<ze_driver_handle_t> drivers(count);
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&count, drivers.data(), &desc));
+
+  // Unload the second driver.
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(drivers[1]));
+
+  uint32_t afterUnloadGet = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&afterUnloadGet, nullptr));
+  std::cout << "[reload probe] zeDriverGet immediately after unload: "
+            << afterUnloadGet << " (originally " << originalCount << ")" << std::endl;
+
+  // Attempt to reload via zeInitDrivers.
+  uint32_t reinitCount = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&reinitCount, nullptr, &desc));
+  std::cout << "[reload probe] zeInitDrivers count after unload: "
+            << reinitCount << std::endl;
+
+  uint32_t getAfterReinit = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&getAfterReinit, nullptr));
+  std::cout << "[reload probe] zeDriverGet after zeInitDrivers reload: "
+            << getAfterReinit << std::endl;
+
+  // The remaining (still-loaded) drivers must keep working.
+  std::vector<ze_driver_handle_t> reDrivers(reinitCount);
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&reinitCount, reDrivers.data(), &desc));
+  for (auto driver : reDrivers) {
+    ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(driver, &contextDesc, &context));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+  }
+
+  // Current semantics: the unloaded driver does not return through any entry point.
+  EXPECT_EQ(reinitCount, originalCount - 1)
+      << "zeInitDrivers should not resurrect the unloaded driver";
+  EXPECT_EQ(getAfterReinit, originalCount - 1)
+      << "zeDriverGet should not resurrect the unloaded driver";
+}
+
 } // namespace
