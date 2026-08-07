@@ -88,6 +88,48 @@ zelLoaderTranslateHandleInternal(
    void **handleOut);                      //Output: Pointer to handleOut is set to driver handle if successful
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Proof-of-concept: unload a single driver identified by its handle.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelUnloadDriverInternal(
+   ze_driver_handle_t hDriver);           //Input: driver handle to unload
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Proof-of-concept: unload a single driver, optionally forcing the unload
+///        even when the driver still owns live child objects.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelUnloadDriverExtInternal(
+   ze_driver_handle_t hDriver,            //Input: driver handle to unload
+   zel_unload_driver_flags_t flags);      //Input: combination of ::zel_unload_driver_flag_t
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Proof-of-concept: reload a previously unloaded driver into its original
+///        slot and rebind the supplied driver handle onto the fresh driver.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelReloadDriverInternal(
+   ze_driver_handle_t hDriver);           //Input: driver handle to reload
+
+
 #if defined(__cplusplus)
 }
 #endif

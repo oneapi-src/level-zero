@@ -9,6 +9,8 @@
  */
 #include "ze_loader_internal.h"
 
+#include <algorithm>
+
 using namespace loader_driver_ddi;
 
 namespace loader
@@ -142,6 +144,9 @@ namespace loader
         bool atLeastOneDriverValid = false;
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
+            if (drv.slotState == driver_slot_state_t::Unloaded) {
+                continue; // Skipped, not blacklisted -- only zelReloadDriver brings the slot back.
+            }
             if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
                 continue;
             if (!drv.handle || !drv.ddiInitialized) {
@@ -197,6 +202,9 @@ namespace loader
 
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
+            if (drv.slotState == driver_slot_state_t::Unloaded) {
+                continue; // An unloaded slot is a hole in the list; it is never enumerated.
+            }
             if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
 
@@ -228,8 +236,16 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>(
-                            context->zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                        {
+                            auto driverObject = context->zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable );
+                            // See the core path: the slot needs to be able to find its own wrappers
+                            // again to rebind them after zelReloadDriver.
+                            if (std::find(drv.zesDriverObjects.begin(), drv.zesDriverObjects.end(), driverObject) == drv.zesDriverObjects.end()) {
+                                drv.zesDriverObjects.push_back(driverObject);
+                            }
+                            drv.wrapperModePinned = true;
+                            phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>( driverObject );
+                        }
                     }
                 }
                 catch( std::bad_alloc& )

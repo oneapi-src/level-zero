@@ -292,6 +292,34 @@ zelLoaderTranslateHandleInternal(
     return ZE_RESULT_SUCCESS;
 }
 
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelUnloadDriverExtInternal(
+   ze_driver_handle_t hDriver,
+   zel_unload_driver_flags_t flags)
+{
+    if (!loader::context) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    return loader::context->unloadDriver(hDriver, flags);
+}
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelUnloadDriverInternal(
+   ze_driver_handle_t hDriver)
+{
+    return zelUnloadDriverExtInternal(hDriver, ZEL_UNLOAD_DRIVER_FLAG_NONE);
+}
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelReloadDriverInternal(
+   ze_driver_handle_t hDriver)
+{
+    if (!loader::context) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    return loader::context->reloadDriver(hDriver);
+}
+
 
 #if defined(__cplusplus)
 }

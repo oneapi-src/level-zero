@@ -463,6 +463,61 @@ zelLoaderTranslateHandle(
 }
 
 ze_result_t ZE_APICALL
+zelUnloadDriver(
+   ze_driver_handle_t hDriver)
+{
+#ifdef L0_STATIC_LOADER_BUILD
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelUnloadDriverInternal_t)(ze_driver_handle_t hDriver);
+    auto unloadDriver = reinterpret_cast<zelUnloadDriverInternal_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelUnloadDriverInternal") );
+    if (nullptr == unloadDriver)
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    return unloadDriver(hDriver);
+#else
+    return zelUnloadDriverInternal(hDriver);
+#endif
+}
+
+ze_result_t ZE_APICALL
+zelUnloadDriverExt(
+   ze_driver_handle_t hDriver,
+   zel_unload_driver_flags_t flags)
+{
+#ifdef L0_STATIC_LOADER_BUILD
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelUnloadDriverExtInternal_t)(ze_driver_handle_t hDriver, zel_unload_driver_flags_t flags);
+    auto unloadDriverExt = reinterpret_cast<zelUnloadDriverExtInternal_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelUnloadDriverExtInternal") );
+    if (nullptr == unloadDriverExt)
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    return unloadDriverExt(hDriver, flags);
+#else
+    return zelUnloadDriverExtInternal(hDriver, flags);
+#endif
+}
+
+ze_result_t ZE_APICALL
+zelReloadDriver(
+   ze_driver_handle_t hDriver)
+{
+#ifdef L0_STATIC_LOADER_BUILD
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelReloadDriverInternal_t)(ze_driver_handle_t hDriver);
+    auto reloadDriver = reinterpret_cast<zelReloadDriverInternal_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelReloadDriverInternal") );
+    if (nullptr == reloadDriver)
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    return reloadDriver(hDriver);
+#else
+    return zelReloadDriverInternal(hDriver);
+#endif
+}
+
+ze_result_t ZE_APICALL
 zelSetDriverTeardown()
 {
     ze_result_t result = ZE_RESULT_SUCCESS;

@@ -171,6 +171,120 @@ zelLoaderTranslateHandle(
    void **handleOut);
 
 /**
+ * @brief [PROOF OF CONCEPT] Flags controlling zelUnloadDriverExt().
+ */
+typedef enum _zel_unload_driver_flag_t
+{
+   ZEL_UNLOAD_DRIVER_FLAG_NONE = 0,        ///< Default: refuse to unload a driver that still owns
+                                           ///< live child objects.
+   ZEL_UNLOAD_DRIVER_FLAG_FORCE = ZE_BIT(0),   ///< Unload even if child objects are still live.
+   ZEL_UNLOAD_DRIVER_FLAG_FORCE_UINT32 = 0x7fffffff
+} zel_unload_driver_flag_t;
+
+typedef uint32_t zel_unload_driver_flags_t;
+
+/**
+ * @brief [PROOF OF CONCEPT] Unloads a single Level Zero driver identified by its handle.
+ *
+ * This function unloads a driver that was previously reported by zeDriverGet()/zeInitDrivers().
+ * The driver's shared library is freed and its DDI tables are cleared, so the driver is no longer
+ * reported by subsequent enumeration. The driver's slot is emptied but retained, which makes the
+ * unload reversible via zelReloadDriver(): an unloaded driver is not blacklisted.
+ *
+ * Preconditions / limitations (proof of concept):
+ * - The driver handle must be a loader-issued driver handle for a currently loaded driver. Drivers
+ *   reached through the driver DDI handle path (ZE_DRIVER_DDI_HANDLE_EXT) cannot be unloaded,
+ *   because the application's handle is memory inside the library being unmapped;
+ *   ZE_RESULT_ERROR_UNSUPPORTED_FEATURE is returned for those.
+ * - The driver must be unused: all child objects created through the driver (contexts, command
+ *   queues, command lists, events, event pools, modules, kernels, images, samplers, fences, and
+ *   physical memory) must have been destroyed first. If any remain live, the unload is rejected
+ *   as unsafe. Use zelUnloadDriverExt() with ZEL_UNLOAD_DRIVER_FLAG_FORCE to override.
+ *
+ * Handle lifetime after a successful unload:
+ * - The supplied driver handle remains a valid pointer and may be passed to zelReloadDriver().
+ *   Any Level Zero API called with it returns ZE_RESULT_ERROR_UNINITIALIZED until it is reloaded.
+ * - Every handle derived from the driver (devices, fabric vertices/edges, sysman and tools objects,
+ *   and any child objects left live by a forced unload) is permanently dead. It remains a valid
+ *   pointer, and every API called with it returns ZE_RESULT_ERROR_UNINITIALIZED forever. These
+ *   handles are never rebound, because a reloaded driver may be a different build.
+ *
+ * @param[in] hDriver
+ *   The driver handle to unload, as returned by zeDriverGet() or zeInitDrivers().
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS if the driver was successfully unloaded.
+ *   - ZE_RESULT_ERROR_INVALID_NULL_HANDLE if hDriver is NULL or does not match a loaded driver.
+ *   - ZE_RESULT_ERROR_UNSUPPORTED_FEATURE if hDriver is a driver DDI handle rather than a loader handle.
+ *   - ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE if the driver still owns live child objects.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if the loader has not been initialized.
+ */
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelUnloadDriver(
+   ze_driver_handle_t hDriver);
+
+/**
+ * @brief [PROOF OF CONCEPT] Unloads a single Level Zero driver, with flags.
+ *
+ * Equivalent to zelUnloadDriver() when flags is ZEL_UNLOAD_DRIVER_FLAG_NONE.
+ *
+ * With ZEL_UNLOAD_DRIVER_FLAG_FORCE the live-child-object check is skipped and the library is
+ * unmapped regardless. This exists for the case where a driver's kernel-mode component has been
+ * removed from under it: the user-mode driver is already unusable, and the application may hold
+ * objects it can never cleanly destroy. Any resources still owned by the driver are leaked, which
+ * is accepted because the library is going away. All of the application's outstanding handles for
+ * that driver are made permanently dead as described for zelUnloadDriver().
+ *
+ * @param[in] hDriver
+ *   The driver handle to unload, as returned by zeDriverGet() or zeInitDrivers().
+ * @param[in] flags
+ *   Combination of ::zel_unload_driver_flag_t.
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS if the driver was successfully unloaded.
+ *   - ZE_RESULT_ERROR_INVALID_NULL_HANDLE if hDriver is NULL or does not match a loaded driver.
+ *   - ZE_RESULT_ERROR_UNSUPPORTED_FEATURE if hDriver is a driver DDI handle rather than a loader handle.
+ *   - ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE if the driver still owns live child objects and
+ *     ZEL_UNLOAD_DRIVER_FLAG_FORCE was not specified.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if the loader has not been initialized.
+ */
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelUnloadDriverExt(
+   ze_driver_handle_t hDriver,
+   zel_unload_driver_flags_t flags);
+
+/**
+ * @brief [PROOF OF CONCEPT] Reloads a driver previously unloaded by zelUnloadDriver().
+ *
+ * The driver's library is loaded again and every DDI table is rebuilt from scratch, so a newer
+ * build of the driver, with different interfaces, is picked up in full. No function pointer,
+ * property or handle from the previous load survives.
+ *
+ * The supplied driver handle is rebound onto the freshly loaded driver and is valid again on
+ * success, so an application that cached it does not have to re-enumerate to keep working.
+ * Handles below driver level are NOT rebound: the application must call zeDeviceGet() (and any
+ * other enumeration it depends on) again. Handles obtained before the unload stay permanently
+ * dead and return ZE_RESULT_ERROR_UNINITIALIZED.
+ *
+ * Reload is the only way to bring an unloaded driver back; zeInit(), zeInitDrivers() and
+ * zeDriverGet() deliberately continue to skip an unloaded slot so that an unrelated component
+ * cannot silently resurrect a driver the application chose to unload. A failed reload leaves the
+ * driver unloaded and may be retried.
+ *
+ * @param[in] hDriver
+ *   The driver handle that was passed to zelUnloadDriver()/zelUnloadDriverExt().
+ *
+ * @return
+ *   - ZE_RESULT_SUCCESS if the driver was reloaded and hDriver is valid again.
+ *   - ZE_RESULT_ERROR_INVALID_NULL_HANDLE if hDriver is NULL or is not a handle for an unloaded driver.
+ *   - ZE_RESULT_ERROR_INVALID_ARGUMENT if the driver identified by hDriver is not unloaded.
+ *   - ZE_RESULT_ERROR_UNINITIALIZED if the library could not be loaded or failed to initialize.
+ */
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelReloadDriver(
+   ze_driver_handle_t hDriver);
+
+/**
  * @brief Notifies the loader that a driver has been removed and forces prevention of subsequent API calls.
  *
  * This function is intended to be called ONLY by Level Zero drivers, not by applications.

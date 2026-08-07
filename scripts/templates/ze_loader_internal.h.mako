@@ -52,6 +52,19 @@ namespace loader
         ZEL_DRIVER_TYPE_FORCE_UINT32 = 0x7fffffff
 
     } zel_driver_type_t;
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Lifecycle state of a driver slot.
+    /// @details A slot is an index into the driver vectors and never moves: object_t
+    /// instances handed to the application store &driver_t::dditable, so erasing,
+    /// reallocating or re-sorting the vectors would dangle every live handle of every
+    /// driver. A slot that is unloaded is therefore emptied in place and reused.
+    enum class driver_slot_state_t
+    {
+        Discovered = 0, ///< Discovered but not yet dlopen'd, or dlopen'd and never initialized.
+        Loaded,         ///< Library is mapped and its DDI tables are populated.
+        Unloaded        ///< Explicitly unloaded via zelUnloadDriver. Skipped by implicit
+                        ///< enumeration, but reloadable via zelReloadDriver -- not blacklisted.
+    };
     //////////////////////////////////////////////////////////////////////////
     struct driver_t
     {
@@ -76,6 +89,29 @@ namespace loader
         ze_result_t zetddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
         ze_result_t zesddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
         ze_result_t zerddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+        // Number of LOAD_DRIVER_LIBRARY references this copy owns on `handle`. The module is
+        // mapped once per copy that loaded it (zeDrivers via zeInit/zeInitDrivers, zesDrivers via
+        // zesInit); the copies made at discovery time alias the module without owning a reference.
+        // Unload must release exactly this many or the library stays mapped and "reload to a fresh
+        // state" is a lie.
+        uint32_t libraryLoadCount = 0;
+        // Snapshot taken at unload so reloadDriver restores exactly the copies that were live.
+        uint32_t reloadLibraryLoadCount = 0;
+        bool reloadDdiInitialized = false;
+        // Lifecycle of this slot. Unloaded slots are skipped by zeInit/zeInitDrivers/
+        // zeDriverGet/driverSorting/driverOrdering, but remain eligible for zelReloadDriver.
+        driver_slot_state_t slotState = driver_slot_state_t::Discovered;
+        // Wrapper objects issued to the application for this slot, in issue order. Used to
+        // resolve a user-facing handle back to its slot exactly (the wrapping decision is per
+        // driver, so intercept_enabled is not a reliable test), and to rebind on reload.
+        // Raw pointers only: driver_t must stay copyable. Ownership while a slot is unloaded
+        // lives in context_t::parkedZeDriverObjects / parkedZesDriverObjects.
+        std::vector<ze_driver_object_t *> zeDriverObjects;
+        std::vector<zes_driver_object_t *> zesDriverObjects;
+        // Once this slot has issued wrapper handles it keeps issuing wrapper handles, even if a
+        // reloaded (possibly newer) driver starts advertising ZE_DRIVER_DDI_HANDLE_EXT. Without
+        // this the application's driver handle could not survive a reload.
+        bool wrapperModePinned = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;
@@ -126,6 +162,29 @@ namespace loader
         void add_loader_version();
         bool driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly);
         void driverOrdering(driver_vector_t *drivers);
+
+        // Unload a single driver identified by its user-facing handle. With
+        // ZEL_UNLOAD_DRIVER_FLAG_FORCE the live-child-object check is skipped, which is what a
+        // driver whose kernel-mode component has been removed requires: the application may hold
+        // objects it can never cleanly destroy.
+        ze_result_t unloadDriver(ze_driver_handle_t hDriver, zel_unload_driver_flags_t flags);
+        // Reload a previously unloaded driver into the same slot and rebind the application's
+        // original driver handle onto the freshly loaded driver. The reloaded driver may be a
+        // different (newer) build, so every DDI table is rebuilt from scratch and no handle below
+        // driver level survives.
+        ze_result_t reloadDriver(ze_driver_handle_t hDriver);
+        // Returns true if the driver (identified by its dditable) still owns live child objects.
+        bool isDriverInUse(const dditable_t *dditable);
+        // Locate the slot in zeDrivers backing a user-facing driver handle. Returns nullptr when
+        // the handle is not a loader wrapper issued for one of our slots.
+        driver_t *findDriverSlot(ze_driver_handle_t hDriver);
+        // Move every wrapper object belonging to the given slot out of its factory and onto the
+        // dead dispatch table, so calls through stale handles fail with UNINITIALIZED instead of
+        // reaching a reloaded driver with a raw handle from the previous load.
+        void retireDriverChildObjects(const driver_t &driver);
+        // Point defaultZerDdiTable/defaultZerDriverHandle at the first loaded slot, or at the dead
+        // table when nothing is loaded.
+        void refreshDefaultZerDdiTable();
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;
@@ -141,9 +200,24 @@ namespace loader
         dditable_t tracing_dditable = {};
         std::shared_ptr<ZeLogger> zel_logger;
         ze_driver_handle_t defaultZerDriverHandle = nullptr;
+        // Wrapper objects whose driver has been unloaded. They are kept alive (the application may
+        // still hold their handles) but point at loader::deadDditable, so every entry point returns
+        // UNINITIALIZED rather than faulting. Child objects are never resurrected: a reloaded
+        // driver may be a different build, and its raw handles must never be confused with these.
+        std::vector<std::shared_ptr<void>> retiredHandleObjects;
+        // Driver wrappers held across an unload, awaiting rebinding by zelReloadDriver.
+        std::vector<std::unique_ptr<ze_driver_object_t>> parkedZeDriverObjects;
+        std::vector<std::unique_ptr<zes_driver_object_t>> parkedZesDriverObjects;
     };
 
     extern ze_handle_t* loaderDispatch;
     extern zer_dditable_t* defaultZerDdiTable;
     extern context_t *context;
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief A permanently zeroed dispatch table.
+    /// @details Every generated intercept function reads its pfn out of object_t::dditable and
+    /// returns UNINITIALIZED when that pfn is null, so pointing a retired wrapper here makes all
+    /// of its entry points fail safely with no generated-code changes. Zero-initialized with
+    /// static storage duration, so it is valid before and after loader construction/teardown.
+    extern dditable_t deadDditable;
 }
