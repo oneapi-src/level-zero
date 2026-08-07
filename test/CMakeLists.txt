@@ -235,12 +235,58 @@ else()
   set_property(TEST tests_unload_driver_multi PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
-# Design probe: unload a driver then attempt to reload it via re-initialization.
-add_test(NAME tests_unload_driver_reload COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenUnloadedDriverWhenReinitializedThenDriverRemainsUnloaded)
+# Unload/reload lifecycle. Each of these mutates process-global loader state, so
+# each one needs its own process.
+
+# The app's original driver handle survives unload and is rebound by zelReloadDriver.
+add_test(NAME tests_unload_driver_reload_same_handle COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenUnloadedDriverWhenReloadedThenSameHandleIsValidAgain)
 if (MSVC)
-  set_property(TEST tests_unload_driver_reload PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
+  set_property(TEST tests_unload_driver_reload_same_handle PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
 else()
-  set_property(TEST tests_unload_driver_reload PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
+  set_property(TEST tests_unload_driver_reload_same_handle PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
+endif()
+
+# Handles issued below the driver are permanently retired -- a newer UMD never
+# sees a device handle minted by the load it replaced.
+add_test(NAME tests_unload_driver_stale_devices COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenUnloadedDriverWhenReloadedThenStaleDeviceHandlesAreDead)
+if (MSVC)
+  set_property(TEST tests_unload_driver_stale_devices PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_unload_driver_stale_devices PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
+endif()
+
+# The replacement driver advertises a different DDI-handle capability; the slot
+# stays pinned to wrapper mode so the app's handle keeps working.
+add_test(NAME tests_unload_driver_ddi_ext_change COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenReloadedDriverWhenNewUmdChangesDdiSupportThenHandleStillWorks)
+if (MSVC)
+  set_property(TEST tests_unload_driver_ddi_ext_change PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_unload_driver_ddi_ext_change PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
+endif()
+
+# The kernel-driver-yanked-out-from-under-us case: force past the in-use gate.
+add_test(NAME tests_unload_driver_force COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenDriverWithLiveObjectsWhenForceUnloadedThenSucceedsAndReloads)
+if (MSVC)
+  set_property(TEST tests_unload_driver_force PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_unload_driver_force PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
+endif()
+
+# Implicit init paths never resurrect an unloaded driver, but it is not blacklisted:
+# an explicit zelReloadDriver restores it.
+add_test(NAME tests_unload_driver_no_resurrect COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenUnloadedDriverWhenInitDriversCalledThenNotResurrected)
+if (MSVC)
+  set_property(TEST tests_unload_driver_no_resurrect PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_unload_driver_no_resurrect PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
+endif()
+
+# A reload that cannot open the library leaves the slot unloaded and retryable.
+add_test(NAME tests_unload_driver_failed_reload_retry COMMAND tests --gtest_filter=*LoaderUnloadDriver.GivenFailedReloadWhenRetriedThenSucceeds)
+if (MSVC)
+  set_property(TEST tests_unload_driver_failed_reload_retry PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test1.dll,$<TARGET_FILE_DIR:ze_null_test1>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_unload_driver_failed_reload_retry PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_INTERCEPT=1;ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT=3;ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
 add_test(NAME tests_loader_teardown_check COMMAND tests --gtest_filter=*GivenLoaderNotInDestructionStateWhenCallingzelCheckIsLoaderInTearDownThenFalseIsReturned)

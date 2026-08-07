@@ -14,16 +14,20 @@
 #include "zes_api.h"
 #include "zer_api.h"
 
+#include <cstdio>
 #include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #if defined(_WIN32)
     #include <io.h>
-    #include <cstdio>
     #include <fcntl.h>
     #include <windows.h>
     #define putenv_safe _putenv
 #else
     #include <cstdlib>
+    #include <dlfcn.h>
     #include <sys/types.h>
     #include <unistd.h>
     #define _dup dup
@@ -4065,16 +4069,14 @@ TEST(
   executeOnDriver(firstDriver);
 }
 
-// Design probe: unload a driver, then attempt to bring it back via re-initialization.
-// Documents the CURRENT reload semantics: an unloaded driver is NOT restored by a
-// subsequent zeInit/zeInitDrivers/zeDriverGet -- it stays a tombstoned hole in the list
-// for the process lifetime. The tombstone's `unloaded` flag makes every reload path skip
-// it, so the library is never re-dlopen'd (no dangling mapping) and it is never re-sorted
-// or re-ordered.
-TEST(
-    LoaderUnloadDriver,
-    GivenUnloadedDriverWhenReinitializedThenDriverRemainsUnloaded) {
+// ---------------------------------------------------------------------------
+// Shared helpers for the unload/reload tests below. Every one of these tests
+// mutates process-global loader state, so each gets its own add_test entry.
+// ---------------------------------------------------------------------------
 
+// Bring up every driver. All of these tests need at least two, so the survivor
+// can be checked while the other one is unloaded.
+void initAllDrivers(std::vector<ze_driver_handle_t> &drivers) {
   ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
   desc.flags = UINT32_MAX;
   desc.pNext = nullptr;
@@ -4083,44 +4085,322 @@ TEST(
   ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&count, nullptr, &desc));
   ASSERT_GE(count, 2u)
       << "This test requires at least two drivers via ZE_ENABLE_ALT_DRIVERS";
-  const uint32_t originalCount = count;
-  std::vector<ze_driver_handle_t> drivers(count);
+  drivers.resize(count);
   ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&count, drivers.data(), &desc));
+}
 
-  // Unload the second driver.
-  ASSERT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(drivers[1]));
+// Drive a driver end-to-end -- context, device, module -- then tear it down.
+void executeOnDriver(ze_driver_handle_t driver) {
+  ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
+  ze_context_handle_t context = nullptr;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(driver, &contextDesc, &context));
 
-  uint32_t afterUnloadGet = 0;
-  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&afterUnloadGet, nullptr));
-  std::cout << "[reload probe] zeDriverGet immediately after unload: "
-            << afterUnloadGet << " (originally " << originalCount << ")" << std::endl;
+  uint32_t deviceCount = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(driver, &deviceCount, nullptr));
+  ASSERT_GT(deviceCount, 0u);
+  std::vector<ze_device_handle_t> devices(deviceCount);
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(driver, &deviceCount, devices.data()));
 
-  // Attempt to reload via zeInitDrivers.
+  ze_module_desc_t moduleDesc = {ZE_STRUCTURE_TYPE_MODULE_DESC};
+  ze_module_handle_t module = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS,
+            zeModuleCreate(context, devices[0], &moduleDesc, &module, nullptr));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeModuleDestroy(module));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
+}
+
+// The library paths the loader was told to use, in discovery order.
+std::vector<std::string> altDriverPaths() {
+  std::vector<std::string> paths;
+  std::stringstream ss(getenv_string("ZE_ENABLE_ALT_DRIVERS"));
+  std::string entry;
+  while (std::getline(ss, entry, ',')) {
+    if (!entry.empty())
+      paths.push_back(entry);
+  }
+  return paths;
+}
+
+#if !defined(_WIN32)
+// How many of the alt driver libraries are still mapped into this process.
+// RTLD_NOLOAD returns a handle only for an already-resident library, so this is
+// the direct test of whether unload really unmapped the module -- glibc will
+// silently pin a library that exports STB_GNU_UNIQUE symbols, and if it does,
+// "reload to a fresh state" is a lie.
+size_t residentAltDriverCount() {
+  size_t resident = 0;
+  for (const auto &path : altDriverPaths()) {
+    void *handle = dlopen(path.c_str(), RTLD_LAZY | RTLD_NOLOAD);
+    if (handle != nullptr) {
+      ++resident;
+      dlclose(handle);
+    }
+  }
+  return resident;
+}
+#endif
+
+// Requirement 1: unload is a reversible state, not a verdict. The driver handle
+// the app holds stays a valid pointer across unload, answers UNINITIALIZED while
+// the slot is dead, and is rebound onto the fresh driver by zelReloadDriver.
+TEST(
+    LoaderUnloadDriver,
+    GivenUnloadedDriverWhenReloadedThenSameHandleIsValidAgain) {
+
+  std::vector<ze_driver_handle_t> drivers;
+  ASSERT_NO_FATAL_FAILURE(initAllDrivers(drivers));
+  ze_driver_handle_t survivor = drivers[0];
+  ze_driver_handle_t target = drivers[1];
+
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(target));
+
+#if !defined(_WIN32)
+  const size_t residentBefore = residentAltDriverCount();
+#endif
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(target));
+
+#if !defined(_WIN32)
+  EXPECT_EQ(residentAltDriverCount(), residentBefore - 1)
+      << "the unloaded driver library is still mapped -- reload cannot produce "
+         "a fresh driver state";
+#endif
+
+  // The handle is dead but not dangling: calls through it fail cleanly.
+  uint32_t deadCount = 0;
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeDeviceGet(target, &deadCount, nullptr));
+  ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
+  ze_context_handle_t deadContext = nullptr;
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED,
+            zeContextCreate(target, &contextDesc, &deadContext));
+
+  // The survivor is untouched while its neighbour is unloaded.
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(survivor));
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelReloadDriver(target));
+
+  // Same ze_driver_handle_t, fresh driver underneath it.
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(target));
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(survivor));
+}
+
+// Requirement 3: a reloaded driver may be a newer UMD with different interfaces,
+// so nothing below the driver handle survives. Handles issued by the old load
+// are permanently dead -- they must never be handed to the new driver.
+TEST(
+    LoaderUnloadDriver,
+    GivenUnloadedDriverWhenReloadedThenStaleDeviceHandlesAreDead) {
+
+  std::vector<ze_driver_handle_t> drivers;
+  ASSERT_NO_FATAL_FAILURE(initAllDrivers(drivers));
+  ze_driver_handle_t target = drivers[1];
+
+  uint32_t deviceCount = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(target, &deviceCount, nullptr));
+  ASSERT_GT(deviceCount, 0u);
+  std::vector<ze_device_handle_t> staleDevices(deviceCount);
+  ASSERT_EQ(ZE_RESULT_SUCCESS,
+            zeDeviceGet(target, &deviceCount, staleDevices.data()));
+  ze_device_handle_t staleDevice = staleDevices[0];
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(target));
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelReloadDriver(target));
+
+  // The stale device handle is retired for good, even though its driver is back.
+  ze_device_properties_t staleProps = {ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES};
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED,
+            zeDeviceGetProperties(staleDevice, &staleProps));
+  uint32_t staleSubCount = 0;
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED,
+            zeDeviceGetSubDevices(staleDevice, &staleSubCount, nullptr));
+
+  // Re-enumerating through the rebound driver handle yields working devices.
+  uint32_t freshCount = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(target, &freshCount, nullptr));
+  ASSERT_GT(freshCount, 0u);
+  std::vector<ze_device_handle_t> freshDevices(freshCount);
+  ASSERT_EQ(ZE_RESULT_SUCCESS,
+            zeDeviceGet(target, &freshCount, freshDevices.data()));
+  EXPECT_NE(freshDevices[0], staleDevice);
+
+  ze_device_properties_t freshProps = {ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES};
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGetProperties(freshDevices[0], &freshProps));
+}
+
+// A reloaded UMD may advertise a different feature set than the one it replaced.
+// The null driver re-reads ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT in its global
+// context_t constructor, which re-runs on the fresh load, so flipping the
+// variable between unload and reload genuinely simulates a different-generation
+// driver. The slot stays in wrapper mode regardless, which is what keeps the
+// app's original handle valid.
+TEST(
+    LoaderUnloadDriver,
+    GivenReloadedDriverWhenNewUmdChangesDdiSupportThenHandleStillWorks) {
+
+  // The ctest entry starts this process with DISABLE_DDI_EXT=3 (both null
+  // drivers hide the extension), so the loader wraps every handle it issues.
+  ASSERT_EQ("3", getenv_string("ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT"));
+
+  std::vector<ze_driver_handle_t> drivers;
+  ASSERT_NO_FATAL_FAILURE(initAllDrivers(drivers));
+  ze_driver_handle_t target = drivers[1];
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(target));
+
+  // The replacement UMD now advertises ZE_DRIVER_DDI_HANDLE_EXT.
+  putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT="));
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelReloadDriver(target));
+
+  // The handle was pinned to wrapper mode at first load, so it still resolves.
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(target));
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(drivers[0]));
+}
+
+// The Microsoft scenario: the kernel-mode driver is yanked out from under a live
+// user-mode driver, so the app is left holding objects it can never cleanly
+// destroy. The default in-use gate blocks recovery entirely; FORCE overrides it.
+TEST(
+    LoaderUnloadDriver,
+    GivenDriverWithLiveObjectsWhenForceUnloadedThenSucceedsAndReloads) {
+
+  std::vector<ze_driver_handle_t> drivers;
+  ASSERT_NO_FATAL_FAILURE(initAllDrivers(drivers));
+  ze_driver_handle_t target = drivers[1];
+
+  ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
+  ze_context_handle_t strandedContext = nullptr;
+  ASSERT_EQ(ZE_RESULT_SUCCESS,
+            zeContextCreate(target, &contextDesc, &strandedContext));
+
+  // Safe by default: a driver with live children refuses to unload.
+  EXPECT_EQ(ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE, zelUnloadDriver(target));
+  EXPECT_EQ(ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE,
+            zelUnloadDriverExt(target, ZEL_UNLOAD_DRIVER_FLAG_NONE));
+
+  // FORCE accepts the driver-side leak and unloads anyway.
+  ASSERT_EQ(ZE_RESULT_SUCCESS,
+            zelUnloadDriverExt(target, ZEL_UNLOAD_DRIVER_FLAG_FORCE));
+
+  // The stranded context fails cleanly instead of faulting into a freed module.
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeContextDestroy(strandedContext));
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelReloadDriver(target));
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(target));
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(drivers[0]));
+}
+
+// Requirement 1, stated negatively and then positively: the implicit paths never
+// resurrect an unloaded driver (an unrelated component calling zeInitDrivers must
+// not undo a deliberate unload), but the slot is not blacklisted either -- an
+// explicit zelReloadDriver brings it back and the counts return to normal.
+TEST(
+    LoaderUnloadDriver,
+    GivenUnloadedDriverWhenInitDriversCalledThenNotResurrected) {
+
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+
+  std::vector<ze_driver_handle_t> drivers;
+  ASSERT_NO_FATAL_FAILURE(initAllDrivers(drivers));
+  const uint32_t originalCount = static_cast<uint32_t>(drivers.size());
+  ze_driver_handle_t target = drivers[1];
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(target));
+
+  // Neither zeInitDrivers nor zeDriverGet may bring it back.
   uint32_t reinitCount = 0;
   ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&reinitCount, nullptr, &desc));
-  std::cout << "[reload probe] zeInitDrivers count after unload: "
-            << reinitCount << std::endl;
+  EXPECT_EQ(reinitCount, originalCount - 1)
+      << "zeInitDrivers should not resurrect the unloaded driver";
 
-  uint32_t getAfterReinit = 0;
-  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&getAfterReinit, nullptr));
-  std::cout << "[reload probe] zeDriverGet after zeInitDrivers reload: "
-            << getAfterReinit << std::endl;
+  uint32_t getCount = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&getCount, nullptr));
+  EXPECT_EQ(getCount, originalCount - 1)
+      << "zeDriverGet should not resurrect the unloaded driver";
 
-  // The remaining (still-loaded) drivers must keep working.
-  std::vector<ze_driver_handle_t> reDrivers(reinitCount);
-  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&reinitCount, reDrivers.data(), &desc));
-  for (auto driver : reDrivers) {
+  // The drivers still standing keep working.
+  std::vector<ze_driver_handle_t> remaining(reinitCount);
+  ASSERT_EQ(ZE_RESULT_SUCCESS,
+            zeInitDrivers(&reinitCount, remaining.data(), &desc));
+  for (auto driver : remaining) {
     ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
     ze_context_handle_t context = nullptr;
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(driver, &contextDesc, &context));
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
   }
 
-  // Current semantics: the unloaded driver does not return through any entry point.
-  EXPECT_EQ(reinitCount, originalCount - 1)
-      << "zeInitDrivers should not resurrect the unloaded driver";
-  EXPECT_EQ(getAfterReinit, originalCount - 1)
-      << "zeDriverGet should not resurrect the unloaded driver";
+  // Not blacklisted: the explicit reload restores the slot and the counts.
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelReloadDriver(target));
+
+  uint32_t afterReloadInit = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&afterReloadInit, nullptr, &desc));
+  EXPECT_EQ(afterReloadInit, originalCount);
+
+  uint32_t afterReloadGet = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&afterReloadGet, nullptr));
+  EXPECT_EQ(afterReloadGet, originalCount);
+
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(target));
+}
+
+// A reload that cannot open the library must leave the slot unloaded and
+// retryable rather than tombstoned -- exactly the case where the replacement
+// driver package is mid-install.
+TEST(
+    LoaderUnloadDriver,
+    GivenFailedReloadWhenRetriedThenSucceeds) {
+
+#if defined(_WIN32)
+  GTEST_SKIP() << "Relies on renaming the driver library out from under the loader";
+#else
+  auto paths = altDriverPaths();
+  ASSERT_GE(paths.size(), 2u)
+      << "This test requires two drivers via ZE_ENABLE_ALT_DRIVERS";
+
+  // Work against a private copy of the second driver so the test can move the
+  // file without disturbing the build tree.
+  const std::string copyPath = "/tmp/zel_reload_test_driver.so.1";
+  const std::string hiddenPath = copyPath + ".hidden";
+  std::remove(hiddenPath.c_str());
+  {
+    std::ifstream src(paths[1], std::ios::binary);
+    ASSERT_TRUE(src.good()) << "cannot read " << paths[1];
+    std::ofstream dst(copyPath, std::ios::binary | std::ios::trunc);
+    ASSERT_TRUE(dst.good()) << "cannot write " << copyPath;
+    dst << src.rdbuf();
+  }
+
+  // putenv() keeps the caller's buffer, so this string must outlive the test.
+  static std::string altDriverEnv =
+      "ZE_ENABLE_ALT_DRIVERS=" + paths[0] + "," + copyPath;
+  ASSERT_EQ(0, putenv_safe(const_cast<char *>(altDriverEnv.c_str())));
+
+  std::vector<ze_driver_handle_t> drivers;
+  ASSERT_NO_FATAL_FAILURE(initAllDrivers(drivers));
+  ze_driver_handle_t target = drivers[1];
+
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelUnloadDriver(target));
+
+  // The library disappears before the reload lands.
+  ASSERT_EQ(0, std::rename(copyPath.c_str(), hiddenPath.c_str()));
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zelReloadDriver(target));
+
+  // Still unloaded, still skipped by the implicit paths, still not blacklisted.
+  uint32_t getCount = 0;
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&getCount, nullptr));
+  EXPECT_EQ(getCount, drivers.size() - 1);
+
+  // The package finishes installing; the retry succeeds.
+  ASSERT_EQ(0, std::rename(hiddenPath.c_str(), copyPath.c_str()));
+  ASSERT_EQ(ZE_RESULT_SUCCESS, zelReloadDriver(target));
+
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(target));
+  ASSERT_NO_FATAL_FAILURE(executeOnDriver(drivers[0]));
+
+  std::remove(copyPath.c_str());
+#endif
 }
 
 } // namespace

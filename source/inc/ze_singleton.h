@@ -9,6 +9,7 @@
 #include <memory>
 #include <unordered_map>
 #include <mutex>
+#include <vector>
 #include <iostream>
 
 //////////////////////////////////////////////////////////////////////////
@@ -84,6 +85,46 @@ public:
                 ++count;
         }
         return count;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    /// removes and returns every instance whose dditable pointer matches the
+    /// argument. Used when a driver is unloaded: the objects must outlive the
+    /// unload (the application may still hold their handles) but they must leave
+    /// the map so their stale keys cannot collide with the raw handles handed out
+    /// by a freshly reloaded driver.
+    template<typename _dditable_t>
+    std::vector<ptr_t> extractByDditable( const _dditable_t* dditable )
+    {
+        std::lock_guard<std::mutex> lk( mut );
+        std::vector<ptr_t> extracted;
+        for( auto iter = map.begin(); iter != map.end(); )
+        {
+            if( iter->second && iter->second->dditable == dditable )
+            {
+                extracted.push_back( std::move( iter->second ) );
+                iter = map.erase( iter );
+            }
+            else
+            {
+                ++iter;
+            }
+        }
+        return extracted;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    /// reinserts an existing instance under a new key. Used to rebind a driver's
+    /// wrapper object onto the raw handle reported by a reloaded driver.
+    void adopt( _key_t _key, ptr_t _ptr )
+    {
+        auto key = getKey( _key );
+
+        if( key == 0 || !_ptr )
+            return;
+
+        std::lock_guard<std::mutex> lk( mut );
+        map[ key ] = std::move( _ptr );
     }
 
     //////////////////////////////////////////////////////////////////////////

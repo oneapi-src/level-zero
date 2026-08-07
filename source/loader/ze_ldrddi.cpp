@@ -9,6 +9,8 @@
  */
 #include "ze_loader_internal.h"
 
+#include <algorithm>
+
 using namespace loader_driver_ddi;
 
 namespace loader
@@ -166,6 +168,9 @@ namespace loader
         bool atLeastOneDriverValid = false;
         for( auto& drv : loader::context->zeDrivers )
         {
+            if (drv.slotState == driver_slot_state_t::Unloaded) {
+                continue; // Skipped, not blacklisted -- only zelReloadDriver brings the slot back.
+            }
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
             if (!drv.handle || !drv.ddiInitialized) {
@@ -214,7 +219,9 @@ namespace loader
             if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
                 std::call_once(loader::context->coreDriverSortOnce, []() {
                     loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
-                    loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
+                    // Never read zeDrivers.front() blindly: slot 0 may have been unloaded, and the
+                    // zer entry points dereference this table without a null check.
+                    loader::context->refreshDefaultZerDdiTable();
                 });
                 loader::context->sortingInProgress.store(false);
             }
@@ -222,6 +229,9 @@ namespace loader
 
         for( auto& drv : loader::context->zeDrivers )
         {
+            if (drv.slotState == driver_slot_state_t::Unloaded) {
+                continue; // An unloaded slot is a hole in the list; it is never enumerated.
+            }
             if(drv.initStatus != ZE_RESULT_SUCCESS || !drv.ddiInitialized)
                 continue;
 
@@ -301,13 +311,25 @@ namespace loader
                             }
                             drv.driverDDIHandleSupportQueried = true;
                         }
-                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                        // wrapperModePinned keeps a slot that has already handed out wrapper
+                        // handles on the wrapper path. A reloaded, newer UMD may start advertising
+                        // ZE_DRIVER_DDI_HANDLE_EXT; switching to raw handles at that point would
+                        // invalidate the driver handle the application is still holding.
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault || drv.wrapperModePinned) {
                             if (loader::context->debugTraceEnabled) {
                                 std::string message = "Driver DDI Handles Not Supported for " + drv.name;
                                 loader::context->debug_trace_message(message, "");
                             }
-                            phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
-                                context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                            auto driverObject = context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable );
+                            // Record every wrapper this slot issues. It is what lets a user-facing
+                            // handle be resolved back to its slot exactly -- the wrapping decision
+                            // is per driver, so intercept_enabled is not a reliable test -- and what
+                            // zelReloadDriver rebinds onto the freshly loaded driver.
+                            if (std::find(drv.zeDriverObjects.begin(), drv.zeDriverObjects.end(), driverObject) == drv.zeDriverObjects.end()) {
+                                drv.zeDriverObjects.push_back(driverObject);
+                            }
+                            drv.wrapperModePinned = true;
+                            phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>( driverObject );
                             if (drv.zerDriverHandle != nullptr) {
                                 drv.zerDriverHandle = phDrivers[ driver_index ];
                             }
@@ -334,10 +356,8 @@ namespace loader
         if (total_driver_handle_count > 0) {
             result = ZE_RESULT_SUCCESS;
         }
-        if (loader::context->zeDrivers.front().zerDriverDDISupported)
-            loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
-        else
-            loader::context->defaultZerDriverHandle = nullptr;
+        // Pick the default ZER driver from a slot that is actually loaded; slot 0 may be unloaded.
+        loader::context->refreshDefaultZerDdiTable();
 
         return result;
     }
@@ -362,8 +382,11 @@ namespace loader
         
         uint32_t total_driver_handle_count = 0;
         for( auto& drv : loader::context->zeDrivers ) {
-            if (drv.unloaded) {
-                continue; // Never reload an explicitly unloaded driver.
+            if (drv.slotState == driver_slot_state_t::Unloaded) {
+                // Skipped, not blacklisted. An unrelated component calling zeInitDrivers must not
+                // silently resurrect a driver the application deliberately unloaded; only an
+                // explicit zelReloadDriver brings the slot back.
+                continue;
             }
             if (!drv.handle || !drv.ddiInitialized) {
                 auto res = loader::context->init_driver( drv, 0, desc);
@@ -379,7 +402,9 @@ namespace loader
             if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
                 std::call_once(loader::context->coreDriverSortOnce, [desc]() {
                     loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
-                    loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
+                    // Never read zeDrivers.front() blindly: slot 0 may have been unloaded, and the
+                    // zer entry points dereference this table without a null check.
+                    loader::context->refreshDefaultZerDdiTable();
                 });
                 loader::context->sortingInProgress.store(false);
             }
@@ -387,8 +412,8 @@ namespace loader
 
         for( auto& drv : loader::context->zeDrivers )
         {
-            if (drv.unloaded) {
-                continue; // Unloaded drivers are a hole in the list; do not enumerate them.
+            if (drv.slotState == driver_slot_state_t::Unloaded) {
+                continue; // An unloaded slot is a hole in the list; it is never enumerated.
             }
             if (!drv.ddiInitialized || !drv.dditable.ze.Global.pfnInitDrivers) {
                 drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
@@ -472,13 +497,25 @@ namespace loader
                             }
                             drv.driverDDIHandleSupportQueried = true;
                         }
-                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                        // wrapperModePinned keeps a slot that has already handed out wrapper
+                        // handles on the wrapper path. A reloaded, newer UMD may start advertising
+                        // ZE_DRIVER_DDI_HANDLE_EXT; switching to raw handles at that point would
+                        // invalidate the driver handle the application is still holding.
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault || drv.wrapperModePinned) {
                             if (loader::context->debugTraceEnabled) {
                                 std::string message = "Driver DDI Handles Not Supported for " + drv.name;
                                 loader::context->debug_trace_message(message, "");
                             }
-                            phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
-                                context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                            auto driverObject = context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable );
+                            // Record every wrapper this slot issues. It is what lets a user-facing
+                            // handle be resolved back to its slot exactly -- the wrapping decision
+                            // is per driver, so intercept_enabled is not a reliable test -- and what
+                            // zelReloadDriver rebinds onto the freshly loaded driver.
+                            if (std::find(drv.zeDriverObjects.begin(), drv.zeDriverObjects.end(), driverObject) == drv.zeDriverObjects.end()) {
+                                drv.zeDriverObjects.push_back(driverObject);
+                            }
+                            drv.wrapperModePinned = true;
+                            phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>( driverObject );
                             if (drv.zerDriverHandle != nullptr) {
                                 drv.zerDriverHandle = phDrivers[ driver_index ];
                             }
@@ -505,10 +542,8 @@ namespace loader
         if (total_driver_handle_count > 0) {
             result = ZE_RESULT_SUCCESS;
         }
-        if (loader::context->zeDrivers.front().zerDriverDDISupported)
-            loader::context->defaultZerDriverHandle = loader::context->zeDrivers.front().zerDriverHandle;
-        else
-            loader::context->defaultZerDriverHandle = nullptr;
+        // Pick the default ZER driver from a slot that is actually loaded; slot 0 may be unloaded.
+        loader::context->refreshDefaultZerDdiTable();
 
         return result;
     }
