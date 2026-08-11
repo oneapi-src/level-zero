@@ -65,6 +65,22 @@ def sha256_of(path):
     return digest.hexdigest()
 
 
+def sha256_of_lf(path):
+    """sha256 of 'path' with CRLF normalised to LF, to recognise a converted checkout."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as fin:
+        trailing_cr = b""
+        for chunk in iter(lambda: fin.read(1 << 20), b""):
+            chunk = trailing_cr + chunk
+            # A CR at the very end may pair with an LF in the next chunk, so hold it.
+            trailing_cr = b"\r" if chunk.endswith(b"\r") else b""
+            if trailing_cr:
+                chunk = chunk[:-1]
+            digest.update(chunk.replace(b"\r\n", b"\n"))
+        digest.update(trailing_cr)
+    return digest.hexdigest()
+
+
 def load_manifest(repo_root):
     path = os.path.join(metadata_dir(repo_root), MANIFEST_NAME)
     if not os.path.isfile(path):
@@ -97,7 +113,15 @@ def verify_archive(repo_root, manifest):
         eprint("error: %s does not match the sha256 recorded in %s" % (path, MANIFEST_NAME))
         eprint("       expected %s" % expected)
         eprint("       actual   %s" % actual)
-        eprint("       Re-run 'scripts/spec_metadata.py refresh' to re-archive the metadata.")
+        if sha256_of_lf(path) == expected:
+            # By far the likeliest cause on Windows, and unrecoverable by
+            # re-archiving: the archive is intact, the checkout converted it.
+            eprint("       The contents are intact; only the line endings differ, so this")
+            eprint("       checkout converted LF to CRLF. Confirm .gitattributes marks")
+            eprint("       scripts/spec_metadata/input.json as '-text', then re-checkout:")
+            eprint("         git rm --cached -r . && git reset --hard")
+        else:
+            eprint("       Re-run 'scripts/spec_metadata.py refresh' to re-archive the metadata.")
         sys.exit(1)
 
 
