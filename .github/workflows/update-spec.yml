@@ -121,9 +121,6 @@ jobs:
         jq -r '.[] | select(.|test("^../include"))' scripts/generated.json | cut -c 4- | sort | xargs -I{} cp -v ./{} ../{}
         echo "::endgroup::"
         cd ..
-        echo "::group::Generate source files"
-        ./scripts/json2src.py < spec/scripts/input.json --ver "${VER}" .
-        echo "::endgroup::"
         # Archive the metadata alongside the code it produced. The Regenerate
         # Source workflow replays it on every pull request, so it has to describe
         # the same spec release as the headers being committed here.
@@ -133,6 +130,15 @@ jobs:
             --ref "${SPEC_TAG}" \
             --ver "${VER}" \
             --input-json spec/scripts/input.json
+        echo "::endgroup::"
+        # Generate through the same entry point the Regenerate Source workflow
+        # uses, rather than calling json2src.py directly. A second generation path
+        # here would only have to differ in how it invokes the generator for every
+        # post-bump pull request to report drift against the very commit that
+        # produced it. Going through 'regen' makes the archive and the committed
+        # sources consistent by construction.
+        echo "::group::Generate source files"
+        python3 ./scripts/spec_metadata.py regen
         echo "::endgroup::"
         # Summarise the change without dumping the multi-megabyte metadata blob
         # into the log.
