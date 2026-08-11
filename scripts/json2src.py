@@ -87,13 +87,19 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    # Resolve every post-processing path against out_dir, so that generating into
+    # a tree other than the current directory works (e.g. the drift check in
+    # scripts/spec_metadata.py, which generates into a scratch copy).
+    def out_path(*parts):
+        return os.path.join(args.out_dir, *parts)
+
     header_files = [
-        'source/loader/ze_loader_internal_tmp.h',
-        'source/loader/zet_loader_internal_tmp.h',
-        'source/loader/zes_loader_internal_tmp.h',
-        'source/loader/zer_loader_internal_tmp.h'
+        out_path('source', 'loader', 'ze_loader_internal_tmp.h'),
+        out_path('source', 'loader', 'zet_loader_internal_tmp.h'),
+        out_path('source', 'loader', 'zes_loader_internal_tmp.h'),
+        out_path('source', 'loader', 'zer_loader_internal_tmp.h')
     ]
-    output_file = 'source/loader/ze_loader_internal_factories.h'
+    output_file = out_path('source', 'loader', 'ze_loader_internal_factories.h')
     merge_header_files(header_files, output_file)
     def replace_factory_section(input_file, factory_file, output_file):
         """
@@ -132,9 +138,9 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    input_file = 'source/loader/ze_loader_internal_tmp.h'
-    factory_file = 'source/loader/ze_loader_internal_factories.h'
-    output_file = 'source/loader/ze_loader_internal.h'
+    input_file = out_path('source', 'loader', 'ze_loader_internal_tmp.h')
+    factory_file = out_path('source', 'loader', 'ze_loader_internal_factories.h')
+    output_file = out_path('source', 'loader', 'ze_loader_internal.h')
     replace_factory_section(input_file, factory_file, output_file)
 
     def region_start_regex(name):
@@ -218,13 +224,13 @@ if __name__ == '__main__':
 
     # Delete temporary and factory files
     files_to_delete = [
-        'source/loader/ze_loader_internal_tmp.h',
-        'source/loader/zet_loader_internal_tmp.h',
-        'source/loader/zes_loader_internal_tmp.h',
-        'source/loader/zer_loader_internal_tmp.h',
-        'source/loader/ze_loader_internal_factories.h',
-        'include/layers/ze_tracing_register_cb_tmp.h',
-        'include/layers/zer_tracing_register_cb_tmp.h'
+        out_path('source', 'loader', 'ze_loader_internal_tmp.h'),
+        out_path('source', 'loader', 'zet_loader_internal_tmp.h'),
+        out_path('source', 'loader', 'zes_loader_internal_tmp.h'),
+        out_path('source', 'loader', 'zer_loader_internal_tmp.h'),
+        out_path('source', 'loader', 'ze_loader_internal_factories.h'),
+        out_path('include', 'layers', 'ze_tracing_register_cb_tmp.h'),
+        out_path('include', 'layers', 'zer_tracing_register_cb_tmp.h')
     ]
 
     for file_path in files_to_delete:

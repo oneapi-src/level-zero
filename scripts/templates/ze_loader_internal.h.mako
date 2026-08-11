@@ -136,6 +136,10 @@ namespace loader
         bool debugTraceAdvanced = false;  // true when ZE_ENABLE_LOADER_DEBUG_TRACE=2 or ZEL_ENABLE_LOADER_LOGGING=2
         bool driverDDIPathDefault = false;
         bool tracingLayerEnabled = false;
+        // Monotonic latch set on the first extension-callback registration. While
+        // false, the enable/disable toggle skips per-driver gate propagation, so
+        // the common case (no extension callbacks, e.g. VTune) stays a cheap
+        // DDI-table swap. Never reset.
         std::atomic<bool> anyExtensionCallbackRegistered{false};
         std::once_flag coreDriverSortOnce;
         std::once_flag sysmanDriverSortOnce;

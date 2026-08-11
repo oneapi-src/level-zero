@@ -1,7 +1,11 @@
 # Configuration for codespell (https://github.com/codespell-project/codespell)
 # Shared by the CI workflow and local runs: just run `codespell` from the repo root.
 [codespell]
-skip = ./.git,./build,./third_party,*.svg
+# ./scripts/spec_metadata is a verbatim archive of the specification metadata for
+# the spec release this loader targets. It is not ours to correct -- typos in it
+# have to be fixed upstream in oneapi-src/level-zero-spec and arrive here with the
+# next spec update.
+skip = ./.git,./build,./third_party,*.svg,./scripts/spec_metadata
 # codespell only flags words from its curated misspelling dictionary, but it is not
 # language-aware. Add identifiers/terms that collide with real words here (comma-separated).
 ignore-words-list = te,pevents

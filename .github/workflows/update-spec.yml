@@ -10,11 +10,15 @@ on:
         type: string
         default: oneapi-src/level-zero-spec
       ref:
-        description: Ref to checkout from the spec repository
+        description: >-
+          Ref to checkout from the spec repository. Resolved to the most recent
+          release tag reachable from it, since only official releases are imported.
         type: string
         default: master
       version:
-        description: Version of the spec to generate code for
+        description: >-
+          API version to generate code for, e.g. 1.17. Leave blank to derive it
+          from the most recent release tag in the spec repository.
         type: string
       branch:
         description: Branch to (force) push generated code to
@@ -33,7 +37,9 @@ jobs:
       with:
         python-version: '3.x'
     - name: Install dependencies
-      run: pip install Mako==1.1.0 PyYAML==5.2
+      # Kept in step with the spec repository's third_party/requirements.txt, since
+      # this job runs that repository's generators.
+      run: pip install "Mako>=1.3.3" "PyYAML>=6.0.1"
     - uses: actions/checkout@v5
       with:
         clean: true
@@ -56,12 +62,59 @@ jobs:
         fetch-depth: 0
         path: spec
         ref: ${{ github.event_name == 'pull_request' && 'master' || inputs.ref }}
+    - name: Resolve the spec release to import
+      run: | #bash
+        # This job imports *official spec releases*, so the checkout is pinned to a
+        # release tag rather than left on a moving branch. Between releases, master
+        # carries post-release commits: generating from it would take that content
+        # while 'git describe' still reports the previous tag, and the metadata
+        # archived below would claim to be a release it is not. That is not
+        # hypothetical -- spec PR #505 landed after v1.18.0 was cut, which is
+        # exactly how the loader's generated sources came to drift.
+        #
+        # --match restricts this to release tags, and --abbrev=0 takes the most
+        # recent one *reachable from the checkout* rather than the highest tag in
+        # the clone. Those differ once a newer release exists, and importing
+        # v1.17.24 must stay on 1.17 even when v1.18.0 has been cut. This is the
+        # same rule as the spec's own run.py:detect_version_git_major_minor().
+        CHECKED_OUT=$(git -C spec rev-parse --short HEAD)
+        SPEC_TAG=$(git -C spec describe --tags --abbrev=0 --match 'v[0-9]*.[0-9]*' 2>/dev/null || true)
+        if [ -z "${SPEC_TAG}" ]; then
+            echo "::error::No release tag is reachable from the requested spec ref (${CHECKED_OUT}). This job imports official spec releases only."
+            exit 1
+        fi
+        git -C spec checkout --quiet --detach "${SPEC_TAG}"
+        RESOLVED=$(git -C spec rev-parse --short HEAD)
+        if [ "${RESOLVED}" != "${CHECKED_OUT}" ]; then
+            echo "::notice::Spec checkout moved from ${CHECKED_OUT} to release tag ${SPEC_TAG} (${RESOLVED}); commits made after the tag are not imported."
+        fi
+        echo "Importing spec release ${SPEC_TAG} (${RESOLVED})"
+
+        # The API version is a max-version filter over the spec metadata, not a
+        # label: set it below the release being imported and every function added
+        # after that version is silently dropped -- the loader still compiles, it
+        # just stops exporting them. Derive it from the resolved tag rather than
+        # writing it down here, where it would go stale.
+        REQUESTED_VER="${{ inputs.version }}"
+        if [ -n "${REQUESTED_VER}" ]; then
+            VER="${REQUESTED_VER}"
+            echo "Using requested API version: ${VER}"
+        else
+            VER=$(echo "${SPEC_TAG}" | sed -n 's/^v\([0-9]\+\.[0-9]\+\).*/\1/p')
+            if [ -z "${VER}" ]; then
+                echo "::error::Could not parse a MAJOR.MINOR version from tag '${SPEC_TAG}'."
+                exit 1
+            fi
+            echo "Detected API version: ${VER} (from ${SPEC_TAG})"
+        fi
+        echo "VER=${VER}" >> $GITHUB_ENV
+        echo "SPEC_TAG=${SPEC_TAG}" >> $GITHUB_ENV
     - name: Apply latest spec commit to develop branch
       run: | #bash
         export LANG="C.UTF-8"
         cd spec/scripts
         echo "::group::Generate spec/scripts/input.json"
-        python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver ${{ github.event_name == 'pull_request' && '1.10' || inputs.version }}
+        python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver "${VER}"
         echo "::endgroup::"
         cd ..
         echo "::group::Copy generated header files"
@@ -69,15 +122,30 @@ jobs:
         echo "::endgroup::"
         cd ..
         echo "::group::Generate source files"
-        ./scripts/json2src.py < spec/scripts/input.json --ver ${{ github.event_name == 'pull_request' && '1.10' || inputs.version }} .
+        ./scripts/json2src.py < spec/scripts/input.json --ver "${VER}" .
         echo "::endgroup::"
-        if (($(git diff | tee >(wc -l) >&2) == 0)); then
+        # Archive the metadata alongside the code it produced. The Regenerate
+        # Source workflow replays it on every pull request, so it has to describe
+        # the same spec release as the headers being committed here.
+        echo "::group::Archive spec metadata"
+        python3 ./scripts/spec_metadata.py refresh \
+            --spec-repo spec \
+            --ref "${SPEC_TAG}" \
+            --ver "${VER}" \
+            --input-json spec/scripts/input.json
+        echo "::endgroup::"
+        # Summarise the change without dumping the multi-megabyte metadata blob
+        # into the log.
+        git diff --stat -- . ':(exclude)scripts/spec_metadata' >&2
+        if git diff --quiet; then
             echo "::warning::No changes were made to files"
         else
             git config user.email "sys-lzdev@intel.com"
             git config user.name "sys-lzdev"
             spec_ver=$(sed -n 's/^.*version v.*-r\([0-9]*\.[0-9]*\.[0-9]*\)/\1/p' include/ze_api.h)
             git add -u
+            # -u alone would miss the archive the first time it appears.
+            git add -A scripts/spec_metadata
             git commit -m "Update to spec ${spec_ver}"
         fi
     - name: Push changes to develop branch
