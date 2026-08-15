@@ -360,9 +360,14 @@ namespace loader
 
         %endif
         %if 'range' in item:
+## A null [in][optional] array must reach the driver as null. new[0] returns a
+## non-null pointer, which for some APIs silently changes the meaning of the
+## call: zetContextActivateMetricGroups reads nullptr as "deactivate all
+## previously used metric groups", so it would never deactivate anything.
+## delete[] on nullptr is a no-op, so the cleanup below needs no change.
         <%
-        add_local = True%>// convert loader handles to driver handles
-        auto ${item['name']}Local = new ${item['type']} [${item['range'][1]}];
+        add_local = True%>// convert loader handles to driver handles, preserving a null input array
+        auto ${item['name']}Local = ( ${item['name']} ) ? new ${item['type']} [${item['range'][1]}] : nullptr;
         <%
         arrays_to_delete.append(item['name']+ 'Local')
         %>for( size_t i = ${item['range'][0]}; ( nullptr != ${item['name']} ) && ( i < ${item['range'][1]} ); ++i )
@@ -413,8 +418,8 @@ namespace loader
         ## Workaround due to incorrect definition of phWaitEvents in the ze headers which missed the range values.
         ## To be removed once the headers have been updated in a new spec release.
         %if re.match(r"\w+CommandListAppendMetricQueryEnd$", th.make_func_name(n, tags, obj)):
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 

@@ -1427,8 +1427,8 @@ namespace loader
         // convert loader handle to driver handle
         hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
 
-        // convert loader handles to driver handles
-        auto phDevicesLocal = new zes_device_handle_t [count];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phDevicesLocal = ( phDevices ) ? new zes_device_handle_t [count] : nullptr;
         for( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
             phDevicesLocal[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
 
@@ -1474,8 +1474,8 @@ namespace loader
         // convert loader handle to driver handle
         hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
 
-        // convert loader handles to driver handles
-        auto phDevicesLocal = new zes_device_handle_t [count];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phDevicesLocal = ( phDevices ) ? new zes_device_handle_t [count] : nullptr;
         for( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
             phDevicesLocal[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
 
@@ -1735,8 +1735,8 @@ namespace loader
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
 
-        // convert loader handles to driver handles
-        auto phPortLocal = new zes_fabric_port_handle_t [numPorts];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phPortLocal = ( phPort ) ? new zes_fabric_port_handle_t [numPorts] : nullptr;
         for( size_t i = 0; ( nullptr != phPort ) && ( i < numPorts ); ++i )
             phPortLocal[ i ] = reinterpret_cast<zes_fabric_port_object_t*>( phPort[ i ] )->handle;
 

@@ -1423,8 +1423,8 @@ namespace loader
         // convert loader handle to driver handle
         hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
 
-        // convert loader handles to driver handles
-        auto phDevicesLocal = new ze_device_handle_t [numDevices];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phDevicesLocal = ( phDevices ) ? new ze_device_handle_t [numDevices] : nullptr;
         for( size_t i = 0; ( nullptr != phDevices ) && ( i < numDevices ); ++i )
             phDevicesLocal[ i ] = reinterpret_cast<ze_device_object_t*>( phDevices[ i ] )->handle;
 
@@ -1599,8 +1599,8 @@ namespace loader
         // convert loader handle to driver handle
         hCommandQueue = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->handle;
 
-        // convert loader handles to driver handles
-        auto phCommandListsLocal = new ze_command_list_handle_t [numCommandLists];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phCommandListsLocal = ( phCommandLists ) ? new ze_command_list_handle_t [numCommandLists] : nullptr;
         for( size_t i = 0; ( nullptr != phCommandLists ) && ( i < numCommandLists ); ++i )
             phCommandListsLocal[ i ] = reinterpret_cast<ze_command_list_object_t*>( phCommandLists[ i ] )->handle;
 
@@ -1964,8 +1964,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2288,8 +2288,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2329,8 +2329,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2398,8 +2398,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2440,8 +2440,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2482,8 +2482,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2525,8 +2525,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2575,8 +2575,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2620,8 +2620,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2666,8 +2666,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2714,8 +2714,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2758,8 +2758,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2802,8 +2802,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2897,8 +2897,8 @@ namespace loader
         // convert loader handle to driver handle
         hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
 
-        // convert loader handles to driver handles
-        auto phDevicesLocal = new ze_device_handle_t [numDevices];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phDevicesLocal = ( phDevices ) ? new ze_device_handle_t [numDevices] : nullptr;
         for( size_t i = 0; ( nullptr != phDevices ) && ( i < numDevices ); ++i )
             phDevicesLocal[ i ] = reinterpret_cast<ze_device_object_t*>( phDevices[ i ] )->handle;
 
@@ -3360,8 +3360,8 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phEventsLocal = new ze_event_handle_t [numEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phEventsLocal = ( phEvents ) ? new ze_event_handle_t [numEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phEvents ) && ( i < numEvents ); ++i )
             phEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phEvents[ i ] )->handle;
 
@@ -3558,16 +3558,16 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phEventsLocal = new ze_event_handle_t [numEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phEventsLocal = ( phEvents ) ? new ze_event_handle_t [numEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phEvents ) && ( i < numEvents ); ++i )
             phEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phEvents[ i ] )->handle;
 
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -4544,8 +4544,8 @@ namespace loader
         if( nullptr == pfnDynamicLink )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        // convert loader handles to driver handles
-        auto phModulesLocal = new ze_module_handle_t [numModules];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phModulesLocal = ( phModules ) ? new ze_module_handle_t [numModules] : nullptr;
         for( size_t i = 0; ( nullptr != phModules ) && ( i < numModules ); ++i )
             phModulesLocal[ i ] = reinterpret_cast<ze_module_object_t*>( phModules[ i ] )->handle;
 
@@ -5155,8 +5155,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -5199,8 +5199,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -5245,8 +5245,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -5288,8 +5288,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -5332,8 +5332,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -5374,16 +5374,16 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phKernelsLocal = new ze_kernel_handle_t [numKernels];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phKernelsLocal = ( phKernels ) ? new ze_kernel_handle_t [numKernels] : nullptr;
         for( size_t i = 0; ( nullptr != phKernels ) && ( i < numKernels ); ++i )
             phKernelsLocal[ i ] = reinterpret_cast<ze_kernel_object_t*>( phKernels[ i ] )->handle;
 
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -6247,8 +6247,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -6295,8 +6295,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -6356,8 +6356,8 @@ namespace loader
         if( nullptr == pfnInspectLinkageExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        // convert loader handles to driver handles
-        auto phModulesLocal = new ze_module_handle_t [numModules];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phModulesLocal = ( phModules ) ? new ze_module_handle_t [numModules] : nullptr;
         for( size_t i = 0; ( nullptr != phModules ) && ( i < numModules ); ++i )
             phModulesLocal[ i ] = reinterpret_cast<ze_module_object_t*>( phModules[ i ] )->handle;
 
@@ -7182,16 +7182,16 @@ namespace loader
         // convert loader handle to driver handle
         hCommandListImmediate = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->handle;
 
-        // convert loader handles to driver handles
-        auto phCommandListsLocal = new ze_command_list_handle_t [numCommandLists];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phCommandListsLocal = ( phCommandLists ) ? new ze_command_list_handle_t [numCommandLists] : nullptr;
         for( size_t i = 0; ( nullptr != phCommandLists ) && ( i < numCommandLists ); ++i )
             phCommandListsLocal[ i ] = reinterpret_cast<ze_command_list_object_t*>( phCommandLists[ i ] )->handle;
 
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -7233,16 +7233,16 @@ namespace loader
         // convert loader handle to driver handle
         hCommandListImmediate = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->handle;
 
-        // convert loader handles to driver handles
-        auto phCommandListsLocal = new ze_command_list_handle_t [numCommandLists];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phCommandListsLocal = ( phCommandLists ) ? new ze_command_list_handle_t [numCommandLists] : nullptr;
         for( size_t i = 0; ( nullptr != phCommandLists ) && ( i < numCommandLists ); ++i )
             phCommandListsLocal[ i ] = reinterpret_cast<ze_command_list_object_t*>( phCommandLists[ i ] )->handle;
 
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -7304,8 +7304,8 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phKernelsLocal = new ze_kernel_handle_t [numKernels];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phKernelsLocal = ( phKernels ) ? new ze_kernel_handle_t [numKernels] : nullptr;
         for( size_t i = 0; ( nullptr != phKernels ) && ( i < numKernels ); ++i )
             phKernelsLocal[ i ] = reinterpret_cast<ze_kernel_object_t*>( phKernels[ i ] )->handle;
 
@@ -7419,8 +7419,8 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -7453,8 +7453,8 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phKernelsLocal = new ze_kernel_handle_t [numKernels];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phKernelsLocal = ( phKernels ) ? new ze_kernel_handle_t [numKernels] : nullptr;
         for( size_t i = 0; ( nullptr != phKernels ) && ( i < numKernels ); ++i )
             phKernelsLocal[ i ] = reinterpret_cast<ze_kernel_object_t*>( phKernels[ i ] )->handle;
 
@@ -7583,16 +7583,16 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phSemaphoresLocal = new ze_external_semaphore_ext_handle_t [numSemaphores];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phSemaphoresLocal = ( phSemaphores ) ? new ze_external_semaphore_ext_handle_t [numSemaphores] : nullptr;
         for( size_t i = 0; ( nullptr != phSemaphores ) && ( i < numSemaphores ); ++i )
             phSemaphoresLocal[ i ] = reinterpret_cast<ze_external_semaphore_ext_object_t*>( phSemaphores[ i ] )->handle;
 
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -7632,16 +7632,16 @@ namespace loader
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
 
-        // convert loader handles to driver handles
-        auto phSemaphoresLocal = new ze_external_semaphore_ext_handle_t [numSemaphores];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phSemaphoresLocal = ( phSemaphores ) ? new ze_external_semaphore_ext_handle_t [numSemaphores] : nullptr;
         for( size_t i = 0; ( nullptr != phSemaphores ) && ( i < numSemaphores ); ++i )
             phSemaphoresLocal[ i ] = reinterpret_cast<ze_external_semaphore_ext_object_t*>( phSemaphores[ i ] )->handle;
 
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -7815,8 +7815,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -8411,8 +8411,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -8604,8 +8604,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 

@@ -738,8 +738,8 @@ namespace loader
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
 
-        // convert loader handles to driver handles
-        auto phMetricGroupsLocal = new zet_metric_group_handle_t [count];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phMetricGroupsLocal = ( phMetricGroups ) ? new zet_metric_group_handle_t [count] : nullptr;
         for( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < count ); ++i )
             phMetricGroupsLocal[ i ] = reinterpret_cast<zet_metric_group_object_t*>( phMetricGroups[ i ] )->handle;
 
@@ -1128,8 +1128,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phWaitEventsLocal = ( phWaitEvents ) ? new ze_event_handle_t [numWaitEvents] : nullptr;
         for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
             phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
 
@@ -2069,8 +2069,8 @@ namespace loader
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
 
-        // convert loader handles to driver handles
-        auto phMetricGroupsLocal = new zet_metric_group_handle_t [metricGroupCount ];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phMetricGroupsLocal = ( phMetricGroups ) ? new zet_metric_group_handle_t [metricGroupCount ] : nullptr;
         for( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < metricGroupCount  ); ++i )
             phMetricGroupsLocal[ i ] = reinterpret_cast<zet_metric_group_object_t*>( phMetricGroups[ i ] )->handle;
 
@@ -2384,8 +2384,8 @@ namespace loader
         // convert loader handle to driver handle
         phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_object_t*>( phMetricDecoder )->handle;
 
-        // convert loader handles to driver handles
-        auto phMetricsLocal = new zet_metric_handle_t [metricsCount];
+        // convert loader handles to driver handles, preserving a null input array
+        auto phMetricsLocal = ( phMetrics ) ? new zet_metric_handle_t [metricsCount] : nullptr;
         for( size_t i = 0; ( nullptr != phMetrics ) && ( i < metricsCount ); ++i )
             phMetricsLocal[ i ] = reinterpret_cast<zet_metric_object_t*>( phMetrics[ i ] )->handle;
 
