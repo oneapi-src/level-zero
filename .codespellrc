@@ -9,3 +9,7 @@ skip = ./.git,./build,./third_party,*.svg,./scripts/spec_metadata
 # codespell only flags words from its curated misspelling dictionary, but it is not
 # language-aware. Add identifiers/terms that collide with real words here (comma-separated).
 ignore-words-list = te,pevents
+# ignore-words-list is case-insensitive; use ignore-regex for terms that are only
+# valid in a specific case. NCE (Neural Compute Engine) is an acronym, but lowercase
+# "nce" should still be caught as a typo for "once"/"nice".
+ignore-regex = \bNCE\b
