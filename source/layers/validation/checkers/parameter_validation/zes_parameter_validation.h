@@ -177,5 +177,7 @@ namespace validation_layer
         ze_result_t zesVFManagementGetVFEngineUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil ) override;
         ze_result_t zesVFManagementGetVFCapabilitiesExp2Prologue( zes_vf_handle_t hVFhandle, zes_vf_exp2_capabilities_t* pCapability ) override;
         ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) override;
+        ze_result_t zesDeviceGetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth ) override;
+        ze_result_t zesDeviceSetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health ) override;
     };
 }

@@ -133,8 +133,8 @@ namespace loader
     /// @brief Intercept function for zesInit
     __zedlllocal ze_result_t ZE_APICALL
     zesInit(
-        zes_init_flags_t flags                          ///< [in] initialization flags.
-                                                        ///< currently unused, must be 0 (default).
+        zes_init_flags_t flags                          ///< [in] initialization flags. This should be 0 or a combination of
+                                                        ///< ::zes_init_flags_t values.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3265,8 +3265,10 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetUsage(
         zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the instant power usage will not be returned.
+        uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the average power usage will not be returned.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4919,6 +4921,56 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetHealthStatusExt = dditable->zes.Device.pfnGetHealthStatusExt;
+        if( nullptr == pfnGetHealthStatusExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetHealthStatusExt( hDevice, pHealth );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnSetHealthStatusExt = dditable->zes.Device.pfnSetHealthStatusExt;
+        if( nullptr == pfnSetHealthStatusExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnSetHealthStatusExt( hDevice, health );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -4966,6 +5018,8 @@ zesGetDeviceProcAddrTableLegacy()
     loader::loaderDispatch->pSysman->Device->pfnEnumStandbyDomains                       = loader::zesDeviceEnumStandbyDomains;
     loader::loaderDispatch->pSysman->Device->pfnEnumTemperatureSensors                   = loader::zesDeviceEnumTemperatureSensors;
     loader::loaderDispatch->pSysman->Device->pfnPciLinkSpeedUpdateExt                    = loader::zesDevicePciLinkSpeedUpdateExt;
+    loader::loaderDispatch->pSysman->Device->pfnGetHealthStatusExt                       = loader::zesDeviceGetHealthStatusExt;
+    loader::loaderDispatch->pSysman->Device->pfnSetHealthStatusExt                       = loader::zesDeviceSetHealthStatusExt;
     loader::loaderDispatch->pSysman->Device->pfnEccAvailable                             = loader::zesDeviceEccAvailable;
     loader::loaderDispatch->pSysman->Device->pfnEccConfigurable                          = loader::zesDeviceEccConfigurable;
     loader::loaderDispatch->pSysman->Device->pfnGetEccState                              = loader::zesDeviceGetEccState;
@@ -6168,6 +6222,20 @@ zesGetDeviceProcAddrTable(
                 pDdiTable->pfnPciLinkSpeedUpdateExt                    = loader::zesDevicePciLinkSpeedUpdateExt;
             }
             }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetHealthStatusExt                       = loader_driver_ddi::zesDeviceGetHealthStatusExt;
+            } else {
+                pDdiTable->pfnGetHealthStatusExt                       = loader::zesDeviceGetHealthStatusExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetHealthStatusExt                       = loader_driver_ddi::zesDeviceSetHealthStatusExt;
+            } else {
+                pDdiTable->pfnSetHealthStatusExt                       = loader::zesDeviceSetHealthStatusExt;
+            }
+            }
             if (version >= ZE_API_VERSION_1_4) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnEccAvailable                             = loader_driver_ddi::zesDeviceEccAvailable;
@@ -6334,6 +6402,12 @@ zesGetDeviceProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_15) {
                 pDdiTable->pfnPciLinkSpeedUpdateExt                    = firstDriver->dditable.zes.Device.pfnPciLinkSpeedUpdateExt;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnGetHealthStatusExt                       = firstDriver->dditable.zes.Device.pfnGetHealthStatusExt;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnSetHealthStatusExt                       = firstDriver->dditable.zes.Device.pfnSetHealthStatusExt;
             }
             if (version >= ZE_API_VERSION_1_4) {
                 pDdiTable->pfnEccAvailable                             = firstDriver->dditable.zes.Device.pfnEccAvailable;

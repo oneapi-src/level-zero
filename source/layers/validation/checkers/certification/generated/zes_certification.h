@@ -957,5 +957,17 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zesDeviceGetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDeviceSetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
 };
 } // namespace validation_layer

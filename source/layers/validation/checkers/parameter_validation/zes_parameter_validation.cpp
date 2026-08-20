@@ -17,11 +17,11 @@ namespace validation_layer
 
     ze_result_t
     ZESParameterValidation::zesInitPrologue(
-        zes_init_flags_t flags                          ///< [in] initialization flags.
-                                                        ///< currently unused, must be 0 (default).
+        zes_init_flags_t flags                          ///< [in] initialization flags. This should be 0 or a combination of
+                                                        ///< ::zes_init_flags_t values.
         )
     {
-        if( 0x1 < flags )
+        if( 0x7 < flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ZE_RESULT_SUCCESS;
@@ -1975,17 +1975,16 @@ namespace validation_layer
     ze_result_t
     ZESParameterValidation::zesPowerGetUsagePrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the instant power usage will not be returned.
+        uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the average power usage will not be returned.
         )
     {
         if( nullptr == hPower )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-        if( nullptr == pInstantPower )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pAveragePower )
+        if( (nullptr == pInstantPower) && (nullptr == pAveragePower) )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
@@ -3033,6 +3032,38 @@ namespace validation_layer
 
         if( nullptr == pendingAction )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesDeviceGetHealthStatusExtPrologue(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pHealth )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesDeviceSetHealthStatusExtPrologue(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( ZES_DEVICE_HEALTH_STATUS_EXT_FAILED < health )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ZE_RESULT_SUCCESS;
     }

@@ -3585,6 +3585,44 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalEventWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalEventWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hEvent                        ///< [in] handle of the event
+        )
+    {
+        auto pfnAppendSignalEventWithParameters = context.zeDdiTable.CommandList.pfnAppendSignalEventWithParameters;
+
+        if( nullptr == pfnAppendSignalEventWithParameters)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendSignalEventWithParameters, hCommandList, pNext, hEvent);
+
+        // capture parameters
+        ze_command_list_append_signal_event_with_parameters_params_t tracerParams = {
+            &hCommandList,
+            &pNext,
+            &hEvent
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendSignalEventWithParametersCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendSignalEventWithParametersCb_t, CommandList, pfnAppendSignalEventWithParametersCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendSignalEventWithParameters,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.ppNext,
+                                                  *tracerParams.phEvent);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendWaitOnEvents
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendWaitOnEvents(
@@ -3619,6 +3657,48 @@ namespace tracing_layer
                                                   apiCallbackData.prologCallbacks,
                                                   apiCallbackData.epilogCallbacks,
                                                   *tracerParams.phCommandList,
+                                                  *tracerParams.pnumEvents,
+                                                  *tracerParams.pphEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitOnEventsWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitOnEventsWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
+        ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
+                                                        ///< continuing
+        )
+    {
+        auto pfnAppendWaitOnEventsWithParameters = context.zeDdiTable.CommandList.pfnAppendWaitOnEventsWithParameters;
+
+        if( nullptr == pfnAppendWaitOnEventsWithParameters)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendWaitOnEventsWithParameters, hCommandList, pNext, numEvents, phEvents);
+
+        // capture parameters
+        ze_command_list_append_wait_on_events_with_parameters_params_t tracerParams = {
+            &hCommandList,
+            &pNext,
+            &numEvents,
+            &phEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendWaitOnEventsWithParametersCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendWaitOnEventsWithParametersCb_t, CommandList, pfnAppendWaitOnEventsWithParametersCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandList.pfnAppendWaitOnEventsWithParameters,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.ppNext,
                                                   *tracerParams.pnumEvents,
                                                   *tracerParams.pphEvents);
     }
@@ -5316,6 +5396,41 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeModuleGetDeviceHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeModuleGetDeviceHandle(
+        ze_module_handle_t hModule,                     ///< [in] handle of the module
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device the module was created for
+        )
+    {
+        auto pfnGetDeviceHandle = context.zeDdiTable.Module.pfnGetDeviceHandle;
+
+        if( nullptr == pfnGetDeviceHandle)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnGetDeviceHandle, hModule, phDevice);
+
+        // capture parameters
+        ze_module_get_device_handle_params_t tracerParams = {
+            &hModule,
+            &phDevice
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnModuleGetDeviceHandleCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleGetDeviceHandleCb_t, Module, pfnGetDeviceHandleCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Module.pfnGetDeviceHandle,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phModule,
+                                                  *tracerParams.pphDevice);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeKernelCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeKernelCreate(
@@ -5818,6 +5933,41 @@ namespace tracing_layer
                                                   *tracerParams.phKernel,
                                                   *tracerParams.ppSize,
                                                   *tracerParams.ppName);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetModuleHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetModuleHandle(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel
+        ze_module_handle_t* phModule                    ///< [out] handle of the module the kernel was created from
+        )
+    {
+        auto pfnGetModuleHandle = context.zeDdiTable.Kernel.pfnGetModuleHandle;
+
+        if( nullptr == pfnGetModuleHandle)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnGetModuleHandle, hKernel, phModule);
+
+        // capture parameters
+        ze_kernel_get_module_handle_params_t tracerParams = {
+            &hKernel,
+            &phModule
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnKernelGetModuleHandleCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetModuleHandleCb_t, Kernel, pfnGetModuleHandleCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Kernel.pfnGetModuleHandle,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.pphModule);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -9899,6 +10049,105 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphPauseCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphPauseCaptureExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to pause capture
+        )
+    {
+        auto pfnPauseCaptureExt = context.zeDdiTable.Graph.pfnPauseCaptureExt;
+
+        if( nullptr == pfnPauseCaptureExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Graph.pfnPauseCaptureExt, hGraph);
+
+        // capture parameters
+        ze_graph_pause_capture_ext_params_t tracerParams = {
+            &hGraph
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnGraphPauseCaptureExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnGraphPauseCaptureExtCb_t, Graph, pfnPauseCaptureExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Graph.pfnPauseCaptureExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphResumeCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphResumeCaptureExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to resume capture
+        )
+    {
+        auto pfnResumeCaptureExt = context.zeDdiTable.Graph.pfnResumeCaptureExt;
+
+        if( nullptr == pfnResumeCaptureExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Graph.pfnResumeCaptureExt, hGraph);
+
+        // capture parameters
+        ze_graph_resume_capture_ext_params_t tracerParams = {
+            &hGraph
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnGraphResumeCaptureExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnGraphResumeCaptureExtCb_t, Graph, pfnResumeCaptureExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Graph.pfnResumeCaptureExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phGraph);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphGetIdExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphGetIdExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle to the graph
+        uint64_t* pGraphId                              ///< [out] pointer to the memory where the graph ID will be written
+        )
+    {
+        auto pfnGetIdExt = context.zeDdiTable.Graph.pfnGetIdExt;
+
+        if( nullptr == pfnGetIdExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Graph.pfnGetIdExt, hGraph, pGraphId);
+
+        // capture parameters
+        ze_graph_get_id_ext_params_t tracerParams = {
+            &hGraph,
+            &pGraphId
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnGraphGetIdExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnGraphGetIdExtCb_t, Graph, pfnGetIdExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Graph.pfnGetIdExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phGraph,
+                                                  *tracerParams.ppGraphId);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendHostFunction
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendHostFunction(
@@ -9950,6 +10199,90 @@ namespace tracing_layer
                                                   *tracerParams.phSignalEvent,
                                                   *tracerParams.pnumWaitEvents,
                                                   *tracerParams.pphWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetPriorityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetPriorityExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_priority_t priority            ///< [in] priority to set for the command queue
+        )
+    {
+        auto pfnSetPriorityExt = context.zeDdiTable.CommandQueue.pfnSetPriorityExt;
+
+        if( nullptr == pfnSetPriorityExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandQueue.pfnSetPriorityExt, hCommandQueue, priority);
+
+        // capture parameters
+        ze_command_queue_set_priority_ext_params_t tracerParams = {
+            &hCommandQueue,
+            &priority
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandQueueSetPriorityExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueSetPriorityExtCb_t, CommandQueue, pfnSetPriorityExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnSetPriorityExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandQueue,
+                                                  *tracerParams.ppriority);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetCompilerInfo
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetCompilerInfo(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info to return
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        size_t* pSize,                                  ///< [in,out] pointer to the size in bytes of the result.
+                                                        ///< If size is zero, then the driver shall update the value with the total
+                                                        ///< size in bytes needed.
+                                                        ///< If size is less than the total size needed, then the driver shall
+                                                        ///< update the value with the required size and shall not write to pData.
+        void* pData                                     ///< [in,out][optional][range(0, *pSize)] pointer to the result buffer.
+                                                        ///< If pData is nullptr, then only the required size is returned in pSize.
+        )
+    {
+        auto pfnGetCompilerInfo = context.zeDdiTable.Device.pfnGetCompilerInfo;
+
+        if( nullptr == pfnGetCompilerInfo)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetCompilerInfo, hDevice, paramName, pNext, pSize, pData);
+
+        // capture parameters
+        ze_device_get_compiler_info_params_t tracerParams = {
+            &hDevice,
+            &paramName,
+            &pNext,
+            &pSize,
+            &pData
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceGetCompilerInfoCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetCompilerInfoCb_t, Device, pfnGetCompilerInfoCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.Device.pfnGetCompilerInfo,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pparamName,
+                                                  *tracerParams.ppNext,
+                                                  *tracerParams.ppSize,
+                                                  *tracerParams.ppData);
     }
 
 } // namespace tracing_layer
@@ -10383,6 +10716,10 @@ zeGetDeviceProcAddrTable(
         dditable.pfnGetCounterBasedEventMaxValue             = pDdiTable->pfnGetCounterBasedEventMaxValue;
         pDdiTable->pfnGetCounterBasedEventMaxValue           = tracing_layer::zeDeviceGetCounterBasedEventMaxValue;
     }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnGetCompilerInfo                          = pDdiTable->pfnGetCompilerInfo;
+        pDdiTable->pfnGetCompilerInfo                        = tracing_layer::zeDeviceGetCompilerInfo;
+    }
     if (version >= ZE_API_VERSION_1_2) {
         dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
         pDdiTable->pfnReserveCacheExt                        = tracing_layer::zeDeviceReserveCacheExt;
@@ -10547,6 +10884,10 @@ zeGetCommandQueueProcAddrTable(
     if (version >= ZE_API_VERSION_1_17) {
         dditable.pfnGetPriority                              = pDdiTable->pfnGetPriority;
         pDdiTable->pfnGetPriority                            = tracing_layer::zeCommandQueueGetPriority;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnSetPriorityExt                           = pDdiTable->pfnSetPriorityExt;
+        pDdiTable->pfnSetPriorityExt                         = tracing_layer::zeCommandQueueSetPriorityExt;
     }
     if (version >= ZE_API_VERSION_1_9) {
         dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
@@ -10758,6 +11099,14 @@ zeGetCommandListProcAddrTable(
     if (version >= ZE_API_VERSION_1_17) {
         dditable.pfnAppendHostFunction                       = pDdiTable->pfnAppendHostFunction;
         pDdiTable->pfnAppendHostFunction                     = tracing_layer::zeCommandListAppendHostFunction;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnAppendSignalEventWithParameters          = pDdiTable->pfnAppendSignalEventWithParameters;
+        pDdiTable->pfnAppendSignalEventWithParameters        = tracing_layer::zeCommandListAppendSignalEventWithParameters;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnAppendWaitOnEventsWithParameters         = pDdiTable->pfnAppendWaitOnEventsWithParameters;
+        pDdiTable->pfnAppendWaitOnEventsWithParameters       = tracing_layer::zeCommandListAppendWaitOnEventsWithParameters;
     }
     if (version >= ZE_API_VERSION_1_3) {
         dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
@@ -11247,6 +11596,10 @@ zeGetKernelProcAddrTable(
         dditable.pfnGetName                                  = pDdiTable->pfnGetName;
         pDdiTable->pfnGetName                                = tracing_layer::zeKernelGetName;
     }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnGetModuleHandle                          = pDdiTable->pfnGetModuleHandle;
+        pDdiTable->pfnGetModuleHandle                        = tracing_layer::zeKernelGetModuleHandle;
+    }
     return result;
 }
 
@@ -11470,6 +11823,10 @@ zeGetModuleProcAddrTable(
     if (version >= ZE_API_VERSION_1_0) {
         dditable.pfnGetFunctionPointer                       = pDdiTable->pfnGetFunctionPointer;
         pDdiTable->pfnGetFunctionPointer                     = tracing_layer::zeModuleGetFunctionPointer;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnGetDeviceHandle                          = pDdiTable->pfnGetDeviceHandle;
+        pDdiTable->pfnGetDeviceHandle                        = tracing_layer::zeModuleGetDeviceHandle;
     }
     if (version >= ZE_API_VERSION_1_3) {
         dditable.pfnInspectLinkageExt                        = pDdiTable->pfnInspectLinkageExt;
@@ -11810,6 +12167,18 @@ zeGetGraphProcAddrTable(
     if (version >= ZE_API_VERSION_1_17) {
         dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
         pDdiTable->pfnDestroyExt                             = tracing_layer::zeGraphDestroyExt;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnPauseCaptureExt                          = pDdiTable->pfnPauseCaptureExt;
+        pDdiTable->pfnPauseCaptureExt                        = tracing_layer::zeGraphPauseCaptureExt;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnResumeCaptureExt                         = pDdiTable->pfnResumeCaptureExt;
+        pDdiTable->pfnResumeCaptureExt                       = tracing_layer::zeGraphResumeCaptureExt;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnGetIdExt                                 = pDdiTable->pfnGetIdExt;
+        pDdiTable->pfnGetIdExt                               = tracing_layer::zeGraphGetIdExt;
     }
     return result;
 }

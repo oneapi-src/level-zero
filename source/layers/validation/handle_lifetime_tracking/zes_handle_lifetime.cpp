@@ -1517,8 +1517,10 @@ namespace validation_layer
     ze_result_t
     ZESHandleLifetimeValidation::zesPowerGetUsagePrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the instant power usage will not be returned.
+        uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the average power usage will not be returned.
         )
     { 
         
@@ -2344,6 +2346,30 @@ namespace validation_layer
         ze_bool_t shouldDowngrade,                      ///< [in] boolean value to decide whether to perform PCIe downgrade(true)
                                                         ///< or set to default speed(false)
         zes_device_action_t* pendingAction              ///< [out] Pending action
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZESHandleLifetimeValidation::zesDeviceGetHealthStatusExtPrologue(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZESHandleLifetimeValidation::zesDeviceSetHealthStatusExtPrologue(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
         )
     { 
         

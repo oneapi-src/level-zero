@@ -186,6 +186,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDeviceValidateRuntimeRequirements") );
             initialzeDdiTable.Device.pfnGetCounterBasedEventMaxValue = reinterpret_cast<ze_pfnDeviceGetCounterBasedEventMaxValue_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceGetCounterBasedEventMaxValue") );
+            initialzeDdiTable.Device.pfnGetCompilerInfo = reinterpret_cast<ze_pfnDeviceGetCompilerInfo_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceGetCompilerInfo") );
             initialzeDdiTable.Device.pfnReserveCacheExt = reinterpret_cast<ze_pfnDeviceReserveCacheExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceReserveCacheExt") );
             initialzeDdiTable.Device.pfnSetCacheAdviceExt = reinterpret_cast<ze_pfnDeviceSetCacheAdviceExt_t>(
@@ -250,6 +252,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeCommandQueueGetMode") );
             initialzeDdiTable.CommandQueue.pfnGetPriority = reinterpret_cast<ze_pfnCommandQueueGetPriority_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandQueueGetPriority") );
+            initialzeDdiTable.CommandQueue.pfnSetPriorityExt = reinterpret_cast<ze_pfnCommandQueueSetPriorityExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandQueueSetPriorityExt") );
             initialzeDdiTable.CommandQueue.pfnGetOrdinal = reinterpret_cast<ze_pfnCommandQueueGetOrdinal_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandQueueGetOrdinal") );
             initialzeDdiTable.CommandQueue.pfnGetIndex = reinterpret_cast<ze_pfnCommandQueueGetIndex_t>(
@@ -349,6 +353,10 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendGraphExt") );
             initialzeDdiTable.CommandList.pfnAppendHostFunction = reinterpret_cast<ze_pfnCommandListAppendHostFunction_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendHostFunction") );
+            initialzeDdiTable.CommandList.pfnAppendSignalEventWithParameters = reinterpret_cast<ze_pfnCommandListAppendSignalEventWithParameters_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListAppendSignalEventWithParameters") );
+            initialzeDdiTable.CommandList.pfnAppendWaitOnEventsWithParameters = reinterpret_cast<ze_pfnCommandListAppendWaitOnEventsWithParameters_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListAppendWaitOnEventsWithParameters") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyToMemoryExt_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendImageCopyToMemoryExt") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyFromMemoryExt_t>(
@@ -544,6 +552,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeKernelGetProperties") );
             initialzeDdiTable.Kernel.pfnGetName = reinterpret_cast<ze_pfnKernelGetName_t>(
                 GET_FUNCTION_PTR(loader, "zeKernelGetName") );
+            initialzeDdiTable.Kernel.pfnGetModuleHandle = reinterpret_cast<ze_pfnKernelGetModuleHandle_t>(
+                GET_FUNCTION_PTR(loader, "zeKernelGetModuleHandle") );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -632,6 +642,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeModuleGetProperties") );
             initialzeDdiTable.Module.pfnGetFunctionPointer = reinterpret_cast<ze_pfnModuleGetFunctionPointer_t>(
                 GET_FUNCTION_PTR(loader, "zeModuleGetFunctionPointer") );
+            initialzeDdiTable.Module.pfnGetDeviceHandle = reinterpret_cast<ze_pfnModuleGetDeviceHandle_t>(
+                GET_FUNCTION_PTR(loader, "zeModuleGetDeviceHandle") );
             initialzeDdiTable.Module.pfnInspectLinkageExt = reinterpret_cast<ze_pfnModuleInspectLinkageExt_t>(
                 GET_FUNCTION_PTR(loader, "zeModuleInspectLinkageExt") );
         }
@@ -754,6 +766,12 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeGraphDumpContentsExt") );
             initialzeDdiTable.Graph.pfnDestroyExt = reinterpret_cast<ze_pfnGraphDestroyExt_t>(
                 GET_FUNCTION_PTR(loader, "zeGraphDestroyExt") );
+            initialzeDdiTable.Graph.pfnPauseCaptureExt = reinterpret_cast<ze_pfnGraphPauseCaptureExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphPauseCaptureExt") );
+            initialzeDdiTable.Graph.pfnResumeCaptureExt = reinterpret_cast<ze_pfnGraphResumeCaptureExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphResumeCaptureExt") );
+            initialzeDdiTable.Graph.pfnGetIdExt = reinterpret_cast<ze_pfnGraphGetIdExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphGetIdExt") );
         }
 
         return result;

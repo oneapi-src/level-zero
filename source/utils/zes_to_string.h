@@ -1529,6 +1529,22 @@ inline std::string to_string(const zes_oem_serial_id_ext_properties_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const zes_memory_vendor_info_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", vendorId=" << to_string(desc->vendorId);
+    oss << ", length=" << to_string(desc->length);
+    oss << ", vendorName=" << to_string(desc->vendorName);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_memory_vendor_info_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
 } // namespace loader
 
 #endif // _ZES_TO_STRING_H

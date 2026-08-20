@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.17-r1.17.24
+ * @version v1.18-r1.18.31
  *
  */
 #ifndef _ZES_DDI_H
@@ -346,6 +346,20 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDevicePciLinkSpeedUpdateExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceGetHealthStatusExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceGetHealthStatusExt_t)(
+    zes_device_handle_t,
+    zes_device_health_status_ext_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceSetHealthStatusExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceSetHealthStatusExt_t)(
+    zes_device_handle_t,
+    zes_device_health_status_ext_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _zes_device_dditable_t
 {
@@ -387,6 +401,8 @@ typedef struct _zes_device_dditable_t
     zes_pfnDeviceEnumOverclockDomains_t                         pfnEnumOverclockDomains;
     zes_pfnDeviceResetExt_t                                     pfnResetExt;
     zes_pfnDevicePciLinkSpeedUpdateExt_t                        pfnPciLinkSpeedUpdateExt;
+    zes_pfnDeviceGetHealthStatusExt_t                           pfnGetHealthStatusExt;
+    zes_pfnDeviceSetHealthStatusExt_t                           pfnSetHealthStatusExt;
 } zes_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

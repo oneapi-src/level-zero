@@ -331,6 +331,10 @@ public:
     virtual ze_result_t zesVFManagementGetVFCapabilitiesExp2Epilogue( zes_vf_handle_t hVFhandle, zes_vf_exp2_capabilities_t* pCapability , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDevicePciLinkSpeedUpdateExtEpilogue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceGetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceGetHealthStatusExtEpilogue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceSetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceSetHealthStatusExtEpilogue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }

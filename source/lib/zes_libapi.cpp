@@ -48,13 +48,13 @@ extern "C" {
 ///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
 ///     - ::ZE_RESULT_ERROR_UNKNOWN
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < flags`
+///         + `0x7 < flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ze_result_t ZE_APICALL
 zesInit(
-    zes_init_flags_t flags                          ///< [in] initialization flags.
-                                                    ///< currently unused, must be 0 (default).
+    zes_init_flags_t flags                          ///< [in] initialization flags. This should be 0 or a combination of
+                                                    ///< ::zes_init_flags_t values.
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
@@ -7140,6 +7140,10 @@ zesPowerSetEnergyThreshold(
 ///     - The implementation of this function should be lock-free.
 ///     - This function returns the different power usage values associated with
 ///       the power domain.
+///     - Computing the average power usage may cause this API to wait and
+///       return only after the average power is computed over an interval.
+///       Applications that do not need it should pass `nullptr` for
+///       `pAveragePower` to reduce the time taken by this function.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -7148,9 +7152,7 @@ zesPowerSetEnergyThreshold(
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
 ///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
@@ -7158,13 +7160,18 @@ zesPowerSetEnergyThreshold(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hPower`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pInstantPower`
-///         + `nullptr == pAveragePower`
+///         + `(nullptr == pInstantPower) && (nullptr == pAveragePower)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + The requested power usage value is not supported on this power domain.
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to request this feature.
 ze_result_t ZE_APICALL
 zesPowerGetUsage(
     zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-    uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-    uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+    uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                    ///< is `nullptr`, the instant power usage will not be returned.
+    uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                    ///< is `nullptr`, the average power usage will not be returned.
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
@@ -10961,6 +10968,145 @@ zesDevicePciLinkSpeedUpdateExt(
     }
 
     return pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get device health status
+/// 
+/// @details
+///     - This function retrieves the current health status of the device.
+///     - The health status is stored in non-volatile memory and persists across
+///       resets and updates.
+///     - The health indicator serves purely as telemetry without downstream
+///       functional effects.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pHealth`
+ze_result_t ZE_APICALL
+zesDeviceGetHealthStatusExt(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDeviceGetHealthStatusExt_t pfnGetHealthStatusExt = [&result] {
+        auto pfnGetHealthStatusExt = ze_lib::context->zesDdiTable.load()->Device.pfnGetHealthStatusExt;
+        if( nullptr == pfnGetHealthStatusExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetHealthStatusExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetHealthStatusExt( hDevice, pHealth );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetHealthStatusExt = ze_lib::context->zesDdiTable.load()->Device.pfnGetHealthStatusExt;
+    if( nullptr == pfnGetHealthStatusExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetHealthStatusExt( hDevice, pHealth );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set device health status
+/// 
+/// @details
+///     - This function sets the health status of the device.
+///     - The health status is persisted to non-volatile memory.
+///     - Setting health status requires appropriate permissions.
+///     - The application should not call this function from simultaneous
+///       threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZES_DEVICE_HEALTH_STATUS_EXT_FAILED < health`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to set health status.
+ze_result_t ZE_APICALL
+zesDeviceSetHealthStatusExt(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDeviceSetHealthStatusExt_t pfnSetHealthStatusExt = [&result] {
+        auto pfnSetHealthStatusExt = ze_lib::context->zesDdiTable.load()->Device.pfnSetHealthStatusExt;
+        if( nullptr == pfnSetHealthStatusExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetHealthStatusExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetHealthStatusExt( hDevice, health );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetHealthStatusExt = ze_lib::context->zesDdiTable.load()->Device.pfnSetHealthStatusExt;
+    if( nullptr == pfnSetHealthStatusExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetHealthStatusExt( hDevice, health );
     #endif
 }
 

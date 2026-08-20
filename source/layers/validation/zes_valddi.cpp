@@ -28,8 +28,8 @@ namespace validation_layer
     // Generate specific logAndPropagateResult functions for each API function
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesInit(
         ze_result_t result,
-        zes_init_flags_t flags                          ///< [in] initialization flags.
-                                                        ///< currently unused, must be 0 (default).
+        zes_init_flags_t flags                          ///< [in] initialization flags. This should be 0 or a combination of
+                                                        ///< ::zes_init_flags_t values.
 ) {
         // Only log success results if verbose logging is enabled
         if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
@@ -3097,8 +3097,10 @@ namespace validation_layer
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesPowerGetUsage(
         ze_result_t result,
         zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the instant power usage will not be returned.
+        uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the average power usage will not be returned.
 ) {
         // Only log success results if verbose logging is enabled
         if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
@@ -4748,13 +4750,66 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDeviceGetHealthStatusExt(
+        ze_result_t result,
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesDeviceGetHealthStatusExt(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "pHealth=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pHealth != nullptr) {
+            oss << loader::to_string(*pHealth);
+        } else {
+            oss << loader::to_string(pHealth);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDeviceSetHealthStatusExt(
+        ze_result_t result,
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesDeviceSetHealthStatusExt(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "health=";
+        oss << loader::to_string(health);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesInit
     __zedlllocal ze_result_t ZE_APICALL
     zesInit(
-        zes_init_flags_t flags                          ///< [in] initialization flags.
-                                                        ///< currently unused, must be 0 (default).
+        zes_init_flags_t flags                          ///< [in] initialization flags. This should be 0 or a combination of
+                                                        ///< ::zes_init_flags_t values.
         )
     {
         context.logger->log_trace("zesInit(flags)");
@@ -9380,8 +9435,10 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetUsage(
         zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the instant power usage will not be returned.
+        uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the average power usage will not be returned.
         )
     {
         context.logger->log_trace("zesPowerGetUsage(hPower, pInstantPower, pAveragePower)");
@@ -11878,6 +11935,90 @@ namespace validation_layer
         return logAndPropagateResult_zesDevicePciLinkSpeedUpdateExt(driver_result, hDevice, shouldDowngrade, pendingAction);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+        )
+    {
+        context.logger->log_trace("zesDeviceGetHealthStatusExt(hDevice, pHealth)");
+
+        auto pfnGetHealthStatusExt = context.zesDdiTable.Device.pfnGetHealthStatusExt;
+
+        if( nullptr == pfnGetHealthStatusExt )
+            return logAndPropagateResult_zesDeviceGetHealthStatusExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, pHealth);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceGetHealthStatusExtPrologue( hDevice, pHealth );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDeviceGetHealthStatusExt(result, hDevice, pHealth);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGetHealthStatusExtPrologue( hDevice, pHealth );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDeviceGetHealthStatusExt(result, hDevice, pHealth);
+        }
+
+        auto driver_result = pfnGetHealthStatusExt( hDevice, pHealth );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceGetHealthStatusExtEpilogue( hDevice, pHealth ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDeviceGetHealthStatusExt(result, hDevice, pHealth);
+        }
+
+        return logAndPropagateResult_zesDeviceGetHealthStatusExt(driver_result, hDevice, pHealth);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
+        )
+    {
+        context.logger->log_trace("zesDeviceSetHealthStatusExt(hDevice, health)");
+
+        auto pfnSetHealthStatusExt = context.zesDdiTable.Device.pfnSetHealthStatusExt;
+
+        if( nullptr == pfnSetHealthStatusExt )
+            return logAndPropagateResult_zesDeviceSetHealthStatusExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, health);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceSetHealthStatusExtPrologue( hDevice, health );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDeviceSetHealthStatusExt(result, hDevice, health);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceSetHealthStatusExtPrologue( hDevice, health );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDeviceSetHealthStatusExt(result, hDevice, health);
+        }
+
+        auto driver_result = pfnSetHealthStatusExt( hDevice, health );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceSetHealthStatusExtEpilogue( hDevice, health ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDeviceSetHealthStatusExt(result, hDevice, health);
+        }
+
+        return logAndPropagateResult_zesDeviceSetHealthStatusExt(driver_result, hDevice, health);
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -12042,6 +12183,14 @@ zesGetDeviceProcAddrTable(
     if (version >= ZE_API_VERSION_1_15) {
         dditable.pfnPciLinkSpeedUpdateExt                    = pDdiTable->pfnPciLinkSpeedUpdateExt;
         pDdiTable->pfnPciLinkSpeedUpdateExt                  = validation_layer::zesDevicePciLinkSpeedUpdateExt;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnGetHealthStatusExt                       = pDdiTable->pfnGetHealthStatusExt;
+        pDdiTable->pfnGetHealthStatusExt                     = validation_layer::zesDeviceGetHealthStatusExt;
+    }
+    if (version >= ZE_API_VERSION_1_18) {
+        dditable.pfnSetHealthStatusExt                       = pDdiTable->pfnSetHealthStatusExt;
+        pDdiTable->pfnSetHealthStatusExt                     = validation_layer::zesDeviceSetHealthStatusExt;
     }
     if (version >= ZE_API_VERSION_1_4) {
         dditable.pfnEccAvailable                             = pDdiTable->pfnEccAvailable;

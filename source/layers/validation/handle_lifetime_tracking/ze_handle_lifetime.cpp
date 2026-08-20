@@ -1531,8 +1531,50 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendSignalEventWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hEvent                        ///< [in] handle of the event
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandListAppendWaitOnEventsPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
+        ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
+                                                        ///< continuing
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        for (size_t i = 0; ( nullptr != phEvents) && (i < numEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendWaitOnEventsWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
         uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
         ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
                                                         ///< continuing
@@ -2226,6 +2268,18 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeModuleGetDeviceHandlePrologue(
+        ze_module_handle_t hModule,                     ///< [in] handle of the module
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device the module was created for
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hModule )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeKernelCreatePrologue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         const ze_kernel_desc_t* desc,                   ///< [in] pointer to kernel descriptor
@@ -2405,6 +2459,18 @@ namespace validation_layer
         size_t* pSize,                                  ///< [in,out] size of kernel name string, including null terminator, in
                                                         ///< bytes.
         char* pName                                     ///< [in,out][optional] char pointer to kernel name.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeKernelGetModuleHandlePrologue(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel
+        ze_module_handle_t* phModule                    ///< [out] handle of the module the kernel was created from
         )
     { 
         
@@ -4206,6 +4272,40 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeGraphPauseCaptureExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to pause capture
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphResumeCaptureExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to resume capture
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphGetIdExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle to the graph
+        uint64_t* pGraphId                              ///< [out] pointer to the memory where the graph ID will be written
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandListAppendHostFunctionPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
@@ -4234,6 +4334,38 @@ namespace validation_layer
             if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
             }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueSetPriorityExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_priority_t priority            ///< [in] priority to set for the command queue
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetCompilerInfoPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info to return
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        size_t* pSize,                                  ///< [in,out] pointer to the size in bytes of the result.
+                                                        ///< If size is zero, then the driver shall update the value with the total
+                                                        ///< size in bytes needed.
+                                                        ///< If size is less than the total size needed, then the driver shall
+                                                        ///< update the value with the required size and shall not write to pData.
+        void* pData                                     ///< [in,out][optional][range(0, *pSize)] pointer to the result buffer.
+                                                        ///< If pData is nullptr, then only the required size is returned in pSize.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;
     }

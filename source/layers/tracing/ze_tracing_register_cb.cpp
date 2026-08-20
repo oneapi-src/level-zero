@@ -1460,6 +1460,22 @@ zelTracerCommandListAppendSignalEventRegisterCallback(
 
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendSignalEventWithParametersRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendSignalEventWithParametersCb_t pfnAppendSignalEventWithParametersCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnAppendSignalEventWithParametersCb = pfnAppendSignalEventWithParametersCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelTracerCommandListAppendWaitOnEventsRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -1470,6 +1486,22 @@ zelTracerCommandListAppendWaitOnEventsRegisterCallback(
     auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendWaitOnEventsCb = pfnAppendWaitOnEventsCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListAppendWaitOnEventsWithParametersRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListAppendWaitOnEventsWithParametersCb_t pfnAppendWaitOnEventsWithParametersCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnAppendWaitOnEventsWithParametersCb = pfnAppendWaitOnEventsWithParametersCb;
 
     return result;
 }
@@ -2180,6 +2212,22 @@ zelTracerModuleGetPropertiesRegisterCallback(
 
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerModuleGetDeviceHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnModuleGetDeviceHandleCb_t pfnGetDeviceHandleCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Module.pfnGetDeviceHandleCb = pfnGetDeviceHandleCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelTracerKernelCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -2382,6 +2430,22 @@ zelTracerKernelGetNameRegisterCallback(
     auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.Kernel.pfnGetNameCb = pfnGetNameCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerKernelGetModuleHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnKernelGetModuleHandleCb_t pfnGetModuleHandleCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Kernel.pfnGetModuleHandleCb = pfnGetModuleHandleCb;
 
     return result;
 }
@@ -3972,6 +4036,54 @@ zelTracerGraphDestroyExtRegisterCallback(
 
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerGraphPauseCaptureExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphPauseCaptureExtCb_t pfnPauseCaptureExtCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Graph.pfnPauseCaptureExtCb = pfnPauseCaptureExtCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerGraphResumeCaptureExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphResumeCaptureExtCb_t pfnResumeCaptureExtCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Graph.pfnResumeCaptureExtCb = pfnResumeCaptureExtCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerGraphGetIdExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnGraphGetIdExtCb_t pfnGetIdExtCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Graph.pfnGetIdExtCb = pfnGetIdExtCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelTracerCommandListAppendHostFunctionRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -3982,6 +4094,38 @@ zelTracerCommandListAppendHostFunctionRegisterCallback(
     auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendHostFunctionCb = pfnAppendHostFunctionCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandQueueSetPriorityExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandQueueSetPriorityExtCb_t pfnSetPriorityExtCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandQueue.pfnSetPriorityExtCb = pfnSetPriorityExtCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetCompilerInfoRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetCompilerInfoCb_t pfnGetCompilerInfoCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Device.pfnGetCompilerInfoCb = pfnGetCompilerInfoCb;
 
     return result;
 }

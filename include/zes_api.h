@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.17-r1.17.24
+ * @version v1.18-r1.18.31
  *
  */
 #ifndef _ZES_API_H
@@ -169,6 +169,7 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP = 0x00020016,                         ///< ::zes_ras_config_exp_t
     ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES = 0x00020017,           ///< ::zes_oem_serial_id_ext_properties_t
     ZES_STRUCTURE_TYPE_DEVICE_EXT_STATE = 0x00020018,                       ///< ::zes_device_ext_state_t
+    ZES_STRUCTURE_TYPE_MEMORY_VENDOR_INFO_EXT_PROPERTIES = 0x00020019,      ///< ::zes_memory_vendor_info_ext_properties_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_STRUCTURE_TYPE_* ENUMs
 
 } zes_structure_type_t;
@@ -603,6 +604,10 @@ typedef struct _zes_device_ext_state_t zes_device_ext_state_t;
 /// @brief Forward-declare zes_oem_serial_id_ext_properties_t
 typedef struct _zes_oem_serial_id_ext_properties_t zes_oem_serial_id_ext_properties_t;
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_memory_vendor_info_ext_properties_t
+typedef struct _zes_memory_vendor_info_ext_properties_t zes_memory_vendor_info_ext_properties_t;
+
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -616,7 +621,11 @@ typedef struct _zes_oem_serial_id_ext_properties_t zes_oem_serial_id_ext_propert
 typedef uint32_t zes_init_flags_t;
 typedef enum _zes_init_flag_t
 {
-    ZES_INIT_FLAG_PLACEHOLDER = ZE_BIT(0),                                  ///< placeholder for future use
+    ZES_INIT_FLAG_GPU_ONLY = ZE_BIT(0),                                     ///< Initialize sysman for GPU devices only
+    ZES_INIT_FLAG_VPU_ONLY = ZE_BIT(1),                                     ///< Initialize sysman for VPU devices only
+    ZES_INIT_FLAG_NO_DEVICES = ZE_BIT(2),                                   ///< Allows ::zesInit() to succeed when no devices are discovered. Device
+                                                                            ///< discovery is deferred until the first call to ::zesDeviceGet(), in
+                                                                            ///< case no devices can be discovered when ::zesInit() is called.
     ZES_INIT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_INIT_FLAG_* ENUMs
 
 } zes_init_flag_t;
@@ -656,13 +665,13 @@ typedef enum _zes_init_flag_t
 ///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
 ///     - ::ZE_RESULT_ERROR_UNKNOWN
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < flags`
+///         + `0x7 < flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zesInit(
-    zes_init_flags_t flags                                                  ///< [in] initialization flags.
-                                                                            ///< currently unused, must be 0 (default).
+    zes_init_flags_t flags                                                  ///< [in] initialization flags. This should be 0 or a combination of
+                                                                            ///< ::zes_init_flags_t values.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5254,7 +5263,10 @@ typedef enum _zes_mem_health_t
 } zes_mem_health_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Memory properties
+/// @brief Memory properties. To get the memory vendor ID and memory vendor name,
+///        pNext member of this structure should point to an instance of
+///        ::zes_memory_vendor_info_ext_properties_t with its stype set to
+///        ::ZES_STRUCTURE_TYPE_MEMORY_VENDOR_INFO_EXT_PROPERTIES.
 typedef struct _zes_mem_properties_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -6111,6 +6123,10 @@ zesPowerSetEnergyThreshold(
 ///     - The implementation of this function should be lock-free.
 ///     - This function returns the different power usage values associated with
 ///       the power domain.
+///     - Computing the average power usage may cause this API to wait and
+///       return only after the average power is computed over an interval.
+///       Applications that do not need it should pass `nullptr` for
+///       `pAveragePower` to reduce the time taken by this function.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -6119,9 +6135,7 @@ zesPowerSetEnergyThreshold(
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
 ///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
@@ -6129,13 +6143,18 @@ zesPowerSetEnergyThreshold(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hPower`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pInstantPower`
-///         + `nullptr == pAveragePower`
+///         + `(nullptr == pInstantPower) && (nullptr == pAveragePower)`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + The requested power usage value is not supported on this power domain.
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to request this feature.
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zesPowerGetUsage(
     zes_pwr_handle_t hPower,                                                ///< [in] Handle of the power domain.
-    uint32_t* pInstantPower,                                                ///< [out] Returns the instant power usage in milliwatts.
-    uint32_t* pAveragePower                                                 ///< [out] Returns the average power usage in milliwatts.
+    uint32_t* pInstantPower,                                                ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                                            ///< is `nullptr`, the instant power usage will not be returned.
+    uint32_t* pAveragePower                                                 ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                                            ///< is `nullptr`, the average power usage will not be returned.
     );
 
 #if !defined(__GNUC__)
@@ -7220,6 +7239,8 @@ typedef enum _zes_temp_sensors_t
     ZES_TEMP_SENSORS_GPU_BOARD = 6,                                         ///< The maximum temperature across all sensors in the GPU Board
     ZES_TEMP_SENSORS_GPU_BOARD_MIN = 7,                                     ///< The minimum temperature across all sensors in the GPU Board
     ZES_TEMP_SENSORS_VOLTAGE_REGULATOR = 8,                                 ///< The maximum temperature across all sensors in the Voltage Regulator
+    ZES_TEMP_SENSORS_COMPOSITE = 9,                                         ///< The normalized temperature across the SOC, Memory and Voltage
+                                                                            ///< Regulators at which shutdown will occur
     ZES_TEMP_SENSORS_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_TEMP_SENSORS_* ENUMs
 
 } zes_temp_sensors_t;
@@ -9158,6 +9179,8 @@ typedef enum _zes_device_state_ext_flag_t
     ZES_DEVICE_STATE_EXT_FLAG_WEDGED = ZE_BIT(1),                           ///< The device is wedged
     ZES_DEVICE_STATE_EXT_FLAG_SURVIVABILITY = ZE_BIT(2),                    ///< The device is in survivability mode
     ZES_DEVICE_STATE_EXT_FLAG_FLASH_OVERRIDE = ZE_BIT(3),                   ///< The device has flash override enabled
+    ZES_DEVICE_STATE_EXT_FLAG_GPU_LOST = ZE_BIT(4),                         ///< The GPU has fallen off the pci bus or is otherwise inaccessible
+    ZES_DEVICE_STATE_EXT_FLAG_DRIVER_NOT_LOADED = ZE_BIT(5),                ///< No kernel driver is bound to the device
     ZES_DEVICE_STATE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_STATE_EXT_FLAG_* ENUMs
 
 } zes_device_state_ext_flag_t;
@@ -9169,7 +9192,8 @@ typedef enum _zes_device_state_ext_flag_t
 ///     - This structure may be returned from ::zesDeviceGetState via the
 ///       `pNext` member of ::zes_device_state_t
 ///     - Provides extended device state information including wedged state,
-///       survivability mode, and flash override status
+///       survivability mode, flash override status, GPU lost condition, and
+///       kernel driver binding status
 typedef struct _zes_device_ext_state_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -9225,6 +9249,171 @@ typedef struct _zes_oem_serial_id_ext_properties_t
     char oemSerialId[ZES_OEM_SERIAL_ID_SIZE];                               ///< [out] OEM serial ID for the device.
 
 } zes_oem_serial_id_ext_properties_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Device Health Status
+#if !defined(__GNUC__)
+#pragma region deviceHealth
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_DEVICE_HEALTH_EXT_NAME
+/// @brief Device Health Extension Name
+#define ZES_DEVICE_HEALTH_EXT_NAME  "ZES_extension_device_health"
+#endif // ZES_DEVICE_HEALTH_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device Health Extension Version(s)
+typedef enum _zes_device_health_ext_version_t
+{
+    ZES_DEVICE_HEALTH_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
+    ZES_DEVICE_HEALTH_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
+    ZES_DEVICE_HEALTH_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_HEALTH_EXT_VERSION_* ENUMs
+
+} zes_device_health_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device health status
+/// 
+/// @details
+///     - Device health represents a comprehensive assessment of a device's
+///       reliability and expected performance in upcoming operations.
+///     - The health indicator is stored in non-volatile memory (NVM) and
+///       persists across resets and firmware updates.
+typedef enum _zes_device_health_status_ext_t
+{
+    ZES_DEVICE_HEALTH_STATUS_EXT_OK = 0,                                    ///< Device is healthy with no known issues
+    ZES_DEVICE_HEALTH_STATUS_EXT_WARNING = 1,                               ///< Device may have issues, diagnostics recommended
+    ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL = 2,                              ///< Device should not be used until maintenance is performed
+    ZES_DEVICE_HEALTH_STATUS_EXT_FAILED = 3,                                ///< Permanent non-recoverable failure; FRU replacement required
+    ZES_DEVICE_HEALTH_STATUS_EXT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_HEALTH_STATUS_EXT_* ENUMs
+
+} zes_device_health_status_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get device health status
+/// 
+/// @details
+///     - This function retrieves the current health status of the device.
+///     - The health status is stored in non-volatile memory and persists across
+///       resets and updates.
+///     - The health indicator serves purely as telemetry without downstream
+///       functional effects.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pHealth`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceGetHealthStatusExt(
+    zes_device_handle_t hDevice,                                            ///< [in] Sysman handle of the device.
+    zes_device_health_status_ext_t* pHealth                                 ///< [out] Current health status of the device.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set device health status
+/// 
+/// @details
+///     - This function sets the health status of the device.
+///     - The health status is persisted to non-volatile memory.
+///     - Setting health status requires appropriate permissions.
+///     - The application should not call this function from simultaneous
+///       threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZES_DEVICE_HEALTH_STATUS_EXT_FAILED < health`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to set health status.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceSetHealthStatusExt(
+    zes_device_handle_t hDevice,                                            ///< [in] Sysman handle of the device.
+    zes_device_health_status_ext_t health                                   ///< [in] New health status to be set for the device.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Memory Vendor Info
+#if !defined(__GNUC__)
+#pragma region memoryVendorInfo
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MEMORY_VENDOR_INFO_EXT_NAME
+/// @brief Memory Vendor Info Extension Name
+#define ZES_MEMORY_VENDOR_INFO_EXT_NAME  "ZES_extension_memory_vendor_info"
+#endif // ZES_MEMORY_VENDOR_INFO_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory Vendor Info Extension Version(s)
+typedef enum _zes_memory_vendor_info_ext_version_t
+{
+    ZES_MEMORY_VENDOR_INFO_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),       ///< version 1.0
+    ZES_MEMORY_VENDOR_INFO_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
+    ZES_MEMORY_VENDOR_INFO_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_MEMORY_VENDOR_INFO_EXT_VERSION_* ENUMs
+
+} zes_memory_vendor_info_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MEMORY_VENDOR_NAME_EXT_SIZE
+/// @brief Maximum memory vendor name string size
+#define ZES_MEMORY_VENDOR_NAME_EXT_SIZE  256
+#endif // ZES_MEMORY_VENDOR_NAME_EXT_SIZE
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory Vendor Info Extension Properties structure
+/// 
+/// @details
+///     - This structure can be passed as an extension structure to
+///       ::zesMemoryGetProperties via pNext member
+///     - Returns the memory vendor ID and the memory vendor name
+typedef struct _zes_memory_vendor_info_ext_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t vendorId;                                                      ///< [out] Memory vendor ID for the device. A value of 0 indicates that the
+                                                                            ///< memory vendor ID could not be determined.
+    uint16_t length;                                                        ///< [out] Length of the memory vendor name, excluding the null terminator.
+                                                                            ///< A value of 0 indicates that the memory vendor name could not be
+                                                                            ///< determined.
+    char vendorName[ZES_MEMORY_VENDOR_NAME_EXT_SIZE];                       ///< [out] Memory vendor name for the device (NULL terminated string
+                                                                            ///< value).
+
+} zes_memory_vendor_info_ext_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

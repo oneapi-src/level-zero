@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.17-r1.17.24
+ @version v1.18-r1.18.31
 
  """
 import platform
@@ -972,13 +972,32 @@ class zet_metric_group_type_exp_t(Structure):
 ###############################################################################
 ## @brief Exported dma_buf properties queried using `pNext` of
 ##        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+## 
+## @details
+##     - This structure must be passed via the `pNext` member of
+##       ::zet_metric_group_properties_t or ::zet_metric_properties_t
+##     - The implementation retains ownership of `fd` for its entire lifetime.
+##       The application must not close `fd`; it is closed by the
+##       implementation when the metric or metric group that exported it is
+##       destroyed, or when metrics are disabled on the device.
+##     - The application must free any allocation it imported from `fd` before
+##       destroying the exporting metric or metric group, or disabling metrics
+##       on the device. Otherwise the imported allocation outlives `fd` and any
+##       subsequent use of it is undefined.
+##     - `fd` refers to a shared resource. The same `fd` may be reported by
+##       repeated queries and by queries on different metric or metric group
+##       handles. The implementation performs no synchronization on `fd` or on
+##       the memory it exports; if the application uses either from more than
+##       one thread it must serialize that access itself, for example with a
+##       mutex or by confining access to a single thread.
 class zet_export_dma_buf_exp_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("fd", c_int),                                                  ## [out] the file descriptor handle that could be used to import the
-                                                                        ## memory by the host process.
+        ("fd", c_int),                                                  ## [out] the file descriptor handle provided for importing memory by the
+                                                                        ## host process.
+                                                                        ## Owned by the implementation; must not be closed by the application.
         ("size", c_size_t)                                              ## [out] size in bytes of the dma_buf
     ]
 

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zer.py
- @version v1.17-r1.17.24
+ @version v1.18-r1.18.31
 
  """
 import platform

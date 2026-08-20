@@ -1447,20 +1447,6 @@ inline std::string to_string(const ze_scheduling_hint_exp_desc_t& desc) {
     return to_string(&desc);
 }
 
-inline std::string to_string(const ze_context_power_saving_hint_exp_desc_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "stype=" << to_string(&desc->stype);
-    oss << ", hint=" << to_string(desc->hint);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const ze_context_power_saving_hint_exp_desc_t& desc) {
-    return to_string(&desc);
-}
-
 inline std::string to_string(const ze_eu_count_ext_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -2982,6 +2968,101 @@ inline std::string to_string(const ze_device_readonly_memory_ext_properties_t* d
 }
 
 inline std::string to_string(const ze_device_readonly_memory_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_compiler_name_version_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "version=" << to_string(desc->version);
+    oss << ", name=" << to_string(desc->name);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_compiler_name_version_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_init_driver_app_version_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", apiVersionHint=" << to_string(&desc->apiVersionHint);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_init_driver_app_version_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_ipc_phys_mem_handle_range_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", size=" << to_string(desc->size);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_ipc_phys_mem_handle_range_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_device_npu_properties_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", tileCount=" << to_string(desc->tileCount);
+    oss << ", tileEnableMask=" << to_string(desc->tileEnableMask);
+    oss << ", totalShaveCount=" << to_string(desc->totalShaveCount);
+    oss << ", int8x8MacsPerTile=" << to_string(desc->int8x8MacsPerTile);
+    oss << ", totalDpuMacs=" << to_string(desc->totalDpuMacs);
+    oss << ", numComputeEngines=" << to_string(desc->numComputeEngines);
+    oss << ", numCopyEngines=" << to_string(desc->numCopyEngines);
+    oss << ", dpuClockRateHz=" << to_string(desc->dpuClockRateHz);
+    oss << ", timestampFreqHz=" << to_string(desc->timestampFreqHz);
+    oss << ", nnSramSizeBytes=" << to_string(desc->nnSramSizeBytes);
+    oss << ", compilerVersion=" << to_string(desc->compilerVersion);
+    oss << ", maxOVOpsetVersionSupported=" << to_string(desc->maxOVOpsetVersionSupported);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_device_npu_properties_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_context_power_saving_hint_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", hint=" << to_string(desc->hint);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_context_power_saving_hint_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_context_power_saving_hint_exp_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", hint=" << to_string(desc->hint);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_context_power_saving_hint_exp_desc_t& desc) {
     return to_string(&desc);
 }
 

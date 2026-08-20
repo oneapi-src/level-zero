@@ -1694,7 +1694,7 @@ namespace validation_layer
         if( nullptr == phEvent )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x7f < desc->flags )
+        if( 0xff < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         if( 0x7 < desc->signal )
@@ -1862,8 +1862,44 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeCommandListAppendSignalEventWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hEvent                        ///< [in] handle of the event
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hEvent )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeCommandListAppendWaitOnEventsPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
+        ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
+                                                        ///< continuing
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phEvents )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListAppendWaitOnEventsWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
         uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
         ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
                                                         ///< continuing
@@ -2748,6 +2784,22 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeModuleGetDeviceHandlePrologue(
+        ze_module_handle_t hModule,                     ///< [in] handle of the module
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device the module was created for
+        )
+    {
+        if( nullptr == hModule )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeKernelCreatePrologue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         const ze_kernel_desc_t* desc,                   ///< [in] pointer to kernel descriptor
@@ -2984,6 +3036,22 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         if( nullptr == pSize )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeKernelGetModuleHandlePrologue(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel
+        ze_module_handle_t* phModule                    ///< [out] handle of the module the kernel was created from
+        )
+    {
+        if( nullptr == hKernel )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phModule )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
@@ -5146,6 +5214,46 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeGraphPauseCaptureExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to pause capture
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphResumeCaptureExtPrologue(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to resume capture
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeGraphGetIdExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle to the graph
+        uint64_t* pGraphId                              ///< [out] pointer to the memory where the graph ID will be written
+        )
+    {
+        if( nullptr == hGraph )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pGraphId )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeCommandListAppendHostFunctionPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_host_function_callback_t pfnHostFunction,    ///< [in] host function to call, expected to be lightweight and
@@ -5165,6 +5273,49 @@ namespace validation_layer
 
         if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
             return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandQueueSetPriorityExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_priority_t priority            ///< [in] priority to set for the command queue
+        )
+    {
+        if( nullptr == hCommandQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < priority )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeDeviceGetCompilerInfoPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info to return
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        size_t* pSize,                                  ///< [in,out] pointer to the size in bytes of the result.
+                                                        ///< If size is zero, then the driver shall update the value with the total
+                                                        ///< size in bytes needed.
+                                                        ///< If size is less than the total size needed, then the driver shall
+                                                        ///< update the value with the required size and shall not write to pData.
+        void* pData                                     ///< [in,out][optional][range(0, *pSize)] pointer to the result buffer.
+                                                        ///< If pData is nullptr, then only the required size is returned in pSize.
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( ZE_DEVICE_COMPILER_INFO_DRIVER_OPTIONS < paramName )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        if( nullptr == pSize )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
     }

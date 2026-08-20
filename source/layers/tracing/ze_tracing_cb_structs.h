@@ -99,6 +99,7 @@ typedef struct _zel_ze_device_callbacks_t
     ze_pfnDeviceGetRuntimeRequirementsKeyCb_t                       pfnGetRuntimeRequirementsKeyCb;
     ze_pfnDeviceValidateRuntimeRequirementsCb_t                     pfnValidateRuntimeRequirementsCb;
     ze_pfnDeviceGetCounterBasedEventMaxValueCb_t                    pfnGetCounterBasedEventMaxValueCb;
+    ze_pfnDeviceGetCompilerInfoCb_t                                 pfnGetCompilerInfoCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
@@ -132,6 +133,7 @@ typedef struct _zel_ze_command_queue_callbacks_t
     ze_pfnCommandQueueGetFlagsCb_t                                  pfnGetFlagsCb;
     ze_pfnCommandQueueGetModeCb_t                                   pfnGetModeCb;
     ze_pfnCommandQueueGetPriorityCb_t                               pfnGetPriorityCb;
+    ze_pfnCommandQueueSetPriorityExtCb_t                            pfnSetPriorityExtCb;
     ze_pfnCommandQueueGetOrdinalCb_t                                pfnGetOrdinalCb;
     ze_pfnCommandQueueGetIndexCb_t                                  pfnGetIndexCb;
 } zel_ze_command_queue_callbacks_t;
@@ -187,6 +189,8 @@ typedef struct _zel_ze_command_list_callbacks_t
     ze_pfnCommandListGetGraphExtCb_t                                pfnGetGraphExtCb;
     ze_pfnCommandListAppendGraphExtCb_t                             pfnAppendGraphExtCb;
     ze_pfnCommandListAppendHostFunctionCb_t                         pfnAppendHostFunctionCb;
+    ze_pfnCommandListAppendSignalEventWithParametersCb_t            pfnAppendSignalEventWithParametersCb;
+    ze_pfnCommandListAppendWaitOnEventsWithParametersCb_t           pfnAppendWaitOnEventsWithParametersCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
     ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;
@@ -285,6 +289,7 @@ typedef struct _zel_ze_kernel_callbacks_t
     ze_pfnKernelSetGlobalOffsetExpCb_t                              pfnSetGlobalOffsetExpCb;
     ze_pfnKernelGetBinaryExpCb_t                                    pfnGetBinaryExpCb;
     ze_pfnKernelGetAllocationPropertiesExpCb_t                      pfnGetAllocationPropertiesExpCb;
+    ze_pfnKernelGetModuleHandleCb_t                                 pfnGetModuleHandleCb;
     ze_pfnKernelSchedulingHintExpCb_t                               pfnSchedulingHintExpCb;
 } zel_ze_kernel_callbacks_t;
 
@@ -323,6 +328,7 @@ typedef struct _zel_ze_module_callbacks_t
     ze_pfnModuleGetKernelNamesCb_t                                  pfnGetKernelNamesCb;
     ze_pfnModuleGetPropertiesCb_t                                   pfnGetPropertiesCb;
     ze_pfnModuleGetFunctionPointerCb_t                              pfnGetFunctionPointerCb;
+    ze_pfnModuleGetDeviceHandleCb_t                                 pfnGetDeviceHandleCb;
     ze_pfnModuleInspectLinkageExtCb_t                               pfnInspectLinkageExtCb;
 } zel_ze_module_callbacks_t;
 
@@ -402,6 +408,9 @@ typedef struct _zel_ze_graph_callbacks_t
     ze_pfnGraphIsEmptyExtCb_t                                       pfnIsEmptyExtCb;
     ze_pfnGraphDumpContentsExtCb_t                                  pfnDumpContentsExtCb;
     ze_pfnGraphDestroyExtCb_t                                       pfnDestroyExtCb;
+    ze_pfnGraphPauseCaptureExtCb_t                                  pfnPauseCaptureExtCb;
+    ze_pfnGraphResumeCaptureExtCb_t                                 pfnResumeCaptureExtCb;
+    ze_pfnGraphGetIdExtCb_t                                         pfnGetIdExtCb;
 } zel_ze_graph_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

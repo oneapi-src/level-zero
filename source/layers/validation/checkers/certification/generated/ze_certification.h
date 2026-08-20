@@ -555,8 +555,20 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandListAppendSignalEventWithParametersPrologue( ze_command_list_handle_t hCommandList, const void * pNext, ze_event_handle_t hEvent ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandListAppendWaitOnEventsPrologue( ze_command_list_handle_t hCommandList, uint32_t numEvents, ze_event_handle_t* phEvents ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendWaitOnEventsWithParametersPrologue( ze_command_list_handle_t hCommandList, const void * pNext, uint32_t numEvents, ze_event_handle_t* phEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;
@@ -825,6 +837,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeModuleGetDeviceHandlePrologue( ze_module_handle_t hModule, ze_device_handle_t* phDevice ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeKernelCreatePrologue( ze_module_handle_t hModule, const ze_kernel_desc_t* desc, ze_kernel_handle_t* phKernel ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -899,6 +917,12 @@ public:
     }
     virtual ze_result_t zeKernelGetNamePrologue( ze_kernel_handle_t hKernel, size_t* pSize, char* pName ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetModuleHandlePrologue( ze_kernel_handle_t hKernel, ze_module_handle_t* phModule ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;
@@ -1497,8 +1521,38 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeGraphPauseCaptureExtPrologue( ze_graph_handle_t hGraph ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphResumeCaptureExtPrologue( ze_graph_handle_t hGraph ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphGetIdExtPrologue( ze_graph_handle_t hGraph, uint64_t* pGraphId ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandListAppendHostFunctionPrologue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_17) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueSetPriorityExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_priority_t priority ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceGetCompilerInfoPrologue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, size_t* pSize, void* pData ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.17-r1.17.24
+ @version v1.18-r1.18.31
 
  """
 import platform
@@ -176,6 +176,7 @@ class zes_structure_type_v(IntEnum):
     RAS_CONFIG_EXP = 0x00020016                                             ## ::zes_ras_config_exp_t
     OEM_SERIAL_ID_EXT_PROPERTIES = 0x00020017                               ## ::zes_oem_serial_id_ext_properties_t
     DEVICE_EXT_STATE = 0x00020018                                           ## ::zes_device_ext_state_t
+    MEMORY_VENDOR_INFO_EXT_PROPERTIES = 0x00020019                          ## ::zes_memory_vendor_info_ext_properties_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -230,7 +231,11 @@ class zes_base_capability_t(Structure):
 ###############################################################################
 ## @brief Supported sysman initialization flags
 class zes_init_flags_v(IntEnum):
-    PLACEHOLDER = ZE_BIT(0)                                                 ## placeholder for future use
+    GPU_ONLY = ZE_BIT(0)                                                    ## Initialize sysman for GPU devices only
+    VPU_ONLY = ZE_BIT(1)                                                    ## Initialize sysman for VPU devices only
+    NO_DEVICES = ZE_BIT(2)                                                  ## Allows ::zesInit() to succeed when no devices are discovered. Device
+                                                                            ## discovery is deferred until the first call to ::zesDeviceGet(), in
+                                                                            ## case no devices can be discovered when ::zesInit() is called.
 
 class zes_init_flags_t(c_int):
     def __str__(self):
@@ -1600,7 +1605,10 @@ class zes_mem_health_t(c_int):
 
 
 ###############################################################################
-## @brief Memory properties
+## @brief Memory properties. To get the memory vendor ID and memory vendor name,
+##        pNext member of this structure should point to an instance of
+##        ::zes_memory_vendor_info_ext_properties_t with its stype set to
+##        ::ZES_STRUCTURE_TYPE_MEMORY_VENDOR_INFO_EXT_PROPERTIES.
 class zes_mem_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -2116,6 +2124,8 @@ class zes_temp_sensors_v(IntEnum):
     GPU_BOARD = 6                                                           ## The maximum temperature across all sensors in the GPU Board
     GPU_BOARD_MIN = 7                                                       ## The minimum temperature across all sensors in the GPU Board
     VOLTAGE_REGULATOR = 8                                                   ## The maximum temperature across all sensors in the Voltage Regulator
+    COMPOSITE = 9                                                           ## The normalized temperature across the SOC, Memory and Voltage
+                                                                            ## Regulators at which shutdown will occur
 
 class zes_temp_sensors_t(c_int):
     def __str__(self):
@@ -2706,6 +2716,8 @@ class zes_device_state_ext_flags_v(IntEnum):
     WEDGED = ZE_BIT(1)                                                      ## The device is wedged
     SURVIVABILITY = ZE_BIT(2)                                               ## The device is in survivability mode
     FLASH_OVERRIDE = ZE_BIT(3)                                              ## The device has flash override enabled
+    GPU_LOST = ZE_BIT(4)                                                    ## The GPU has fallen off the pci bus or is otherwise inaccessible
+    DRIVER_NOT_LOADED = ZE_BIT(5)                                           ## No kernel driver is bound to the device
 
 class zes_device_state_ext_flags_t(c_int):
     def __str__(self):
@@ -2719,7 +2731,8 @@ class zes_device_state_ext_flags_t(c_int):
 ##     - This structure may be returned from ::zesDeviceGetState via the
 ##       `pNext` member of ::zes_device_state_t
 ##     - Provides extended device state information including wedged state,
-##       survivability mode, and flash override status
+##       survivability mode, flash override status, GPU lost condition, and
+##       kernel driver binding status
 class zes_device_ext_state_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -2762,6 +2775,80 @@ class zes_oem_serial_id_ext_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("length", c_ushort),                                           ## [out] OEM serial ID length
         ("oemSerialId", c_char * ZES_OEM_SERIAL_ID_SIZE)                ## [out] OEM serial ID for the device.
+    ]
+
+###############################################################################
+## @brief Device Health Extension Name
+ZES_DEVICE_HEALTH_EXT_NAME = "ZES_extension_device_health"
+
+###############################################################################
+## @brief Device Health Extension Version(s)
+class zes_device_health_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_health_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_health_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Device health status
+## 
+## @details
+##     - Device health represents a comprehensive assessment of a device's
+##       reliability and expected performance in upcoming operations.
+##     - The health indicator is stored in non-volatile memory (NVM) and
+##       persists across resets and firmware updates.
+class zes_device_health_status_ext_v(IntEnum):
+    OK = 0                                                                  ## Device is healthy with no known issues
+    WARNING = 1                                                             ## Device may have issues, diagnostics recommended
+    CRITICAL = 2                                                            ## Device should not be used until maintenance is performed
+    FAILED = 3                                                              ## Permanent non-recoverable failure; FRU replacement required
+
+class zes_device_health_status_ext_t(c_int):
+    def __str__(self):
+        return str(zes_device_health_status_ext_v(self.value))
+
+
+###############################################################################
+## @brief Memory Vendor Info Extension Name
+ZES_MEMORY_VENDOR_INFO_EXT_NAME = "ZES_extension_memory_vendor_info"
+
+###############################################################################
+## @brief Memory Vendor Info Extension Version(s)
+class zes_memory_vendor_info_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_memory_vendor_info_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_memory_vendor_info_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Maximum memory vendor name string size
+ZES_MEMORY_VENDOR_NAME_EXT_SIZE = 256
+
+###############################################################################
+## @brief Memory Vendor Info Extension Properties structure
+## 
+## @details
+##     - This structure can be passed as an extension structure to
+##       ::zesMemoryGetProperties via pNext member
+##     - Returns the memory vendor ID and the memory vendor name
+class zes_memory_vendor_info_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("vendorId", c_ulong),                                          ## [out] Memory vendor ID for the device. A value of 0 indicates that the
+                                                                        ## memory vendor ID could not be determined.
+        ("length", c_ushort),                                           ## [out] Length of the memory vendor name, excluding the null terminator.
+                                                                        ## A value of 0 indicates that the memory vendor name could not be
+                                                                        ## determined.
+        ("vendorName", c_char * ZES_MEMORY_VENDOR_NAME_EXT_SIZE)        ## [out] Memory vendor name for the device (NULL terminated string
+                                                                        ## value).
     ]
 
 ###############################################################################
@@ -3048,6 +3135,20 @@ if __use_win_types:
 else:
     _zesDevicePciLinkSpeedUpdateExt_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, ze_bool_t, POINTER(zes_device_action_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDeviceGetHealthStatusExt
+if __use_win_types:
+    _zesDeviceGetHealthStatusExt_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_device_health_status_ext_t) )
+else:
+    _zesDeviceGetHealthStatusExt_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_device_health_status_ext_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDeviceSetHealthStatusExt
+if __use_win_types:
+    _zesDeviceSetHealthStatusExt_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, zes_device_health_status_ext_t )
+else:
+    _zesDeviceSetHealthStatusExt_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, zes_device_health_status_ext_t )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -3090,7 +3191,9 @@ class _zes_device_dditable_t(Structure):
         ("pfnReadOverclockState", c_void_p),                            ## _zesDeviceReadOverclockState_t
         ("pfnEnumOverclockDomains", c_void_p),                          ## _zesDeviceEnumOverclockDomains_t
         ("pfnResetExt", c_void_p),                                      ## _zesDeviceResetExt_t
-        ("pfnPciLinkSpeedUpdateExt", c_void_p)                          ## _zesDevicePciLinkSpeedUpdateExt_t
+        ("pfnPciLinkSpeedUpdateExt", c_void_p),                         ## _zesDevicePciLinkSpeedUpdateExt_t
+        ("pfnGetHealthStatusExt", c_void_p),                            ## _zesDeviceGetHealthStatusExt_t
+        ("pfnSetHealthStatusExt", c_void_p)                             ## _zesDeviceSetHealthStatusExt_t
     ]
 
 ###############################################################################
@@ -4289,6 +4392,8 @@ class ZES_DDI:
         self.zesDeviceEnumOverclockDomains = _zesDeviceEnumOverclockDomains_t(self.__dditable.Device.pfnEnumOverclockDomains)
         self.zesDeviceResetExt = _zesDeviceResetExt_t(self.__dditable.Device.pfnResetExt)
         self.zesDevicePciLinkSpeedUpdateExt = _zesDevicePciLinkSpeedUpdateExt_t(self.__dditable.Device.pfnPciLinkSpeedUpdateExt)
+        self.zesDeviceGetHealthStatusExt = _zesDeviceGetHealthStatusExt_t(self.__dditable.Device.pfnGetHealthStatusExt)
+        self.zesDeviceSetHealthStatusExt = _zesDeviceSetHealthStatusExt_t(self.__dditable.Device.pfnSetHealthStatusExt)
 
         # call driver to get function pointers
         _DeviceExp = _zes_device_exp_dditable_t()

@@ -2926,6 +2926,38 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalEventWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalEventWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hEvent                        ///< [in] handle of the event
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnAppendSignalEventWithParameters = dditable->CommandList->pfnAppendSignalEventWithParameters;
+        if( nullptr == pfnAppendSignalEventWithParameters ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnAppendSignalEventWithParameters( hCommandList, pNext, hEvent );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendWaitOnEvents
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendWaitOnEvents(
@@ -2955,6 +2987,40 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitOnEventsWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitOnEventsWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
+        ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
+                                                        ///< continuing
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnAppendWaitOnEventsWithParameters = dditable->CommandList->pfnAppendWaitOnEventsWithParameters;
+        if( nullptr == pfnAppendWaitOnEventsWithParameters ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnAppendWaitOnEventsWithParameters( hCommandList, pNext, numEvents, phEvents );
         return result;
     }
 
@@ -4399,6 +4465,37 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeModuleGetDeviceHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeModuleGetDeviceHandle(
+        ze_module_handle_t hModule,                     ///< [in] handle of the module
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device the module was created for
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Module == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetDeviceHandle = dditable->Module->pfnGetDeviceHandle;
+        if( nullptr == pfnGetDeviceHandle ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetDeviceHandle( hModule, phDevice );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeKernelCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeKernelCreate(
@@ -4824,6 +4921,37 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnGetName( hKernel, pSize, pName );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetModuleHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetModuleHandle(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel
+        ze_module_handle_t* phModule                    ///< [out] handle of the module the kernel was created from
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Kernel == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetModuleHandle = dditable->Kernel->pfnGetModuleHandle;
+        if( nullptr == pfnGetModuleHandle ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetModuleHandle( hKernel, phModule );
         return result;
     }
 
@@ -8194,6 +8322,97 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphPauseCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphPauseCaptureExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to pause capture
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hGraph )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Graph == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnPauseCaptureExt = dditable->Graph->pfnPauseCaptureExt;
+        if( nullptr == pfnPauseCaptureExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnPauseCaptureExt( hGraph );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphResumeCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphResumeCaptureExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to resume capture
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hGraph )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Graph == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnResumeCaptureExt = dditable->Graph->pfnResumeCaptureExt;
+        if( nullptr == pfnResumeCaptureExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnResumeCaptureExt( hGraph );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphGetIdExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphGetIdExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle to the graph
+        uint64_t* pGraphId                              ///< [out] pointer to the memory where the graph ID will be written
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hGraph )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Graph == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetIdExt = dditable->Graph->pfnGetIdExt;
+        if( nullptr == pfnGetIdExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetIdExt( hGraph, pGraphId );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendHostFunction
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendHostFunction(
@@ -8230,6 +8449,76 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetPriorityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetPriorityExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_priority_t priority            ///< [in] priority to set for the command queue
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandQueue == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnSetPriorityExt = dditable->CommandQueue->pfnSetPriorityExt;
+        if( nullptr == pfnSetPriorityExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnSetPriorityExt( hCommandQueue, priority );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetCompilerInfo
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetCompilerInfo(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info to return
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        size_t* pSize,                                  ///< [in,out] pointer to the size in bytes of the result.
+                                                        ///< If size is zero, then the driver shall update the value with the total
+                                                        ///< size in bytes needed.
+                                                        ///< If size is less than the total size needed, then the driver shall
+                                                        ///< update the value with the required size and shall not write to pData.
+        void* pData                                     ///< [in,out][optional][range(0, *pSize)] pointer to the result buffer.
+                                                        ///< If pData is nullptr, then only the required size is returned in pSize.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Device == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetCompilerInfo = dditable->Device->pfnGetCompilerInfo;
+        if( nullptr == pfnGetCompilerInfo ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetCompilerInfo( hDevice, paramName, pNext, pSize, pData );
         return result;
     }
 

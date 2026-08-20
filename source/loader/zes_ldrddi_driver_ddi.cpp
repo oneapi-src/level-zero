@@ -3420,8 +3420,10 @@ namespace loader_driver_ddi
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetUsage(
         zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the instant power usage will not be returned.
+        uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the average power usage will not be returned.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5276,6 +5278,68 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Device == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetHealthStatusExt = dditable->Device->pfnGetHealthStatusExt;
+        if( nullptr == pfnGetHealthStatusExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetHealthStatusExt( hDevice, pHealth );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Device == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnSetHealthStatusExt = dditable->Device->pfnSetHealthStatusExt;
+        if( nullptr == pfnSetHealthStatusExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnSetHealthStatusExt( hDevice, health );
         return result;
     }
 

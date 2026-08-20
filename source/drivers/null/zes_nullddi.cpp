@@ -16,8 +16,8 @@ namespace driver
     /// @brief Intercept function for zesInit
     __zedlllocal ze_result_t ZE_APICALL
     zesInit(
-        zes_init_flags_t flags                          ///< [in] initialization flags.
-                                                        ///< currently unused, must be 0 (default).
+        zes_init_flags_t flags                          ///< [in] initialization flags. This should be 0 or a combination of
+                                                        ///< ::zes_init_flags_t values.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3124,8 +3124,10 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetUsage(
         zes_pwr_handle_t hPower,                        ///< [in] Handle of the power domain.
-        uint32_t* pInstantPower,                        ///< [out] Returns the instant power usage in milliwatts.
-        uint32_t* pAveragePower                         ///< [out] Returns the average power usage in milliwatts.
+        uint32_t* pInstantPower,                        ///< [out][optional] Returns the instant power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the instant power usage will not be returned.
+        uint32_t* pAveragePower                         ///< [out][optional] Returns the average power usage in milliwatts. If this
+                                                        ///< is `nullptr`, the average power usage will not be returned.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4790,6 +4792,60 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t* pHealth         ///< [out] Current health status of the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetHealthStatusExt = context.zesDdiTable.Device.pfnGetHealthStatusExt;
+        if( nullptr != pfnGetHealthStatusExt )
+        {
+            result = pfnGetHealthStatusExt( hDevice, pHealth );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesDeviceGetHealthStatusExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetHealthStatusExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetHealthStatusExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_device_health_status_ext_t health           ///< [in] New health status to be set for the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetHealthStatusExt = context.zesDdiTable.Device.pfnSetHealthStatusExt;
+        if( nullptr != pfnSetHealthStatusExt )
+        {
+            result = pfnSetHealthStatusExt( hDevice, health );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesDeviceSetHealthStatusExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -4949,6 +5005,14 @@ zesGetDeviceProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_15) {
     pDdiTable->pfnPciLinkSpeedUpdateExt                  = driver::zesDevicePciLinkSpeedUpdateExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_18) {
+    pDdiTable->pfnGetHealthStatusExt                     = driver::zesDeviceGetHealthStatusExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_18) {
+    pDdiTable->pfnSetHealthStatusExt                     = driver::zesDeviceSetHealthStatusExt;
     }
 
     if (version >= ZE_API_VERSION_1_4) {

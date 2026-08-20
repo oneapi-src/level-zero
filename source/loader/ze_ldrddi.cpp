@@ -3340,6 +3340,35 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalEventWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalEventWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hEvent                        ///< [in] handle of the event
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendSignalEventWithParameters = dditable->ze.CommandList.pfnAppendSignalEventWithParameters;
+        if( nullptr == pfnAppendSignalEventWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hEvent = reinterpret_cast<ze_event_object_t*>( hEvent )->handle;
+
+        // forward to device-driver
+        result = pfnAppendSignalEventWithParameters( hCommandList, pNext, hEvent );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendWaitOnEvents
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendWaitOnEvents(
@@ -3367,6 +3396,40 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEventsLocal );
+        delete []phEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitOnEventsWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitOnEventsWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
+        ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
+                                                        ///< continuing
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendWaitOnEventsWithParameters = dditable->ze.CommandList.pfnAppendWaitOnEventsWithParameters;
+        if( nullptr == pfnAppendWaitOnEventsWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handles to driver handles, preserving a null input array
+        auto phEventsLocal = ( phEvents ) ? new ze_event_handle_t [numEvents] : nullptr;
+        for( size_t i = 0; ( nullptr != phEvents ) && ( i < numEvents ); ++i )
+            phEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendWaitOnEventsWithParameters( hCommandList, pNext, numEvents, phEventsLocal );
         delete []phEventsLocal;
 
         return result;
@@ -4738,6 +4801,45 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeModuleGetDeviceHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeModuleGetDeviceHandle(
+        ze_module_handle_t hModule,                     ///< [in] handle of the module
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device the module was created for
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
+        auto pfnGetDeviceHandle = dditable->ze.Module.pfnGetDeviceHandle;
+        if( nullptr == pfnGetDeviceHandle )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hModule = reinterpret_cast<ze_module_object_t*>( hModule )->handle;
+
+        // forward to device-driver
+        result = pfnGetDeviceHandle( hModule, phDevice );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phDevice = reinterpret_cast<ze_device_handle_t>(
+                context->ze_device_factory.getInstance( *phDevice, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeKernelCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeKernelCreate(
@@ -5120,6 +5222,45 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetName( hKernel, pSize, pName );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetModuleHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetModuleHandle(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel
+        ze_module_handle_t* phModule                    ///< [out] handle of the module the kernel was created from
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
+        auto pfnGetModuleHandle = dditable->ze.Kernel.pfnGetModuleHandle;
+        if( nullptr == pfnGetModuleHandle )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hKernel = reinterpret_cast<ze_kernel_object_t*>( hKernel )->handle;
+
+        // forward to device-driver
+        result = pfnGetModuleHandle( hKernel, phModule );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phModule = reinterpret_cast<ze_module_handle_t>(
+                context->ze_module_factory.getInstance( *phModule, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
 
         return result;
     }
@@ -8574,6 +8715,79 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphPauseCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphPauseCaptureExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to pause capture
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_graph_object_t*>( hGraph )->dditable;
+        auto pfnPauseCaptureExt = dditable->ze.Graph.pfnPauseCaptureExt;
+        if( nullptr == pfnPauseCaptureExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hGraph = reinterpret_cast<ze_graph_object_t*>( hGraph )->handle;
+
+        // forward to device-driver
+        result = pfnPauseCaptureExt( hGraph );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphResumeCaptureExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphResumeCaptureExt(
+        ze_graph_handle_t hGraph                        ///< [in] handle to the graph to resume capture
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_graph_object_t*>( hGraph )->dditable;
+        auto pfnResumeCaptureExt = dditable->ze.Graph.pfnResumeCaptureExt;
+        if( nullptr == pfnResumeCaptureExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hGraph = reinterpret_cast<ze_graph_object_t*>( hGraph )->handle;
+
+        // forward to device-driver
+        result = pfnResumeCaptureExt( hGraph );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphGetIdExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphGetIdExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle to the graph
+        uint64_t* pGraphId                              ///< [out] pointer to the memory where the graph ID will be written
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_graph_object_t*>( hGraph )->dditable;
+        auto pfnGetIdExt = dditable->ze.Graph.pfnGetIdExt;
+        if( nullptr == pfnGetIdExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hGraph = reinterpret_cast<ze_graph_object_t*>( hGraph )->handle;
+
+        // forward to device-driver
+        result = pfnGetIdExt( hGraph, pGraphId );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendHostFunction
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendHostFunction(
@@ -8612,6 +8826,64 @@ namespace loader
         // forward to device-driver
         result = pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
         delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetPriorityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetPriorityExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_priority_t priority            ///< [in] priority to set for the command queue
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
+        auto pfnSetPriorityExt = dditable->ze.CommandQueue.pfnSetPriorityExt;
+        if( nullptr == pfnSetPriorityExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandQueue = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->handle;
+
+        // forward to device-driver
+        result = pfnSetPriorityExt( hCommandQueue, priority );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetCompilerInfo
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetCompilerInfo(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info to return
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        size_t* pSize,                                  ///< [in,out] pointer to the size in bytes of the result.
+                                                        ///< If size is zero, then the driver shall update the value with the total
+                                                        ///< size in bytes needed.
+                                                        ///< If size is less than the total size needed, then the driver shall
+                                                        ///< update the value with the required size and shall not write to pData.
+        void* pData                                     ///< [in,out][optional][range(0, *pSize)] pointer to the result buffer.
+                                                        ///< If pData is nullptr, then only the required size is returned in pSize.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetCompilerInfo = dditable->ze.Device.pfnGetCompilerInfo;
+        if( nullptr == pfnGetCompilerInfo )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetCompilerInfo( hDevice, paramName, pNext, pSize, pData );
 
         return result;
     }
@@ -8737,6 +9009,7 @@ zeGetDeviceProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Device->pfnGetRuntimeRequirementsKey                = loader::zeDeviceGetRuntimeRequirementsKey;
     loader::loaderDispatch->pCore->Device->pfnValidateRuntimeRequirements              = loader::zeDeviceValidateRuntimeRequirements;
     loader::loaderDispatch->pCore->Device->pfnGetCounterBasedEventMaxValue             = loader::zeDeviceGetCounterBasedEventMaxValue;
+    loader::loaderDispatch->pCore->Device->pfnGetCompilerInfo                          = loader::zeDeviceGetCompilerInfo;
     loader::loaderDispatch->pCore->Device->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
     loader::loaderDispatch->pCore->Device->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
     loader::loaderDispatch->pCore->Device->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
@@ -8782,6 +9055,7 @@ zeGetCommandQueueProcAddrTableLegacy()
     loader::loaderDispatch->pCore->CommandQueue->pfnGetFlags                                 = loader::zeCommandQueueGetFlags;
     loader::loaderDispatch->pCore->CommandQueue->pfnGetMode                                  = loader::zeCommandQueueGetMode;
     loader::loaderDispatch->pCore->CommandQueue->pfnGetPriority                              = loader::zeCommandQueueGetPriority;
+    loader::loaderDispatch->pCore->CommandQueue->pfnSetPriorityExt                           = loader::zeCommandQueueSetPriorityExt;
     loader::loaderDispatch->pCore->CommandQueue->pfnGetOrdinal                               = loader::zeCommandQueueGetOrdinal;
     loader::loaderDispatch->pCore->CommandQueue->pfnGetIndex                                 = loader::zeCommandQueueGetIndex;
 }
@@ -8836,6 +9110,8 @@ zeGetCommandListProcAddrTableLegacy()
     loader::loaderDispatch->pCore->CommandList->pfnGetGraphExt                              = loader::zeCommandListGetGraphExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendGraphExt                           = loader::zeCommandListAppendGraphExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendHostFunction                       = loader::zeCommandListAppendHostFunction;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendSignalEventWithParameters          = loader::zeCommandListAppendSignalEventWithParameters;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendWaitOnEventsWithParameters         = loader::zeCommandListAppendWaitOnEventsWithParameters;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
@@ -8968,6 +9244,7 @@ zeGetKernelProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Kernel->pfnGetSourceAttributes                      = loader::zeKernelGetSourceAttributes;
     loader::loaderDispatch->pCore->Kernel->pfnGetProperties                            = loader::zeKernelGetProperties;
     loader::loaderDispatch->pCore->Kernel->pfnGetName                                  = loader::zeKernelGetName;
+    loader::loaderDispatch->pCore->Kernel->pfnGetModuleHandle                          = loader::zeKernelGetModuleHandle;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9029,6 +9306,7 @@ zeGetModuleProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Module->pfnGetKernelNames                           = loader::zeModuleGetKernelNames;
     loader::loaderDispatch->pCore->Module->pfnGetProperties                            = loader::zeModuleGetProperties;
     loader::loaderDispatch->pCore->Module->pfnGetFunctionPointer                       = loader::zeModuleGetFunctionPointer;
+    loader::loaderDispatch->pCore->Module->pfnGetDeviceHandle                          = loader::zeModuleGetDeviceHandle;
     loader::loaderDispatch->pCore->Module->pfnInspectLinkageExt                        = loader::zeModuleInspectLinkageExt;
 }
 
@@ -9124,6 +9402,9 @@ zeGetGraphProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Graph->pfnIsEmptyExt                               = loader::zeGraphIsEmptyExt;
     loader::loaderDispatch->pCore->Graph->pfnDumpContentsExt                          = loader::zeGraphDumpContentsExt;
     loader::loaderDispatch->pCore->Graph->pfnDestroyExt                               = loader::zeGraphDestroyExt;
+    loader::loaderDispatch->pCore->Graph->pfnPauseCaptureExt                          = loader::zeGraphPauseCaptureExt;
+    loader::loaderDispatch->pCore->Graph->pfnResumeCaptureExt                         = loader::zeGraphResumeCaptureExt;
+    loader::loaderDispatch->pCore->Graph->pfnGetIdExt                                 = loader::zeGraphGetIdExt;
 }
 
 
@@ -10935,6 +11216,13 @@ zeGetDeviceProcAddrTable(
                 pDdiTable->pfnGetCounterBasedEventMaxValue             = loader::zeDeviceGetCounterBasedEventMaxValue;
             }
             }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetCompilerInfo                          = loader_driver_ddi::zeDeviceGetCompilerInfo;
+            } else {
+                pDdiTable->pfnGetCompilerInfo                          = loader::zeDeviceGetCompilerInfo;
+            }
+            }
             if (version >= ZE_API_VERSION_1_2) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnReserveCacheExt                          = loader_driver_ddi::zeDeviceReserveCacheExt;
@@ -11039,6 +11327,9 @@ zeGetDeviceProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_17) {
                 pDdiTable->pfnGetCounterBasedEventMaxValue             = firstDriver->dditable.ze.Device.pfnGetCounterBasedEventMaxValue;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnGetCompilerInfo                          = firstDriver->dditable.ze.Device.pfnGetCompilerInfo;
             }
             if (version >= ZE_API_VERSION_1_2) {
                 pDdiTable->pfnReserveCacheExt                          = firstDriver->dditable.ze.Device.pfnReserveCacheExt;
@@ -11430,6 +11721,13 @@ zeGetCommandQueueProcAddrTable(
                 pDdiTable->pfnGetPriority                              = loader::zeCommandQueueGetPriority;
             }
             }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetPriorityExt                           = loader_driver_ddi::zeCommandQueueSetPriorityExt;
+            } else {
+                pDdiTable->pfnSetPriorityExt                           = loader::zeCommandQueueSetPriorityExt;
+            }
+            }
             if (version >= ZE_API_VERSION_1_9) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnGetOrdinal                               = loader_driver_ddi::zeCommandQueueGetOrdinal;
@@ -11469,6 +11767,9 @@ zeGetCommandQueueProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_17) {
                 pDdiTable->pfnGetPriority                              = firstDriver->dditable.ze.CommandQueue.pfnGetPriority;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnSetPriorityExt                           = firstDriver->dditable.ze.CommandQueue.pfnSetPriorityExt;
             }
             if (version >= ZE_API_VERSION_1_9) {
                 pDdiTable->pfnGetOrdinal                               = firstDriver->dditable.ze.CommandQueue.pfnGetOrdinal;
@@ -11857,6 +12158,20 @@ zeGetCommandListProcAddrTable(
                 pDdiTable->pfnAppendHostFunction                       = loader::zeCommandListAppendHostFunction;
             }
             }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendSignalEventWithParameters          = loader_driver_ddi::zeCommandListAppendSignalEventWithParameters;
+            } else {
+                pDdiTable->pfnAppendSignalEventWithParameters          = loader::zeCommandListAppendSignalEventWithParameters;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendWaitOnEventsWithParameters         = loader_driver_ddi::zeCommandListAppendWaitOnEventsWithParameters;
+            } else {
+                pDdiTable->pfnAppendWaitOnEventsWithParameters         = loader::zeCommandListAppendWaitOnEventsWithParameters;
+            }
+            }
             if (version >= ZE_API_VERSION_1_3) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnAppendImageCopyToMemoryExt               = loader_driver_ddi::zeCommandListAppendImageCopyToMemoryExt;
@@ -12049,6 +12364,12 @@ zeGetCommandListProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_17) {
                 pDdiTable->pfnAppendHostFunction                       = firstDriver->dditable.ze.CommandList.pfnAppendHostFunction;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnAppendSignalEventWithParameters          = firstDriver->dditable.ze.CommandList.pfnAppendSignalEventWithParameters;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnAppendWaitOnEventsWithParameters         = firstDriver->dditable.ze.CommandList.pfnAppendWaitOnEventsWithParameters;
             }
             if (version >= ZE_API_VERSION_1_3) {
                 pDdiTable->pfnAppendImageCopyToMemoryExt               = firstDriver->dditable.ze.CommandList.pfnAppendImageCopyToMemoryExt;
@@ -13257,6 +13578,13 @@ zeGetKernelProcAddrTable(
                 pDdiTable->pfnGetName                                  = loader::zeKernelGetName;
             }
             }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetModuleHandle                          = loader_driver_ddi::zeKernelGetModuleHandle;
+            } else {
+                pDdiTable->pfnGetModuleHandle                          = loader::zeKernelGetModuleHandle;
+            }
+            }
             zeGetKernelProcAddrTableLegacy();
         }
         else
@@ -13297,6 +13625,9 @@ zeGetKernelProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_0) {
                 pDdiTable->pfnGetName                                  = firstDriver->dditable.ze.Kernel.pfnGetName;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnGetModuleHandle                          = firstDriver->dditable.ze.Kernel.pfnGetModuleHandle;
             }
         }
     }
@@ -13871,6 +14202,13 @@ zeGetModuleProcAddrTable(
                 pDdiTable->pfnGetFunctionPointer                       = loader::zeModuleGetFunctionPointer;
             }
             }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDeviceHandle                          = loader_driver_ddi::zeModuleGetDeviceHandle;
+            } else {
+                pDdiTable->pfnGetDeviceHandle                          = loader::zeModuleGetDeviceHandle;
+            }
+            }
             if (version >= ZE_API_VERSION_1_3) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnInspectLinkageExt                        = loader_driver_ddi::zeModuleInspectLinkageExt;
@@ -13906,6 +14244,9 @@ zeGetModuleProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_0) {
                 pDdiTable->pfnGetFunctionPointer                       = firstDriver->dditable.ze.Module.pfnGetFunctionPointer;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnGetDeviceHandle                          = firstDriver->dditable.ze.Module.pfnGetDeviceHandle;
             }
             if (version >= ZE_API_VERSION_1_3) {
                 pDdiTable->pfnInspectLinkageExt                        = firstDriver->dditable.ze.Module.pfnInspectLinkageExt;
@@ -14808,6 +15149,27 @@ zeGetGraphProcAddrTable(
                 pDdiTable->pfnDestroyExt                               = loader::zeGraphDestroyExt;
             }
             }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnPauseCaptureExt                          = loader_driver_ddi::zeGraphPauseCaptureExt;
+            } else {
+                pDdiTable->pfnPauseCaptureExt                          = loader::zeGraphPauseCaptureExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnResumeCaptureExt                         = loader_driver_ddi::zeGraphResumeCaptureExt;
+            } else {
+                pDdiTable->pfnResumeCaptureExt                         = loader::zeGraphResumeCaptureExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetIdExt                                 = loader_driver_ddi::zeGraphGetIdExt;
+            } else {
+                pDdiTable->pfnGetIdExt                                 = loader::zeGraphGetIdExt;
+            }
+            }
             zeGetGraphProcAddrTableLegacy();
         }
         else
@@ -14833,6 +15195,15 @@ zeGetGraphProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_17) {
                 pDdiTable->pfnDestroyExt                               = firstDriver->dditable.ze.Graph.pfnDestroyExt;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnPauseCaptureExt                          = firstDriver->dditable.ze.Graph.pfnPauseCaptureExt;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnResumeCaptureExt                         = firstDriver->dditable.ze.Graph.pfnResumeCaptureExt;
+            }
+            if (version >= ZE_API_VERSION_1_18) {
+                pDdiTable->pfnGetIdExt                                 = firstDriver->dditable.ze.Graph.pfnGetIdExt;
             }
         }
     }
