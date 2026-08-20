@@ -1,4 +1,13 @@
 # Level zero loader changelog
+## v1.33.0
+* Update to L0 Zero Spec v1.18.31: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-18-31
+* Feature: Driver Extension Callback Tracing (#498)
+* Add missing tracing definitions into template (#503)
+* Fix: incorrect translation of null handle in zet API (#505)
+* Fix: spelling and grammar issues in headers and docs (#501)
+* Update zel* functions to use (void) instead of () (#497)
+* Add stdbool.h for C header inclusion correctness (#494)
+* Fix: incompatible strerror_r for non-gnu/windows libc (#493)
 ## v1.32.0
  * Update to L0 Zero Spec v1.17.24: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-17-24
 * Fix: add .mako deduplication to prevent multiple to_string definitions
