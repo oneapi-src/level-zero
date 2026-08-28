@@ -111,7 +111,93 @@ inline std::string readLevelZeroLoaderLibraryPath() {
 
     return LoaderRegKeyPath;
 }
+
+// Reads a single Level Zero loader setting from the given registry root under
+// the "Environment" subkey of the loader key. Value names match the
+// corresponding environment variable names (e.g. "ZEL_LOADER_LOG_CONSOLE").
+// Supports REG_SZ / REG_EXPAND_SZ (used verbatim) and REG_DWORD (rendered as a
+// decimal string) so that numeric flags can be stored either way. Returns true
+// and populates 'value' when the named value exists and is of a supported type.
+inline bool readLoaderSettingFromRegistryRoot(HKEY root, const char* name, std::string& value) {
+    static constexpr char settingsKeyPath[] = "Software\\Intel\\oneAPI\\LevelZero\\Environment";
+
+    HKEY regKey = {};
+    if (ERROR_SUCCESS != RegOpenKeyExA(root, settingsKeyPath, 0, KEY_QUERY_VALUE, &regKey)) {
+        return false;
+    }
+
+    DWORD regValueType = {};
+    DWORD dataSize = {};
+    bool found = false;
+    LSTATUS regOpStatus = RegQueryValueExA(regKey, name, NULL, &regValueType, NULL, &dataSize);
+
+    if (ERROR_SUCCESS == regOpStatus) {
+        if ((REG_SZ == regValueType || REG_EXPAND_SZ == regValueType) && dataSize > 0) {
+            std::string buffer(dataSize, '\0');
+            regOpStatus = RegQueryValueExA(regKey, name, NULL, &regValueType,
+                                           (LPBYTE) & *buffer.begin(), &dataSize);
+            if (ERROR_SUCCESS == regOpStatus) {
+                // dataSize includes the terminating null for string types; trim
+                // at the first null so 'value' holds a clean C-string.
+                value.assign(buffer.c_str());
+                found = true;
+            }
+        } else if (REG_DWORD == regValueType && dataSize == sizeof(DWORD)) {
+            DWORD dwordValue = 0;
+            regOpStatus = RegQueryValueExA(regKey, name, NULL, &regValueType,
+                                           (LPBYTE)&dwordValue, &dataSize);
+            if (ERROR_SUCCESS == regOpStatus) {
+                value.assign(std::to_string(dwordValue));
+                found = true;
+            }
+        }
+    }
+
+    RegCloseKey(regKey);
+    return found;
+}
+
+// Fallback lookup for loader settings on Windows: checks the current user hive
+// first (HKEY_CURRENT_USER, writable without administrator rights) and then the
+// machine-wide hive (HKEY_LOCAL_MACHINE). This lets loader environment settings
+// be configured persistently in the registry for processes (e.g. GUI apps and
+// their child processes) that cannot conveniently inherit them from the shell.
+inline bool readLoaderSettingFromRegistry(const char* name, std::string& value) {
+    if (readLoaderSettingFromRegistryRoot(HKEY_CURRENT_USER, name, value)) {
+        return true;
+    }
+    return readLoaderSettingFromRegistryRoot(HKEY_LOCAL_MACHINE, name, value);
+}
 #endif
+
+// Looks up a loader setting by name. The process environment always takes
+// precedence; on Windows, if the variable is not present in the environment the
+// registry fallback (see readLoaderSettingFromRegistry) is consulted. Returns
+// true and populates 'value' when a value is found from either source.
+inline bool getenv_raw(const char* name, std::string& value) {
+#if defined(_WIN32)
+    // Query the required buffer size (includes the terminating null); a return
+    // of 0 means the variable is not set in the environment.
+    DWORD required = GetEnvironmentVariableA(name, nullptr, 0);
+    if (0 != required) {
+        std::string buffer(required, '\0');
+        DWORD written = GetEnvironmentVariableA(name, &buffer[0], required);
+        if (0 != written && written < required) {
+            buffer.resize(written);
+            value.assign(std::move(buffer));
+            return true;
+        }
+    }
+    return readLoaderSettingFromRegistry(name, value);
+#else
+    const char* env = getenv(name);
+    if (nullptr == env) {
+        return false;
+    }
+    value.assign(env);
+    return true;
+#endif
+}
 
 //////////////////////////////////////////////////////////////////////////
 #if !defined(_WIN32) && (__GNUC__ >= 4)
@@ -131,21 +217,10 @@ typedef struct _cl_program* cl_program;
 ///////////////////////////////////////////////////////////////////////////////
 inline bool getenv_tobool( const char* name )
 {
-    const char* env = nullptr;
-
-#if defined(_WIN32)
-    char buffer[8];
-    auto rc = GetEnvironmentVariable(name, buffer, 8);
-    if (0 != rc && rc <= 8) {
-        env = buffer;
-    }
-#else
-    env = getenv(name);
-#endif
-
-    if( ( nullptr == env ) || ( 0 == strcmp( "0", env ) ) )
+    std::string value;
+    if( !getenv_raw( name, value ) || ( "0" == value ) )
         return false;
-    return ( 0 == strcmp( "1", env ) );
+    return ( "1" == value );
 }
 
 // Returns the numeric mode (0, 1, or 2) for env vars that support a two-level
@@ -153,43 +228,20 @@ inline bool getenv_tobool( const char* name )
 // Any value other than "1" or "2" is treated as 0.
 inline uint32_t getenv_tomode( const char* name )
 {
-    const char* env = nullptr;
-
-#if defined(_WIN32)
-    char buffer[8];
-    auto rc = GetEnvironmentVariable(name, buffer, 8);
-    if (0 != rc && rc <= 8) {
-        env = buffer;
-    }
-#else
-    env = getenv(name);
-#endif
-
-    if (env == nullptr || strcmp("0", env) == 0)
+    std::string value;
+    if (!getenv_raw(name, value) || value == "0")
         return 0;
-    if (strcmp("2", env) == 0)
+    if (value == "2")
         return 2;
-    if (strcmp("1", env) == 0)
+    if (value == "1")
         return 1;
     return 0;
 }
 
 
 inline std::string getenv_string ( const char* name){
-
-    const char* env = nullptr;
-
-#if defined(_WIN32)
-    char buffer[1024];
-    auto rc = GetEnvironmentVariable(name, buffer, 1024);
-    if (0 != rc && rc <= 1024) {
-        env = buffer;
-    }
-#else
-    env = getenv(name);
-#endif
-
-    if ((nullptr == env))
+    std::string value;
+    if (!getenv_raw(name, value))
         return "";
-    return std::string(env);
+    return value;
 }

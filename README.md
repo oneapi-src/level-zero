@@ -185,6 +185,48 @@ cmake -G "NMake Makefiles" CMAKE_CXX_FLAGS="/EHsc" ..
 nmake
 ```
 
+# Configuring loader settings via the Windows registry
+
+On Windows, every loader environment variable (for example `ZEL_ENABLE_LOADER_LOGGING`,
+`ZEL_LOADER_LOG_CONSOLE`, `ZEL_LIBRARY_PATH`, `ZE_ENABLE_VALIDATION_LAYER`, ...) can also be
+supplied through the registry. This is useful when the L0 application is launched as a child
+process of a GUI application that cannot conveniently pass environment variables to its
+subprocesses.
+
+Values are read from the `Environment` subkey of the loader key:
+
+```
+HKEY_CURRENT_USER\Software\Intel\oneAPI\LevelZero\Environment
+HKEY_LOCAL_MACHINE\Software\Intel\oneAPI\LevelZero\Environment
+```
+
+Each setting is a registry value whose **name matches the environment variable name** and whose
+data is the value the variable would otherwise hold. Both `REG_SZ` (string) and `REG_DWORD`
+(numeric) value types are supported — a `REG_DWORD` of `1` is equivalent to a `REG_SZ` of `"1"`.
+
+Lookup order (first match wins):
+
+1. The process environment variable (if set) — always takes precedence, so existing scripts and
+   CI setups are unaffected.
+2. `HKEY_CURRENT_USER` (per-user, writable without administrator rights).
+3. `HKEY_LOCAL_MACHINE` (machine-wide).
+
+Example — enable console logging at `trace` level for the current user with a `.reg` file:
+
+```
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Intel\oneAPI\LevelZero\Environment]
+"ZEL_LOADER_LOG_CONSOLE"="1"
+"ZEL_LOADER_LOGGING_LEVEL"="trace"
+```
+
+Or from the command line:
+
+```sh
+reg add "HKCU\Software\Intel\oneAPI\LevelZero\Environment" /v ZEL_LOADER_LOG_CONSOLE /t REG_SZ /d 1 /f
+```
+
 
 # Contributing
 
