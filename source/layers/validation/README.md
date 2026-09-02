@@ -23,6 +23,7 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
 - `ZEL_ENABLE_CERTIFICATION_CHECKER`
 - `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER`
+- `ZEL_ENABLE_TIMING_CHECKER`
 
 ## Validation Modes
 
@@ -140,6 +141,41 @@ export ZEL_LOADER_LOGGING_LEVEL=debug
 **Platform Support:** This checker supports Linux and Windows. On Linux it reads `/proc/self/status`; on Windows it uses the Win32 `PSAPI` and `Toolhelp32` APIs. macOS is not supported.
 
 See [System Resource Tracker documentation](checkers/system_resource_tracker/system_resource_tracker.md) for detailed usage and CSV format.
+
+### `ZEL_ENABLE_TIMING_CHECKER`
+
+The Timing Checker measures the host-side (CPU) duration of every Level Zero API
+call and aggregates per-API statistics (call count, total, min, max and average
+time in nanoseconds).
+
+For each API call the checker stamps a high-resolution monotonic timestamp in the
+Prologue and reads it again in the Epilogue. The clock is
+`QueryPerformanceCounter` on Windows and `clock_gettime(CLOCK_MONOTONIC_RAW)`
+elsewhere. The measured span is dominated by the underlying driver call and is
+consistent across calls, making it suitable for relative host-cost analysis.
+
+To enable, set:
+```bash
+export ZE_ENABLE_VALIDATION_LAYER=1
+export ZEL_ENABLE_TIMING_CHECKER=1
+```
+
+Output modes (each independently controlled):
+
+| Environment Variable | Default | Description |
+|---|---|---|
+| `ZEL_ENABLE_TIMING_CHECKER` | `0` | Enable the checker; a per-API summary table is printed at teardown |
+| `ZEL_TIMING_CHECKER_CSV` | (unset) | Also export the per-API statistics to a CSV file (the process id is appended to the filename) |
+| `ZEL_TIMING_CHECKER_LIVE` | `0` | Also print each call's duration as it happens (verbose) |
+
+The summary and live output are written directly to `stderr` and the rows are
+sorted by their share of total host time (highest first). The Timing Checker does
+not use the loader logging system, so the `ZEL_ENABLE_LOADER_LOGGING` /
+`ZEL_LOADER_LOGGING_LEVEL` variables are **not** required (in particular you do
+not need to set logging to `trace`, which would also enable API-call logging).
+
+See [Timing Checker documentation](checkers/timing/timing_checker.md) for detailed
+usage, output examples, and the CSV format.
 
 ## Testing
 
