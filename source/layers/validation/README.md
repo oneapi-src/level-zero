@@ -22,6 +22,7 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZEL_ENABLE_BASIC_LEAK_CHECKER`
 - `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
 - `ZEL_ENABLE_CERTIFICATION_CHECKER`
+- `ZEL_ENABLE_PERFORMANCE_CHECKER`
 - `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER`
 
 ## Validation Modes
