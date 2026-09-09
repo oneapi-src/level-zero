@@ -3864,18 +3864,6 @@ typedef enum _zet_metric_group_marker_exp_version_t
 } zet_metric_group_marker_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Query the metric source unique identifier using `pNext` of
-///        ::zet_metric_group_properties_t
-typedef struct _zet_metric_source_id_exp_t
-{
-    zet_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint32_t sourceId;                                                      ///< [out] unique number representing the Metric Source.
-
-} zet_metric_source_id_exp_t;
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Append a Marker based on the Metric source of the Metric Group, to a
 ///        Command List.
 /// 
@@ -3908,6 +3896,41 @@ zetCommandListAppendMarkerExp(
                                                                             ///< marker is supoported by the metric group.
     uint32_t value                                                          ///< [in] marker value
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension to support Metrics source ID
+#if !defined(__GNUC__)
+#pragma region metricSourceId
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_METRIC_SOURCE_ID_EXP_NAME
+/// @brief Metric Source ID Experimental Extension Name
+#define ZET_METRIC_SOURCE_ID_EXP_NAME  "ZET_experimental_metric_source_id"
+#endif // ZET_METRIC_SOURCE_ID_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Source ID Experimental Extension Version(s)
+typedef enum _zet_metric_source_id_exp_version_t
+{
+    ZET_METRIC_SOURCE_ID_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),     ///< version 1.0
+    ZET_METRIC_SOURCE_ID_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZET_METRIC_SOURCE_ID_EXP_VERSION_FORCE_UINT32 = 0x7fffffff          ///< Value marking end of ZET_METRIC_SOURCE_ID_EXP_VERSION_* ENUMs
+
+} zet_metric_source_id_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query the metric source unique identifier using `pNext` of
+///        ::zet_metric_group_properties_t
+typedef struct _zet_metric_source_id_exp_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t sourceId;                                                      ///< [out] unique number representing the Metric Source.
+
+} zet_metric_source_id_exp_t;
 
 #if !defined(__GNUC__)
 #pragma endregion
