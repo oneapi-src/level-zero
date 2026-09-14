@@ -34,7 +34,8 @@ namespace validation_layer
     //              zeEventPoolCreate = 1     \--->      zeEventPoolDestroy = 1
     //   zeCommandListCreateImmediate = 1     |
     //            zeCommandListCreate = 1     \--->    zeCommandListDestroy = 1  ---> LEAK = 1
-    //                  zeEventCreate = 2     \--->          zeEventDestroy = 2
+    //                  zeEventCreate = 2     |
+    //       zeEventCounterBasedCreate = 0    \--->          zeEventDestroy = 2
     //                  zeFenceCreate = 1     \--->          zeFenceDestroy = 1
     //                  zeImageCreate = 0     \--->          zeImageDestroy = 0
     //                zeSamplerCreate = 0     \--->        zeSamplerDestroy = 0
@@ -67,6 +68,7 @@ namespace validation_layer
                 ze_result_t zeCommandListCreateEpilogue(ze_context_handle_t, ze_device_handle_t, const ze_command_list_desc_t*, ze_command_list_handle_t*, ze_result_t result) override;
                 ze_result_t zeCommandListDestroyEpilogue(ze_command_list_handle_t, ze_result_t result) override;
                 ze_result_t zeEventCreateEpilogue(ze_event_pool_handle_t, const ze_event_desc_t *, ze_event_handle_t *, ze_result_t result) override;
+                ze_result_t zeEventCounterBasedCreateEpilogue(ze_context_handle_t, ze_device_handle_t, const ze_event_counter_based_desc_t *, ze_event_handle_t *, ze_result_t result) override;
                 ze_result_t zeEventDestroyEpilogue(ze_event_handle_t, ze_result_t result) override;
                 ze_result_t zeFenceCreateEpilogue(ze_command_queue_handle_t, const ze_fence_desc_t *, ze_fence_handle_t*, ze_result_t result) override;
                 ze_result_t zeFenceDestroyEpilogue(ze_fence_handle_t, ze_result_t result) override;
