@@ -1,4 +1,7 @@
 # Level zero loader changelog
+## v1.34.0
+* Update to L0 Zero Spec v1.19.12: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-19-12
+* Feature: Track zeEventCounterBasedCreate in basic_leak_checker (#513)
 ## v1.33.1
 * Fix: Driver extension callback tracing compatibility with legacy drivers (#507)
 ## v1.33.0
