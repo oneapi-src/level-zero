@@ -11,6 +11,28 @@
 #include "ze_loader_internal.h"
 #include "../lib/ze_lib.h"
 
+#ifdef L0_STATIC_LOADER_BUILD_NO_DLL
+#include <cstdlib>
+#include <mutex>
+
+namespace {
+void destroyEmbeddedLoaderContext() {
+    delete loader::context;
+    loader::context = nullptr;
+}
+
+void ensureEmbeddedLoaderContext() {
+    static std::once_flag contextOnce;
+    std::call_once(contextOnce, []() {
+        if (loader::context == nullptr) {
+            loader::context = new loader::context_t;
+        }
+        std::atexit(destroyEmbeddedLoaderContext);
+    });
+}
+} // namespace
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -24,6 +46,9 @@ extern "C" {
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeLoaderInit()
 {
+#ifdef L0_STATIC_LOADER_BUILD_NO_DLL
+    ensureEmbeddedLoaderContext();
+#endif
     return loader::context->init();
 }
 
