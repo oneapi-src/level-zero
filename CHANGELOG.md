@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.33.1
+* Fix: Driver extension callback tracing compatibility with legacy drivers (#507)
 ## v1.33.0
 * Update to L0 Zero Spec v1.18.31: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-18-31
 * Feature: Driver Extension Callback Tracing (#498)

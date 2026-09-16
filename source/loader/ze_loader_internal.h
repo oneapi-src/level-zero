@@ -70,6 +70,10 @@ namespace loader
 
         // Resolved gate hook; null = driver doesn't support extension tracing.
         zel_pfnDriverEnableTracing_t pfnDriverEnableTracing = nullptr;
+        // Native driver handle used to invoke the gate hook. The loader calls the
+        // driver's zelDriverEnableTracing directly (bypassing loader dispatch), so
+        // it must pass a real driver handle -- drivers reject a null handle.
+        ze_driver_handle_t enableTracingDriverHandle = nullptr;
         bool driverEnableTracingResolved = false;
     };
 

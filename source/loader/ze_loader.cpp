@@ -484,8 +484,8 @@ namespace loader
     // site because drivers that bypass init_driver (null-driver / proc-address
     // setups) first reach it via their enable toggle. The by-name symbol only
     // proves it exists, so we probe with enable=false: SUCCESS means supported and
-    // caches the hook (later toggles are just a null-check + call); anything else
-    // leaves it unsupported. The probe is side-effect-free (disabled is the
+    // caches the hook plus its native handle (later toggles reuse both); anything
+    // else leaves it unsupported. The probe is side-effect-free (disabled is the
     // default), but it WRITES the gate -- so it must run exactly once, before the
     // paired enable-propagation, or a re-probe would clobber an already-open gate.
     void resolveDriverExtensionTracingHook(driver_t &driver) {
@@ -498,18 +498,42 @@ namespace loader
         if (nullptr == pfnGetExtensionFunctionAddress)
             return;
 
-        void *pfnRaw = nullptr;
-        // Global driver-level hook; the handle is not needed to resolve it.
-        if (ZE_RESULT_SUCCESS != pfnGetExtensionFunctionAddress(nullptr, "zelDriverEnableTracing", &pfnRaw) ||
-            nullptr == pfnRaw)
+        // Although "zelDriverEnableTracing" is a global driver-level hook whose
+        // resolution does not logically depend on a handle, we must NOT probe
+        // with a null handle: legacy drivers dereference hDriver unconditionally
+        // inside zeDriverGetExtensionFunctionAddress (they predate this hook) and
+        // segfault on null. Resolve a real native driver handle first and probe
+        // with that -- a driver that lacks the extension safely reports it as
+        // unsupported, while a supporting driver ignores the handle and resolves
+        // the hook regardless. If no handle is available we leave it unsupported
+        // rather than risk crashing a legacy driver with null.
+        auto pfnGet = driver.dditable.ze.Driver.pfnGet;
+        if (nullptr == pfnGet)
             return;
 
-        // Probe with the benign default (disabled). A driver that truly supports
-        // the gate returns SUCCESS; one that only advertises the symbol returns a
-        // non-SUCCESS result and stays unsupported (cached pointer left null).
+        uint32_t driverCount = 0;
+        if (ZE_RESULT_SUCCESS != pfnGet(&driverCount, nullptr) || 0 == driverCount)
+            return;
+
+        driverCount = 1;
+        ze_driver_handle_t hNativeDriver = nullptr;
+        if (ZE_RESULT_SUCCESS != pfnGet(&driverCount, &hNativeDriver) || nullptr == hNativeDriver)
+            return;
+
+        void *pfnRaw = nullptr;
+        if (ZE_RESULT_SUCCESS != pfnGetExtensionFunctionAddress(hNativeDriver, "zelDriverEnableTracing", &pfnRaw) ||
+            nullptr == pfnRaw)
+            return;
+        // Probe with the benign default (disabled), passing the real native
+        // handle: drivers reject a null handle (ZE_RESULT_ERROR_INVALID_NULL_HANDLE).
+        // A driver that truly supports the gate returns SUCCESS and we cache both
+        // the hook and the handle to reuse for later toggles; one that only
+        // advertises the symbol returns non-SUCCESS and stays unsupported.
         auto pfnEnableTracing = reinterpret_cast<zel_pfnDriverEnableTracing_t>(pfnRaw);
-        if (ZE_RESULT_SUCCESS == pfnEnableTracing(nullptr, false))
+        if (ZE_RESULT_SUCCESS == pfnEnableTracing(hNativeDriver, false)) {
             driver.pfnDriverEnableTracing = pfnEnableTracing;
+            driver.enableTracingDriverHandle = hNativeDriver;
+        }
     }
 
     ze_result_t enableDriverExtensionTracing(driver_t &driver, ze_bool_t enable) {
@@ -519,7 +543,8 @@ namespace loader
         if (nullptr == driver.pfnDriverEnableTracing)
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE; // driver doesn't support it; skip
 
-        return driver.pfnDriverEnableTracing(nullptr, enable);
+        // Pass the native handle resolved during the probe -- drivers reject null.
+        return driver.pfnDriverEnableTracing(driver.enableTracingDriverHandle, enable);
     }
 
     ze_result_t context_t::init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc) {
