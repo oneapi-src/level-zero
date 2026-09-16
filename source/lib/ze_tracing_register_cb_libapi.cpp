@@ -6443,4 +6443,54 @@ zelTracerDeviceGetCompilerInfoRegisterCallback(
 }
 
 
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandQueueSetQosExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandQueueSetQosExtCb_t pfnSetQosExtCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnCommandQueueSetQosExtCb_t pfnSetQosExtCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerCommandQueueSetQosExtRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnSetQosExtCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandQueueGetQosExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandQueueGetQosExtCb_t pfnGetQosExtCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnCommandQueueGetQosExtCb_t pfnGetQosExtCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerCommandQueueGetQosExtRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetQosExtCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
 } //Extern C

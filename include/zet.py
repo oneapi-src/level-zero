@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.18-r1.18.31
+ @version v1.19-r1.19.12
 
  """
 import platform
@@ -1017,17 +1017,6 @@ class zet_metric_group_marker_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Query the metric source unique identifier using `pNext` of
-##        ::zet_metric_group_properties_t
-class zet_metric_source_id_exp_t(Structure):
-    _fields_ = [
-        ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
-    ]
-
-###############################################################################
 ## @brief Runtime Enabling and Disabling Metrics Extension Name
 ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME = "ZET_experimental_metrics_runtime_enable_disable"
 
@@ -1041,6 +1030,32 @@ class zet_metrics_runtime_enable_disable_exp_version_t(c_int):
     def __str__(self):
         return str(zet_metrics_runtime_enable_disable_exp_version_v(self.value))
 
+
+###############################################################################
+## @brief Metric Source Id Experimental Extension Name
+ZET_METRIC_SOURCE_ID_EXP_NAME = "ZET_experimental_metric_source_id"
+
+###############################################################################
+## @brief Metric Source Id Experimental Extension Version(s)
+class zet_metric_source_id_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_source_id_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_source_id_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Query the metric source unique identifier using `pNext` of
+##        ::zet_metric_group_properties_t
+class zet_metric_source_id_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
+    ]
 
 ###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]

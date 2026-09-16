@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.18-r1.18.31
+ * @version v1.19-r1.19.12
  *
  */
 #ifndef _ZE_API_H
@@ -420,6 +420,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_DEVICE_NPU_PROPERTIES_EXT = 0x00020049,               ///< ::ze_device_npu_properties_ext_t
     ZE_STRUCTURE_TYPE_INIT_DRIVER_APP_VERSION_EXT_DESC = 0x0002004A,        ///< ::ze_init_driver_app_version_ext_desc_t
     ZE_STRUCTURE_TYPE_IPC_PHYS_MEM_HANDLE_RANGE_EXT_DESC = 0x0002004B,      ///< ::ze_ipc_phys_mem_handle_range_ext_desc_t
+    ZE_STRUCTURE_TYPE_COMMAND_QUEUE_QOS_EXT_DESC = 0x0002004C,              ///< ::ze_command_queue_qos_ext_desc_t
+    ZE_STRUCTURE_TYPE_COMMAND_QUEUE_QOS_EXT_PROPERTIES = 0x0002004D,        ///< ::ze_command_queue_qos_ext_properties_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_STRUCTURE_TYPE_* ENUMs
 
 } ze_structure_type_t;
@@ -1251,6 +1253,14 @@ typedef struct _ze_context_power_saving_hint_ext_desc_t ze_context_power_saving_
 /// @brief Forward-declare ze_context_power_saving_hint_exp_desc_t
 typedef struct _ze_context_power_saving_hint_exp_desc_t ze_context_power_saving_hint_exp_desc_t;
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_command_queue_qos_ext_desc_t
+typedef struct _ze_command_queue_qos_ext_desc_t ze_command_queue_qos_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_command_queue_qos_ext_properties_t
+typedef struct _ze_command_queue_qos_ext_properties_t ze_command_queue_qos_ext_properties_t;
+
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -1494,7 +1504,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_16 = ZE_MAKE_VERSION( 1, 16 ),                         ///< version 1.16
     ZE_API_VERSION_1_17 = ZE_MAKE_VERSION( 1, 17 ),                         ///< version 1.17
     ZE_API_VERSION_1_18 = ZE_MAKE_VERSION( 1, 18 ),                         ///< version 1.18
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 18 ),                      ///< latest known version
+    ZE_API_VERSION_1_19 = ZE_MAKE_VERSION( 1, 19 ),                         ///< version 1.19
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 19 ),                      ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_API_VERSION_* ENUMs
 
 } ze_api_version_t;
@@ -1502,7 +1513,7 @@ typedef enum _ze_api_version_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 18 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 19 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -18208,6 +18219,175 @@ typedef struct _ze_context_power_saving_hint_exp_desc_t
                                                                             ///< and can use pre-defined settings from ::ze_power_saving_hint_type_t.
 
 } ze_context_power_saving_hint_exp_desc_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Command Queue Quality of Service
+#if !defined(__GNUC__)
+#pragma region commandQueueQosExt
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_COMMAND_QUEUE_QOS_EXT_NAME
+/// @brief Command Queue QoS Extension Name
+#define ZE_COMMAND_QUEUE_QOS_EXT_NAME  "ZE_extension_command_queue_qos"
+#endif // ZE_COMMAND_QUEUE_QOS_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Command Queue QoS Extension Version(s)
+typedef enum _ze_command_queue_qos_ext_version_t
+{
+    ZE_COMMAND_QUEUE_QOS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
+    ZE_COMMAND_QUEUE_QOS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
+    ZE_COMMAND_QUEUE_QOS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_QUEUE_QOS_EXT_VERSION_* ENUMs
+
+} ze_command_queue_qos_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported command queue Quality of Service (QoS) levels.
+///        Expresses desired power/energy characteristics for work submitted through
+///        a command queue; orthogonal to ::ze_command_queue_priority_t, which expresses
+///        scheduling urgency instead. A queue may combine an explicit priority with
+///        an explicit QoS level.
+///        Applications must not perform relational comparisons (e.g. less-than,
+///        greater-than) between QoS levels; only equality checks are guaranteed to
+///        be meaningful. The numeric values are not guaranteed to be ordered by
+///        energy efficiency, and future levels may be added without preserving any
+///        such order.
+typedef enum _ze_command_queue_qos_ext_t
+{
+    ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT = 0,                                   ///< [default] implicit default behavior; uses the driver/OS-selected QoS
+                                                                            ///< level
+    ZE_COMMAND_QUEUE_QOS_EXT_HIGH = 1,                                      ///< foreground / latency-sensitive workloads
+    ZE_COMMAND_QUEUE_QOS_EXT_MEDIUM = 2,                                    ///< nominal scheduling class
+    ZE_COMMAND_QUEUE_QOS_EXT_LOW = 3,                                       ///< reduced energy usage with forward progress guaranteed
+    ZE_COMMAND_QUEUE_QOS_EXT_UTILITY = 4,                                   ///< more energy efficient than LOW while still guaranteeing forward
+                                                                            ///< progress
+    ZE_COMMAND_QUEUE_QOS_EXT_ECO = 5,                                       ///< maximum energy savings; no forward progress guarantee
+    ZE_COMMAND_QUEUE_QOS_EXT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_QUEUE_QOS_EXT_* ENUMs
+
+} ze_command_queue_qos_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Command Queue QoS descriptor
+/// 
+/// @details
+///     - This structure may be passed to ::zeCommandQueueCreate via the `pNext`
+///       member of ::ze_command_queue_desc_t to request a non-default QoS level
+///       at creation time, or to ::zeCommandQueueSetQosExt to change the level
+///       of an existing command queue.
+///     - Setting `qos` to ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT requests the
+///       driver/OS-selected default; when chained to ::ze_command_queue_desc_t
+///       at creation time this is equivalent to not chaining this structure at
+///       all.
+typedef struct _ze_command_queue_qos_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_command_queue_qos_ext_t qos;                                         ///< [in] requested QoS level for this command queue
+
+} ze_command_queue_qos_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Command Queue QoS properties queried from a command queue
+/// 
+/// @details
+///     - This structure is populated by ::zeCommandQueueGetQosExt.
+///     - `qos` reports the resolved level, so
+///       ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT is never returned; a queue running
+///       at the driver/OS default reports the concrete level that default
+///       resolved to, with `isOverridden` set to false.
+typedef struct _ze_command_queue_qos_ext_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_command_queue_qos_ext_t qos;                                         ///< [out] effective QoS level of the command queue; never
+                                                                            ///< ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT
+    ze_bool_t isOverridden;                                                 ///< [out] true if `qos` was specified by the application, either at
+                                                                            ///< creation time through ::ze_command_queue_qos_ext_desc_t or by a call
+                                                                            ///< to ::zeCommandQueueSetQosExt; false if `qos` is the driver/OS-selected
+                                                                            ///< default
+
+} ze_command_queue_qos_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Sets the Quality of Service level of a command queue.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - This function changes the QoS level of an existing command queue,
+///       overriding both the driver default and any level specified at creation
+///       through ::ze_command_queue_qos_ext_desc_t; the updated value is
+///       reported by ::zeCommandQueueGetQosExt.
+///     - Setting `qos` of the descriptor to ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT
+///       clears any active override and returns the queue to the
+///       driver/OS-selected default.
+///     - Whether the new QoS level affects commands already submitted to the
+///       command queue, or only commands submitted after this call, is
+///       implementation-defined.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_COMMAND_QUEUE_QOS_EXT_ECO < desc->qos`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandQueueSetQosExt(
+    ze_command_queue_handle_t hCommandQueue,                                ///< [in] handle of the command queue
+    const ze_command_queue_qos_ext_desc_t* desc                             ///< [in] pointer to QoS descriptor
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the effective Quality of Service level of a command queue.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - Reports the effective QoS level after resolving any
+///       application-specified level against the driver/OS default, and whether
+///       that level was application-specified.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandQueueGetQosExt(
+    ze_command_queue_handle_t hCommandQueue,                                ///< [in] handle of the command queue
+    ze_command_queue_qos_ext_properties_t* pProperties                      ///< [in,out] query result for QoS properties of the command queue
+    );
 
 #if !defined(__GNUC__)
 #pragma endregion

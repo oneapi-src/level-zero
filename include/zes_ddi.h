@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.18-r1.18.31
+ * @version v1.19-r1.19.12
  *
  */
 #ifndef _ZES_DDI_H
@@ -528,6 +528,40 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDriverGetExtensionFunctionAddress_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverGetProperties 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverGetProperties_t)(
+    zes_driver_handle_t,
+    zes_driver_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverEventRegisterExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventRegisterExt_t)(
+    zes_driver_handle_t,
+    zes_event_type_flags_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverEventListenExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventListenExt_t)(
+    zes_driver_handle_t,
+    uint64_t,
+    uint32_t,
+    zes_device_handle_t*,
+    uint32_t*,
+    zes_event_type_flags_t*,
+    zes_event_type_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverEnumInfoLogsExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverEnumInfoLogsExt_t)(
+    zes_driver_handle_t,
+    uint32_t*,
+    zes_info_log_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver functions pointers
 typedef struct _zes_driver_dditable_t
 {
@@ -536,6 +570,10 @@ typedef struct _zes_driver_dditable_t
     zes_pfnDriverGet_t                                          pfnGet;
     zes_pfnDriverGetExtensionProperties_t                       pfnGetExtensionProperties;
     zes_pfnDriverGetExtensionFunctionAddress_t                  pfnGetExtensionFunctionAddress;
+    zes_pfnDriverGetProperties_t                                pfnGetProperties;
+    zes_pfnDriverEventRegisterExt_t                             pfnEventRegisterExt;
+    zes_pfnDriverEventListenExt_t                               pfnEventListenExt;
+    zes_pfnDriverEnumInfoLogsExt_t                              pfnEnumInfoLogsExt;
 } zes_driver_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2050,6 +2088,113 @@ typedef ze_result_t (ZE_APICALL *zes_pfnGetVFManagementExpProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogGetPropertiesExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogGetPropertiesExt_t)(
+    zes_info_log_handle_t,
+    zes_info_log_ext_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogCreateInstanceExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogCreateInstanceExt_t)(
+    zes_info_log_handle_t,
+    const char*,
+    zes_info_log_instance_ext_desc_t*,
+    zes_info_log_instance_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of InfoLog functions pointers
+typedef struct _zes_info_log_dditable_t
+{
+    zes_pfnInfoLogGetPropertiesExt_t                            pfnGetPropertiesExt;
+    zes_pfnInfoLogCreateInstanceExt_t                           pfnCreateInstanceExt;
+} zes_info_log_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's InfoLog table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetInfoLogProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zes_info_log_dditable_t* pDdiTable                                      ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesGetInfoLogProcAddrTable
+typedef ze_result_t (ZE_APICALL *zes_pfnGetInfoLogProcAddrTable_t)(
+    ze_api_version_t,
+    zes_info_log_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogInstanceReadWithMetadataExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogInstanceReadWithMetadataExt_t)(
+    zes_info_log_instance_handle_t,
+    uint64_t,
+    uint32_t*,
+    uint8_t*,
+    uint32_t*,
+    zes_info_log_metadata_ext_t*,
+    zes_info_log_read_status_ext_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogInstancePeekWithMetadataExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogInstancePeekWithMetadataExt_t)(
+    zes_info_log_instance_handle_t,
+    uint64_t,
+    uint32_t*,
+    uint8_t*,
+    uint32_t*,
+    zes_info_log_metadata_ext_t*,
+    zes_info_log_read_status_ext_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogInstanceDeleteExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogInstanceDeleteExt_t)(
+    zes_info_log_instance_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of InfoLogInstance functions pointers
+typedef struct _zes_info_log_instance_dditable_t
+{
+    zes_pfnInfoLogInstanceReadWithMetadataExt_t                 pfnReadWithMetadataExt;
+    zes_pfnInfoLogInstancePeekWithMetadataExt_t                 pfnPeekWithMetadataExt;
+    zes_pfnInfoLogInstanceDeleteExt_t                           pfnDeleteExt;
+} zes_info_log_instance_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's InfoLogInstance table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetInfoLogInstanceProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zes_info_log_instance_dditable_t* pDdiTable                             ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesGetInfoLogInstanceProcAddrTable
+typedef ze_result_t (ZE_APICALL *zes_pfnGetInfoLogInstanceProcAddrTable_t)(
+    ze_api_version_t,
+    zes_info_log_instance_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all DDI tables
 typedef struct _zes_dditable_t
 {
@@ -2077,6 +2222,8 @@ typedef struct _zes_dditable_t
     zes_ras_exp_dditable_t              RasExp;
     zes_diagnostics_dditable_t          Diagnostics;
     zes_vf_management_exp_dditable_t    VFManagementExp;
+    zes_info_log_dditable_t             InfoLog;
+    zes_info_log_instance_dditable_t    InfoLogInstance;
 } zes_dditable_t;
 /// @brief Container for all DDI tables with version and tables set by the Driver
 typedef struct _zes_dditable_driver_t
@@ -2107,6 +2254,8 @@ typedef struct _zes_dditable_driver_t
     zes_ras_exp_dditable_t *            RasExp;
     zes_diagnostics_dditable_t *        Diagnostics;
     zes_vf_management_exp_dditable_t *  VFManagementExp;
+    zes_info_log_dditable_t *           InfoLog;
+    zes_info_log_instance_dditable_t *  InfoLogInstance;
 } zes_dditable_driver_t;
 
 #if defined(__cplusplus)

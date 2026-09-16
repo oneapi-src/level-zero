@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.18-r1.18.31
+ @version v1.19-r1.19.12
 
  """
 import platform
@@ -386,6 +386,8 @@ class ze_structure_type_v(IntEnum):
     DEVICE_NPU_PROPERTIES_EXT = 0x00020049                                  ## ::ze_device_npu_properties_ext_t
     INIT_DRIVER_APP_VERSION_EXT_DESC = 0x0002004A                           ## ::ze_init_driver_app_version_ext_desc_t
     IPC_PHYS_MEM_HANDLE_RANGE_EXT_DESC = 0x0002004B                         ## ::ze_ipc_phys_mem_handle_range_ext_desc_t
+    COMMAND_QUEUE_QOS_EXT_DESC = 0x0002004C                                 ## ::ze_command_queue_qos_ext_desc_t
+    COMMAND_QUEUE_QOS_EXT_PROPERTIES = 0x0002004D                           ## ::ze_command_queue_qos_ext_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -572,7 +574,8 @@ class ze_api_version_v(IntEnum):
     _1_16 = ZE_MAKE_VERSION( 1, 16 )                                        ## version 1.16
     _1_17 = ZE_MAKE_VERSION( 1, 17 )                                        ## version 1.17
     _1_18 = ZE_MAKE_VERSION( 1, 18 )                                        ## version 1.18
-    CURRENT = ZE_MAKE_VERSION( 1, 18 )                                      ## latest known version
+    _1_19 = ZE_MAKE_VERSION( 1, 19 )                                        ## version 1.19
+    CURRENT = ZE_MAKE_VERSION( 1, 19 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -581,7 +584,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 18 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 19 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -6016,6 +6019,89 @@ class ze_context_power_saving_hint_exp_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Command Queue QoS Extension Name
+ZE_COMMAND_QUEUE_QOS_EXT_NAME = "ZE_extension_command_queue_qos"
+
+###############################################################################
+## @brief Command Queue QoS Extension Version(s)
+class ze_command_queue_qos_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_command_queue_qos_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_command_queue_qos_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Supported command queue Quality of Service (QoS) levels.
+##        Expresses desired power/energy characteristics for work submitted through
+##        a command queue; orthogonal to ::ze_command_queue_priority_t, which expresses
+##        scheduling urgency instead. A queue may combine an explicit priority with
+##        an explicit QoS level.
+##        Applications must not perform relational comparisons (e.g. less-than,
+##        greater-than) between QoS levels; only equality checks are guaranteed to
+##        be meaningful. The numeric values are not guaranteed to be ordered by
+##        energy efficiency, and future levels may be added without preserving any
+##        such order.
+class ze_command_queue_qos_ext_v(IntEnum):
+    DEFAULT = 0                                                             ## [default] implicit default behavior; uses the driver/OS-selected QoS
+                                                                            ## level
+    HIGH = 1                                                                ## foreground / latency-sensitive workloads
+    MEDIUM = 2                                                              ## nominal scheduling class
+    LOW = 3                                                                 ## reduced energy usage with forward progress guaranteed
+    UTILITY = 4                                                             ## more energy efficient than LOW while still guaranteeing forward
+                                                                            ## progress
+    ECO = 5                                                                 ## maximum energy savings; no forward progress guarantee
+
+class ze_command_queue_qos_ext_t(c_int):
+    def __str__(self):
+        return str(ze_command_queue_qos_ext_v(self.value))
+
+
+###############################################################################
+## @brief Command Queue QoS descriptor
+## 
+## @details
+##     - This structure may be passed to ::zeCommandQueueCreate via the `pNext`
+##       member of ::ze_command_queue_desc_t to request a non-default QoS level
+##       at creation time, or to ::zeCommandQueueSetQosExt to change the level
+##       of an existing command queue.
+##     - Setting `qos` to ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT requests the
+##       driver/OS-selected default; when chained to ::ze_command_queue_desc_t
+##       at creation time this is equivalent to not chaining this structure at
+##       all.
+class ze_command_queue_qos_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("qos", ze_command_queue_qos_ext_t)                             ## [in] requested QoS level for this command queue
+    ]
+
+###############################################################################
+## @brief Command Queue QoS properties queried from a command queue
+## 
+## @details
+##     - This structure is populated by ::zeCommandQueueGetQosExt.
+##     - `qos` reports the resolved level, so
+##       ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT is never returned; a queue running
+##       at the driver/OS default reports the concrete level that default
+##       resolved to, with `isOverridden` set to false.
+class ze_command_queue_qos_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("qos", ze_command_queue_qos_ext_t),                            ## [out] effective QoS level of the command queue; never
+                                                                        ## ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT
+        ("isOverridden", ze_bool_t)                                     ## [out] true if `qos` was specified by the application, either at
+                                                                        ## creation time through ::ze_command_queue_qos_ext_desc_t or by a call
+                                                                        ## to ::zeCommandQueueSetQosExt; false if `qos` is the driver/OS-selected
+                                                                        ## default
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -6702,6 +6788,20 @@ if __use_win_types:
 else:
     _zeCommandQueueSetPriorityExt_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, ze_command_queue_priority_t )
 
+###############################################################################
+## @brief Function-pointer for zeCommandQueueSetQosExt
+if __use_win_types:
+    _zeCommandQueueSetQosExt_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_qos_ext_desc_t) )
+else:
+    _zeCommandQueueSetQosExt_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_qos_ext_desc_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandQueueGetQosExt
+if __use_win_types:
+    _zeCommandQueueGetQosExt_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_qos_ext_properties_t) )
+else:
+    _zeCommandQueueGetQosExt_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_qos_ext_properties_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandQueue functions pointers
@@ -6716,7 +6816,9 @@ class _ze_command_queue_dditable_t(Structure):
         ("pfnGetFlags", c_void_p),                                      ## _zeCommandQueueGetFlags_t
         ("pfnGetMode", c_void_p),                                       ## _zeCommandQueueGetMode_t
         ("pfnGetPriority", c_void_p),                                   ## _zeCommandQueueGetPriority_t
-        ("pfnSetPriorityExt", c_void_p)                                 ## _zeCommandQueueSetPriorityExt_t
+        ("pfnSetPriorityExt", c_void_p),                                ## _zeCommandQueueSetPriorityExt_t
+        ("pfnSetQosExt", c_void_p),                                     ## _zeCommandQueueSetQosExt_t
+        ("pfnGetQosExt", c_void_p)                                      ## _zeCommandQueueGetQosExt_t
     ]
 
 ###############################################################################
@@ -8524,6 +8626,8 @@ class ZE_DDI:
         self.zeCommandQueueGetMode = _zeCommandQueueGetMode_t(self.__dditable.CommandQueue.pfnGetMode)
         self.zeCommandQueueGetPriority = _zeCommandQueueGetPriority_t(self.__dditable.CommandQueue.pfnGetPriority)
         self.zeCommandQueueSetPriorityExt = _zeCommandQueueSetPriorityExt_t(self.__dditable.CommandQueue.pfnSetPriorityExt)
+        self.zeCommandQueueSetQosExt = _zeCommandQueueSetQosExt_t(self.__dditable.CommandQueue.pfnSetQosExt)
+        self.zeCommandQueueGetQosExt = _zeCommandQueueGetQosExt_t(self.__dditable.CommandQueue.pfnGetQosExt)
 
         # call driver to get function pointers
         _CommandList = _ze_command_list_dditable_t()

@@ -7760,6 +7760,60 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetQosExt = context.zeDdiTable.CommandQueue.pfnSetQosExt;
+        if( nullptr != pfnSetQosExt )
+        {
+            result = pfnSetQosExt( hCommandQueue, desc );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueSetQosExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetQosExt = context.zeDdiTable.CommandQueue.pfnGetQosExt;
+        if( nullptr != pfnGetQosExt )
+        {
+            result = pfnGetQosExt( hCommandQueue, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueGetQosExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -8344,6 +8398,14 @@ zeGetCommandQueueProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_18) {
     pDdiTable->pfnSetPriorityExt                         = driver::zeCommandQueueSetPriorityExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_19) {
+    pDdiTable->pfnSetQosExt                              = driver::zeCommandQueueSetQosExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_19) {
+    pDdiTable->pfnGetQosExt                              = driver::zeCommandQueueGetQosExt;
     }
 
     if (version >= ZE_API_VERSION_1_9) {

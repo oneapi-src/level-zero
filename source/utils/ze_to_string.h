@@ -3066,6 +3066,35 @@ inline std::string to_string(const ze_context_power_saving_hint_exp_desc_t& desc
     return to_string(&desc);
 }
 
+inline std::string to_string(const ze_command_queue_qos_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", qos=" << to_string(&desc->qos);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_command_queue_qos_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_command_queue_qos_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", qos=" << to_string(&desc->qos);
+    oss << ", isOverridden=" << to_string(&desc->isOverridden);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_command_queue_qos_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
 } // namespace loader
 
 #endif // _ZE_TO_STRING_H

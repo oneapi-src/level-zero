@@ -49,6 +49,22 @@ namespace validation_layer
 
 
     ze_result_t
+    ZESParameterValidation::zesDriverGetPropertiesPrologue(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        zes_driver_properties_t* pDriverProperties      ///< [in,out] query result for sysman driver properties
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pDriverProperties )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pDriverProperties);
+    }
+
+
+    ze_result_t
     ZESParameterValidation::zesDriverGetExtensionPropertiesPrologue(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
@@ -816,7 +832,7 @@ namespace validation_layer
         if( nullptr == hDevice )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-        if( 0xffff < events )
+        if( 0x1ffff < events )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ZE_RESULT_SUCCESS;
@@ -881,6 +897,65 @@ namespace validation_layer
                                                         ///< that occurred for that device at the same position in this array. If
                                                         ///< no event was received for a given device, the corresponding array
                                                         ///< entry will be zero.
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phDevices )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pNumDeviceEvents )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pEvents )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesDriverEventRegisterExtPrologue(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        zes_event_type_flags_t events                   ///< [in] List of driver scoped events to listen to.
+                                                        ///< Must be 0 or a combination of the driver scoped
+                                                        ///< ::zes_event_type_flags_t values.
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( 0x1ffff < events )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesDriverEventListenExtPrologue(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then will check status and return immediately;
+                                                        ///< if `UINT64_MAX`, then function will not return until events arrive.
+        uint32_t count,                                 ///< [in] Number of device handles in phDevices.
+        zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
+                                                        ///< devices from the provided driver handle can be specified in this list.
+        uint32_t* pNumDeviceEvents,                     ///< [in,out] Will contain the actual number of devices in phDevices that
+                                                        ///< generated device scoped events. If non-zero, check pEvents to
+                                                        ///< determine the devices and events that were received.
+        zes_event_type_flags_t* pEvents,                ///< [in,out] An array that will contain the list of device scoped events
+                                                        ///< for each device listened in phDevices.
+                                                        ///< This array must be at least as big as count.
+                                                        ///< For every device handle in phDevices, this will provide the events
+                                                        ///< that occurred for that device at the same position in this array. If
+                                                        ///< no event was received for a given device, the corresponding array
+                                                        ///< entry will be zero.
+        zes_event_type_flags_t* pDriverEvents           ///< [in,out][optional] Returns the driver scoped events which occurred,
+                                                        ///< i.e. 0 or a combination of the driver scoped ::zes_event_type_flags_t values.
+                                                        ///< When `nullptr`, driver scoped events are not listened to.
         )
     {
         if( nullptr == hDriver )
@@ -3064,6 +3139,194 @@ namespace validation_layer
 
         if( ZES_DEVICE_HEALTH_STATUS_EXT_FAILED < health )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesDriverEnumInfoLogsExtPrologue(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of info logs.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of info logs available.
+                                                        ///< if count is greater than the number of info logs available, then the
+                                                        ///< driver shall update the value with the correct number of info logs available.
+        zes_info_log_handle_t* phInfoLogs               ///< [in,out][optional][range(0, *pCount)] array of info log handles.
+                                                        ///< if count is less than the number of info logs available, then the
+                                                        ///< driver shall only retrieve that number of info log handles.
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesInfoLogGetPropertiesExtPrologue(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log
+        zes_info_log_ext_properties_t* pProperties      ///< [in,out] Will contain the properties of the info log.
+        )
+    {
+        if( nullptr == hInfoLog )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pProperties )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pProperties);
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesInfoLogCreateInstanceExtPrologue(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log
+        const char* pInstanceName,                      ///< [in][optional] name of the collection instance to create.
+                                                        ///< if nullptr, then the default buffer of the info log shall be used.
+        zes_info_log_instance_ext_desc_t* pDesc,        ///< [in,out] pointer to the descriptor of the collection instance to
+                                                        ///< create.
+        zes_info_log_instance_handle_t* phInfoLogInstance   ///< [out] handle of the collection instance that was created.
+        )
+    {
+        if( nullptr == hInfoLog )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pDesc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == phInfoLogInstance )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pDesc);
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesInfoLogInstanceReadWithMetadataExtPrologue(
+        zes_info_log_instance_handle_t hInfoLogInstance,///< [in] handle of the info log collection instance
+        uint64_t timeout,                               ///< [in] maximum time, in milliseconds, that this function may spend
+                                                        ///< searching the collection instance for records.
+                                                        ///< if zero, then the function shall return immediately without searching.
+                                                        ///< if `UINT64_MAX`, then the function shall not return until it has
+                                                        ///< searched all of the data held by the collection instance.
+                                                        ///< when this time elapses, the function shall return ::ZE_RESULT_SUCCESS
+                                                        ///< with the records it has found so far, which may be none.
+                                                        ///< due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        uint32_t* pSize,                                ///< [in,out] pointer to the size, in bytes, of the record data.
+                                                        ///< on input, the value is the size of `pBuffer`.
+                                                        ///< if the value is zero, or if `*pRecordCount` is zero, then this is a
+                                                        ///< query call: the driver shall update the value with the total size of
+                                                        ///< the record data that was found and shall not consume any record.
+                                                        ///< otherwise, on output the driver shall update the value with the size
+                                                        ///< of the record data written to `pBuffer`.
+        uint8_t* pBuffer,                               ///< [in,out][optional][range(0, *pSize)] buffer that will contain the
+                                                        ///< record data.
+                                                        ///< the driver shall not write to this buffer on a query call, and the
+                                                        ///< application may pass nullptr for such a call.
+        uint32_t* pRecordCount,                         ///< [in,out] pointer to the number of records.
+                                                        ///< on input, the value is the number of elements in `pDescriptors`.
+                                                        ///< if the value is zero, or if `*pSize` is zero, then this is a query
+                                                        ///< call: the driver shall update the value with the total number of
+                                                        ///< records that were found and shall not consume any record.
+                                                        ///< otherwise, on output the driver shall update the value with the number
+                                                        ///< of records written to `pDescriptors`.
+        zes_info_log_metadata_ext_t* pDescriptors,      ///< [in,out][optional][range(0, *pRecordCount)] array of metadata
+                                                        ///< describing each record written to `pBuffer`.
+                                                        ///< the driver shall not write to this array on a query call, and the
+                                                        ///< application may pass nullptr for such a call.
+                                                        ///< the application must initialize the stype member of each element in
+                                                        ///< the array.
+        zes_info_log_read_status_ext_t* pReadStatus     ///< [in,out][optional] pointer to a structure that will contain the status
+                                                        ///< of this call.
+                                                        ///< if nullptr, then the driver shall not report the status of this call,
+                                                        ///< and the application cannot determine whether records were dropped or
+                                                        ///< whether records remain available.
+                                                        ///< the application must initialize the stype member.
+        )
+    {
+        if( nullptr == hInfoLogInstance )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pSize )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pRecordCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesInfoLogInstancePeekWithMetadataExtPrologue(
+        zes_info_log_instance_handle_t hInfoLogInstance,///< [in] handle of the info log collection instance
+        uint64_t timeout,                               ///< [in] maximum time, in milliseconds, that this function may spend
+                                                        ///< searching the collection instance for records.
+                                                        ///< if zero, then the function shall return immediately without searching.
+                                                        ///< if `UINT64_MAX`, then the function shall not return until it has
+                                                        ///< searched all of the data held by the collection instance.
+                                                        ///< when this time elapses, the function shall return ::ZE_RESULT_SUCCESS
+                                                        ///< with the records it has found so far, which may be none.
+                                                        ///< due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        uint32_t* pSize,                                ///< [in,out] pointer to the size, in bytes, of the record data.
+                                                        ///< on input, the value is the size of `pBuffer`.
+                                                        ///< if the value is zero, or if `*pRecordCount` is zero, then this is a
+                                                        ///< query call: the driver shall update the value with the total size of
+                                                        ///< the record data that was found.
+                                                        ///< otherwise, on output the driver shall update the value with the size
+                                                        ///< of the record data written to `pBuffer`.
+        uint8_t* pBuffer,                               ///< [in,out][optional][range(0, *pSize)] buffer that will contain the
+                                                        ///< record data.
+                                                        ///< the driver shall not write to this buffer on a query call, and the
+                                                        ///< application may pass nullptr for such a call.
+        uint32_t* pRecordCount,                         ///< [in,out] pointer to the number of records.
+                                                        ///< on input, the value is the number of elements in `pDescriptors`.
+                                                        ///< if the value is zero, or if `*pSize` is zero, then this is a query
+                                                        ///< call: the driver shall update the value with the total number of
+                                                        ///< records that were found.
+                                                        ///< otherwise, on output the driver shall update the value with the number
+                                                        ///< of records written to `pDescriptors`.
+        zes_info_log_metadata_ext_t* pDescriptors,      ///< [in,out][optional][range(0, *pRecordCount)] array of metadata
+                                                        ///< describing each record written to `pBuffer`.
+                                                        ///< the driver shall not write to this array on a query call, and the
+                                                        ///< application may pass nullptr for such a call.
+                                                        ///< the application must initialize the stype member of each element in
+                                                        ///< the array.
+        zes_info_log_read_status_ext_t* pReadStatus     ///< [in,out][optional] pointer to a structure that will contain the status
+                                                        ///< of this call.
+                                                        ///< if nullptr, then the driver shall not report the status of this call,
+                                                        ///< and the application cannot determine whether records were dropped or
+                                                        ///< whether records remain available.
+                                                        ///< the application must initialize the stype member.
+        )
+    {
+        if( nullptr == hInfoLogInstance )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pSize )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pRecordCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesInfoLogInstanceDeleteExtPrologue(
+        zes_info_log_instance_handle_t hInfoLogInstance ///< [in][release] handle of the info log collection instance to delete
+        )
+    {
+        if( nullptr == hInfoLogInstance )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         return ZE_RESULT_SUCCESS;
     }
