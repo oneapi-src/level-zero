@@ -3852,6 +3852,43 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFormatModifiersSupportedExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFormatModifiersSupportedExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const ze_device_mem_alloc_desc_t* pDeviceDesc,  ///< [in] pointer to device memory allocation descriptor
+        size_t size,                                    ///< [in] size in bytes to allocate
+        size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFormatModifiersSupportedExp = context.zeDdiTable.MemExp.pfnGetFormatModifiersSupportedExp;
+        if( nullptr != pfnGetFormatModifiersSupportedExp )
+        {
+            result = pfnGetFormatModifiersSupportedExp( hContext, pDeviceDesc, size, alignment, hDevice, pCount, pDrmFormatModifiers );
+        }
+        else
+        {
+            // generic implementation
+            if( nullptr != pCount )
+            {
+                *pCount = 0;
+            }
+        }
+
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetFormatModifiersSupportedExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeModuleCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeModuleCreate(
@@ -6281,6 +6318,40 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeImageGetDeviceOffsetExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetFormatModifiersSupportedExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetFormatModifiersSupportedExp(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* pImageDesc,              ///< [in] pointer to image descriptor
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFormatModifiersSupportedExp = context.zeDdiTable.ImageExp.pfnGetFormatModifiersSupportedExp;
+        if( nullptr != pfnGetFormatModifiersSupportedExp )
+        {
+            result = pfnGetFormatModifiersSupportedExp( hDevice, pImageDesc, pCount, pDrmFormatModifiers );
+        }
+        else
+        {
+            // generic implementation
+            if( nullptr != pCount )
+            {
+                *pCount = 0;
+            }
+        }
+
+        char *env_str = context.setenv_var_with_driver_id("zeImageGetFormatModifiersSupportedExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -8962,6 +9033,10 @@ zeGetImageExpProcAddrTable(
     pDdiTable->pfnGetDeviceOffsetExp                     = driver::zeImageGetDeviceOffsetExp;
     }
 
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetFormatModifiersSupportedExp         = driver::zeImageGetFormatModifiersSupportedExp;
+    }
+
     return result;
 }
 
@@ -9196,6 +9271,10 @@ zeGetMemExpProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_7) {
     pDdiTable->pfnGetAtomicAccessAttributeExp            = driver::zeMemGetAtomicAccessAttributeExp;
+    }
+
+    if (version >= ZE_API_VERSION_1_17) {
+    pDdiTable->pfnGetFormatModifiersSupportedExp         = driver::zeMemGetFormatModifiersSupportedExp;
     }
 
     return result;

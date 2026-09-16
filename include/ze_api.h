@@ -420,6 +420,12 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_DEVICE_NPU_PROPERTIES_EXT = 0x00020049,               ///< ::ze_device_npu_properties_ext_t
     ZE_STRUCTURE_TYPE_INIT_DRIVER_APP_VERSION_EXT_DESC = 0x0002004A,        ///< ::ze_init_driver_app_version_ext_desc_t
     ZE_STRUCTURE_TYPE_IPC_PHYS_MEM_HANDLE_RANGE_EXT_DESC = 0x0002004B,      ///< ::ze_ipc_phys_mem_handle_range_ext_desc_t
+    ZE_STRUCTURE_TYPE_IMAGE_FORMAT_MODIFIER_CREATE_LIST_EXP_DESC = 0x0002004C,   ///< ::ze_image_format_modifier_create_list_exp_desc_t
+    ZE_STRUCTURE_TYPE_IMAGE_FORMAT_MODIFIER_IMPORT_EXP_DESC = 0x0002004D,   ///< ::ze_image_format_modifier_import_exp_desc_t
+    ZE_STRUCTURE_TYPE_IMAGE_SELECTED_FORMAT_MODIFIER_EXP_PROPERTIES = 0x0002004E,   ///< ::ze_image_selected_format_modifier_exp_properties_t
+    ZE_STRUCTURE_TYPE_MEM_FORMAT_MODIFIER_CREATE_LIST_EXP_DESC = 0x0002004F,///< ::ze_mem_format_modifier_create_list_exp_desc_t
+    ZE_STRUCTURE_TYPE_MEM_FORMAT_MODIFIER_IMPORT_EXP_DESC = 0x00020050,     ///< ::ze_mem_format_modifier_import_exp_desc_t
+    ZE_STRUCTURE_TYPE_MEM_SELECTED_FORMAT_MODIFIER_EXP_PROPERTIES = 0x00020051,  ///< ::ze_mem_selected_format_modifier_exp_properties_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_STRUCTURE_TYPE_* ENUMs
 
 } ze_structure_type_t;
@@ -18208,6 +18214,245 @@ typedef struct _ze_context_power_saving_hint_exp_desc_t
                                                                             ///< and can use pre-defined settings from ::ze_power_saving_hint_type_t.
 
 } ze_context_power_saving_hint_exp_desc_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for querying and using Linux DRM format modifiers
+#if !defined(__GNUC__)
+#pragma region imageDrmFormatModifier
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_NAME
+/// @brief Image DRM Format Modifier Extension Name
+#define ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_NAME  "ZE_experimental_image_drm_format_modifier"
+#endif // ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Image DRM Format Modifier Extension Version(s)
+typedef enum _ze_image_drm_format_modifier_exp_version_t
+{
+    ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_VERSION_* ENUMs
+
+} ze_image_drm_format_modifier_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Image DRM format modifier create list descriptor
+///
+/// @details
+///     - A DRM format modifier is a 64-bit, vendor-prefixed, semi-opaque
+///       unsigned integer that names a concrete memory layout (tiling and/or
+///       compression). The canonical list of modifiers and vendor prefixes is
+///       found in `drm_fourcc.h` in the Linux kernel source.
+///     - This structure may be passed as `pNext` member of ::ze_image_desc_t
+///       when creating an image that will be exported to another API. The
+///       implementation selects one modifier from the supplied list; the
+///       selection may be read back with
+///       ::ze_image_selected_format_modifier_exp_properties_t.
+///     - To request one specific modifier, set `drmFormatModifierCount` to 1.
+///     - Applications must translate between ::ze_image_format_layout_t and the
+///       DRM `fourcc` format code at the API boundary. That mapping is lossy
+///       (DRM formats do not distinguish RGB from sRGB) and incomplete in both
+///       directions.
+///     - When no DRM format modifier structure is chained, the implementation
+///       assumes the image is uncompressed and linear.
+typedef struct _ze_image_format_modifier_create_list_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t drmFormatModifierCount;                                        ///< [in] number of DRM format modifiers in `pDrmFormatModifiers`
+    const uint64_t* pDrmFormatModifiers;                                    ///< [in][range(0, drmFormatModifierCount)] array of DRM format modifiers
+                                                                            ///< the implementation may choose from
+
+} ze_image_format_modifier_create_list_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Image DRM format modifier import descriptor
+///
+/// @details
+///     - This structure may be passed as `pNext` member of ::ze_image_desc_t
+///       when importing an image whose memory layout was chosen by an external
+///       API. Exactly one modifier applies to a whole image.
+///     - This descriptor must be used together with
+///       ::ze_external_memory_import_fd_t; the recommended chain is
+///       ::ze_image_desc_t -> ::ze_external_memory_import_fd_t ->
+///       ::ze_image_format_modifier_import_exp_desc_t.
+typedef struct _ze_image_format_modifier_import_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t drmFormatModifier;                                             ///< [in] the DRM format modifier the exporting API used to create the image
+
+} ze_image_format_modifier_import_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Image selected DRM format modifier properties
+///
+/// @details
+///     - This structure may be passed as `pNext` member of
+///       ::ze_image_properties_t to retrieve the DRM format modifier the
+///       implementation selected for an image description. The value is needed
+///       to hand the image to an external API that consumes modifiers.
+typedef struct _ze_image_selected_format_modifier_exp_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t drmFormatModifier;                                             ///< [out] the DRM format modifier selected by the implementation
+
+} ze_image_selected_format_modifier_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory allocation DRM format modifier create list descriptor
+///
+/// @details
+///     - This structure may be passed as `pNext` member of
+///       ::ze_device_mem_alloc_desc_t when allocating memory that will be
+///       exported to another API. The implementation selects one modifier from
+///       the supplied list.
+///     - Modifiers on buffers are primarily useful for interoperating with
+///       buffers that may be compressed.
+///     - When no DRM format modifier structure is chained, the implementation
+///       assumes the allocation is uncompressed.
+typedef struct _ze_mem_format_modifier_create_list_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t drmFormatModifierCount;                                        ///< [in] number of DRM format modifiers in `pDrmFormatModifiers`
+    const uint64_t* pDrmFormatModifiers;                                    ///< [in][range(0, drmFormatModifierCount)] array of DRM format modifiers
+                                                                            ///< the implementation may choose from
+
+} ze_mem_format_modifier_create_list_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory allocation DRM format modifier import descriptor
+///
+/// @details
+///     - This structure may be passed as `pNext` member of
+///       ::ze_device_mem_alloc_desc_t when importing an allocation whose layout
+///       was chosen by an external API.
+///     - This descriptor must be used together with
+///       ::ze_external_memory_import_fd_t; the recommended chain is
+///       ::ze_device_mem_alloc_desc_t -> ::ze_external_memory_import_fd_t ->
+///       ::ze_mem_format_modifier_import_exp_desc_t.
+typedef struct _ze_mem_format_modifier_import_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t drmFormatModifier;                                             ///< [in] the DRM format modifier the exporting API used for the allocation
+
+} ze_mem_format_modifier_import_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory allocation selected DRM format modifier properties
+///
+/// @details
+///     - This structure may be passed as `pNext` member of
+///       ::ze_memory_allocation_properties_t to retrieve the DRM format
+///       modifier the implementation selected for an allocation.
+typedef struct _ze_mem_selected_format_modifier_exp_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t drmFormatModifier;                                             ///< [out] the DRM format modifier selected by the implementation
+
+} ze_mem_selected_format_modifier_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries the DRM format modifiers supported for an image description.
+///
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - The returned set is the list of modifiers the implementation can use
+///       for `pImageDesc` on `hDevice`. It is the direct analogue of the Linux
+///       negotiation phase: intersect this set with the set reported by the
+///       external API (for example Vulkan's
+///       `VkDrmFormatModifierPropertiesListEXT`) to obtain the modifiers usable
+///       for interop, then create the resource in the exporting API with that
+///       common set and import it with the modifier it selected.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pImageDesc`
+///         + `nullptr == pCount`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT
+///     - ::ZE_RESULT_ERROR_INVALID_IMAGE_DESC
+///         + the image description does not match the device capabilities
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeImageGetFormatModifiersSupportedExp(
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device
+    const ze_image_desc_t* pImageDesc,                                      ///< [in] pointer to image descriptor
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of DRM format modifiers.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< total number of supported DRM format modifiers for the image
+                                                                            ///< description.
+                                                                            ///< if count is greater than the number of supported DRM format
+                                                                            ///< modifiers, then the driver shall update the value with the correct
+                                                                            ///< number of supported DRM format modifiers.
+    uint64_t* pDrmFormatModifiers                                           ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                                            ///< modifiers.
+                                                                            ///< if count is less than the number of supported DRM format modifiers,
+                                                                            ///< then the driver shall only retrieve that number of modifiers.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries the DRM format modifiers supported for a device memory
+///        allocation description.
+///
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - The set of DRM format modifiers returned must be valid for the supplied
+///       allocation description, size and alignment.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDeviceDesc`
+///         + `nullptr == pCount`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeMemGetFormatModifiersSupportedExp(
+    ze_context_handle_t hContext,                                           ///< [in] handle of the context object
+    const ze_device_mem_alloc_desc_t* pDeviceDesc,                          ///< [in] pointer to device memory allocation descriptor
+    size_t size,                                                            ///< [in] size in bytes to allocate
+    size_t alignment,                                                       ///< [in] minimum alignment in bytes for the allocation
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of DRM format modifiers.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< total number of supported DRM format modifiers for the allocation
+                                                                            ///< description.
+                                                                            ///< if count is greater than the number of supported DRM format
+                                                                            ///< modifiers, then the driver shall update the value with the correct
+                                                                            ///< number of supported DRM format modifiers.
+    uint64_t* pDrmFormatModifiers                                           ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                                            ///< modifiers.
+                                                                            ///< if count is less than the number of supported DRM format modifiers,
+                                                                            ///< then the driver shall only retrieve that number of modifiers.
+    );
 
 #if !defined(__GNUC__)
 #pragma endregion

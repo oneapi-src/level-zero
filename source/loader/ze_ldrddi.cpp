@@ -4503,6 +4503,40 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFormatModifiersSupportedExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFormatModifiersSupportedExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const ze_device_mem_alloc_desc_t* pDeviceDesc,  ///< [in] pointer to device memory allocation descriptor
+        size_t size,                                    ///< [in] size in bytes to allocate
+        size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnGetFormatModifiersSupportedExp = dditable->ze.MemExp.pfnGetFormatModifiersSupportedExp;
+        if( nullptr == pfnGetFormatModifiersSupportedExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetFormatModifiersSupportedExp( hContext, pDeviceDesc, size, alignment, hDevice, pCount, pDrmFormatModifiers );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeModuleCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeModuleCreate(
@@ -7256,6 +7290,34 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetFormatModifiersSupportedExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetFormatModifiersSupportedExp(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* pImageDesc,              ///< [in] pointer to image descriptor
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetFormatModifiersSupportedExp = dditable->ze.ImageExp.pfnGetFormatModifiersSupportedExp;
+        if( nullptr == pfnGetFormatModifiersSupportedExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetFormatModifiersSupportedExp( hDevice, pImageDesc, pCount, pDrmFormatModifiers );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListCreateCloneExp
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListCreateCloneExp(
@@ -9224,6 +9286,7 @@ zeGetImageExpProcAddrTableLegacy()
     loader::loaderDispatch->pCore->ImageExp->pfnGetMemoryPropertiesExp                   = loader::zeImageGetMemoryPropertiesExp;
     loader::loaderDispatch->pCore->ImageExp->pfnViewCreateExp                            = loader::zeImageViewCreateExp;
     loader::loaderDispatch->pCore->ImageExp->pfnGetDeviceOffsetExp                       = loader::zeImageGetDeviceOffsetExp;
+    loader::loaderDispatch->pCore->ImageExp->pfnGetFormatModifiersSupportedExp           = loader::zeImageGetFormatModifiersSupportedExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9290,6 +9353,7 @@ zeGetMemExpProcAddrTableLegacy()
     loader::loaderDispatch->pCore->MemExp->pfnGetFileDescriptorFromIpcHandleExp        = loader::zeMemGetFileDescriptorFromIpcHandleExp;
     loader::loaderDispatch->pCore->MemExp->pfnSetAtomicAccessAttributeExp              = loader::zeMemSetAtomicAccessAttributeExp;
     loader::loaderDispatch->pCore->MemExp->pfnGetAtomicAccessAttributeExp              = loader::zeMemGetAtomicAccessAttributeExp;
+    loader::loaderDispatch->pCore->MemExp->pfnGetFormatModifiersSupportedExp           = loader::zeMemGetFormatModifiersSupportedExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -13407,6 +13471,13 @@ zeGetImageExpProcAddrTable(
                 pDdiTable->pfnGetDeviceOffsetExp                       = loader::zeImageGetDeviceOffsetExp;
             }
             }
+            if (version >= ZE_API_VERSION_1_17) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetFormatModifiersSupportedExp           = loader_driver_ddi::zeImageGetFormatModifiersSupportedExp;
+            } else {
+                pDdiTable->pfnGetFormatModifiersSupportedExp           = loader::zeImageGetFormatModifiersSupportedExp;
+            }
+            }
             zeGetImageExpProcAddrTableLegacy();
         }
         else
@@ -13420,6 +13491,9 @@ zeGetImageExpProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_9) {
                 pDdiTable->pfnGetDeviceOffsetExp                       = firstDriver->dditable.ze.ImageExp.pfnGetDeviceOffsetExp;
+            }
+            if (version >= ZE_API_VERSION_1_17) {
+                pDdiTable->pfnGetFormatModifiersSupportedExp           = firstDriver->dditable.ze.ImageExp.pfnGetFormatModifiersSupportedExp;
             }
         }
     }
@@ -14056,6 +14130,13 @@ zeGetMemExpProcAddrTable(
                 pDdiTable->pfnGetAtomicAccessAttributeExp              = loader::zeMemGetAtomicAccessAttributeExp;
             }
             }
+            if (version >= ZE_API_VERSION_1_17) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetFormatModifiersSupportedExp           = loader_driver_ddi::zeMemGetFormatModifiersSupportedExp;
+            } else {
+                pDdiTable->pfnGetFormatModifiersSupportedExp           = loader::zeMemGetFormatModifiersSupportedExp;
+            }
+            }
             zeGetMemExpProcAddrTableLegacy();
         }
         else
@@ -14072,6 +14153,9 @@ zeGetMemExpProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_7) {
                 pDdiTable->pfnGetAtomicAccessAttributeExp              = firstDriver->dditable.ze.MemExp.pfnGetAtomicAccessAttributeExp;
+            }
+            if (version >= ZE_API_VERSION_1_17) {
+                pDdiTable->pfnGetFormatModifiersSupportedExp           = firstDriver->dditable.ze.MemExp.pfnGetFormatModifiersSupportedExp;
             }
         }
     }

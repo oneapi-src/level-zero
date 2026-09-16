@@ -1826,12 +1826,22 @@ typedef ze_result_t (ZE_APICALL *ze_pfnImageGetDeviceOffsetExp_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeImageGetFormatModifiersSupportedExp
+typedef ze_result_t (ZE_APICALL *ze_pfnImageGetFormatModifiersSupportedExp_t)(
+    ze_device_handle_t,
+    const ze_image_desc_t*,
+    uint32_t*,
+    uint64_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of ImageExp functions pointers
 typedef struct _ze_image_exp_dditable_t
 {
     ze_pfnImageGetMemoryPropertiesExp_t                         pfnGetMemoryPropertiesExp;
     ze_pfnImageViewCreateExp_t                                  pfnViewCreateExp;
     ze_pfnImageGetDeviceOffsetExp_t                             pfnGetDeviceOffsetExp;
+    ze_pfnImageGetFormatModifiersSupportedExp_t                 pfnGetFormatModifiersSupportedExp;
 } ze_image_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2052,6 +2062,18 @@ typedef ze_result_t (ZE_APICALL *ze_pfnMemGetAtomicAccessAttributeExp_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemGetFormatModifiersSupportedExp
+typedef ze_result_t (ZE_APICALL *ze_pfnMemGetFormatModifiersSupportedExp_t)(
+    ze_context_handle_t,
+    const ze_device_mem_alloc_desc_t*,
+    size_t,
+    size_t,
+    ze_device_handle_t,
+    uint32_t*,
+    uint64_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of MemExp functions pointers
 typedef struct _ze_mem_exp_dditable_t
 {
@@ -2059,6 +2081,7 @@ typedef struct _ze_mem_exp_dditable_t
     ze_pfnMemGetFileDescriptorFromIpcHandleExp_t                pfnGetFileDescriptorFromIpcHandleExp;
     ze_pfnMemSetAtomicAccessAttributeExp_t                      pfnSetAtomicAccessAttributeExp;
     ze_pfnMemGetAtomicAccessAttributeExp_t                      pfnGetAtomicAccessAttributeExp;
+    ze_pfnMemGetFormatModifiersSupportedExp_t                   pfnGetFormatModifiersSupportedExp;
 } ze_mem_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

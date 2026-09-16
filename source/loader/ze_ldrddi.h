@@ -1004,6 +1004,17 @@ namespace loader_driver_ddi
         ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
         );
     __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFormatModifiersSupportedExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const ze_device_mem_alloc_desc_t* pDeviceDesc,  ///< [in] pointer to device memory allocation descriptor
+        size_t size,                                    ///< [in] size in bytes to allocate
+        size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
+        );
+    __zedlllocal ze_result_t ZE_APICALL
     zeModuleCreate(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
@@ -1627,6 +1638,14 @@ namespace loader_driver_ddi
     zeImageGetDeviceOffsetExp(
         ze_image_handle_t hImage,                       ///< [in] handle of the image
         uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetFormatModifiersSupportedExp(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* pImageDesc,              ///< [in] pointer to image descriptor
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
         );
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListCreateCloneExp(

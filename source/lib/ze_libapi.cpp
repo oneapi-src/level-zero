@@ -15562,6 +15562,139 @@ zeImageGetDeviceOffsetExp(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries the DRM format modifiers supported for an image description.
+///
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - Intersect the returned set with the set reported by the external API
+///       to obtain the modifiers usable for interop.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT
+///     - ::ZE_RESULT_ERROR_INVALID_IMAGE_DESC
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pImageDesc`
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zeImageGetFormatModifiersSupportedExp(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    const ze_image_desc_t* pImageDesc,              ///< [in] pointer to image descriptor
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+    uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                    ///< modifiers
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnImageGetFormatModifiersSupportedExp_t pfnGetFormatModifiersSupportedExp = [&result] {
+        auto pfnGetFormatModifiersSupportedExp = ze_lib::context->zeDdiTable.load()->ImageExp.pfnGetFormatModifiersSupportedExp;
+        if( nullptr == pfnGetFormatModifiersSupportedExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetFormatModifiersSupportedExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetFormatModifiersSupportedExp( hDevice, pImageDesc, pCount, pDrmFormatModifiers );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFormatModifiersSupportedExp = ze_lib::context->zeDdiTable.load()->ImageExp.pfnGetFormatModifiersSupportedExp;
+    if( nullptr == pfnGetFormatModifiersSupportedExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFormatModifiersSupportedExp( hDevice, pImageDesc, pCount, pDrmFormatModifiers );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Queries the DRM format modifiers supported for a device memory
+///        allocation description.
+///
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDeviceDesc`
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zeMemGetFormatModifiersSupportedExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    const ze_device_mem_alloc_desc_t* pDeviceDesc,  ///< [in] pointer to device memory allocation descriptor
+    size_t size,                                    ///< [in] size in bytes to allocate
+    size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+    uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                    ///< modifiers
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnMemGetFormatModifiersSupportedExp_t pfnGetFormatModifiersSupportedExp = [&result] {
+        auto pfnGetFormatModifiersSupportedExp = ze_lib::context->zeDdiTable.load()->MemExp.pfnGetFormatModifiersSupportedExp;
+        if( nullptr == pfnGetFormatModifiersSupportedExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetFormatModifiersSupportedExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetFormatModifiersSupportedExp( hContext, pDeviceDesc, size, alignment, hDevice, pCount, pDrmFormatModifiers );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFormatModifiersSupportedExp = ze_lib::context->zeDdiTable.load()->MemExp.pfnGetFormatModifiersSupportedExp;
+    if( nullptr == pfnGetFormatModifiersSupportedExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFormatModifiersSupportedExp( hContext, pDeviceDesc, size, alignment, hDevice, pCount, pDrmFormatModifiers );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Creates a command list as the clone of another command list.
 /// 
 /// @details

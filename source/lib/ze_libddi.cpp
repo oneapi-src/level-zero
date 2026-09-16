@@ -521,6 +521,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeImageViewCreateExp") );
             initialzeDdiTable.ImageExp.pfnGetDeviceOffsetExp = reinterpret_cast<ze_pfnImageGetDeviceOffsetExp_t>(
                 GET_FUNCTION_PTR(loader, "zeImageGetDeviceOffsetExp") );
+            initialzeDdiTable.ImageExp.pfnGetFormatModifiersSupportedExp = reinterpret_cast<ze_pfnImageGetFormatModifiersSupportedExp_t>(
+                GET_FUNCTION_PTR(loader, "zeImageGetFormatModifiersSupportedExp") );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -619,6 +621,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeMemSetAtomicAccessAttributeExp") );
             initialzeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp = reinterpret_cast<ze_pfnMemGetAtomicAccessAttributeExp_t>(
                 GET_FUNCTION_PTR(loader, "zeMemGetAtomicAccessAttributeExp") );
+            initialzeDdiTable.MemExp.pfnGetFormatModifiersSupportedExp = reinterpret_cast<ze_pfnMemGetFormatModifiersSupportedExp_t>(
+                GET_FUNCTION_PTR(loader, "zeMemGetFormatModifiersSupportedExp") );
         }
 
         if( ZE_RESULT_SUCCESS == result )

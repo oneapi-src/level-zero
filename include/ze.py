@@ -386,6 +386,12 @@ class ze_structure_type_v(IntEnum):
     DEVICE_NPU_PROPERTIES_EXT = 0x00020049                                  ## ::ze_device_npu_properties_ext_t
     INIT_DRIVER_APP_VERSION_EXT_DESC = 0x0002004A                           ## ::ze_init_driver_app_version_ext_desc_t
     IPC_PHYS_MEM_HANDLE_RANGE_EXT_DESC = 0x0002004B                         ## ::ze_ipc_phys_mem_handle_range_ext_desc_t
+    IMAGE_FORMAT_MODIFIER_CREATE_LIST_EXP_DESC = 0x0002004C                 ## ::ze_image_format_modifier_create_list_exp_desc_t
+    IMAGE_FORMAT_MODIFIER_IMPORT_EXP_DESC = 0x0002004D                      ## ::ze_image_format_modifier_import_exp_desc_t
+    IMAGE_SELECTED_FORMAT_MODIFIER_EXP_PROPERTIES = 0x0002004E              ## ::ze_image_selected_format_modifier_exp_properties_t
+    MEM_FORMAT_MODIFIER_CREATE_LIST_EXP_DESC = 0x0002004F                   ## ::ze_mem_format_modifier_create_list_exp_desc_t
+    MEM_FORMAT_MODIFIER_IMPORT_EXP_DESC = 0x00020050                        ## ::ze_mem_format_modifier_import_exp_desc_t
+    MEM_SELECTED_FORMAT_MODIFIER_EXP_PROPERTIES = 0x00020051                ## ::ze_mem_selected_format_modifier_exp_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -6016,6 +6022,85 @@ class ze_context_power_saving_hint_exp_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Image DRM Format Modifier Extension Name
+ZE_IMAGE_DRM_FORMAT_MODIFIER_EXP_NAME = "ZE_experimental_image_drm_format_modifier"
+
+###############################################################################
+## @brief Image DRM Format Modifier Extension Version(s)
+class ze_image_drm_format_modifier_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_image_drm_format_modifier_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_image_drm_format_modifier_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Image DRM format modifier create list descriptor
+class ze_image_format_modifier_create_list_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("drmFormatModifierCount", c_ulong),                            ## [in] number of DRM format modifiers in `pDrmFormatModifiers`
+        ("pDrmFormatModifiers", POINTER(c_ulonglong))                   ## [in][range(0, drmFormatModifierCount)] array of DRM format modifiers
+                                                                        ## the implementation may choose from
+    ]
+
+###############################################################################
+## @brief Image DRM format modifier import descriptor
+class ze_image_format_modifier_import_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("drmFormatModifier", c_ulonglong)                              ## [in] the DRM format modifier the exporting API used for the image
+    ]
+
+###############################################################################
+## @brief Image selected DRM format modifier properties
+class ze_image_selected_format_modifier_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("drmFormatModifier", c_ulonglong)                              ## [out] the DRM format modifier selected by the implementation
+    ]
+
+###############################################################################
+## @brief Memory allocation DRM format modifier create list descriptor
+class ze_mem_format_modifier_create_list_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("drmFormatModifierCount", c_ulong),                            ## [in] number of DRM format modifiers in `pDrmFormatModifiers`
+        ("pDrmFormatModifiers", POINTER(c_ulonglong))                   ## [in][range(0, drmFormatModifierCount)] array of DRM format modifiers
+                                                                        ## the implementation may choose from
+    ]
+
+###############################################################################
+## @brief Memory allocation DRM format modifier import descriptor
+class ze_mem_format_modifier_import_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("drmFormatModifier", c_ulonglong)                              ## [in] the DRM format modifier the exporting API used for the allocation
+    ]
+
+###############################################################################
+## @brief Memory allocation selected DRM format modifier properties
+class ze_mem_selected_format_modifier_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("drmFormatModifier", c_ulonglong)                              ## [out] the DRM format modifier selected by the implementation
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -7305,6 +7390,13 @@ if __use_win_types:
 else:
     _zeImageGetDeviceOffsetExp_t = CFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(c_ulonglong) )
 
+###############################################################################
+## @brief Function-pointer for zeImageGetFormatModifiersSupportedExp
+if __use_win_types:
+    _zeImageGetFormatModifiersSupportedExp_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_image_desc_t), POINTER(c_ulong), POINTER(c_ulonglong) )
+else:
+    _zeImageGetFormatModifiersSupportedExp_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_image_desc_t), POINTER(c_ulong), POINTER(c_ulonglong) )
+
 
 ###############################################################################
 ## @brief Table of ImageExp functions pointers
@@ -7312,7 +7404,8 @@ class _ze_image_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnGetMemoryPropertiesExp", c_void_p),                        ## _zeImageGetMemoryPropertiesExp_t
         ("pfnViewCreateExp", c_void_p),                                 ## _zeImageViewCreateExp_t
-        ("pfnGetDeviceOffsetExp", c_void_p)                             ## _zeImageGetDeviceOffsetExp_t
+        ("pfnGetDeviceOffsetExp", c_void_p),                            ## _zeImageGetDeviceOffsetExp_t
+        ("pfnGetFormatModifiersSupportedExp", c_void_p)                 ## _zeImageGetFormatModifiersSupportedExp_t
     ]
 
 ###############################################################################
@@ -7454,6 +7547,13 @@ if __use_win_types:
 else:
     _zeMemGetAtomicAccessAttributeExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, POINTER(ze_memory_atomic_attr_exp_flags_t) )
 
+###############################################################################
+## @brief Function-pointer for zeMemGetFormatModifiersSupportedExp
+if __use_win_types:
+    _zeMemGetFormatModifiersSupportedExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_ulong), POINTER(c_ulonglong) )
+else:
+    _zeMemGetFormatModifiersSupportedExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_ulong), POINTER(c_ulonglong) )
+
 
 ###############################################################################
 ## @brief Table of MemExp functions pointers
@@ -7462,7 +7562,8 @@ class _ze_mem_exp_dditable_t(Structure):
         ("pfnGetIpcHandleFromFileDescriptorExp", c_void_p),             ## _zeMemGetIpcHandleFromFileDescriptorExp_t
         ("pfnGetFileDescriptorFromIpcHandleExp", c_void_p),             ## _zeMemGetFileDescriptorFromIpcHandleExp_t
         ("pfnSetAtomicAccessAttributeExp", c_void_p),                   ## _zeMemSetAtomicAccessAttributeExp_t
-        ("pfnGetAtomicAccessAttributeExp", c_void_p)                    ## _zeMemGetAtomicAccessAttributeExp_t
+        ("pfnGetAtomicAccessAttributeExp", c_void_p),                    ## _zeMemGetAtomicAccessAttributeExp_t
+        ("pfnGetFormatModifiersSupportedExp", c_void_p)                 ## _zeMemGetFormatModifiersSupportedExp_t
     ]
 
 ###############################################################################
@@ -8631,6 +8732,7 @@ class ZE_DDI:
         self.zeImageGetMemoryPropertiesExp = _zeImageGetMemoryPropertiesExp_t(self.__dditable.ImageExp.pfnGetMemoryPropertiesExp)
         self.zeImageViewCreateExp = _zeImageViewCreateExp_t(self.__dditable.ImageExp.pfnViewCreateExp)
         self.zeImageGetDeviceOffsetExp = _zeImageGetDeviceOffsetExp_t(self.__dditable.ImageExp.pfnGetDeviceOffsetExp)
+        self.zeImageGetFormatModifiersSupportedExp = _zeImageGetFormatModifiersSupportedExp_t(self.__dditable.ImageExp.pfnGetFormatModifiersSupportedExp)
 
         # call driver to get function pointers
         _Mem = _ze_mem_dditable_t()
@@ -8666,6 +8768,7 @@ class ZE_DDI:
         self.zeMemGetFileDescriptorFromIpcHandleExp = _zeMemGetFileDescriptorFromIpcHandleExp_t(self.__dditable.MemExp.pfnGetFileDescriptorFromIpcHandleExp)
         self.zeMemSetAtomicAccessAttributeExp = _zeMemSetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnSetAtomicAccessAttributeExp)
         self.zeMemGetAtomicAccessAttributeExp = _zeMemGetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnGetAtomicAccessAttributeExp)
+        self.zeMemGetFormatModifiersSupportedExp = _zeMemGetFormatModifiersSupportedExp_t(self.__dditable.MemExp.pfnGetFormatModifiersSupportedExp)
 
         # call driver to get function pointers
         _Fence = _ze_fence_dditable_t()

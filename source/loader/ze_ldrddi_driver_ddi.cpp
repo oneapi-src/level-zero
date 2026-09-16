@@ -4172,6 +4172,43 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFormatModifiersSupportedExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFormatModifiersSupportedExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const ze_device_mem_alloc_desc_t* pDeviceDesc,  ///< [in] pointer to device memory allocation descriptor
+        size_t size,                                    ///< [in] size in bytes to allocate
+        size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_17) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MemExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetFormatModifiersSupportedExp = dditable->MemExp->pfnGetFormatModifiersSupportedExp;
+        if( nullptr == pfnGetFormatModifiersSupportedExp ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetFormatModifiersSupportedExp( hContext, pDeviceDesc, size, alignment, hDevice, pCount, pDrmFormatModifiers );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeModuleCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeModuleCreate(
@@ -6873,6 +6910,40 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetFormatModifiersSupportedExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetFormatModifiersSupportedExp(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* pImageDesc,              ///< [in] pointer to image descriptor
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of DRM format modifiers
+        uint64_t* pDrmFormatModifiers                   ///< [in,out][optional][range(0, *pCount)] array of supported DRM format
+                                                        ///< modifiers
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_17) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->ImageExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetFormatModifiersSupportedExp = dditable->ImageExp->pfnGetFormatModifiersSupportedExp;
+        if( nullptr == pfnGetFormatModifiersSupportedExp ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetFormatModifiersSupportedExp( hDevice, pImageDesc, pCount, pDrmFormatModifiers );
         return result;
     }
 
