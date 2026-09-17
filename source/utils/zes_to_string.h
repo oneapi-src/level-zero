@@ -89,6 +89,34 @@ inline std::string to_string(const zes_base_capability_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const zes_uuid_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "id=" << to_string(desc->id);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_uuid_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_driver_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", uuid=" << to_string(&desc->uuid);
+    oss << ", driverVersion=" << to_string(desc->driverVersion);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_driver_properties_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const zes_driver_extension_properties_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -130,19 +158,6 @@ inline std::string to_string(const zes_reset_properties_t* desc) {
 }
 
 inline std::string to_string(const zes_reset_properties_t& desc) {
-    return to_string(&desc);
-}
-
-inline std::string to_string(const zes_uuid_t* desc) {
-    if (!desc) return "nullptr";
-    std::ostringstream oss;
-    oss << "{";
-    oss << "id=" << to_string(desc->id);
-    oss << "}";
-    return oss.str();
-}
-
-inline std::string to_string(const zes_uuid_t& desc) {
     return to_string(&desc);
 }
 
@@ -1542,6 +1557,72 @@ inline std::string to_string(const zes_memory_vendor_info_ext_properties_t* desc
 }
 
 inline std::string to_string(const zes_memory_vendor_info_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_info_log_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", infoLogType=" << to_string(&desc->infoLogType);
+    oss << ", infoLogFormat=" << to_string(&desc->infoLogFormat);
+    oss << ", isNamedInstanceSupported=" << to_string(&desc->isNamedInstanceSupported);
+    oss << ", isPeekDataSupported=" << to_string(&desc->isPeekDataSupported);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_info_log_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_info_log_instance_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", pBufferSizeInKb=" << to_string(desc->pBufferSizeInKb);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_info_log_instance_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_info_log_metadata_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", address=" << to_string(&desc->address);
+    oss << ", uuid=" << to_string(&desc->uuid);
+    oss << ", timestamp=" << to_string(desc->timestamp);
+    oss << ", lengthOfData=" << to_string(desc->lengthOfData);
+    oss << ", offset=" << to_string(desc->offset);
+    oss << ", recordType=" << to_string(&desc->recordType);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_info_log_metadata_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_info_log_read_status_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", droppedRecordCount=" << to_string(desc->droppedRecordCount);
+    oss << ", consumedDataSize=" << to_string(desc->consumedDataSize);
+    oss << ", hasDataToRead=" << to_string(&desc->hasDataToRead);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_info_log_read_status_ext_t& desc) {
     return to_string(&desc);
 }
 

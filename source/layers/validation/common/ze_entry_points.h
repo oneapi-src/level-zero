@@ -531,6 +531,10 @@ public:
     virtual ze_result_t zeCommandQueueSetPriorityExtEpilogue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_priority_t priority , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetCompilerInfoPrologue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, size_t* pSize, void* pData ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetCompilerInfoEpilogue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, size_t* pSize, void* pData , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueSetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueSetQosExtEpilogue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetQosExtEpilogue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     // Experimental Intel extension for counter-based events
     virtual ze_result_t zexCounterBasedEventCreate2Prologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zexCounterBasedEventCreate2Epilogue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent , ze_result_t result) {return ZE_RESULT_SUCCESS;}

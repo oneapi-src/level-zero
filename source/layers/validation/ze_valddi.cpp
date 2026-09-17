@@ -8616,6 +8616,54 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandQueueSetQosExt(
+        ze_result_t result,
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueSetQosExt(";
+        
+        
+        oss << "hCommandQueue=";
+        oss << loader::to_string(hCommandQueue);
+        
+        oss << ", ";
+        oss << "desc=";
+        oss << loader::to_string(desc);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandQueueGetQosExt(
+        ze_result_t result,
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueGetQosExt(";
+        
+        
+        oss << "hCommandQueue=";
+        oss << loader::to_string(hCommandQueue);
+        
+        oss << ", ";
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
     // Special function for zexCounterBasedEventCreate2
     VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zexCounterBasedEventCreate2(
         ze_result_t result,
@@ -20468,6 +20516,90 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        )
+    {
+        context.logger->log_trace("zeCommandQueueSetQosExt(hCommandQueue, desc)");
+
+        auto pfnSetQosExt = context.zeDdiTable.CommandQueue.pfnSetQosExt;
+
+        if( nullptr == pfnSetQosExt )
+            return logAndPropagateResult_zeCommandQueueSetQosExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandQueue, desc);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSetQosExtPrologue( hCommandQueue, desc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueSetQosExt(result, hCommandQueue, desc);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueSetQosExtPrologue( hCommandQueue, desc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueSetQosExt(result, hCommandQueue, desc);
+        }
+
+        auto driver_result = pfnSetQosExt( hCommandQueue, desc );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSetQosExtEpilogue( hCommandQueue, desc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueSetQosExt(result, hCommandQueue, desc);
+        }
+
+        return logAndPropagateResult_zeCommandQueueSetQosExt(driver_result, hCommandQueue, desc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        )
+    {
+        context.logger->log_trace("zeCommandQueueGetQosExt(hCommandQueue, pProperties)");
+
+        auto pfnGetQosExt = context.zeDdiTable.CommandQueue.pfnGetQosExt;
+
+        if( nullptr == pfnGetQosExt )
+            return logAndPropagateResult_zeCommandQueueGetQosExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandQueue, pProperties);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetQosExtPrologue( hCommandQueue, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueGetQosExt(result, hCommandQueue, pProperties);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetQosExtPrologue( hCommandQueue, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueGetQosExt(result, hCommandQueue, pProperties);
+        }
+
+        auto driver_result = pfnGetQosExt( hCommandQueue, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetQosExtEpilogue( hCommandQueue, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueGetQosExt(result, hCommandQueue, pProperties);
+        }
+
+        return logAndPropagateResult_zeCommandQueueGetQosExt(driver_result, hCommandQueue, pProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zexCounterBasedEventCreate2
     __zedlllocal ze_result_t ZE_APICALL zexCounterBasedEventCreate2(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
@@ -21151,6 +21283,14 @@ zeGetCommandQueueProcAddrTable(
     if (version >= ZE_API_VERSION_1_18) {
         dditable.pfnSetPriorityExt                           = pDdiTable->pfnSetPriorityExt;
         pDdiTable->pfnSetPriorityExt                         = validation_layer::zeCommandQueueSetPriorityExt;
+    }
+    if (version >= ZE_API_VERSION_1_19) {
+        dditable.pfnSetQosExt                                = pDdiTable->pfnSetQosExt;
+        pDdiTable->pfnSetQosExt                              = validation_layer::zeCommandQueueSetQosExt;
+    }
+    if (version >= ZE_API_VERSION_1_19) {
+        dditable.pfnGetQosExt                                = pDdiTable->pfnGetQosExt;
+        pDdiTable->pfnGetQosExt                              = validation_layer::zeCommandQueueGetQosExt;
     }
     if (version >= ZE_API_VERSION_1_9) {
         dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;

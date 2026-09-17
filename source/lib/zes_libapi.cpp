@@ -169,6 +169,70 @@ zesDriverGet(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves properties of the sysman driver.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDriverProperties`
+ze_result_t ZE_APICALL
+zesDriverGetProperties(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+    zes_driver_properties_t* pDriverProperties      ///< [in,out] query result for sysman driver properties
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDriverGetProperties_t pfnGetProperties = [&result] {
+        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetProperties;
+        if( nullptr == pfnGetProperties ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetProperties;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetProperties( hDriver, pDriverProperties );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetProperties;
+    if( nullptr == pfnGetProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetProperties( hDriver, pDriverProperties );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves extension properties
 /// 
 /// @details
@@ -2835,7 +2899,7 @@ zesEngineGetActivity(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0xffff < events`
+///         + `0x1ffff < events`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ze_result_t ZE_APICALL
 zesDeviceEventRegister(
@@ -3041,6 +3105,190 @@ zesDriverEventListenEx(
     }
 
     return pfnEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Specify the list of driver scoped events to listen to for a given
+///        driver
+/// 
+/// @details
+///     - This function registers the driver scoped events the application wants
+///       to be notified about. Unlike ::zesDeviceEventRegister the registration
+///       is not tied to a device: the underlying event source is shared by all
+///       devices of the driver.
+///     - Registered events are reported only by ::zesDriverEventListenExt, in
+///       its `pDriverEvents` argument. As the events are driver scoped they
+///       have no device handle to be reported against, so
+///       ::zesDriverEventListen and ::zesDriverEventListenEx never report them.
+///     - Calling this function while another thread is blocked in a listen call
+///       updates that call, so an event registered after a listen has started
+///       can still be reported by it.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x1ffff < events`
+///         + `events` contains a flag which is not a driver scoped event.
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to listen to events.
+ze_result_t ZE_APICALL
+zesDriverEventRegisterExt(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+    zes_event_type_flags_t events                   ///< [in] List of driver scoped events to listen to.
+                                                    ///< Must be 0 or a combination of the driver scoped
+                                                    ///< ::zes_event_type_flags_t values.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDriverEventRegisterExt_t pfnEventRegisterExt = [&result] {
+        auto pfnEventRegisterExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEventRegisterExt;
+        if( nullptr == pfnEventRegisterExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnEventRegisterExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnEventRegisterExt( hDriver, events );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnEventRegisterExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEventRegisterExt;
+    if( nullptr == pfnEventRegisterExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnEventRegisterExt( hDriver, events );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Wait for device scoped and driver scoped events to be received from
+///        one or more devices.
+/// 
+/// @details
+///     - This function extends ::zesDriverEventListenEx with the ability to
+///       report the driver scoped events registered with
+///       ::zesDriverEventRegisterExt.
+///     - The `hDriver`, `timeout`, `count`, `phDevices`, `pNumDeviceEvents` and
+///       `pEvents` arguments behave exactly as in ::zesDriverEventListenEx.
+///     - `pDriverEvents` is optional. When it is `nullptr` this function
+///       behaves exactly like ::zesDriverEventListenEx and no driver scoped
+///       event source is listened to.
+///     - When `pDriverEvents` is not `nullptr` it is cleared on entry and, on
+///       return, contains the driver scoped events which have been registered
+///       and occurred, i.e. 0 or a combination of the driver scoped
+///       ::zes_event_type_flags_t values.
+///     - `*pNumDeviceEvents` accounts for device scoped events only. A driver
+///       scoped event which occurs without any device scoped event therefore
+///       returns `*pNumDeviceEvents` set to 0 and `*pDriverEvents` set to the
+///       events which occurred, so an application must check both values.
+///     - The application should not call this function from simultaneous
+///       threads with the same driver handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phDevices`
+///         + `nullptr == pNumDeviceEvents`
+///         + `nullptr == pEvents`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to listen to events.
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + One or more of the supplied device handles belongs to a different driver.
+ze_result_t ZE_APICALL
+zesDriverEventListenExt(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+    uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
+                                                    ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                    ///< if zero, then will check status and return immediately;
+                                                    ///< if `UINT64_MAX`, then function will not return until events arrive.
+    uint32_t count,                                 ///< [in] Number of device handles in phDevices.
+    zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
+                                                    ///< devices from the provided driver handle can be specified in this list.
+    uint32_t* pNumDeviceEvents,                     ///< [in,out] Will contain the actual number of devices in phDevices that
+                                                    ///< generated device scoped events. If non-zero, check pEvents to
+                                                    ///< determine the devices and events that were received.
+    zes_event_type_flags_t* pEvents,                ///< [in,out] An array that will contain the list of device scoped events
+                                                    ///< for each device listened in phDevices.
+                                                    ///< This array must be at least as big as count.
+                                                    ///< For every device handle in phDevices, this will provide the events
+                                                    ///< that occurred for that device at the same position in this array. If
+                                                    ///< no event was received for a given device, the corresponding array
+                                                    ///< entry will be zero.
+    zes_event_type_flags_t* pDriverEvents           ///< [in,out][optional] Returns the driver scoped events which occurred,
+                                                    ///< i.e. 0 or a combination of the driver scoped ::zes_event_type_flags_t values.
+                                                    ///< When `nullptr`, driver scoped events are not listened to.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDriverEventListenExt_t pfnEventListenExt = [&result] {
+        auto pfnEventListenExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEventListenExt;
+        if( nullptr == pfnEventListenExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnEventListenExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnEventListenExt( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents, pDriverEvents );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnEventListenExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEventListenExt;
+    if( nullptr == pfnEventListenExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnEventListenExt( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents, pDriverEvents );
     #endif
 }
 
@@ -11107,6 +11355,552 @@ zesDeviceSetHealthStatusExt(
     }
 
     return pfnSetHealthStatusExt( hDevice, health );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get handles to the info logs supported by the driver
+/// 
+/// @details
+///     - An info log is a driver scoped object. Records collected from an info
+///       log may originate from any of the devices managed by the driver, and
+///       the originating device is reported in the metadata of each record.
+///     - The application should first call this function with `pCount` pointing
+///       to a value of zero to retrieve the number of info logs available.
+///     - Multiple calls to this function will return identical info log
+///       handles, in the same order.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesDriverEnumInfoLogsExt(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of info logs.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of info logs available.
+                                                    ///< if count is greater than the number of info logs available, then the
+                                                    ///< driver shall update the value with the correct number of info logs available.
+    zes_info_log_handle_t* phInfoLogs               ///< [in,out][optional][range(0, *pCount)] array of info log handles.
+                                                    ///< if count is less than the number of info logs available, then the
+                                                    ///< driver shall only retrieve that number of info log handles.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDriverEnumInfoLogsExt_t pfnEnumInfoLogsExt = [&result] {
+        auto pfnEnumInfoLogsExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEnumInfoLogsExt;
+        if( nullptr == pfnEnumInfoLogsExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnEnumInfoLogsExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnEnumInfoLogsExt( hDriver, pCount, phInfoLogs );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnEnumInfoLogsExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEnumInfoLogsExt;
+    if( nullptr == pfnEnumInfoLogsExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnEnumInfoLogsExt( hDriver, pCount, phInfoLogs );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get info log properties
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLog`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ze_result_t ZE_APICALL
+zesInfoLogGetPropertiesExt(
+    zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log
+    zes_info_log_ext_properties_t* pProperties      ///< [in,out] Will contain the properties of the info log.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogGetPropertiesExt_t pfnGetPropertiesExt = [&result] {
+        auto pfnGetPropertiesExt = ze_lib::context->zesDdiTable.load()->InfoLog.pfnGetPropertiesExt;
+        if( nullptr == pfnGetPropertiesExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetPropertiesExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetPropertiesExt( hInfoLog, pProperties );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetPropertiesExt = ze_lib::context->zesDdiTable.load()->InfoLog.pfnGetPropertiesExt;
+    if( nullptr == pfnGetPropertiesExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetPropertiesExt( hInfoLog, pProperties );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create a collection instance for an info log
+/// 
+/// @details
+///     - Creating a collection instance starts the collection of records into a
+///       buffer owned by that instance.
+///     - Records collected by an instance are retrieved using
+///       ::zesInfoLogInstanceReadWithMetadataExt, or inspected without being
+///       consumed using ::zesInfoLogInstancePeekWithMetadataExt.
+///     - Collection continues until the instance is deleted using
+///       ::zesInfoLogInstanceDeleteExt, which also releases the resources
+///       allocated by the instance during create operation.
+///     - A named collection instance collects records into a buffer that is not
+///       shared with other collection instances. Named collection instances are
+///       only supported when isNamedInstanceSupported of
+///       ::zes_info_log_ext_properties_t is true.
+///     - If `pInstanceName` is nullptr, then records are collected from the
+///       default/global buffer of the info log, which may be shared with other
+///       consumers and can have data from different sources.
+///     - The application must not call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLog`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDesc`
+///         + `nullptr == phInfoLogInstance`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + `pInstanceName != nullptr` and isNamedInstanceSupported of ::zes_info_log_ext_properties_t is false.
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + A collection instance was already created with the same name.
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to collect info log records.
+ze_result_t ZE_APICALL
+zesInfoLogCreateInstanceExt(
+    zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log
+    const char* pInstanceName,                      ///< [in][optional] name of the collection instance to create.
+                                                    ///< if nullptr, then the default buffer of the info log shall be used.
+    zes_info_log_instance_ext_desc_t* pDesc,        ///< [in,out] pointer to the descriptor of the collection instance to
+                                                    ///< create.
+    zes_info_log_instance_handle_t* phInfoLogInstance   ///< [out] handle of the collection instance that was created.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogCreateInstanceExt_t pfnCreateInstanceExt = [&result] {
+        auto pfnCreateInstanceExt = ze_lib::context->zesDdiTable.load()->InfoLog.pfnCreateInstanceExt;
+        if( nullptr == pfnCreateInstanceExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateInstanceExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateInstanceExt( hInfoLog, pInstanceName, pDesc, phInfoLogInstance );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateInstanceExt = ze_lib::context->zesDdiTable.load()->InfoLog.pfnCreateInstanceExt;
+    if( nullptr == pfnCreateInstanceExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateInstanceExt( hInfoLog, pInstanceName, pDesc, phInfoLogInstance );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Read collected info log records and their metadata
+/// 
+/// @details
+///     - A call in which `*pSize` is zero or `*pRecordCount` is zero on input
+///       is a query call. A query call reports the total size, in bytes, of the
+///       record data and the total number of records that were found, does not
+///       write to `pBuffer` or `pDescriptors`, and does not consume any record.
+///       `pBuffer` and `pDescriptors` may be nullptr on a query call and are
+///       otherwise ignored by it.
+///     - The application can optionally make a query call first to determine
+///       the size of the buffer and the number of descriptors it must provide.
+///     - Records are consumed as they are returned. A record returned by one
+///       call will not be returned again by a subsequent call.
+///     - ::zesInfoLogInstancePeekWithMetadataExt returns the same records
+///       without consuming them.
+///     - This function searches the data held by the collection instance for
+///       records. The amount of data that must be searched is not related to
+///       the amount of record data returned, because the collection instance
+///       may hold a large amount of data that contains no record. `timeout`
+///       bounds the search and applies to the query call as well.
+///     - `hasDataToRead` in ::zes_info_log_read_status_ext_t reports whether
+///       records remain, and is the value the application should use to decide
+///       whether to call this function again.
+///     - The application must not call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLogInstance`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pSize`
+///         + `nullptr == pRecordCount`
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA
+///         + One or more records were dropped because the collection buffer overflowed. The number of records dropped is reported in ::zes_info_log_read_status_ext_t.
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to read info log records.
+ze_result_t ZE_APICALL
+zesInfoLogInstanceReadWithMetadataExt(
+    zes_info_log_instance_handle_t hInfoLogInstance,///< [in] handle of the info log collection instance
+    uint64_t timeout,                               ///< [in] maximum time, in milliseconds, that this function may spend
+                                                    ///< searching the collection instance for records.
+                                                    ///< if zero, then the function shall return immediately without searching.
+                                                    ///< if `UINT64_MAX`, then the function shall not return until it has
+                                                    ///< searched all of the data held by the collection instance.
+                                                    ///< when this time elapses, the function shall return ::ZE_RESULT_SUCCESS
+                                                    ///< with the records it has found so far, which may be none.
+                                                    ///< due to external dependencies, timeout may be rounded to the closest
+                                                    ///< value allowed by the accuracy of those dependencies.
+    uint32_t* pSize,                                ///< [in,out] pointer to the size, in bytes, of the record data.
+                                                    ///< on input, the value is the size of `pBuffer`.
+                                                    ///< if the value is zero, or if `*pRecordCount` is zero, then this is a
+                                                    ///< query call: the driver shall update the value with the total size of
+                                                    ///< the record data that was found and shall not consume any record.
+                                                    ///< otherwise, on output the driver shall update the value with the size
+                                                    ///< of the record data written to `pBuffer`.
+    uint8_t* pBuffer,                               ///< [in,out][optional][range(0, *pSize)] buffer that will contain the
+                                                    ///< record data.
+                                                    ///< the driver shall not write to this buffer on a query call, and the
+                                                    ///< application may pass nullptr for such a call.
+    uint32_t* pRecordCount,                         ///< [in,out] pointer to the number of records.
+                                                    ///< on input, the value is the number of elements in `pDescriptors`.
+                                                    ///< if the value is zero, or if `*pSize` is zero, then this is a query
+                                                    ///< call: the driver shall update the value with the total number of
+                                                    ///< records that were found and shall not consume any record.
+                                                    ///< otherwise, on output the driver shall update the value with the number
+                                                    ///< of records written to `pDescriptors`.
+    zes_info_log_metadata_ext_t* pDescriptors,      ///< [in,out][optional][range(0, *pRecordCount)] array of metadata
+                                                    ///< describing each record written to `pBuffer`.
+                                                    ///< the driver shall not write to this array on a query call, and the
+                                                    ///< application may pass nullptr for such a call.
+                                                    ///< the application must initialize the stype member of each element in
+                                                    ///< the array.
+    zes_info_log_read_status_ext_t* pReadStatus     ///< [in,out][optional] pointer to a structure that will contain the status
+                                                    ///< of this call.
+                                                    ///< if nullptr, then the driver shall not report the status of this call,
+                                                    ///< and the application cannot determine whether records were dropped or
+                                                    ///< whether records remain available.
+                                                    ///< the application must initialize the stype member.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogInstanceReadWithMetadataExt_t pfnReadWithMetadataExt = [&result] {
+        auto pfnReadWithMetadataExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnReadWithMetadataExt;
+        if( nullptr == pfnReadWithMetadataExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnReadWithMetadataExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnReadWithMetadataExt( hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnReadWithMetadataExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnReadWithMetadataExt;
+    if( nullptr == pfnReadWithMetadataExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnReadWithMetadataExt( hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Read collected info log records and their metadata without consuming
+///        them
+/// 
+/// @details
+///     - This function is equivalent to
+///       ::zesInfoLogInstanceReadWithMetadataExt, except that the records it
+///       returns are not consumed and remain available to subsequent calls to
+///       either function.
+///     - Reading records without consuming them is only supported when
+///       isPeekDataSupported of ::zes_info_log_ext_properties_t is true.
+///     - As with ::zesInfoLogInstanceReadWithMetadataExt, a call in which
+///       `*pSize` is zero or `*pRecordCount` is zero on input is a query call,
+///       which reports the total size, in bytes, of the record data and the
+///       total number of records that were found without writing to `pBuffer`
+///       or `pDescriptors`.
+///     - The application should then call this function with `*pSize` and
+///       `*pRecordCount` both non-zero to inspect the records that are
+///       available.
+///     - The application must not call this function from simultaneous threads.
+///     - The application must not call this function and
+///       ::zesInfoLogInstanceReadWithMetadataExt simultaneously with the same
+///       handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLogInstance`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pSize`
+///         + `nullptr == pRecordCount`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + isPeekDataSupported of ::zes_info_log_ext_properties_t is false.
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA
+///         + One or more records were dropped because the collection buffer overflowed. The number of records dropped is reported in ::zes_info_log_read_status_ext_t.
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to read info log records.
+ze_result_t ZE_APICALL
+zesInfoLogInstancePeekWithMetadataExt(
+    zes_info_log_instance_handle_t hInfoLogInstance,///< [in] handle of the info log collection instance
+    uint64_t timeout,                               ///< [in] maximum time, in milliseconds, that this function may spend
+                                                    ///< searching the collection instance for records.
+                                                    ///< if zero, then the function shall return immediately without searching.
+                                                    ///< if `UINT64_MAX`, then the function shall not return until it has
+                                                    ///< searched all of the data held by the collection instance.
+                                                    ///< when this time elapses, the function shall return ::ZE_RESULT_SUCCESS
+                                                    ///< with the records it has found so far, which may be none.
+                                                    ///< due to external dependencies, timeout may be rounded to the closest
+                                                    ///< value allowed by the accuracy of those dependencies.
+    uint32_t* pSize,                                ///< [in,out] pointer to the size, in bytes, of the record data.
+                                                    ///< on input, the value is the size of `pBuffer`.
+                                                    ///< if the value is zero, or if `*pRecordCount` is zero, then this is a
+                                                    ///< query call: the driver shall update the value with the total size of
+                                                    ///< the record data that was found.
+                                                    ///< otherwise, on output the driver shall update the value with the size
+                                                    ///< of the record data written to `pBuffer`.
+    uint8_t* pBuffer,                               ///< [in,out][optional][range(0, *pSize)] buffer that will contain the
+                                                    ///< record data.
+                                                    ///< the driver shall not write to this buffer on a query call, and the
+                                                    ///< application may pass nullptr for such a call.
+    uint32_t* pRecordCount,                         ///< [in,out] pointer to the number of records.
+                                                    ///< on input, the value is the number of elements in `pDescriptors`.
+                                                    ///< if the value is zero, or if `*pSize` is zero, then this is a query
+                                                    ///< call: the driver shall update the value with the total number of
+                                                    ///< records that were found.
+                                                    ///< otherwise, on output the driver shall update the value with the number
+                                                    ///< of records written to `pDescriptors`.
+    zes_info_log_metadata_ext_t* pDescriptors,      ///< [in,out][optional][range(0, *pRecordCount)] array of metadata
+                                                    ///< describing each record written to `pBuffer`.
+                                                    ///< the driver shall not write to this array on a query call, and the
+                                                    ///< application may pass nullptr for such a call.
+                                                    ///< the application must initialize the stype member of each element in
+                                                    ///< the array.
+    zes_info_log_read_status_ext_t* pReadStatus     ///< [in,out][optional] pointer to a structure that will contain the status
+                                                    ///< of this call.
+                                                    ///< if nullptr, then the driver shall not report the status of this call,
+                                                    ///< and the application cannot determine whether records were dropped or
+                                                    ///< whether records remain available.
+                                                    ///< the application must initialize the stype member.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogInstancePeekWithMetadataExt_t pfnPeekWithMetadataExt = [&result] {
+        auto pfnPeekWithMetadataExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnPeekWithMetadataExt;
+        if( nullptr == pfnPeekWithMetadataExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnPeekWithMetadataExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnPeekWithMetadataExt( hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnPeekWithMetadataExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnPeekWithMetadataExt;
+    if( nullptr == pfnPeekWithMetadataExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnPeekWithMetadataExt( hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Delete a collection instance of an info log
+/// 
+/// @details
+///     - Deleting a collection instance stops the collection of records into
+///       that instance and releases the resources used by the instance.
+///     - The application must ensure that no other function is using the handle
+///       when calling this function.
+///     - The application must not call this function from simultaneous threads
+///       with the same handle.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLogInstance`
+ze_result_t ZE_APICALL
+zesInfoLogInstanceDeleteExt(
+    zes_info_log_instance_handle_t hInfoLogInstance ///< [in][release] handle of the info log collection instance to delete
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogInstanceDeleteExt_t pfnDeleteExt = [&result] {
+        auto pfnDeleteExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnDeleteExt;
+        if( nullptr == pfnDeleteExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDeleteExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDeleteExt( hInfoLogInstance );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDeleteExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnDeleteExt;
+    if( nullptr == pfnDeleteExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDeleteExt( hInfoLogInstance );
     #endif
 }
 

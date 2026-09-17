@@ -277,5 +277,7 @@ namespace validation_layer
         ze_result_t zeCommandListAppendHostFunctionPrologue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandQueueSetPriorityExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_priority_t priority ) override;
         ze_result_t zeDeviceGetCompilerInfoPrologue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, size_t* pSize, void* pData ) override;
+        ze_result_t zeCommandQueueSetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc ) override;
+        ze_result_t zeCommandQueueGetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties ) override;
     };
 }
