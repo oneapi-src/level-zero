@@ -16,6 +16,13 @@ endif()
 project(level-zero VERSION 1.34.0)
 include(GNUInstallDirs)
 
+option(BUILD_STATIC "Build the Level Zero front end as a static library" OFF)
+option(BUILD_STATIC_NO_DLL "Embed the Level Zero loader implementation in the static library" OFF)
+
+if(BUILD_STATIC_NO_DLL)
+    set(BUILD_STATIC ON CACHE BOOL "Build the Level Zero front end as a static library" FORCE)
+endif()
+
 find_package(Git)
 if(Git_FOUND)
 	if(MSVC)
