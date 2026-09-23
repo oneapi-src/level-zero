@@ -929,7 +929,9 @@ def test_memory_modules(device_handle, device_index):
     return True
 
 
-def test_power_module(device_handle, device_index):
+def test_power_module(
+    device_handle, device_index, set_global_limit=None, set_energy_threshold=None
+):
     """Test power domain enumeration, properties, energy-derived power, and power limit extension operations"""
     print(f"\n---- Device {device_index} Power Domains Test ----")
 
@@ -1055,6 +1057,140 @@ def test_power_module(device_handle, device_index):
             print_verbose(f"    Current Power: {power_watt:.6f} W for {device_scope}")
         else:
             print_verbose("    Current Power: unavailable due to zero delta time")
+
+        instant_power = c_uint32(0)
+        average_power = c_uint32(0)
+        rc = pz.zesPowerGetUsage(
+            power_handles[i], byref(instant_power), byref(average_power)
+        )
+        if rc == pz.ZE_RESULT_SUCCESS:
+            print_verbose("    Power Usage:")
+            print_verbose(f"      Instant Power: {instant_power.value} mW")
+            print_verbose(f"      Average Power: {average_power.value} mW")
+        else:
+            print_verbose(f"    Power Usage: Not available ({get_result_string(rc)})")
+
+        limit_ext2 = c_uint32(0)
+        rc = pz.zesPowerGetLimitsExt2(power_handles[i], byref(limit_ext2))
+        limit_ext2_available = rc == pz.ZE_RESULT_SUCCESS
+        if limit_ext2_available:
+            print_verbose(f"    Power Limit (Ext2): {limit_ext2.value} mW")
+        else:
+            print_verbose(
+                f"    Power Limit (Ext2): Not available ({get_result_string(rc)})"
+            )
+
+        energy_threshold = None
+        if properties.isEnergyThresholdSupported:
+            energy_threshold = pz.zes_energy_threshold_t()
+            rc = pz.zesPowerGetEnergyThreshold(
+                power_handles[i], byref(energy_threshold)
+            )
+            if rc == pz.ZE_RESULT_SUCCESS:
+                print_verbose("    Energy Threshold:")
+                print_verbose(f"      Enabled: {bool(energy_threshold.enable)}")
+                print_verbose(f"      Threshold: {energy_threshold.threshold} J")
+                print_verbose(f"      Process ID: 0x{energy_threshold.processId:X}")
+            else:
+                print_verbose(
+                    f"    Energy Threshold: Not available ({get_result_string(rc)})"
+                )
+                energy_threshold = None
+
+        # Requested set operations only apply to the root power domain of the selected device
+        requested_limit = None
+        if set_global_limit is not None and set_global_limit[0] == device_index:
+            requested_limit = set_global_limit[1]
+        requested_threshold = None
+        if (
+            set_energy_threshold is not None
+            and int(set_energy_threshold[0]) == device_index
+        ):
+            requested_threshold = set_energy_threshold[1]
+        if properties.onSubdevice:
+            requested_limit = None
+            requested_threshold = None
+
+        if not is_root_user():
+            if requested_limit is not None or requested_threshold is not None:
+                print_verbose(
+                    "    Skipping power set operations due to insufficient permissions"
+                )
+        elif properties.canControl:
+            if limit_ext2_available and requested_limit is not None:
+                rc = pz.zesPowerSetLimitsExt2(power_handles[i], requested_limit)
+                if check_rc(f"zesPowerSetLimitsExt2(power {i}, {requested_limit})", rc):
+                    print_verbose(f"    Power limit (Ext2) set to {requested_limit} mW")
+                    read_back = c_uint32(0)
+                    rc = pz.zesPowerGetLimitsExt2(power_handles[i], byref(read_back))
+                    if check_rc(f"zesPowerGetLimitsExt2(power {i}, verify)", rc):
+                        if read_back.value == requested_limit:
+                            print_verbose(
+                                f"    Read back power limit (Ext2): {read_back.value} mW (OK)"
+                            )
+                        else:
+                            print_verbose(
+                                f"    Warning: requested power limit {requested_limit} mW "
+                                f"does not match applied limit {read_back.value} mW"
+                            )
+
+                # Restore the limit read before the test
+                rc = pz.zesPowerSetLimitsExt2(power_handles[i], limit_ext2.value)
+                if check_rc(f"zesPowerSetLimitsExt2(power {i}, restore)", rc):
+                    print_verbose(
+                        f"    Restored power limit (Ext2) to {limit_ext2.value} mW"
+                    )
+            elif limit_ext2_available:
+                # Write back the limit just read so the device configuration is unchanged
+                rc = pz.zesPowerSetLimitsExt2(power_handles[i], limit_ext2.value)
+                if check_rc(f"zesPowerSetLimitsExt2(power {i})", rc):
+                    print_verbose("    Set power limit (Ext2) successfully")
+
+            if energy_threshold is not None and requested_threshold is not None:
+                rc = pz.zesPowerSetEnergyThreshold(
+                    power_handles[i], requested_threshold
+                )
+                if check_rc(
+                    f"zesPowerSetEnergyThreshold(power {i}, {requested_threshold})", rc
+                ):
+                    print_verbose(
+                        f"    Energy threshold set to {requested_threshold} J"
+                    )
+                    read_back_threshold = pz.zes_energy_threshold_t()
+                    rc = pz.zesPowerGetEnergyThreshold(
+                        power_handles[i], byref(read_back_threshold)
+                    )
+                    if check_rc(f"zesPowerGetEnergyThreshold(power {i}, verify)", rc):
+                        print_verbose(
+                            f"    Read back energy threshold: {read_back_threshold.threshold} J "
+                            f"(enabled: {bool(read_back_threshold.enable)}, "
+                            f"process ID: 0x{read_back_threshold.processId:X})"
+                        )
+
+                # An energy threshold cannot be disabled, so only an enabled one can be restored
+                if energy_threshold.enable:
+                    rc = pz.zesPowerSetEnergyThreshold(
+                        power_handles[i], energy_threshold.threshold
+                    )
+                    if check_rc(f"zesPowerSetEnergyThreshold(power {i}, restore)", rc):
+                        print_verbose(
+                            f"    Restored energy threshold to {energy_threshold.threshold} J"
+                        )
+                else:
+                    print_verbose(
+                        "    Energy threshold was not enabled before the test and cannot be disabled"
+                    )
+            elif energy_threshold is not None and energy_threshold.enable:
+                # Only re-apply an already enabled threshold since it cannot be unset afterwards
+                rc = pz.zesPowerSetEnergyThreshold(
+                    power_handles[i], energy_threshold.threshold
+                )
+                if check_rc(f"zesPowerSetEnergyThreshold(power {i})", rc):
+                    print_verbose("    Set energy threshold successfully")
+        elif requested_limit is not None or requested_threshold is not None:
+            print_verbose(
+                "    Skipping power set operations since the domain cannot be controlled"
+            )
 
         if properties.onSubdevice or limit_descs is None:
             continue
@@ -1410,6 +1546,8 @@ def main():
   %(prog)s -p                 # PCI tests only
   %(prog)s -C                 # ECC tests only
   %(prog)s -o                 # Power tests only
+  %(prog)s -o --set-global-limit 0 150000       # Power tests, set then restore device 0 limit (root)
+  %(prog)s -o --set-energy-threshold 0 5000.0   # Power tests, set device 0 energy threshold (root)
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
@@ -1429,6 +1567,20 @@ def main():
     )
     parser.add_argument(
         "-o", "--power", action="store_true", help="Run only power-related tests"
+    )
+    parser.add_argument(
+        "--set-global-limit",
+        nargs=2,
+        type=int,
+        metavar=("DEVICE", "LIMIT_MW"),
+        help="With -o, set the power limit (Ext2) of a device in mW, verify it and restore the original (requires root)",
+    )
+    parser.add_argument(
+        "--set-energy-threshold",
+        nargs=2,
+        type=float,
+        metavar=("DEVICE", "JOULES"),
+        help="With -o, set the energy threshold of a device in Joules and read it back (requires root)",
     )
     parser.add_argument("-p", "--pci", action="store_true", help="Run only PCI tests")
     parser.add_argument("-C", "--ecc", action="store_true", help="Run only ECC tests")
@@ -1452,6 +1604,16 @@ def main():
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
 
     args = parser.parse_args()
+    if args.set_global_limit is not None and min(args.set_global_limit) < 0:
+        parser.error("--set-global-limit values must be non-negative integers")
+    if args.set_energy_threshold is not None and (
+        args.set_energy_threshold[0] < 0
+        or not args.set_energy_threshold[0].is_integer()
+        or args.set_energy_threshold[1] < 0
+    ):
+        parser.error(
+            "--set-energy-threshold needs a device index and a non-negative threshold"
+        )
 
     # Check if any specific test is requested
     specific_test = (
@@ -1507,7 +1669,12 @@ def main():
                     test_engine_modules(devices[device_idx], device_idx)
 
                 if args.power:
-                    test_power_module(devices[device_idx], device_idx)
+                    test_power_module(
+                        devices[device_idx],
+                        device_idx,
+                        set_global_limit=args.set_global_limit,
+                        set_energy_threshold=args.set_energy_threshold,
+                    )
 
                 if args.frequency:
                     test_frequency_domains(devices[device_idx], device_idx)
