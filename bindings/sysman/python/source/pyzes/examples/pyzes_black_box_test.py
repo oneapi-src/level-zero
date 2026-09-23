@@ -321,6 +321,23 @@ def get_device_action_string(action):
     return action_map.get(action, f"UNKNOWN_DEVICE_ACTION_{action}")
 
 
+def get_standby_type_string(standby_type):
+    """Convert standby type enum to string"""
+    type_map = {
+        pz.ZES_STANDBY_TYPE_GLOBAL: "ZES_STANDBY_TYPE_GLOBAL",
+    }
+    return type_map.get(standby_type, f"UNKNOWN_STANDBY_TYPE_{standby_type}")
+
+
+def get_standby_promo_mode_string(mode):
+    """Convert standby promo mode enum to string"""
+    mode_map = {
+        pz.ZES_STANDBY_PROMO_MODE_DEFAULT: "ZES_STANDBY_PROMO_MODE_DEFAULT",
+        pz.ZES_STANDBY_PROMO_MODE_NEVER: "ZES_STANDBY_PROMO_MODE_NEVER",
+    }
+    return mode_map.get(mode, f"UNKNOWN_STANDBY_PROMO_MODE_{mode}")
+
+
 def is_root_user():
     """Return whether the current user has root privileges on platforms that support it"""
     geteuid = getattr(os, "geteuid", None)
@@ -837,6 +854,222 @@ def test_engine_modules(device_handle, device_index):
             print_verbose(f"        Active Time: {engineStats.activeTime}")
             print_verbose(f"        Timestamp: {engineStats.timestamp}")
 
+    for i in range(engine_count.value):
+        ext_count = c_uint32(0)
+        rc = pz.zesEngineGetActivityExt(engine_handles[i], byref(ext_count), None)
+        if rc != pz.ZE_RESULT_SUCCESS:
+            print_verbose(
+                f"\n  Engine Module {i} Activity Ext: Not available ({get_result_string(rc)})"
+            )
+            continue
+
+        if ext_count.value == 0:
+            continue
+
+        # Take two samples to derive the utilization of the PF and each VF
+        EngineStatsArray = pz.zes_engine_stats_t * ext_count.value
+        ext_stats = EngineStatsArray()
+        rc = pz.zesEngineGetActivityExt(engine_handles[i], byref(ext_count), ext_stats)
+        if not check_rc(f"zesEngineGetActivityExt(engine {i}, sample 1)", rc):
+            continue
+
+        time.sleep(0.15)
+        ext_stats2 = EngineStatsArray()
+        rc = pz.zesEngineGetActivityExt(engine_handles[i], byref(ext_count), ext_stats2)
+        if not check_rc(f"zesEngineGetActivityExt(engine {i}, sample 2)", rc):
+            continue
+
+        print_verbose(f"\n  Engine Module {i} Activity Ext:")
+        for j in range(ext_count.value):
+            label = "PF" if j == 0 else f"VF {j}"
+            print_verbose(
+                f"    {label}: Active Time: {ext_stats2[j].activeTime}, Timestamp: {ext_stats2[j].timestamp}"
+            )
+            delta_active = ext_stats2[j].activeTime - ext_stats[j].activeTime
+            delta_time = ext_stats2[j].timestamp - ext_stats[j].timestamp
+            if delta_time > 0:
+                print_verbose(
+                    f"      Utilization: {100.0 * delta_active / delta_time:.2f}%"
+                )
+            else:
+                print_verbose("      Utilization: unavailable due to zero delta time")
+
+    return True
+
+
+def test_standby_module(device_handle, device_index):
+    """Test standby domain enumeration, properties, and mode operations"""
+    print(f"\n---- Device {device_index} Standby Domains Test ----")
+
+    standby_count = c_uint32(0)
+    rc = pz.zesDeviceEnumStandbyDomains(device_handle, byref(standby_count), None)
+    if not check_rc(f"zesDeviceEnumStandbyDomains(device {device_index}, count)", rc):
+        return False
+
+    if standby_count.value == 0:
+        print_verbose("No standby domains found on this device")
+        return True
+
+    print_verbose(f"Found {standby_count.value} standby domain(s)")
+
+    StandbyArray = pz.zes_standby_handle_t * standby_count.value
+    standby_handles = StandbyArray()
+
+    rc = pz.zesDeviceEnumStandbyDomains(
+        device_handle, byref(standby_count), standby_handles
+    )
+    if not check_rc(f"zesDeviceEnumStandbyDomains(device {device_index}, handles)", rc):
+        return False
+
+    for i in range(standby_count.value):
+        print_verbose(f"\n  Standby Domain {i}:")
+
+        props = pz.zes_standby_properties_t()
+        props.stype = pz.ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES
+        props.pNext = None
+
+        rc = pz.zesStandbyGetProperties(standby_handles[i], byref(props))
+        if not check_rc(f"zesStandbyGetProperties(standby {i})", rc):
+            continue
+
+        print_verbose(f"    Type: {get_standby_type_string(props.type)}")
+        print_verbose(f"    On Subdevice: {bool(props.onSubdevice)}")
+        if props.onSubdevice:
+            print_verbose(f"    Subdevice ID: {props.subdeviceId}")
+
+        mode = pz.zes_standby_promo_mode_t(0)
+        rc = pz.zesStandbyGetMode(standby_handles[i], byref(mode))
+        if not check_rc(f"zesStandbyGetMode(standby {i})", rc):
+            continue
+
+        print_verbose(f"    Mode: {get_standby_promo_mode_string(mode.value)}")
+
+        if not is_root_user():
+            print_verbose(
+                "    Skipping zesStandbySetMode due to insufficient permissions"
+            )
+            continue
+
+        for new_mode in (
+            pz.ZES_STANDBY_PROMO_MODE_DEFAULT,
+            pz.ZES_STANDBY_PROMO_MODE_NEVER,
+        ):
+            mode_name = get_standby_promo_mode_string(new_mode)
+            rc = pz.zesStandbySetMode(standby_handles[i], new_mode)
+            if not check_rc(f"zesStandbySetMode(standby {i}, {mode_name})", rc):
+                continue
+
+            read_back = pz.zes_standby_promo_mode_t(0)
+            rc = pz.zesStandbyGetMode(standby_handles[i], byref(read_back))
+            if check_rc(f"zesStandbyGetMode(standby {i}, verify)", rc):
+                status = "OK" if read_back.value == new_mode else "MISMATCH"
+                print_verbose(
+                    f"    Set mode {mode_name}, read back "
+                    f"{get_standby_promo_mode_string(read_back.value)} ({status})"
+                )
+
+        # Restore the mode read before the test
+        rc = pz.zesStandbySetMode(standby_handles[i], mode.value)
+        if check_rc(f"zesStandbySetMode(standby {i}, restore)", rc):
+            print_verbose(
+                f"    Restored standby mode to {get_standby_promo_mode_string(mode.value)}"
+            )
+
+    return True
+
+
+def test_vf_management_module(device_handle, device_index):
+    """Test enabled VF enumeration, capabilities, and utilization operations"""
+    print(f"\n---- Device {device_index} VF Management Test ----")
+
+    vf_count = c_uint32(0)
+    rc = pz.zesDeviceEnumEnabledVFExp(device_handle, byref(vf_count), None)
+    if not check_rc(f"zesDeviceEnumEnabledVFExp(device {device_index}, count)", rc):
+        return False
+
+    if vf_count.value == 0:
+        print_verbose("No enabled VFs found on this device")
+        return True
+
+    print_verbose(f"Found {vf_count.value} enabled VF(s)")
+
+    VFArray = pz.zes_vf_handle_t * vf_count.value
+    vf_handles = VFArray()
+
+    rc = pz.zesDeviceEnumEnabledVFExp(device_handle, byref(vf_count), vf_handles)
+    if not check_rc(f"zesDeviceEnumEnabledVFExp(device {device_index}, handles)", rc):
+        return False
+
+    for i in range(vf_count.value):
+        print_verbose(f"\n  VF {i}:")
+
+        capability = pz.zes_vf_exp2_capabilities_t()
+        capability.stype = pz.ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES
+        capability.pNext = None
+
+        rc = pz.zesVFManagementGetVFCapabilitiesExp2(vf_handles[i], byref(capability))
+        if not check_rc(f"zesVFManagementGetVFCapabilitiesExp2(vf {i})", rc):
+            continue
+
+        print_verbose("    Capabilities:")
+        print_verbose(f"      VF ID: {capability.vfID}")
+        print_verbose(
+            f"      BDF: {capability.address.domain:04X}:{capability.address.bus:02X}:"
+            f"{capability.address.device:02X}.{capability.address.function:X}"
+        )
+        print_verbose(f"      Device Memory Size: {capability.vfDeviceMemSize} bytes")
+
+        mem_count = c_uint32(0)
+        rc = pz.zesVFManagementGetVFMemoryUtilizationExp2(
+            vf_handles[i], byref(mem_count), None
+        )
+        if check_rc(f"zesVFManagementGetVFMemoryUtilizationExp2(vf {i}, count)", rc):
+            if mem_count.value > 0:
+                MemUtilArray = pz.zes_vf_util_mem_exp2_t * mem_count.value
+                mem_util = MemUtilArray()
+                for j in range(mem_count.value):
+                    mem_util[j].stype = pz.ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2
+                    mem_util[j].pNext = None
+
+                rc = pz.zesVFManagementGetVFMemoryUtilizationExp2(
+                    vf_handles[i], byref(mem_count), mem_util
+                )
+                if check_rc(
+                    f"zesVFManagementGetVFMemoryUtilizationExp2(vf {i}, data)", rc
+                ):
+                    print_verbose("    Memory Utilization:")
+                    for j in range(mem_count.value):
+                        print_verbose(
+                            f"      {get_memory_location_string(mem_util[j].vfMemLocation)}: "
+                            f"{mem_util[j].vfMemUtilized} bytes"
+                        )
+
+        engine_count = c_uint32(0)
+        rc = pz.zesVFManagementGetVFEngineUtilizationExp2(
+            vf_handles[i], byref(engine_count), None
+        )
+        if check_rc(f"zesVFManagementGetVFEngineUtilizationExp2(vf {i}, count)", rc):
+            if engine_count.value > 0:
+                EngineUtilArray = pz.zes_vf_util_engine_exp2_t * engine_count.value
+                engine_util = EngineUtilArray()
+                for j in range(engine_count.value):
+                    engine_util[j].stype = pz.ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2
+                    engine_util[j].pNext = None
+
+                rc = pz.zesVFManagementGetVFEngineUtilizationExp2(
+                    vf_handles[i], byref(engine_count), engine_util
+                )
+                if check_rc(
+                    f"zesVFManagementGetVFEngineUtilizationExp2(vf {i}, data)", rc
+                ):
+                    print_verbose("    Engine Utilization:")
+                    for j in range(engine_count.value):
+                        print_verbose(
+                            f"      {get_engine_type_string(engine_util[j].vfEngineType)}: "
+                            f"Active Counter: {engine_util[j].activeCounterValue}, "
+                            f"Sampling Counter: {engine_util[j].samplingCounterValue}"
+                        )
+
     return True
 
 
@@ -1336,6 +1569,16 @@ def test_temperature_sensors(device_handle, device_index):
                 if temp_config.threshold2.threshold >= 0
                 else "      Threshold 2: Not set"
             )
+
+            if is_root_user():
+                # Write back the config just read so the device configuration is unchanged
+                rc = pz.zesTemperatureSetConfig(temp_handles[i], byref(temp_config))
+                if check_rc(f"zesTemperatureSetConfig(temperature {i})", rc):
+                    print_verbose("    Set temperature config successfully")
+            else:
+                print_verbose(
+                    "    Skipping zesTemperatureSetConfig due to insufficient permissions"
+                )
         else:
             print_verbose(
                 f"    Temperature Config: Not available ({get_result_string(rc)})"
@@ -1395,6 +1638,12 @@ def run_all_tests():
             # Test engine modules
             test_engine_modules(devices[device_idx], device_idx)
 
+            # Test standby domains
+            test_standby_module(devices[device_idx], device_idx)
+
+            # Test VF management
+            test_vf_management_module(devices[device_idx], device_idx)
+
     print("\n=== Test Completed ===")
     return True
 
@@ -1413,6 +1662,8 @@ def main():
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
+  %(prog)s -s                 # Standby tests only
+  %(prog)s -V                 # VF management tests only
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1450,6 +1701,12 @@ def main():
         version="Python Level Zero Sysman Black Box Test v1.0",
     )
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
+    parser.add_argument(
+        "-s", "--standby", action="store_true", help="Run only standby tests"
+    )
+    parser.add_argument(
+        "-V", "--vf", action="store_true", help="Run only VF management tests"
+    )
 
     args = parser.parse_args()
 
@@ -1463,6 +1720,8 @@ def main():
         or args.frequency
         or args.temperature
         or args.engine
+        or args.standby
+        or args.vf
         or args.all
     )
 
@@ -1514,6 +1773,12 @@ def main():
 
                 if args.temperature:
                     test_temperature_sensors(devices[device_idx], device_idx)
+
+                if args.standby:
+                    test_standby_module(devices[device_idx], device_idx)
+
+                if args.vf:
+                    test_vf_management_module(devices[device_idx], device_idx)
 
             success = True
 

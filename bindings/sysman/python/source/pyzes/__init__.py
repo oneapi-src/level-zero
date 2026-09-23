@@ -148,6 +148,14 @@ class zes_engine_handle_t(c_void_p):
     pass
 
 
+class zes_standby_handle_t(c_void_p):
+    pass
+
+
+class zes_vf_handle_t(c_void_p):
+    pass
+
+
 ##
 
 ze_bool_t = c_uint8
@@ -294,6 +302,16 @@ ZES_ENGINE_GROUP_3D_ALL = 13
 ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14
 ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7FFFFFFF
 
+## Standby enums ##
+zes_standby_type_t = c_int32
+ZES_STANDBY_TYPE_GLOBAL = 0
+ZES_STANDBY_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_standby_promo_mode_t = c_int32
+ZES_STANDBY_PROMO_MODE_DEFAULT = 0
+ZES_STANDBY_PROMO_MODE_NEVER = 1
+ZES_STANDBY_PROMO_MODE_FORCE_UINT32 = 0x7FFFFFFF
+
 ze_result_t = c_int32
 ZE_RESULT_SUCCESS = 0
 ZE_RESULT_NOT_READY = 1
@@ -376,6 +394,12 @@ ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
 ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
 ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
+ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES = 0x13
+ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2 = 0x00020009  # Experimental VF memory utilization
+ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2 = (
+    0x00020010  # Experimental VF engine utilization
+)
+ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES = 0x00020011  # Experimental VF capabilities
 
 
 ## Core ze_device UUID struct ##
@@ -777,6 +801,50 @@ class zes_engine_stats_t(_PrintableStructure):
         ("timestamp", c_uint64),  # timestamp
     ]
     _fmt_ = {"activeTime": "%d", "timestamp": "%d"}
+
+
+## Standby structures ##
+class zes_standby_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES
+        ("pNext", c_void_p),
+        ("type", zes_standby_type_t),  # standby hardware component
+        ("onSubdevice", ze_bool_t),  # is on subdevice
+        ("subdeviceId", c_uint32),  # subdevice ID
+    ]
+
+
+## VF management structures ##
+class zes_vf_exp2_capabilities_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES
+        ("pNext", c_void_p),
+        ("address", zes_pci_address_t),  # VF BDF address
+        ("vfDeviceMemSize", c_uint64),  # VF memory size in bytes
+        ("vfID", c_uint32),  # VF ID
+    ]
+    _fmt_ = {"vfDeviceMemSize": "%d bytes"}
+
+
+class zes_vf_util_mem_exp2_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2
+        ("pNext", c_void_p),
+        ("vfMemLocation", zes_mem_loc_t),  # memory location (system, device)
+        ("vfMemUtilized", c_uint64),  # utilized memory size in bytes
+    ]
+    _fmt_ = {"vfMemUtilized": "%d bytes"}
+
+
+class zes_vf_util_engine_exp2_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2
+        ("pNext", c_void_p),
+        ("vfEngineType", zes_engine_group_t),  # engine group
+        ("activeCounterValue", c_uint64),  # active counter
+        ("samplingCounterValue", c_uint64),  # sampling counter
+    ]
+    _fmt_ = {"activeCounterValue": "%d", "samplingCounterValue": "%d"}
 
 
 ## Function access ##
@@ -1492,6 +1560,26 @@ def zesTemperatureGetState(hTemperature, pTemperature):
     return retVal
 
 
+def zesTemperatureSetConfig(hTemperature, pConfig):
+    """Wraps API:
+    ze_result_t zesTemperatureSetConfig(
+        zes_temp_handle_t hTemperature,
+        const zes_temp_config_t* pConfig)
+
+    Parameters:
+      hTemperature: temperature handle
+      pConfig: POINTER(zes_temp_config_t) - new configuration
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesTemperatureSetConfig")
+    funcPtr.argtypes = [zes_temp_handle_t, POINTER(zes_temp_config_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hTemperature, pConfig)
+    return retVal
+
+
 ## Engine functions ##
 
 
@@ -1555,4 +1643,214 @@ def zesEngineGetActivity(hEngine, pStats):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hEngine, pStats)
+    return retVal
+
+
+def zesEngineGetActivityExt(hEngine, pCount, pStats):
+    """Wraps API:
+    ze_result_t zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,
+        uint32_t* pCount,
+        zes_engine_stats_t* pStats)
+
+    Parameters:
+      hEngine: engine handle
+      pCount: POINTER(c_uint32)
+      pStats: POINTER(zes_engine_stats_t) or None - PF stats at index 0 followed by VF stats
+    Returns:
+      ze_result_t - return code only, stats are filled into pStats
+    """
+    funcPtr = getFunctionPointerList("zesEngineGetActivityExt")
+    funcPtr.argtypes = [
+        zes_engine_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_engine_stats_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hEngine, pCount, pStats)
+    return retVal
+
+
+## Standby functions ##
+
+
+def zesDeviceEnumStandbyDomains(hDevice, pCount, phStandby):
+    """Wraps API:
+    ze_result_t zesDeviceEnumStandbyDomains(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_standby_handle_t* phStandby)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phStandby: POINTER(zes_standby_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumStandbyDomains")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_standby_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phStandby)
+    return retVal
+
+
+def zesStandbyGetProperties(hStandby, pProperties):
+    """Wraps API:
+    ze_result_t zesStandbyGetProperties(
+        zes_standby_handle_t hStandby,
+        zes_standby_properties_t* pProperties)
+
+    Parameters:
+      hStandby: standby handle
+      pProperties: POINTER(zes_standby_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesStandbyGetProperties")
+    funcPtr.argtypes = [zes_standby_handle_t, POINTER(zes_standby_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hStandby, pProperties)
+    return retVal
+
+
+def zesStandbyGetMode(hStandby, pMode):
+    """Wraps API:
+    ze_result_t zesStandbyGetMode(
+        zes_standby_handle_t hStandby,
+        zes_standby_promo_mode_t* pMode)
+
+    Parameters:
+      hStandby: standby handle
+      pMode: POINTER(zes_standby_promo_mode_t) - current standby mode to fill
+    Returns:
+      ze_result_t - return code only, mode is filled into pMode
+    """
+    funcPtr = getFunctionPointerList("zesStandbyGetMode")
+    funcPtr.argtypes = [zes_standby_handle_t, POINTER(zes_standby_promo_mode_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hStandby, pMode)
+    return retVal
+
+
+def zesStandbySetMode(hStandby, mode):
+    """Wraps API:
+    ze_result_t zesStandbySetMode(
+        zes_standby_handle_t hStandby,
+        zes_standby_promo_mode_t mode)
+
+    Parameters:
+      hStandby: standby handle
+      mode: zes_standby_promo_mode_t - new standby mode
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesStandbySetMode")
+    funcPtr.argtypes = [zes_standby_handle_t, zes_standby_promo_mode_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hStandby, mode)
+    return retVal
+
+
+## VF management functions ##
+
+
+def zesDeviceEnumEnabledVFExp(hDevice, pCount, phVFhandle):
+    """Wraps API:
+    ze_result_t zesDeviceEnumEnabledVFExp(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_vf_handle_t* phVFhandle)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phVFhandle: POINTER(zes_vf_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumEnabledVFExp")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_vf_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phVFhandle)
+    return retVal
+
+
+def zesVFManagementGetVFCapabilitiesExp2(hVFhandle, pCapability):
+    """Wraps API:
+    ze_result_t zesVFManagementGetVFCapabilitiesExp2(
+        zes_vf_handle_t hVFhandle,
+        zes_vf_exp2_capabilities_t* pCapability)
+
+    Parameters:
+      hVFhandle: VF handle
+      pCapability: POINTER(zes_vf_exp2_capabilities_t) - capability structure to fill
+    Returns:
+      ze_result_t - return code only, capability is filled into pCapability
+    """
+    funcPtr = getFunctionPointerList("zesVFManagementGetVFCapabilitiesExp2")
+    funcPtr.argtypes = [zes_vf_handle_t, POINTER(zes_vf_exp2_capabilities_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hVFhandle, pCapability)
+    return retVal
+
+
+def zesVFManagementGetVFEngineUtilizationExp2(hVFhandle, pCount, pEngineUtil):
+    """Wraps API:
+    ze_result_t zesVFManagementGetVFEngineUtilizationExp2(
+        zes_vf_handle_t hVFhandle,
+        uint32_t* pCount,
+        zes_vf_util_engine_exp2_t* pEngineUtil)
+
+    Parameters:
+      hVFhandle: VF handle
+      pCount: POINTER(c_uint32)
+      pEngineUtil: POINTER(zes_vf_util_engine_exp2_t) or None
+    Returns:
+      ze_result_t - return code only, engine utilization is filled into pEngineUtil
+    """
+    funcPtr = getFunctionPointerList("zesVFManagementGetVFEngineUtilizationExp2")
+    funcPtr.argtypes = [
+        zes_vf_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_vf_util_engine_exp2_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hVFhandle, pCount, pEngineUtil)
+    return retVal
+
+
+def zesVFManagementGetVFMemoryUtilizationExp2(hVFhandle, pCount, pMemUtil):
+    """Wraps API:
+    ze_result_t zesVFManagementGetVFMemoryUtilizationExp2(
+        zes_vf_handle_t hVFhandle,
+        uint32_t* pCount,
+        zes_vf_util_mem_exp2_t* pMemUtil)
+
+    Parameters:
+      hVFhandle: VF handle
+      pCount: POINTER(c_uint32)
+      pMemUtil: POINTER(zes_vf_util_mem_exp2_t) or None
+    Returns:
+      ze_result_t - return code only, memory utilization is filled into pMemUtil
+    """
+    funcPtr = getFunctionPointerList("zesVFManagementGetVFMemoryUtilizationExp2")
+    funcPtr.argtypes = [
+        zes_vf_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_vf_util_mem_exp2_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hVFhandle, pCount, pMemUtil)
     return retVal

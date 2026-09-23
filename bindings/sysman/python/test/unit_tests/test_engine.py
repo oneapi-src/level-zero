@@ -100,6 +100,59 @@ class TestEngineFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesEngineGetActivity")
         mock_func.assert_called_once()
 
+    def test_GivenValidEngineHandleWhenCallingZesEngineGetActivityExtThenCallSucceedsWithValidCount(
+        self, mock_get_func
+    ):
+        mock_count = 3
+
+        def mock_get_activity_ext(engine_handle, count_ptr, stats_ptr):
+            count_ptr._obj.value = mock_count
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_activity_ext)
+        mock_get_func.return_value = mock_func
+
+        engine_handle = self.pyzes.zes_engine_handle_t()
+        count = c_uint32(0)
+
+        result = self.pyzes.zesEngineGetActivityExt(engine_handle, byref(count), None)
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(count.value, mock_count)
+        mock_get_func.assert_called_with("zesEngineGetActivityExt")
+        mock_func.assert_called_once()
+
+    def test_GivenValidEngineHandleWhenCallingZesEngineGetActivityExtWithArrayThenCallSucceedsWithStats(
+        self, mock_get_func
+    ):
+        mock_count = 2
+
+        def mock_get_activity_ext(engine_handle, count_ptr, stats_ptr):
+            count_ptr._obj.value = mock_count
+            stats_ptr[0].activeTime = 1000
+            stats_ptr[0].timestamp = 5000
+            stats_ptr[1].activeTime = 400
+            stats_ptr[1].timestamp = 5000
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_activity_ext)
+        mock_get_func.return_value = mock_func
+
+        engine_handle = self.pyzes.zes_engine_handle_t()
+        count = c_uint32(mock_count)
+        stats = (self.pyzes.zes_engine_stats_t * mock_count)()
+
+        result = self.pyzes.zesEngineGetActivityExt(engine_handle, byref(count), stats)
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(count.value, mock_count)
+        self.assertEqual(stats[0].activeTime, 1000)
+        self.assertEqual(stats[0].timestamp, 5000)
+        self.assertEqual(stats[1].activeTime, 400)
+        self.assertEqual(stats[1].timestamp, 5000)
+        mock_get_func.assert_called_with("zesEngineGetActivityExt")
+        mock_func.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
