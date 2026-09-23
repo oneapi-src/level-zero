@@ -669,6 +669,15 @@ class zes_power_energy_counter_t(_PrintableStructure):
     _fmt_ = {"energy": "%d", "timestamp": "%d microseconds"}
 
 
+class zes_energy_threshold_t(_PrintableStructure):
+    _fields_ = [
+        ("enable", ze_bool_t),  # is the energy threshold enabled
+        ("threshold", c_double),  # energy threshold in Joules, 0.0 if not set
+        ("processId", c_uint32),  # host process ID that set the threshold
+    ]
+    _fmt_ = {"threshold": "%.3f J"}
+
+
 ## Frequency structures ##
 class zes_freq_properties_t(_PrintableStructure):
     _fields_ = [
@@ -1259,6 +1268,108 @@ def zesPowerSetLimitsExt(hPower, pCount, pSustained):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hPower, pCount, pSustained)
+    return retVal
+
+
+def zesPowerGetUsage(hPower, pInstantPower, pAveragePower):
+    """Wraps API:
+    ze_result_t zesPowerGetUsage(
+            zes_pwr_handle_t hPower,
+            uint32_t* pInstantPower,
+            uint32_t* pAveragePower)
+
+    Parameters:
+        hPower: power handle
+        pInstantPower: POINTER(c_uint32) or None - instant power usage in milliwatts
+        pAveragePower: POINTER(c_uint32) or None - average power usage in milliwatts
+    Returns:
+        ze_result_t - return code only, power usage is filled into pInstantPower and pAveragePower
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetUsage")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pInstantPower, pAveragePower)
+    return retVal
+
+
+def zesPowerGetLimitsExt2(hPower, pLimit):
+    """Wraps API:
+    ze_result_t zesPowerGetLimitsExt2(
+            zes_pwr_handle_t hPower,
+            uint32_t* pLimit)
+
+    Parameters:
+        hPower: power handle
+        pLimit: POINTER(c_uint32) - power limit in milliwatts to fill
+    Returns:
+        ze_result_t - return code only, power limit is filled into pLimit
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetLimitsExt2")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pLimit)
+    return retVal
+
+
+def zesPowerSetLimitsExt2(hPower, limit):
+    """Wraps API:
+    ze_result_t zesPowerSetLimitsExt2(
+            zes_pwr_handle_t hPower,
+            const uint32_t limit)
+
+    Parameters:
+        hPower: power handle
+        limit: power limit in milliwatts to set
+    Returns:
+        ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesPowerSetLimitsExt2")
+    funcPtr.argtypes = [zes_pwr_handle_t, c_uint32]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, limit)
+    return retVal
+
+
+def zesPowerGetEnergyThreshold(hPower, pThreshold):
+    """Wraps API:
+    ze_result_t zesPowerGetEnergyThreshold(
+            zes_pwr_handle_t hPower,
+            zes_energy_threshold_t* pThreshold)
+
+    Parameters:
+        hPower: power handle
+        pThreshold: POINTER(zes_energy_threshold_t) - energy threshold structure to fill
+    Returns:
+        ze_result_t - return code only, energy threshold is filled into pThreshold
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetEnergyThreshold")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(zes_energy_threshold_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pThreshold)
+    return retVal
+
+
+def zesPowerSetEnergyThreshold(hPower, threshold):
+    """Wraps API:
+    ze_result_t zesPowerSetEnergyThreshold(
+            zes_pwr_handle_t hPower,
+            double threshold)
+
+    Parameters:
+        hPower: power handle
+        threshold: energy threshold in Joules to set
+    Returns:
+        ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesPowerSetEnergyThreshold")
+    funcPtr.argtypes = [zes_pwr_handle_t, c_double]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, threshold)
     return retVal
 
 
