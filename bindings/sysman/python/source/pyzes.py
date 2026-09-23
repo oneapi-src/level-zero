@@ -262,6 +262,27 @@ ZES_FREQ_THROTTLE_REASON_FLAG_THERMAL = 1 << 8
 ZES_FREQ_THROTTLE_REASON_FLAG_POWER = 1 << 9
 ZES_FREQ_THROTTLE_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
 
+## Event type flags ##
+zes_event_type_flags_t = c_uint32
+ZES_EVENT_TYPE_FLAG_DEVICE_DETACH = 1 << 0
+ZES_EVENT_TYPE_FLAG_DEVICE_ATTACH = 1 << 1
+ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_ENTER = 1 << 2
+ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_EXIT = 1 << 3
+ZES_EVENT_TYPE_FLAG_FREQ_THROTTLED = 1 << 4
+ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED = 1 << 5
+ZES_EVENT_TYPE_FLAG_TEMP_CRITICAL = 1 << 6
+ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD1 = 1 << 7
+ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD2 = 1 << 8
+ZES_EVENT_TYPE_FLAG_MEM_HEALTH = 1 << 9
+ZES_EVENT_TYPE_FLAG_FABRIC_PORT_HEALTH = 1 << 10
+ZES_EVENT_TYPE_FLAG_PCI_LINK_HEALTH = 1 << 11
+ZES_EVENT_TYPE_FLAG_RAS_CORRECTABLE_ERRORS = 1 << 12
+ZES_EVENT_TYPE_FLAG_RAS_UNCORRECTABLE_ERRORS = 1 << 13
+ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED = 1 << 14
+ZES_EVENT_TYPE_FLAG_SURVIVABILITY_MODE_DETECTED = 1 << 15
+ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT = 1 << 16
+ZES_EVENT_TYPE_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
 ## Temperature sensor enums ##
 zes_temp_sensors_t = c_int32
 ZES_TEMP_SENSORS_GLOBAL = 0
@@ -354,6 +375,7 @@ ZE_MAX_DEVICE_UUID_SIZE = 16
 ZES_STRING_PROPERTY_SIZE = 64  # from zes_api.h
 ZE_MAX_DEVICE_NAME = 256  # from ze_api.h
 ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
+ZES_MAX_EXTENSION_NAME = 256  # from zes_api.h
 
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
@@ -376,6 +398,7 @@ ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
 ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
 ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
+ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES = 0x2F
 
 
 ## Core ze_device UUID struct ##
@@ -553,6 +576,23 @@ class zes_device_ecc_properties_t(_PrintableStructure):
 ## Sysman zes_uuid_t ##
 class zes_uuid_t(_PrintableStructure):
     _fields_ = [("id", c_ubyte * ZES_MAX_UUID_SIZE)]
+
+
+## Driver structures ##
+class zes_driver_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES
+        ("pNext", c_void_p),
+        ("uuid", zes_uuid_t),  # sysman driver instance UUID
+        ("driverVersion", c_uint32),  # sysman driver version
+    ]
+
+
+class zes_driver_extension_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("name", c_char * ZES_MAX_EXTENSION_NAME),  # extension name
+        ("version", c_uint32),  # extension version using ZE_MAKE_VERSION
+    ]
 
 
 ## Sysman zes_device_ext_properties_t (extension) ##
@@ -1555,4 +1595,174 @@ def zesEngineGetActivity(hEngine, pStats):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hEngine, pStats)
+    return retVal
+
+
+## Driver functions ##
+
+
+def zesDriverGetProperties(hDriver, pDriverProperties):
+    """Wraps API:
+    ze_result_t zesDriverGetProperties(
+        zes_driver_handle_t hDriver,
+        zes_driver_properties_t* pDriverProperties)
+
+    Parameters:
+      hDriver: driver handle
+      pDriverProperties: POINTER(zes_driver_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pDriverProperties
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetProperties")
+    funcPtr.argtypes = [zes_driver_handle_t, POINTER(zes_driver_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, pDriverProperties)
+    return retVal
+
+
+def zesDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties):
+    """Wraps API:
+    ze_result_t zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,
+        uint32_t* pCount,
+        zes_driver_extension_properties_t* pExtensionProperties)
+
+    Parameters:
+      hDriver: driver handle
+      pCount: POINTER(c_uint32)
+      pExtensionProperties: POINTER(zes_driver_extension_properties_t) or None
+    Returns:
+      ze_result_t - return code only, extension properties are filled into pExtensionProperties
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetExtensionProperties")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_driver_extension_properties_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, pCount, pExtensionProperties)
+    return retVal
+
+
+def zesDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress):
+    """Wraps API:
+    ze_result_t zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,
+        const char* name,
+        void** ppFunctionAddress)
+
+    Parameters:
+      hDriver: driver handle
+      name: bytes - extension function name
+      ppFunctionAddress: POINTER(c_void_p) - function address to fill
+    Returns:
+      ze_result_t - return code only, function address is filled into ppFunctionAddress
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetExtensionFunctionAddress")
+    funcPtr.argtypes = [zes_driver_handle_t, c_char_p, POINTER(c_void_p)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, name, ppFunctionAddress)
+    return retVal
+
+
+def zesDriverEventListenEx(
+    hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents
+):
+    """Wraps API:
+    ze_result_t zesDriverEventListenEx(
+        ze_driver_handle_t hDriver,
+        uint64_t timeout,
+        uint32_t count,
+        zes_device_handle_t* phDevices,
+        uint32_t* pNumDeviceEvents,
+        zes_event_type_flags_t* pEvents)
+
+    Parameters:
+      hDriver: driver handle
+      timeout: c_uint64 - maximum wait in milliseconds; 0 returns immediately
+      count: c_uint32 - number of device handles in phDevices
+      phDevices: POINTER(zes_device_handle_t) - devices to listen to
+      pNumDeviceEvents: POINTER(c_uint32) - number of devices that generated events
+      pEvents: POINTER(zes_event_type_flags_t) - events for each device, at least count elements
+    Returns:
+      ze_result_t - return code only, events are filled into pEvents
+    """
+    funcPtr = getFunctionPointerList("zesDriverEventListenEx")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        c_uint64,
+        c_uint32,
+        POINTER(zes_device_handle_t),
+        POINTER(c_uint32),
+        POINTER(zes_event_type_flags_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents)
+    return retVal
+
+
+def zesDriverEventRegisterExt(hDriver, events):
+    """Wraps API:
+    ze_result_t zesDriverEventRegisterExt(
+        zes_driver_handle_t hDriver,
+        zes_event_type_flags_t events)
+
+    Parameters:
+      hDriver: driver handle
+      events: zes_event_type_flags_t - driver scoped events to listen to, 0 to clear
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDriverEventRegisterExt")
+    funcPtr.argtypes = [zes_driver_handle_t, zes_event_type_flags_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, events)
+    return retVal
+
+
+def zesDriverEventListenExt(
+    hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents, pDriverEvents
+):
+    """Wraps API:
+    ze_result_t zesDriverEventListenExt(
+        zes_driver_handle_t hDriver,
+        uint64_t timeout,
+        uint32_t count,
+        zes_device_handle_t* phDevices,
+        uint32_t* pNumDeviceEvents,
+        zes_event_type_flags_t* pEvents,
+        zes_event_type_flags_t* pDriverEvents)
+
+    Parameters:
+      hDriver: driver handle
+      timeout: c_uint64 - maximum wait in milliseconds; 0 returns immediately
+      count: c_uint32 - number of device handles in phDevices
+      phDevices: POINTER(zes_device_handle_t) - devices to listen to
+      pNumDeviceEvents: POINTER(c_uint32) - number of devices that generated device scoped events
+      pEvents: POINTER(zes_event_type_flags_t) - device scoped events for each device
+      pDriverEvents: POINTER(zes_event_type_flags_t) or None - driver scoped events that occurred
+    Returns:
+      ze_result_t - return code only, events are filled into pEvents and pDriverEvents
+    """
+    funcPtr = getFunctionPointerList("zesDriverEventListenExt")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        c_uint64,
+        c_uint32,
+        POINTER(zes_device_handle_t),
+        POINTER(c_uint32),
+        POINTER(zes_event_type_flags_t),
+        POINTER(zes_event_type_flags_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(
+        hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents, pDriverEvents
+    )
     return retVal
