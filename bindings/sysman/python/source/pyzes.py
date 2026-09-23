@@ -148,6 +148,10 @@ class zes_engine_handle_t(c_void_p):
     pass
 
 
+class zes_firmware_handle_t(c_void_p):
+    pass
+
+
 ##
 
 ze_bool_t = c_uint8
@@ -171,6 +175,31 @@ ZES_DEVICE_TYPE_FPGA = 3
 ZES_DEVICE_TYPE_MCA = 4
 ZES_DEVICE_TYPE_VPU = 5
 ZES_DEVICE_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+## Device state, reset and health enums ##
+zes_repair_status_t = c_int32
+ZES_REPAIR_STATUS_UNSUPPORTED = 0
+ZES_REPAIR_STATUS_NOT_PERFORMED = 1
+ZES_REPAIR_STATUS_PERFORMED = 2
+ZES_REPAIR_STATUS_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_reset_reason_flags_t = c_uint32
+ZES_RESET_REASON_FLAG_WEDGED = 1 << 0
+ZES_RESET_REASON_FLAG_REPAIR = 1 << 1
+ZES_RESET_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_reset_type_t = c_int32
+ZES_RESET_TYPE_WARM = 0
+ZES_RESET_TYPE_COLD = 1
+ZES_RESET_TYPE_FLR = 2
+ZES_RESET_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_device_health_status_ext_t = c_int32
+ZES_DEVICE_HEALTH_STATUS_EXT_OK = 0
+ZES_DEVICE_HEALTH_STATUS_EXT_WARNING = 1
+ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL = 2
+ZES_DEVICE_HEALTH_STATUS_EXT_FAILED = 3
+ZES_DEVICE_HEALTH_STATUS_EXT_FORCE_UINT32 = 0x7FFFFFFF
 
 # Memory type enumeration
 zes_mem_type_t = c_int32
@@ -261,6 +290,27 @@ ZES_FREQ_THROTTLE_REASON_FLAG_VOLTAGE = 1 << 7
 ZES_FREQ_THROTTLE_REASON_FLAG_THERMAL = 1 << 8
 ZES_FREQ_THROTTLE_REASON_FLAG_POWER = 1 << 9
 ZES_FREQ_THROTTLE_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
+## Event type flags ##
+zes_event_type_flags_t = c_uint32
+ZES_EVENT_TYPE_FLAG_DEVICE_DETACH = 1 << 0
+ZES_EVENT_TYPE_FLAG_DEVICE_ATTACH = 1 << 1
+ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_ENTER = 1 << 2
+ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_EXIT = 1 << 3
+ZES_EVENT_TYPE_FLAG_FREQ_THROTTLED = 1 << 4
+ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED = 1 << 5
+ZES_EVENT_TYPE_FLAG_TEMP_CRITICAL = 1 << 6
+ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD1 = 1 << 7
+ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD2 = 1 << 8
+ZES_EVENT_TYPE_FLAG_MEM_HEALTH = 1 << 9
+ZES_EVENT_TYPE_FLAG_FABRIC_PORT_HEALTH = 1 << 10
+ZES_EVENT_TYPE_FLAG_PCI_LINK_HEALTH = 1 << 11
+ZES_EVENT_TYPE_FLAG_RAS_CORRECTABLE_ERRORS = 1 << 12
+ZES_EVENT_TYPE_FLAG_RAS_UNCORRECTABLE_ERRORS = 1 << 13
+ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED = 1 << 14
+ZES_EVENT_TYPE_FLAG_SURVIVABILITY_MODE_DETECTED = 1 << 15
+ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT = 1 << 16
+ZES_EVENT_TYPE_FLAG_FORCE_UINT32 = 0x7FFFFFFF
 
 ## Temperature sensor enums ##
 zes_temp_sensors_t = c_int32
@@ -365,6 +415,8 @@ ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES = 0x26
 ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27
 ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28
 ZES_STRUCTURE_TYPE_PROCESS_STATE = 0x16
+ZES_STRUCTURE_TYPE_DEVICE_STATE = 0x15
+ZES_STRUCTURE_TYPE_RESET_PROPERTIES = 0x2C
 ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES = 0x2D  # from zes_structure_type_t
 ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES = (
     0x00020004  # Experimental subdevice properties
@@ -423,6 +475,26 @@ class zes_device_properties_t(_PrintableStructure):
         ("modelName", c_char * ZES_STRING_PROPERTY_SIZE),
         ("vendorName", c_char * ZES_STRING_PROPERTY_SIZE),
         ("driverVersion", c_char * ZES_STRING_PROPERTY_SIZE),
+    ]
+
+
+## Sysman zes_device_state_t ##
+class zes_device_state_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_DEVICE_STATE
+        ("pNext", c_void_p),
+        ("reset", zes_reset_reason_flags_t),  # reasons the device needs a reset
+        ("repaired", zes_repair_status_t),  # repair status
+    ]
+
+
+## Sysman zes_reset_properties_t ##
+class zes_reset_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RESET_PROPERTIES
+        ("pNext", c_void_p),
+        ("force", ze_bool_t),  # forcibly kill applications using the device
+        ("resetType", zes_reset_type_t),  # type of reset to perform
     ]
 
 
@@ -1062,6 +1134,133 @@ def zesDeviceProcessesGetState(hDevice, pCount, pProcesses):
     ]
     funcPtr.restype = ze_result_t
     retVal = funcPtr(hDevice, pCount, pProcesses)
+    return retVal
+
+
+def zesDeviceGetState(hDevice, pState):
+    """Wraps API:
+    ze_result_t zesDeviceGetState(
+        zes_device_handle_t hDevice,
+        zes_device_state_t* pState)
+
+    Parameters:
+      hDevice: device handle
+      pState: POINTER(zes_device_state_t) - state structure to fill
+    Returns:
+      ze_result_t - return code only, state is filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesDeviceGetState")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_device_state_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, pState)
+    return retVal
+
+
+def zesDeviceResetExt(hDevice, pProperties):
+    """Wraps API:
+    ze_result_t zesDeviceResetExt(
+        zes_device_handle_t hDevice,
+        zes_reset_properties_t* pProperties)
+
+    Performs a PCI bus reset of the device and all current device state is lost.
+
+    Parameters:
+      hDevice: device handle
+      pProperties: POINTER(zes_reset_properties_t) - reset properties to apply
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDeviceResetExt")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_reset_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, pProperties)
+    return retVal
+
+
+def zesDeviceEventRegister(hDevice, events):
+    """Wraps API:
+    ze_result_t zesDeviceEventRegister(
+        zes_device_handle_t hDevice,
+        zes_event_type_flags_t events)
+
+    Parameters:
+      hDevice: device handle
+      events: zes_event_type_flags_t - events to listen to, 0 to clear
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEventRegister")
+    funcPtr.argtypes = [zes_device_handle_t, zes_event_type_flags_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, events)
+    return retVal
+
+
+def zesDeviceGetHealthStatusExt(hDevice, pHealth):
+    """Wraps API:
+    ze_result_t zesDeviceGetHealthStatusExt(
+        zes_device_handle_t hDevice,
+        zes_device_health_status_ext_t* pHealth)
+
+    Parameters:
+      hDevice: device handle
+      pHealth: POINTER(zes_device_health_status_ext_t) - current health status to fill
+    Returns:
+      ze_result_t - return code only, health status is filled into pHealth
+    """
+    funcPtr = getFunctionPointerList("zesDeviceGetHealthStatusExt")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_device_health_status_ext_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, pHealth)
+    return retVal
+
+
+def zesDeviceSetHealthStatusExt(hDevice, health):
+    """Wraps API:
+    ze_result_t zesDeviceSetHealthStatusExt(
+        zes_device_handle_t hDevice,
+        zes_device_health_status_ext_t health)
+
+    The health status is persisted to non-volatile memory.
+
+    Parameters:
+      hDevice: device handle
+      health: zes_device_health_status_ext_t - new health status
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDeviceSetHealthStatusExt")
+    funcPtr.argtypes = [zes_device_handle_t, zes_device_health_status_ext_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, health)
+    return retVal
+
+
+def zesDeviceEnumFirmwares(hDevice, pCount, phFirmware):
+    """Wraps API:
+    ze_result_t zesDeviceEnumFirmwares(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_firmware_handle_t* phFirmware)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phFirmware: POINTER(zes_firmware_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumFirmwares")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_firmware_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phFirmware)
     return retVal
 
 
