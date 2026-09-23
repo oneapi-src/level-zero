@@ -158,6 +158,12 @@ SUPPORTED APIs
 | `zesDeviceGetProperties` | Device | 0.1.0 | None |
 | `zesDriverGetDeviceByUuidExp` | Device | 0.1.0 | Experimental API |
 | `zesDeviceProcessesGetState` | Device | 0.1.0 | None |
+| `zesDeviceGetState` | Device | 0.1.3 | None |
+| `zesDeviceResetExt` | Device | 0.1.3 | Linux: Requires superuser; all device state is lost |
+| `zesDeviceEventRegister` | Device | 0.1.3 | None |
+| `zesDeviceGetHealthStatusExt` | Device | 0.1.3 | None |
+| `zesDeviceSetHealthStatusExt` | Device | 0.1.3 | Linux: Requires superuser; persisted to non-volatile memory |
+| `zesDeviceEnumFirmwares` | Device | 0.1.3 | None |
 | **Memory Management** |-|-|-|
 | `zesDeviceEnumMemoryModules` | Memory | 0.1.0 | None |
 | `zesMemoryGetProperties` | Memory | 0.1.0 | None |
