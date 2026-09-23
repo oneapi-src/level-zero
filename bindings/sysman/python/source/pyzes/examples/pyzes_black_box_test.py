@@ -321,6 +321,35 @@ def get_device_action_string(action):
     return action_map.get(action, f"UNKNOWN_DEVICE_ACTION_{action}")
 
 
+def get_ras_error_type_string(error_type):
+    """Convert RAS error type enum to string"""
+    type_map = {
+        pz.ZES_RAS_ERROR_TYPE_CORRECTABLE: "ZES_RAS_ERROR_TYPE_CORRECTABLE",
+        pz.ZES_RAS_ERROR_TYPE_UNCORRECTABLE: "ZES_RAS_ERROR_TYPE_UNCORRECTABLE",
+    }
+    return type_map.get(error_type, f"UNKNOWN_RAS_ERROR_TYPE_{error_type}")
+
+
+def get_ras_error_category_string(category):
+    """Convert RAS error category enum to string"""
+    category_map = {
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_RESET: "ZES_RAS_ERROR_CATEGORY_EXP_RESET",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_PCIE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_PCIE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_FABRIC_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_FABRIC_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS",
+    }
+    return category_map.get(category, f"UNKNOWN_RAS_ERROR_CATEGORY_{category}")
+
+
 def is_root_user():
     """Return whether the current user has root privileges on platforms that support it"""
     geteuid = getattr(os, "geteuid", None)
@@ -836,6 +865,175 @@ def test_engine_modules(device_handle, device_index):
             print_verbose("      Activity:")
             print_verbose(f"        Active Time: {engineStats.activeTime}")
             print_verbose(f"        Timestamp: {engineStats.timestamp}")
+
+    return True
+
+
+def get_ras_states(ras_handle, ras_index, categories, category_count, label):
+    """Read RAS error counters for the given categories, returns None on failure"""
+    StateArray = pz.zes_ras_state_exp2_t * category_count
+    states = StateArray()
+    for j in range(category_count):
+        states[j].stype = pz.ZES_STRUCTURE_TYPE_RAS_STATE_EXP2
+        states[j].pNext = None
+
+    rc = pz.zesRasGetStateExp2(ras_handle, category_count, categories, states)
+    if not check_rc(f"zesRasGetStateExp2(ras {ras_index}, {label})", rc):
+        return None
+    return states
+
+
+def get_ras_configs(ras_handle, ras_index, categories, category_count, label):
+    """Read RAS thresholds for the given categories, returns None on failure"""
+    ConfigArray = pz.zes_ras_config_exp_t * category_count
+    configs = ConfigArray()
+    for j in range(category_count):
+        configs[j].stype = pz.ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP
+        configs[j].pNext = None
+        configs[j].category = categories[j]
+
+    rc = pz.zesRasGetConfigExp(ras_handle, category_count, configs)
+    if not check_rc(f"zesRasGetConfigExp(ras {ras_index}, {label})", rc):
+        return None
+    return configs
+
+
+def test_ras_module(device_handle, device_index, set_threshold=None, clear_state=False):
+    """Test RAS error set enumeration, properties, state, and config operations"""
+    print(f"\n---- Device {device_index} RAS Test ----")
+
+    ras_count = c_uint32(0)
+    rc = pz.zesDeviceEnumRasErrorSets(device_handle, byref(ras_count), None)
+    if not check_rc(f"zesDeviceEnumRasErrorSets(device {device_index}, count)", rc):
+        return False
+
+    if ras_count.value == 0:
+        print_verbose("No RAS error sets found on this device")
+        return True
+
+    print_verbose(f"Found {ras_count.value} RAS error set(s)")
+
+    RasArray = pz.zes_ras_handle_t * ras_count.value
+    ras_handles = RasArray()
+
+    rc = pz.zesDeviceEnumRasErrorSets(device_handle, byref(ras_count), ras_handles)
+    if not check_rc(f"zesDeviceEnumRasErrorSets(device {device_index}, handles)", rc):
+        return False
+
+    for i in range(ras_count.value):
+        print_verbose(f"\n  RAS Error Set {i}:")
+
+        props = pz.zes_ras_properties_t()
+        props.stype = pz.ZES_STRUCTURE_TYPE_RAS_PROPERTIES
+        props.pNext = None
+
+        rc = pz.zesRasGetProperties(ras_handles[i], byref(props))
+        if not check_rc(f"zesRasGetProperties(ras {i})", rc):
+            continue
+
+        print_verbose(f"    Type: {get_ras_error_type_string(props.type)}")
+        print_verbose(f"    On Subdevice: {bool(props.onSubdevice)}")
+        if props.onSubdevice:
+            print_verbose(f"    Subdevice ID: {props.subdeviceId}")
+
+        category_count = c_uint32(0)
+        rc = pz.zesRasGetSupportedCategoriesExp(
+            ras_handles[i], byref(category_count), None
+        )
+        if not check_rc(f"zesRasGetSupportedCategoriesExp(ras {i}, count)", rc):
+            continue
+
+        if category_count.value == 0:
+            print_verbose("    No supported RAS error categories")
+            continue
+
+        count = category_count.value
+        CategoryArray = pz.zes_ras_error_category_exp_t * count
+        categories = CategoryArray()
+        rc = pz.zesRasGetSupportedCategoriesExp(
+            ras_handles[i], byref(category_count), categories
+        )
+        if not check_rc(f"zesRasGetSupportedCategoriesExp(ras {i}, categories)", rc):
+            continue
+
+        states = get_ras_states(ras_handles[i], i, categories, count, "current")
+        if states is None:
+            continue
+
+        configs = get_ras_configs(ras_handles[i], i, categories, count, "current")
+
+        print_verbose("    Error Counters:")
+        for j in range(count):
+            line = f"      {get_ras_error_category_string(categories[j])}: {states[j].errorCounter}"
+            if configs is not None:
+                line += f" (threshold: {configs[j].threshold})"
+            print_verbose(line)
+
+        if not is_root_user():
+            print_verbose(
+                "    Skipping zesRasSetConfigExp and zesRasClearStateExp tests due to insufficient permissions"
+            )
+            continue
+
+        if configs is not None and set_threshold is not None:
+            ConfigArray = pz.zes_ras_config_exp_t * count
+            new_configs = ConfigArray()
+            for j in range(count):
+                new_configs[j].stype = pz.ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP
+                new_configs[j].pNext = None
+                new_configs[j].category = categories[j]
+                new_configs[j].threshold = set_threshold
+
+            print_verbose(f"    Setting threshold {set_threshold} for all categories")
+            rc = pz.zesRasSetConfigExp(ras_handles[i], count, new_configs)
+            if check_rc(f"zesRasSetConfigExp(ras {i}, threshold={set_threshold})", rc):
+                verify = get_ras_configs(ras_handles[i], i, categories, count, "verify")
+                if verify is not None:
+                    print_verbose("    Thresholds after set:")
+                    for j in range(count):
+                        status = (
+                            "OK" if verify[j].threshold == set_threshold else "MISMATCH"
+                        )
+                        print_verbose(
+                            f"      {get_ras_error_category_string(categories[j])}: {verify[j].threshold} ({status})"
+                        )
+
+            # Restore the thresholds read before the test
+            print_verbose("    Restoring original thresholds")
+            rc = pz.zesRasSetConfigExp(ras_handles[i], count, configs)
+            check_rc(f"zesRasSetConfigExp(ras {i}, restore)", rc)
+        elif configs is not None:
+            # Write back the thresholds just read so the device configuration is unchanged
+            rc = pz.zesRasSetConfigExp(ras_handles[i], count, configs)
+            check_rc(f"zesRasSetConfigExp(ras {i})", rc)
+
+        if clear_state:
+            print_verbose("    Clearing all RAS error categories")
+            for j in range(count):
+                rc = pz.zesRasClearStateExp(ras_handles[i], categories[j])
+                check_rc(
+                    f"zesRasClearStateExp(ras {i}, {get_ras_error_category_string(categories[j])})",
+                    rc,
+                )
+
+            after = get_ras_states(ras_handles[i], i, categories, count, "after clear")
+            if after is not None:
+                print_verbose("    Error Counters (before -> after clear):")
+                for j in range(count):
+                    print_verbose(
+                        f"      {get_ras_error_category_string(categories[j])}: "
+                        f"{states[j].errorCounter} -> {after[j].errorCounter}"
+                    )
+        else:
+            # Only clear categories that have no errors so that no counter data is lost
+            for j in range(count):
+                if states[j].errorCounter != 0:
+                    continue
+                rc = pz.zesRasClearStateExp(ras_handles[i], categories[j])
+                check_rc(
+                    f"zesRasClearStateExp(ras {i}, {get_ras_error_category_string(categories[j])})",
+                    rc,
+                )
 
     return True
 
@@ -1395,6 +1593,9 @@ def run_all_tests():
             # Test engine modules
             test_engine_modules(devices[device_idx], device_idx)
 
+            # Test RAS module
+            test_ras_module(devices[device_idx], device_idx)
+
     print("\n=== Test Completed ===")
     return True
 
@@ -1413,6 +1614,9 @@ def main():
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
+  %(prog)s -r                 # RAS tests only
+  %(prog)s -r --set-threshold 5   # RAS tests, set then restore threshold 5 (root)
+  %(prog)s -r --clear-ras-state   # RAS tests, clear all error counters (root)
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1450,8 +1654,22 @@ def main():
         version="Python Level Zero Sysman Black Box Test v1.0",
     )
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
+    parser.add_argument("-r", "--ras", action="store_true", help="Run only RAS tests")
+    parser.add_argument(
+        "--set-threshold",
+        type=int,
+        metavar="VALUE",
+        help="With -r, set the RAS threshold of all categories, verify it and restore the original (requires root)",
+    )
+    parser.add_argument(
+        "--clear-ras-state",
+        action="store_true",
+        help="With -r, clear all RAS error counters and print them before and after (requires root)",
+    )
 
     args = parser.parse_args()
+    if args.set_threshold is not None and args.set_threshold < 0:
+        parser.error("--set-threshold must be a non-negative integer")
 
     # Check if any specific test is requested
     specific_test = (
@@ -1463,6 +1681,7 @@ def main():
         or args.frequency
         or args.temperature
         or args.engine
+        or args.ras
         or args.all
     )
 
@@ -1514,6 +1733,14 @@ def main():
 
                 if args.temperature:
                     test_temperature_sensors(devices[device_idx], device_idx)
+
+                if args.ras:
+                    test_ras_module(
+                        devices[device_idx],
+                        device_idx,
+                        set_threshold=args.set_threshold,
+                        clear_state=args.clear_ras_state,
+                    )
 
             success = True
 

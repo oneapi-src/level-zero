@@ -148,6 +148,10 @@ class zes_engine_handle_t(c_void_p):
     pass
 
 
+class zes_ras_handle_t(c_void_p):
+    pass
+
+
 ##
 
 ze_bool_t = c_uint8
@@ -294,6 +298,28 @@ ZES_ENGINE_GROUP_3D_ALL = 13
 ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14
 ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7FFFFFFF
 
+## RAS enums ##
+zes_ras_error_type_t = c_int32
+ZES_RAS_ERROR_TYPE_CORRECTABLE = 0
+ZES_RAS_ERROR_TYPE_UNCORRECTABLE = 1
+ZES_RAS_ERROR_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_ras_error_category_exp_t = c_int32
+ZES_RAS_ERROR_CATEGORY_EXP_RESET = 0
+ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS = 1
+ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS = 2
+ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS = 3
+ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS = 4
+ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS = 5
+ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS = 6
+ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS = 7
+ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS = 8
+ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS = 9
+ZES_RAS_ERROR_CATEGORY_EXP_PCIE_ERRORS = 10
+ZES_RAS_ERROR_CATEGORY_EXP_FABRIC_ERRORS = 11
+ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS = 12
+ZES_RAS_ERROR_CATEGORY_EXP_FORCE_UINT32 = 0x7FFFFFFF
+
 ze_result_t = c_int32
 ZE_RESULT_SUCCESS = 0
 ZE_RESULT_NOT_READY = 1
@@ -376,6 +402,9 @@ ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
 ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
 ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
+ZES_STRUCTURE_TYPE_RAS_PROPERTIES = 0xF
+ZES_STRUCTURE_TYPE_RAS_STATE_EXP2 = 0x00020015  # Experimental RAS state
+ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP = 0x00020016  # Experimental RAS config
 
 
 ## Core ze_device UUID struct ##
@@ -777,6 +806,36 @@ class zes_engine_stats_t(_PrintableStructure):
         ("timestamp", c_uint64),  # timestamp
     ]
     _fmt_ = {"activeTime": "%d", "timestamp": "%d"}
+
+
+## RAS structures ##
+class zes_ras_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RAS_PROPERTIES
+        ("pNext", c_void_p),
+        ("type", zes_ras_error_type_t),  # correctable/uncorrectable
+        ("onSubdevice", ze_bool_t),  # is on subdevice
+        ("subdeviceId", c_uint32),  # subdevice ID
+    ]
+
+
+class zes_ras_state_exp2_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RAS_STATE_EXP2
+        ("pNext", c_void_p),
+        ("errorCounter", c_uint64),  # error counter for the requested category
+    ]
+    _fmt_ = {"errorCounter": "%d"}
+
+
+class zes_ras_config_exp_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP
+        ("pNext", c_void_p),
+        ("category", zes_ras_error_category_exp_t),  # RAS error category
+        ("threshold", c_uint64),  # threshold to trigger RAS events (0 disables)
+    ]
+    _fmt_ = {"threshold": "%d"}
 
 
 ## Function access ##
@@ -1555,4 +1614,169 @@ def zesEngineGetActivity(hEngine, pStats):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hEngine, pStats)
+    return retVal
+
+
+## RAS functions ##
+
+
+def zesDeviceEnumRasErrorSets(hDevice, pCount, phRas):
+    """Wraps API:
+    ze_result_t zesDeviceEnumRasErrorSets(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_ras_handle_t* phRas)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phRas: POINTER(zes_ras_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumRasErrorSets")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_ras_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phRas)
+    return retVal
+
+
+def zesRasGetProperties(hRas, pProperties):
+    """Wraps API:
+    ze_result_t zesRasGetProperties(
+        zes_ras_handle_t hRas,
+        zes_ras_properties_t* pProperties)
+
+    Parameters:
+      hRas: RAS handle
+      pProperties: POINTER(zes_ras_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesRasGetProperties")
+    funcPtr.argtypes = [zes_ras_handle_t, POINTER(zes_ras_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, pProperties)
+    return retVal
+
+
+def zesRasGetSupportedCategoriesExp(hRas, pCount, pCategories):
+    """Wraps API:
+    ze_result_t zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,
+        uint32_t* pCount,
+        zes_ras_error_category_exp_t* pCategories)
+
+    Parameters:
+      hRas: RAS handle
+      pCount: POINTER(c_uint32)
+      pCategories: POINTER(zes_ras_error_category_exp_t) or None
+    Returns:
+      ze_result_t - return code only, supported categories are filled into pCategories
+    """
+    funcPtr = getFunctionPointerList("zesRasGetSupportedCategoriesExp")
+    funcPtr.argtypes = [
+        zes_ras_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_ras_error_category_exp_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, pCount, pCategories)
+    return retVal
+
+
+def zesRasGetStateExp2(hRas, count, pCategories, pState):
+    """Wraps API:
+    ze_result_t zesRasGetStateExp2(
+        zes_ras_handle_t hRas,
+        const uint32_t count,
+        const zes_ras_error_category_exp_t* pCategories,
+        zes_ras_state_exp2_t* pState)
+
+    Parameters:
+      hRas: RAS handle
+      count: number of elements in pCategories and pState
+      pCategories: POINTER(zes_ras_error_category_exp_t) - categories to query
+      pState: POINTER(zes_ras_state_exp2_t) - states to fill, pState[i] maps to pCategories[i]
+    Returns:
+      ze_result_t - return code only, error counters are filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesRasGetStateExp2")
+    funcPtr.argtypes = [
+        zes_ras_handle_t,
+        c_uint32,
+        POINTER(zes_ras_error_category_exp_t),
+        POINTER(zes_ras_state_exp2_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, count, pCategories, pState)
+    return retVal
+
+
+def zesRasGetConfigExp(hRas, count, pConfig):
+    """Wraps API:
+    ze_result_t zesRasGetConfigExp(
+        zes_ras_handle_t hRas,
+        const uint32_t count,
+        zes_ras_config_exp_t* pConfig)
+
+    Parameters:
+      hRas: RAS handle
+      count: number of elements in pConfig
+      pConfig: POINTER(zes_ras_config_exp_t) - category set by caller, threshold filled by driver
+    Returns:
+      ze_result_t - return code only, thresholds are filled into pConfig
+    """
+    funcPtr = getFunctionPointerList("zesRasGetConfigExp")
+    funcPtr.argtypes = [zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, count, pConfig)
+    return retVal
+
+
+def zesRasSetConfigExp(hRas, count, pConfig):
+    """Wraps API:
+    ze_result_t zesRasSetConfigExp(
+        zes_ras_handle_t hRas,
+        const uint32_t count,
+        const zes_ras_config_exp_t* pConfig)
+
+    Parameters:
+      hRas: RAS handle
+      count: number of elements in pConfig
+      pConfig: POINTER(zes_ras_config_exp_t) - thresholds to set per category
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesRasSetConfigExp")
+    funcPtr.argtypes = [zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, count, pConfig)
+    return retVal
+
+
+def zesRasClearStateExp(hRas, category):
+    """Wraps API:
+    ze_result_t zesRasClearStateExp(
+        zes_ras_handle_t hRas,
+        zes_ras_error_category_exp_t category)
+
+    Parameters:
+      hRas: RAS handle
+      category: zes_ras_error_category_exp_t - category whose error counter is cleared
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesRasClearStateExp")
+    funcPtr.argtypes = [zes_ras_handle_t, zes_ras_error_category_exp_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, category)
     return retVal
