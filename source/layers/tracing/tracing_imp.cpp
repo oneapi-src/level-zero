@@ -12,6 +12,7 @@
 namespace tracing_layer {
 
 thread_local ze_bool_t tracingInProgress = 0;
+thread_local ze_result_t *pEpilogueResultReturnValue = nullptr;
 
 struct APITracerContextImp *pGlobalAPITracerContextImp;
 
