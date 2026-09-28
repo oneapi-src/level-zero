@@ -178,6 +178,37 @@ zelTracerSetEnabled(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Overrides the value returned by the API call currently being traced.
+///        Only valid from an epilogue of an API that returns ze_result_t.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+ze_result_t ZE_APICALL
+zelTracerSetResultReturnValue(
+    ze_result_t value                           ///< [in] value the traced API returns to the application
+    )
+{
+    if(ze_lib::destruction)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetResultReturnValue_t)( ze_result_t );
+
+    // Looked up by name so an older tracing layer without it reports unsupported.
+    auto func = reinterpret_cast<ze_pfnSetResultReturnValue_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib,
+                         "zelTracerSetResultReturnValue") );
+    if(!func)
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+    return func( value );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Registers a prologue/epilogue callback on a tracer for a named
 ///        extension function of a specific driver. See loader/ze_loader.h.
 ze_result_t ZE_APICALL
