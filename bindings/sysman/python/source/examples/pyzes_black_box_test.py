@@ -983,7 +983,13 @@ def test_device_state_module(device_handle, device_index, set_health=None):
     else:
         print_verbose(f"  Health Status: {get_health_status_string(health.value)}")
 
-        if is_root_user() and set_health is not None:
+        if set_health is None:
+            pass
+        elif not is_root_user():
+            print_verbose(
+                "  Skipping zesDeviceSetHealthStatusExt due to insufficient permissions"
+            )
+        else:
             rc = pz.zesDeviceSetHealthStatusExt(device_handle, set_health)
             if check_rc(
                 f"zesDeviceSetHealthStatusExt(device {device_index}, {get_health_status_string(set_health)})",
@@ -1008,15 +1014,6 @@ def test_device_state_module(device_handle, device_index, set_health=None):
                 print_verbose(
                     f"  Restored health status to {get_health_status_string(health.value)}"
                 )
-        elif is_root_user():
-            # Write back the health status just read so the device state is unchanged
-            rc = pz.zesDeviceSetHealthStatusExt(device_handle, health.value)
-            if check_rc(f"zesDeviceSetHealthStatusExt(device {device_index})", rc):
-                print_verbose("  Set health status successfully")
-        else:
-            print_verbose(
-                "  Skipping zesDeviceSetHealthStatusExt due to insufficient permissions"
-            )
 
     events_to_register = pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED
     rc = pz.zesDeviceEventRegister(device_handle, events_to_register)
