@@ -871,86 +871,444 @@ def test_engine_modules(device_handle, device_index):
 
 
 INFO_LOG_READ_TIMEOUT_MS = 1000
+INFO_LOG_RECORD_WAIT_MS = 5000
+INFO_LOG_POLL_INTERVAL_MS = 200
+INFO_LOG_MAX_DRAIN_CALLS = 16
+INFO_LOG_INSTANCE_NAME = "pyzes_black_box_infolog"
 
 
-def collect_info_log_records(
-    collect_fn, api_name, instance_handle, timeout, info_log_index
-):
-    """Query and then collect info log records with the given read or peek function.
+class InfoLogChecks:
+    """Count and print the pass and fail results of the info log checks"""
 
-    Returns (record_count, size, buffer, descriptors, status) or None on failure.
+    def __init__(self):
+        self.passed = 0
+        self.failed = 0
+
+    def __call__(self, condition, description):
+        if condition:
+            print_verbose(f"  [PASS] {description}")
+            self.passed += 1
+        else:
+            print_verbose(f"  [FAIL] {description}")
+            self.failed += 1
+
+    def print_summary(self):
+        print_verbose(f"{self.passed} check(s) passed, {self.failed} check(s) failed")
+
+
+class InfoLogRecords:
+    """Records returned by one read or peek call"""
+
+    def __init__(self):
+        self.size = 0
+        self.record_count = 0
+        self.buffer = None
+        self.descriptors = None
+        self.status = None
+
+
+def query_info_log_records(collect_fn, instance_handle, timeout):
+    """Query the records held by the instance without consuming them.
+
+    A call with *pSize and *pRecordCount zero on input is a query call for both read and peek.
+    Returns (rc, size, record_count).
     """
     size = c_uint32(0)
     record_count = c_uint32(0)
     rc = collect_fn(
         instance_handle, timeout, byref(size), None, byref(record_count), None, None
     )
-    if not check_rc(f"{api_name}(info log {info_log_index}, query)", rc):
+    return rc, size.value, record_count.value
+
+
+def collect_info_log_records(collect_fn, api_name, instance_handle, timeout):
+    """Query the records held by the instance, then collect them in a second call.
+
+    Returns an InfoLogRecords object, or None on failure.
+    """
+    records = InfoLogRecords()
+    rc, records.size, records.record_count = query_info_log_records(
+        collect_fn, instance_handle, timeout
+    )
+    if not check_rc(f"{api_name}(query)", rc):
         return None
 
     print_verbose(
-        f"    {api_name} query: {record_count.value} record(s), {size.value} bytes"
+        f"{api_name}() query: {records.record_count} record(s), {records.size} byte(s) pending"
     )
-    if size.value == 0 or record_count.value == 0:
-        return 0, 0, None, None, None
+    if records.size == 0 or records.record_count == 0:
+        records.size = 0
+        records.record_count = 0
+        return records
 
-    buffer = (c_uint8 * size.value)()
-    descriptors = (pz.zes_info_log_metadata_ext_t * record_count.value)()
+    size = c_uint32(records.size)
+    record_count = c_uint32(records.record_count)
+    records.buffer = (c_uint8 * size.value)()
+    records.descriptors = (pz.zes_info_log_metadata_ext_t * record_count.value)()
     for j in range(record_count.value):
-        descriptors[j].stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT
-        descriptors[j].pNext = None
+        records.descriptors[j].stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT
+        records.descriptors[j].pNext = None
 
-    status = pz.zes_info_log_read_status_ext_t()
-    status.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT
-    status.pNext = None
+    records.status = pz.zes_info_log_read_status_ext_t()
+    records.status.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT
+    records.status.pNext = None
 
     rc = collect_fn(
         instance_handle,
         timeout,
         byref(size),
-        buffer,
+        records.buffer,
         byref(record_count),
-        descriptors,
-        byref(status),
+        records.descriptors,
+        byref(records.status),
     )
-    if rc == pz.ZE_RESULT_WARNING_DROPPED_DATA:
-        print_verbose(f"    Dropped Records: {status.droppedRecordCount}")
-    elif not check_rc(f"{api_name}(info log {info_log_index}, data)", rc):
+    if rc != pz.ZE_RESULT_WARNING_DROPPED_DATA and not check_rc(f"{api_name}()", rc):
         return None
 
-    return record_count.value, size.value, buffer, descriptors, status
+    records.size = size.value
+    records.record_count = record_count.value
+    print_verbose(
+        f"{api_name}(): {records.record_count} record(s), {records.size} byte(s) returned"
+    )
+    dropped = (
+        records.status.droppedRecordCount
+        if rc == pz.ZE_RESULT_WARNING_DROPPED_DATA
+        else 0
+    )
+    if dropped == -1:
+        dropped = "unknown"
+    print_verbose(
+        f"  readStatus.hasDataToRead = {bool(records.status.hasDataToRead)}, "
+        f"readStatus.droppedRecordCount = {dropped}, "
+        f"readStatus.consumedDataSize = {records.status.consumedDataSize} bytes"
+    )
+    if records.status.hasDataToRead:
+        print_verbose(
+            f"  Records remain on the instance, {api_name}() has to be called again"
+        )
+    return records
 
 
-def print_info_log_records(action, record_count, size, descriptors, status):
-    """Print the metadata of collected info log records and the read status"""
-    print_verbose(f"    {action} {record_count} record(s), {size} bytes:")
-    for j in range(record_count):
-        record = descriptors[j]
-        print_verbose(f"      Record {j}:")
+def print_info_log_records(records, first_record_number):
+    """Print the metadata and the start of the data of collected info log records"""
+    print_verbose("-" * 80)
+    for j in range(records.record_count):
+        record = records.descriptors[j]
+        print_verbose(f"\nEvent #{first_record_number + j}:")
+        print_verbose(f"  Timestamp:    {record.timestamp} nano seconds")
         print_verbose(
-            f"        Type: {get_info_log_record_type_string(record.recordType)}"
+            f"  BDF:          {record.address.domain:04x}:{record.address.bus:02x}:"
+            f"{record.address.device:02x}.{record.address.function:x}"
         )
         print_verbose(
-            f"        BDF: {record.address.domain:04X}:{record.address.bus:02X}:"
-            f"{record.address.device:02X}.{record.address.function:X}"
+            f"  Platform ID:  {'-'.join(f'{record.uuid.id[k]:02x}' for k in range(16))}"
         )
-        print_verbose(f"        Timestamp: {record.timestamp} ns")
-        print_verbose(f"        Offset: {record.offset}")
-        print_verbose(f"        Length: {record.lengthOfData} bytes")
-    print_verbose(f"    Consumed Data Size: {status.consumedDataSize} bytes")
-    print_verbose(f"    Has Data To Read: {bool(status.hasDataToRead)}")
+        print_verbose(
+            f"  Record Type:  {get_info_log_record_type_string(record.recordType)}"
+        )
+        print_verbose(f"  Data Size:    {record.lengthOfData} bytes")
+        print_verbose(f"  Data Offset:  {record.offset}")
+        start = record.offset
+        end = min(start + record.lengthOfData, records.size)
+        stop = min(end, start + 64)
+        data = bytes(records.buffer[start:stop])
+        suffix = " ..." if end - start > 64 else ""
+        print_verbose(f"  CPER Data:    {data.hex(' ')}{suffix}")
+    print_verbose("-" * 80)
+
+
+def drain_info_log_records(
+    collect_fn, api_name, instance_handle, timeout, first_record_number
+):
+    """Keep collecting while the driver reports more data. Returns (records collected, success)."""
+    collected = 0
+    for _ in range(INFO_LOG_MAX_DRAIN_CALLS):
+        records = collect_info_log_records(
+            collect_fn, api_name, instance_handle, timeout
+        )
+        if records is None:
+            return collected, False
+        if records.record_count == 0:
+            break
+        print_info_log_records(records, first_record_number + collected)
+        collected += records.record_count
+        if not records.status.hasDataToRead:
+            break
+    return collected, True
+
+
+def records_match(first, second):
+    """Check that the first record of two collections has the same data"""
+    if first.record_count == 0 or second.record_count == 0:
+        return False
+    a = first.descriptors[0]
+    b = second.descriptors[0]
+    if a.lengthOfData != b.lengthOfData:
+        return False
+    a_start, a_end = a.offset, a.offset + a.lengthOfData
+    b_start, b_end = b.offset, b.offset + b.lengthOfData
+    return bytes(first.buffer[a_start:a_end]) == bytes(second.buffer[b_start:b_end])
+
+
+def get_info_log_properties(info_log_handle):
+    """Return the properties of an info log, or None on failure"""
+    props = pz.zes_info_log_ext_properties_t()
+    props.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES
+    props.pNext = None
+    rc = pz.zesInfoLogGetPropertiesExt(info_log_handle, byref(props))
+    if not check_rc("zesInfoLogGetPropertiesExt", rc):
+        return None
+    return props
+
+
+def create_info_log_instance(info_log_handle, instance_name, buffer_size_kb):
+    """Create a collection instance, unset options use the default buffer and buffer size"""
+    desc = pz.zes_info_log_instance_ext_desc_t()
+    desc.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC
+    desc.pNext = None
+    buffer_size = None
+    if buffer_size_kb is not None:
+        buffer_size = c_uint32(buffer_size_kb)
+        desc.pBufferSizeInKb = pointer(buffer_size)
+        print_verbose(f"  requested buffer size: {buffer_size_kb} KB")
+    else:
+        desc.pBufferSizeInKb = None
+
+    name = instance_name.encode() if instance_name is not None else None
+    instance_handle = pz.zes_info_log_instance_handle_t()
+    rc = pz.zesInfoLogCreateInstanceExt(
+        info_log_handle, name, byref(desc), byref(instance_handle)
+    )
+    if not check_rc("zesInfoLogCreateInstanceExt", rc):
+        return None
+
+    # The descriptor members are updated in place with the values which were actually applied
+    if buffer_size is not None:
+        print_verbose(f"  applied buffer size: {buffer_size.value} KB")
+    return instance_handle
+
+
+def test_info_log_instance_read_peek(info_log_handle, props, timeout):
+    """Peek twice, read and drain the records of a named instance and check the results"""
+    print("\n---- Info Log instance read and peek tests ----")
+
+    if not props.isNamedInstanceSupported:
+        print_verbose(
+            "Named collection instances are not supported. Skipping the test."
+        )
+        return
+    if not props.isPeekDataSupported:
+        print_verbose("Peek is not supported. Skipping the test.")
+        return
+
+    instance_handle = create_info_log_instance(
+        info_log_handle, INFO_LOG_INSTANCE_NAME, None
+    )
+    if instance_handle is None:
+        return
+    print_verbose(f"Created collection instance '{INFO_LOG_INSTANCE_NAME}'")
+
+    # Only records generated after the instance was created are collected into it, so the
+    # instance is polled with the non-consuming query until it reports data
+    print_verbose(
+        f"\nWaiting up to {INFO_LOG_RECORD_WAIT_MS} ms for CPER records. Records are generated "
+        "when the uncorrectable RAS counters are read, for example with "
+        "'zello_sysman -L --instanceapi' "
+        "from another shell."
+    )
+    peek_name = "zesInfoLogInstancePeekWithMetadataExt"
+    read_name = "zesInfoLogInstanceReadWithMetadataExt"
+    pending_size = 0
+    pending_count = 0
+    for _ in range(0, INFO_LOG_RECORD_WAIT_MS, INFO_LOG_POLL_INTERVAL_MS):
+        rc, pending_size, pending_count = query_info_log_records(
+            pz.zesInfoLogInstancePeekWithMetadataExt, instance_handle, timeout
+        )
+        if not check_rc(f"{peek_name}(query)", rc) or pending_count != 0:
+            break
+        time.sleep(INFO_LOG_POLL_INTERVAL_MS / 1000)
+
+    if pending_count == 0:
+        print_verbose(
+            f"No CPER record was collected within {INFO_LOG_RECORD_WAIT_MS} ms. "
+            "Skipping the read and peek verification."
+        )
+        check_rc(
+            "zesInfoLogInstanceDeleteExt",
+            pz.zesInfoLogInstanceDeleteExt(instance_handle),
+        )
+        return
+    print_verbose(
+        f"{pending_count} record(s), {pending_size} byte(s) are pending on the instance"
+    )
+
+    check = InfoLogChecks()
+
+    print_verbose("\nFirst peek:")
+    first_peek = collect_info_log_records(
+        pz.zesInfoLogInstancePeekWithMetadataExt, peek_name, instance_handle, timeout
+    )
+    check(
+        first_peek is not None and first_peek.record_count != 0,
+        "peek returned the pending records",
+    )
+    if first_peek is None:
+        first_peek = InfoLogRecords()
+    if first_peek.record_count != 0:
+        print_info_log_records(first_peek, 1)
+
+    print_verbose("\nSecond peek, on the same records:")
+    second_peek = collect_info_log_records(
+        pz.zesInfoLogInstancePeekWithMetadataExt, peek_name, instance_handle, timeout
+    )
+    check(
+        second_peek is not None
+        and second_peek.record_count == first_peek.record_count
+        and second_peek.size == first_peek.size,
+        "a second peek reports the same records, peek does not consume",
+    )
+
+    print_verbose("\nRead, on the records the peek left in place:")
+    read = collect_info_log_records(
+        pz.zesInfoLogInstanceReadWithMetadataExt, read_name, instance_handle, timeout
+    )
+    check(
+        read is not None and read.record_count >= first_peek.record_count,
+        "read returned at least the records the peek reported",
+    )
+    if read is None:
+        read = InfoLogRecords()
+    if read.record_count != 0:
+        print_info_log_records(read, 1)
+
+    check(
+        records_match(first_peek, read),
+        "the first record the read returned is byte identical to the peeked one",
+    )
+
+    if read.status is not None and read.status.hasDataToRead:
+        drained, success = drain_info_log_records(
+            pz.zesInfoLogInstanceReadWithMetadataExt,
+            read_name,
+            instance_handle,
+            timeout,
+            read.record_count + 1,
+        )
+        print_verbose(f"{drained} further record(s) were read to drain the instance")
+        check(success, "the reads which drained the remaining records succeeded")
+
+    rc, pending_size, pending_count = query_info_log_records(
+        pz.zesInfoLogInstanceReadWithMetadataExt, instance_handle, timeout
+    )
+    check(
+        rc == pz.ZE_RESULT_SUCCESS and pending_count == 0,
+        "the instance is drained after the read, nothing is pending",
+    )
+
+    print_verbose("")
+    check.print_summary()
+
+    rc = pz.zesInfoLogInstanceDeleteExt(instance_handle)
+    if check_rc("zesInfoLogInstanceDeleteExt", rc):
+        print_verbose(f"Deleted collection instance '{INFO_LOG_INSTANCE_NAME}'")
+
+
+def test_info_log_instance_collect(
+    info_log_handle, props, instance_name, buffer_size_kb, timeout, use_peek
+):
+    """Peek or read the records collected into an instance and check the results"""
+    operation = "peek" if use_peek else "read"
+    print(f"\n---- Info Log instance {operation} tests ----")
+
+    if use_peek and not props.isPeekDataSupported:
+        print_verbose("Peek is not supported. Skipping the test.")
+        return
+    if instance_name is not None and not props.isNamedInstanceSupported:
+        print_verbose(
+            "Named collection instances are not supported. Skipping the test."
+        )
+        return
+
+    print_verbose(
+        f"Collection instance: {instance_name if instance_name is not None else 'the default buffer'}"
+    )
+    instance_handle = create_info_log_instance(
+        info_log_handle, instance_name, buffer_size_kb
+    )
+    if instance_handle is None:
+        return
+
+    if use_peek:
+        collect_fn = pz.zesInfoLogInstancePeekWithMetadataExt
+        api_name = "zesInfoLogInstancePeekWithMetadataExt"
+    else:
+        collect_fn = pz.zesInfoLogInstanceReadWithMetadataExt
+        api_name = "zesInfoLogInstanceReadWithMetadataExt"
+
+    check = InfoLogChecks()
+    records = collect_info_log_records(collect_fn, api_name, instance_handle, timeout)
+    if records is not None and records.record_count == 0:
+        print_verbose(
+            "No record is pending on the instance. Records are generated when the "
+            "uncorrectable RAS counters are read, for example with 'zello_sysman -L --instanceapi'."
+        )
+    elif records is not None:
+        print_info_log_records(records, 1)
+        if use_peek:
+            # The peek left the records in place, so the same totals must still be reported
+            rc, pending_size, pending_count = query_info_log_records(
+                collect_fn, instance_handle, timeout
+            )
+            check(
+                rc == pz.ZE_RESULT_SUCCESS
+                and pending_count == records.record_count
+                and pending_size == records.size,
+                "the peeked records are still pending on the instance",
+            )
+        else:
+            if records.status.hasDataToRead:
+                drained, success = drain_info_log_records(
+                    collect_fn,
+                    api_name,
+                    instance_handle,
+                    timeout,
+                    records.record_count + 1,
+                )
+                print_verbose(
+                    f"{drained} further record(s) were read to drain the instance"
+                )
+                check(
+                    success, "the reads which drained the remaining records succeeded"
+                )
+            rc, pending_size, pending_count = query_info_log_records(
+                collect_fn, instance_handle, timeout
+            )
+            check(
+                rc == pz.ZE_RESULT_SUCCESS and pending_count == 0,
+                "the read consumed the records, nothing is pending",
+            )
+        print_verbose("")
+        check.print_summary()
+
+    rc = pz.zesInfoLogInstanceDeleteExt(instance_handle)
+    if check_rc("zesInfoLogInstanceDeleteExt", rc):
+        print_verbose("Deleted collection instance")
 
 
 def test_info_log_module(
     driver_handle,
     driver_index,
+    mode=None,
     instance_name=None,
     buffer_size_kb=None,
     timeout=INFO_LOG_READ_TIMEOUT_MS,
-    read_records=False,
 ):
-    """Test info log enumeration, properties, and collection instance operations"""
-    print(f"\n---- Driver {driver_index} Info Log Test ----")
+    """Test info log properties, and with a mode the collection instance operations.
+
+    mode is None for properties only, "api" to verify peek and read on a named instance,
+    "peek" to peek or "read" to read the records of an instance.
+    """
+    print(f"\n---- Driver {driver_index} Info Log properties tests ----")
 
     info_log_count = c_uint32(0)
     rc = pz.zesDriverEnumInfoLogsExt(driver_handle, byref(info_log_count), None)
@@ -958,10 +1316,10 @@ def test_info_log_module(
         return False
 
     if info_log_count.value == 0:
-        print_verbose("No info logs found on this driver")
+        print_verbose("Could not retrieve Info Log handles")
         return True
 
-    print_verbose(f"Found {info_log_count.value} info log(s)")
+    print_verbose(f"Found {info_log_count.value} info log handles..")
 
     InfoLogArray = pz.zes_info_log_handle_t * info_log_count.value
     info_log_handles = InfoLogArray()
@@ -972,127 +1330,58 @@ def test_info_log_module(
     if not check_rc(f"zesDriverEnumInfoLogsExt(driver {driver_index}, handles)", rc):
         return False
 
+    cper_handle = None
+    cper_props = None
     for i in range(info_log_count.value):
-        print_verbose(f"\n  Info Log {i}:")
-
-        props = pz.zes_info_log_ext_properties_t()
-        props.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES
-        props.pNext = None
-
-        rc = pz.zesInfoLogGetPropertiesExt(info_log_handles[i], byref(props))
-        if not check_rc(f"zesInfoLogGetPropertiesExt(info log {i})", rc):
+        props = get_info_log_properties(info_log_handles[i])
+        if props is None:
             continue
-
-        print_verbose(f"    Type: {get_info_log_type_string(props.infoLogType)}")
-        print_verbose(f"    Format: {get_info_log_format_string(props.infoLogFormat)}")
         print_verbose(
-            f"    Named Instance Supported: {bool(props.isNamedInstanceSupported)}"
+            f"properties.infoLogType = {get_info_log_type_string(props.infoLogType)}"
         )
-        print_verbose(f"    Peek Data Supported: {bool(props.isPeekDataSupported)}")
-
-        if instance_name is not None and not props.isNamedInstanceSupported:
-            print_verbose(
-                f"    Skipping named instance '{instance_name}' since named instances are not supported"
-            )
-            continue
-
-        # Unset options use the default buffer and default buffer size
-        desc = pz.zes_info_log_instance_ext_desc_t()
-        desc.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC
-        desc.pNext = None
-        buffer_size = None
-        if buffer_size_kb is not None:
-            buffer_size = c_uint32(buffer_size_kb)
-            desc.pBufferSizeInKb = pointer(buffer_size)
-        else:
-            desc.pBufferSizeInKb = None
-
-        name = instance_name.encode() if instance_name is not None else None
-        instance_handle = pz.zes_info_log_instance_handle_t()
-        rc = pz.zesInfoLogCreateInstanceExt(
-            info_log_handles[i], name, byref(desc), byref(instance_handle)
+        print_verbose(
+            f"properties.infoLogFormat = {get_info_log_format_string(props.infoLogFormat)}"
         )
-        if rc != pz.ZE_RESULT_SUCCESS:
-            print_verbose(
-                f"    Collection Instance: Not available ({get_result_string(rc)})"
-            )
-            continue
-
-        label = (
-            f"'{instance_name}'"
-            if instance_name is not None
-            else "on the default buffer"
+        print_verbose(
+            f"properties.isNamedInstanceSupported = {bool(props.isNamedInstanceSupported)}"
         )
-        print_verbose(f"    Created collection instance {label} successfully")
-        if buffer_size is not None:
-            print_verbose(
-                f"    Buffer Size: requested {buffer_size_kb} KB, applied {buffer_size.value} KB"
-            )
+        print_verbose(
+            f"properties.isPeekDataSupported = {bool(props.isPeekDataSupported)}"
+        )
+        if (
+            cper_handle is None
+            and props.infoLogFormat == pz.ZES_INFO_LOG_FORMAT_EXT_CPER
+        ):
+            cper_handle = info_log_handles[i]
+            cper_props = props
 
-        peeked_count = None
-        if props.isPeekDataSupported:
-            peeked = collect_info_log_records(
-                pz.zesInfoLogInstancePeekWithMetadataExt,
-                "zesInfoLogInstancePeekWithMetadataExt",
-                instance_handle,
-                timeout,
-                i,
-            )
-            if peeked is not None:
-                peeked_count = peeked[0]
-                if peeked_count > 0:
-                    print_info_log_records(
-                        "Peeked", peeked[0], peeked[1], peeked[3], peeked[4]
-                    )
+    if mode is None:
+        print_verbose(
+            "\nRecords are collected with --instance-api, --instance-peek or --instance-read"
+        )
+        return True
 
-        if read_records:
-            # Records are consumed, so keep reading while the driver reports more data
-            read_count = 0
-            while True:
-                read = collect_info_log_records(
-                    pz.zesInfoLogInstanceReadWithMetadataExt,
-                    "zesInfoLogInstanceReadWithMetadataExt",
-                    instance_handle,
-                    timeout,
-                    i,
-                )
-                if read is None or read[0] == 0:
-                    break
-                read_count += read[0]
-                print_info_log_records("Read", read[0], read[1], read[3], read[4])
-                if not read[4].hasDataToRead:
-                    break
+    if not is_root_user():
+        print_verbose(
+            "Not running as Root. Skipping the info log collection instance test."
+        )
+        return True
 
-            print_verbose(f"    Total Records Read: {read_count}")
-            if peeked_count is not None and peeked_count != read_count:
-                print_verbose(
-                    f"    Note: peek returned {peeked_count} record(s) and read returned {read_count}, "
-                    "records may have arrived between the calls"
-                )
-        else:
-            # Only a query call is made, so records in the shared default buffer are not consumed
-            size = c_uint32(0)
-            record_count = c_uint32(0)
-            rc = pz.zesInfoLogInstanceReadWithMetadataExt(
-                instance_handle,
-                timeout,
-                byref(size),
-                None,
-                byref(record_count),
-                None,
-                None,
-            )
-            if check_rc(
-                f"zesInfoLogInstanceReadWithMetadataExt(info log {i}, query)", rc
-            ):
-                print_verbose(
-                    f"    Read Query: {record_count.value} record(s), {size.value} bytes"
-                )
+    if cper_handle is None:
+        print_verbose("No info log handle reports the CPER format")
+        return True
 
-        rc = pz.zesInfoLogInstanceDeleteExt(instance_handle)
-        if check_rc(f"zesInfoLogInstanceDeleteExt(info log {i})", rc):
-            print_verbose("    Deleted collection instance successfully")
-
+    if mode == "api":
+        test_info_log_instance_read_peek(cper_handle, cper_props, timeout)
+    else:
+        test_info_log_instance_collect(
+            cper_handle,
+            cper_props,
+            instance_name,
+            buffer_size_kb,
+            timeout,
+            use_peek=(mode == "peek"),
+        )
     return True
 
 
@@ -1672,9 +1961,9 @@ def main():
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
-  %(prog)s -l                 # Info log tests only
-  %(prog)s -l --instance-read --timeout 5000   # Info log tests, peek then consume all records
-  %(prog)s -l --instance mylog --buffer-size 1024   # Info log tests on a named 1 MB collection instance
+  %(prog)s -l                 # Info log properties tests only
+  %(prog)s -l --instance-api  # Info log tests, verify peek and read on a named collection instance
+  %(prog)s -l --instance-read --instance mylog --buffer-size 1024   # Info log tests, read the records of a named 1 MB collection instance
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1713,18 +2002,43 @@ def main():
     )
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
     parser.add_argument(
-        "-l", "--infolog", action="store_true", help="Run only info log tests"
+        "-l",
+        "--infolog",
+        action="store_true",
+        help="Run only info log tests, reporting what each info log supports",
+    )
+    instance_mode = parser.add_mutually_exclusive_group()
+    instance_mode.add_argument(
+        "--instance-api",
+        action="store_const",
+        const="api",
+        dest="instance_mode",
+        help="With -l, create a named collection instance, wait for CPER records, then verify peek and read (requires root)",
+    )
+    instance_mode.add_argument(
+        "--instance-peek",
+        action="store_const",
+        const="peek",
+        dest="instance_mode",
+        help="With -l, create a collection instance and peek the records (requires root)",
+    )
+    instance_mode.add_argument(
+        "--instance-read",
+        action="store_const",
+        const="read",
+        dest="instance_mode",
+        help="With -l, create a collection instance and read the records (requires root)",
     )
     parser.add_argument(
         "--instance",
         metavar="NAME",
-        help="With -l, collect into a named instance instead of the default buffer",
+        help="With --instance-peek/--instance-read, collect into a named instance instead of the default buffer",
     )
     parser.add_argument(
         "--buffer-size",
         type=int,
         metavar="KB",
-        help="With -l, request a collection buffer size in kilobytes (0 reports the default size)",
+        help="With --instance-peek/--instance-read, request a total collection buffer size in kilobytes",
     )
     parser.add_argument(
         "--timeout",
@@ -1733,15 +2047,16 @@ def main():
         metavar="MS",
         help=f"With -l, maximum time in milliseconds to search for records, default is {INFO_LOG_READ_TIMEOUT_MS}",
     )
-    parser.add_argument(
-        "--instance-read",
-        action="store_true",
-        help="With -l, read and consume all collected records after peeking them",
-    )
 
     args = parser.parse_args()
-    if args.buffer_size is not None and args.buffer_size < 0:
-        parser.error("--buffer-size must be a non-negative integer")
+    if args.buffer_size is not None and args.buffer_size <= 0:
+        parser.error("--buffer-size must be a positive integer")
+    if (
+        args.instance is not None or args.buffer_size is not None
+    ) and args.instance_mode not in ("peek", "read"):
+        parser.error(
+            "--instance and --buffer-size are used with --instance-peek or --instance-read"
+        )
     if args.timeout < 0:
         parser.error("--timeout must be a non-negative integer")
 
@@ -1788,10 +2103,10 @@ def main():
                     test_info_log_module(
                         drivers[driver_idx],
                         driver_idx,
+                        mode=args.instance_mode,
                         instance_name=args.instance,
                         buffer_size_kb=args.buffer_size,
                         timeout=args.timeout,
-                        read_records=args.instance_read,
                     )
 
             # Run selected tests on all devices
