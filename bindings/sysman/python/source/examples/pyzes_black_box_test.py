@@ -969,6 +969,9 @@ def test_ras_module(device_handle, device_index, set_threshold=None, clear_state
                 line += f" (threshold: {configs[j].threshold})"
             print_verbose(line)
 
+        if set_threshold is None and not clear_state:
+            continue
+
         if not is_root_user():
             print_verbose(
                 "    Skipping zesRasSetConfigExp and zesRasClearStateExp tests due to insufficient permissions"
@@ -1002,10 +1005,6 @@ def test_ras_module(device_handle, device_index, set_threshold=None, clear_state
             print_verbose("    Restoring original thresholds")
             rc = pz.zesRasSetConfigExp(ras_handles[i], count, configs)
             check_rc(f"zesRasSetConfigExp(ras {i}, restore)", rc)
-        elif configs is not None:
-            # Write back the thresholds just read so the device configuration is unchanged
-            rc = pz.zesRasSetConfigExp(ras_handles[i], count, configs)
-            check_rc(f"zesRasSetConfigExp(ras {i})", rc)
 
         if clear_state:
             print_verbose("    Clearing all RAS error categories")
@@ -1024,16 +1023,6 @@ def test_ras_module(device_handle, device_index, set_threshold=None, clear_state
                         f"      {get_ras_error_category_string(categories[j])}: "
                         f"{states[j].errorCounter} -> {after[j].errorCounter}"
                     )
-        else:
-            # Only clear categories that have no errors so that no counter data is lost
-            for j in range(count):
-                if states[j].errorCounter != 0:
-                    continue
-                rc = pz.zesRasClearStateExp(ras_handles[i], categories[j])
-                check_rc(
-                    f"zesRasClearStateExp(ras {i}, {get_ras_error_category_string(categories[j])})",
-                    rc,
-                )
 
     return True
 
