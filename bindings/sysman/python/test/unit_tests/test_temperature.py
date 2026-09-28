@@ -144,6 +144,37 @@ class TestTemperatureFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesTemperatureGetState")
         mock_func.assert_called_once()
 
+    def test_GivenValidTemperatureHandleWhenCallingZesTemperatureSetConfigThenCallSucceeds(
+        self, mock_get_func
+    ):
+        def mock_set_config(temp_handle, config_ptr):
+            config = config_ptr._obj
+            self.assertEqual(config.stype, self.pyzes.ZES_STRUCTURE_TYPE_TEMP_CONFIG)
+            self.assertEqual(config.enableCritical, 1)
+            self.assertEqual(config.threshold1.enableLowToHigh, 1)
+            self.assertEqual(config.threshold1.threshold, 85.0)
+            self.assertEqual(config.threshold2.enableHighToLow, 1)
+            self.assertEqual(config.threshold2.threshold, 60.0)
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_set_config)
+        mock_get_func.return_value = mock_func
+
+        temp_handle = self.pyzes.zes_temp_handle_t()
+        config = self.pyzes.zes_temp_config_t()
+        config.stype = self.pyzes.ZES_STRUCTURE_TYPE_TEMP_CONFIG
+        config.enableCritical = 1
+        config.threshold1.enableLowToHigh = 1
+        config.threshold1.threshold = 85.0
+        config.threshold2.enableHighToLow = 1
+        config.threshold2.threshold = 60.0
+
+        result = self.pyzes.zesTemperatureSetConfig(temp_handle, byref(config))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        mock_get_func.assert_called_with("zesTemperatureSetConfig")
+        mock_func.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
