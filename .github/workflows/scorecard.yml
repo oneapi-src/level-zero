@@ -28,7 +28,7 @@ jobs:
       with:
         persist-credentials: false
     - name: "Run analysis"
-      uses: ossf/scorecard-action@v2.3.3
+      uses: ossf/scorecard-action@v2.4.4
       with:
         results_file: results.sarif
         results_format: sarif
@@ -45,6 +45,6 @@ jobs:
         path: results.sarif
     - name: "Upload to code-scanning"
       if: github.event_name != 'pull_request'
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: results.sarif
