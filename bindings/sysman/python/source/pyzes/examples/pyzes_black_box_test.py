@@ -229,6 +229,11 @@ def get_temperature_sensor_string(temp_sensor):
         pz.ZES_TEMP_SENSORS_VOLTAGE_REGULATOR: "ZES_TEMP_SENSORS_VOLTAGE_REGULATOR",
         pz.ZES_TEMP_SENSORS_GPU_MIN: "ZES_TEMP_SENSORS_GPU_MIN",
         pz.ZES_TEMP_SENSORS_MEMORY_MIN: "ZES_TEMP_SENSORS_MEMORY_MIN",
+        pz.ZES_TEMP_SENSORS_GPU_BOARD: "ZES_TEMP_SENSORS_GPU_BOARD",
+        pz.ZES_TEMP_SENSORS_GPU_BOARD_MIN: "ZES_TEMP_SENSORS_GPU_BOARD_MIN",
+        pz.ZES_TEMP_SENSORS_COMPOSITE: "ZES_TEMP_SENSORS_COMPOSITE",
+        pz.ZES_TEMP_SENSORS_GPU_BOARD_SINGLE: "ZES_TEMP_SENSORS_GPU_BOARD_SINGLE",
+        pz.ZES_TEMP_SENSORS_VOLTAGE_REGULATOR_SINGLE: "ZES_TEMP_SENSORS_VOLTAGE_REGULATOR_SINGLE",
     }
     return sensor_map.get(temp_sensor, f"UNKNOWN_TEMP_SENSOR_{temp_sensor}")
 
@@ -1569,16 +1574,6 @@ def test_temperature_sensors(device_handle, device_index):
                 if temp_config.threshold2.threshold >= 0
                 else "      Threshold 2: Not set"
             )
-
-            if is_root_user():
-                # Write back the config just read so the device configuration is unchanged
-                rc = pz.zesTemperatureSetConfig(temp_handles[i], byref(temp_config))
-                if check_rc(f"zesTemperatureSetConfig(temperature {i})", rc):
-                    print_verbose("    Set temperature config successfully")
-            else:
-                print_verbose(
-                    "    Skipping zesTemperatureSetConfig due to insufficient permissions"
-                )
         else:
             print_verbose(
                 f"    Temperature Config: Not available ({get_result_string(rc)})"
