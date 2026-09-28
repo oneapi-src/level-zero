@@ -1913,7 +1913,8 @@ def test_driver_module(driver_handle, driver_index, listen_timeout=0):
                         f"v{version >> 16}.{version & 0xFFFF}"
                     )
 
-    function_name = b"zesDriverGetDeviceByUuidExp"
+    # Only the address of this extension function is queried, the function is not called
+    function_name = b"zesIntelDriverGetPropertiesExp"
     function_address = c_void_p()
     rc = pz.zesDriverGetExtensionFunctionAddress(
         driver_handle, function_name, byref(function_address)
@@ -2736,7 +2737,7 @@ def main():
   %(prog)s -L --instanceapi   # Info log tests, verify peek and read on a named collection instance
   %(prog)s -L --instanceread --instance mylog --buffersize 1024   # Info log tests, read the records of a named 1 MB collection instance
   %(prog)s -d                 # Driver tests only
-  %(prog)s -d --listen-timeout 10000   # Driver tests, wait up to 10 s for events
+  %(prog)s -d --listen-timeout 0       # Driver tests, return from event listen immediately
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -2865,9 +2866,9 @@ def main():
     parser.add_argument(
         "--listen-timeout",
         type=int,
-        default=0,
+        default=10000,
         metavar="MS",
-        help="With -d, time in milliseconds to wait for events, default 0 returns immediately",
+        help="With -d, time in milliseconds to wait for events, default 10000, 0 returns immediately",
     )
 
     args = parser.parse_args()
