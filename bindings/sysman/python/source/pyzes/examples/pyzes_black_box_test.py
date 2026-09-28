@@ -1140,11 +1140,6 @@ def test_power_module(
                     print_verbose(
                         f"    Restored power limit (Ext2) to {limit_ext2.value} mW"
                     )
-            elif limit_ext2_available:
-                # Write back the limit just read so the device configuration is unchanged
-                rc = pz.zesPowerSetLimitsExt2(power_handles[i], limit_ext2.value)
-                if check_rc(f"zesPowerSetLimitsExt2(power {i})", rc):
-                    print_verbose("    Set power limit (Ext2) successfully")
 
             if energy_threshold is not None and requested_threshold is not None:
                 rc = pz.zesPowerSetEnergyThreshold(
@@ -1180,13 +1175,6 @@ def test_power_module(
                     print_verbose(
                         "    Energy threshold was not enabled before the test and cannot be disabled"
                     )
-            elif energy_threshold is not None and energy_threshold.enable:
-                # Only re-apply an already enabled threshold since it cannot be unset afterwards
-                rc = pz.zesPowerSetEnergyThreshold(
-                    power_handles[i], energy_threshold.threshold
-                )
-                if check_rc(f"zesPowerSetEnergyThreshold(power {i})", rc):
-                    print_verbose("    Set energy threshold successfully")
         elif requested_limit is not None or requested_threshold is not None:
             print_verbose(
                 "    Skipping power set operations since the domain cannot be controlled"
