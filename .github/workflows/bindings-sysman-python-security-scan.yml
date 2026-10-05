@@ -22,6 +22,9 @@ on:
       - 'bindings/sysman/python/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   bandit:
     name: Bandit Security Analysis
