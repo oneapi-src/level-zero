@@ -19,7 +19,7 @@ jobs:
       short-sha: ${{ steps.const.outputs.short-sha }}
       ref-slug: ${{ steps.const.outputs.ref-slug }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
       with:
         clean: true
         ref: ${{ github.event.pull_request.head.sha }}
@@ -86,7 +86,7 @@ jobs:
         image-name=ghcr.io/${{ github.repository }}/${OS_STRING}
         ccache-dir=${CCACHE_DIR}
         EOF
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
       with:
         clean: true
         fetch-depth: 0
@@ -94,7 +94,7 @@ jobs:
     - name: Create Ccache directory
       run: mkdir -p '${{ steps.const.outputs.ccache-dir }}'
     - name: Ccache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ${{ steps.const.outputs.ccache-dir }}
         key: ccache-${{ github.job }}-${{ steps.const.outputs.os-string }}${{ env.ARCH_SUFFIX }}-${{ matrix.target }}-${{ github.sha }}

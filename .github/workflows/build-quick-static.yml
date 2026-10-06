@@ -12,7 +12,7 @@ jobs:
     if: github.repository_owner == 'oneapi-src'
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: hendrikmuhs/ccache-action@v1
       - name: Build Static Loader on Latest Ubuntu
         run: |
@@ -48,7 +48,7 @@ jobs:
     if: github.repository_owner == 'oneapi-src'
     runs-on: [windows-latest]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Setup Windows build environment
         uses: ilammy/msvc-dev-cmd@v1
         with:

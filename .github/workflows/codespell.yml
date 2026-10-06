@@ -19,8 +19,8 @@ jobs:
   codespell:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v7
+    - uses: actions/setup-python@v7
       with:
         python-version: '3.x'
     - name: Install codespell
@@ -40,7 +40,7 @@ jobs:
       run: echo "${{ github.event.number }}" > pr_number.txt
     - name: Upload report
       # Consumed by the "Codespell Comment" workflow to post the PR comment.
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: codespell-report
         path: |
