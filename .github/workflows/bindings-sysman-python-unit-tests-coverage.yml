@@ -25,6 +25,9 @@ on:
 env:
   PYTHON_VERSION: '3.10'
 
+permissions:
+  contents: read
+
 jobs:
   unit-tests-linux:
     name: Linux - Unit Tests & Coverage Analysis
@@ -34,7 +37,6 @@ jobs:
         working-directory: bindings/sysman/python
     permissions:
       contents: read
-      checks: write        # For check results
 
     steps:
       - name: Checkout code
