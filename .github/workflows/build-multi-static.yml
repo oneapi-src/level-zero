@@ -137,9 +137,7 @@ jobs:
         done
     - name: Setup Windows build environment
       if: matrix.os.name == 'windows'
-      uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-      with:
-        arch: x64
+      uses: ./.github/actions/msvc-env
     - name: Build (Windows)
       if: matrix.os.name == 'windows'
       run: |

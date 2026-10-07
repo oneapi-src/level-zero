@@ -1,0 +1,25 @@
+name: MSVC x64 environment
+description: Load vcvars64 into the job environment so Ninja can find cl.exe.
+
+# Replaces ilammy/msvc-dev-cmd, which is stalled on Node 20. Only variables
+# that vcvars64.bat adds or changes are exported to later steps.
+runs:
+  using: composite
+  steps:
+    - shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+        $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+        $bat = Join-Path "$vs" 'VC\Auxiliary\Build\vcvars64.bat'
+        if (-not $vs -or -not (Test-Path $bat)) { throw "vcvars64.bat not found (VS: '$vs')" }
+
+        $before = @{}
+        Get-ChildItem env: | ForEach-Object { $before[$_.Name] = $_.Value }
+        $after = cmd /c "`"$bat`" >nul && set"
+        if ($LASTEXITCODE -ne 0) { throw "vcvars64.bat failed ($LASTEXITCODE)" }
+
+        $after | ForEach-Object {
+          if ($_ -match '^([^=]+)=(.*)$' -and $before[$Matches[1]] -cne $Matches[2]) { "$($Matches[1])=$($Matches[2])" }
+        } | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+        Write-Host "Loaded MSVC x64 environment from $vs"
