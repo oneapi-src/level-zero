@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [ master,release_branch* ]
+    branches: [ release_branch* ]
   pull_request:
     branches: [ master,release_branch* ]
   workflow_dispatch:

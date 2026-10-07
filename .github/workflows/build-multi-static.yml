@@ -1,6 +1,9 @@
 on:
   push:
-    branches: [ master,release_branch* ]
+    branches: [ release_branch* ]
+  # Weekly master build keeps the PR ccache warm (unused caches expire after 7 days).
+  schedule:
+    - cron: '47 3 * * 1'
   pull_request:
     branches: [ master,release_branch* ]
   workflow_dispatch:
