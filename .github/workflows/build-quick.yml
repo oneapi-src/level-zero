@@ -31,7 +31,7 @@ jobs:
             apt-get update
             apt-get install -y build-essential cmake git
           fi
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build Loader on ${{ matrix.container }}
         run: |
           mkdir build
@@ -71,9 +71,9 @@ jobs:
     if: github.repository_owner == 'oneapi-src'
     runs-on: [windows-latest]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup Windows build environment
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
         with:
           arch: x64
       - name: Build Loader on Latest Windows

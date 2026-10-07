@@ -19,7 +19,7 @@ jobs:
       short-sha: ${{ steps.const.outputs.short-sha }}
       ref-slug: ${{ steps.const.outputs.ref-slug }}
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         clean: true
         ref: ${{ github.event.pull_request.head.sha }}
@@ -86,7 +86,7 @@ jobs:
         image-name=ghcr.io/${{ github.repository }}/${OS_STRING}
         ccache-dir=${CCACHE_DIR}
         EOF
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         clean: true
         fetch-depth: 0
@@ -94,7 +94,7 @@ jobs:
     - name: Create Ccache directory
       run: mkdir -p '${{ steps.const.outputs.ccache-dir }}'
     - name: Ccache
-      uses: actions/cache@v6
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ steps.const.outputs.ccache-dir }}
         key: ccache-${{ github.job }}-${{ steps.const.outputs.os-string }}${{ env.ARCH_SUFFIX }}-${{ matrix.target }}-${{ github.sha }}
@@ -137,7 +137,7 @@ jobs:
         done
     - name: Setup Windows build environment
       if: matrix.os.name == 'windows'
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       with:
         arch: x64
     - name: Build (Windows)
