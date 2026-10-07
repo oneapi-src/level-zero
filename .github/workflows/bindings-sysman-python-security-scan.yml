@@ -37,10 +37,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.x'
       
@@ -55,7 +55,7 @@ jobs:
           bandit -r source/ test/ -ll -f screen
       
       - name: Upload Bandit results as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: bandit-security-report

@@ -40,7 +40,7 @@ jobs:
           # Floor kept in step with the spec repository's third_party/requirements.txt;
           # verified to produce byte-identical output from 1.3.3 through 1.3.11.
           pip3 install --break-system-packages "Mako>=1.3.3"
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Regenerate sources from archived spec metadata
         run: python3 scripts/spec_metadata.py regen
@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload drift report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regen-diff-linux
           path: regen.diff
@@ -105,8 +105,8 @@ jobs:
     if: github.repository_owner == 'oneapi-src'
     runs-on: [windows-latest]
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.x'
       - name: Install dependencies
