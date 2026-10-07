@@ -46,7 +46,7 @@ jobs:
         fetch-depth: 0
         fetch-tags: true
         # Fall back to the default token when the push secret is unavailable
-        # (e.g. pull_request runs), otherwise checkout@v5 rejects an empty token.
+        # (e.g. pull_request runs), otherwise checkout rejects an empty token.
         token: ${{ secrets.TOKEN || github.token }}
     - name: Checkout develop branch or create local version
       if: ${{ github.event_name == 'workflow_dispatch' }}
