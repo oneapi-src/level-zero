@@ -967,14 +967,47 @@ def test_device_reset(device_handle, device_index, force, reset_type):
     return True
 
 
-def test_device_state_module(device_handle, device_index, set_health=None):
-    """Test device state, health status, event registration, and firmware enumeration"""
+def test_device_state_module(device_handle, device_index):
+    """Test device state, event registration, and firmware enumeration"""
     print(f"\n---- Device {device_index} Device State Test ----")
 
     print_device_state(device_handle, device_index)
 
     # zesDeviceResetExt is only exercised with --reset as a reset loses all device
     # state and may kill applications using the device.
+
+    events_to_register = pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED
+    rc = pz.zesDeviceEventRegister(device_handle, events_to_register)
+    if rc != pz.ZE_RESULT_SUCCESS:
+        print_verbose(
+            f"  Device Event Registration: Not available ({get_result_string(rc)})"
+        )
+    else:
+        print_verbose(
+            f"  Registered device events: {get_event_type_flags_string(events_to_register)}"
+        )
+        # Clear the device event registration made by this test
+        rc = pz.zesDeviceEventRegister(device_handle, 0)
+        check_rc(f"zesDeviceEventRegister(device {device_index}, clear)", rc)
+
+    firmware_count = c_uint32(0)
+    rc = pz.zesDeviceEnumFirmwares(device_handle, byref(firmware_count), None)
+    if check_rc(f"zesDeviceEnumFirmwares(device {device_index}, count)", rc):
+        print_verbose(f"  Found {firmware_count.value} firmware component(s)")
+        if firmware_count.value > 0:
+            FirmwareArray = pz.zes_firmware_handle_t * firmware_count.value
+            firmware_handles = FirmwareArray()
+            rc = pz.zesDeviceEnumFirmwares(
+                device_handle, byref(firmware_count), firmware_handles
+            )
+            check_rc(f"zesDeviceEnumFirmwares(device {device_index}, handles)", rc)
+
+    return True
+
+
+def test_device_health_module(device_handle, device_index, set_health=None):
+    """Test the device health status read and, with --set-health, set and restore"""
+    print(f"\n---- Device {device_index} Device Health Test ----")
 
     health = pz.zes_device_health_status_ext_t(0)
     rc = pz.zesDeviceGetHealthStatusExt(device_handle, byref(health))
@@ -1014,32 +1047,6 @@ def test_device_state_module(device_handle, device_index, set_health=None):
                 print_verbose(
                     f"  Restored health status to {get_health_status_string(health.value)}"
                 )
-
-    events_to_register = pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED
-    rc = pz.zesDeviceEventRegister(device_handle, events_to_register)
-    if rc != pz.ZE_RESULT_SUCCESS:
-        print_verbose(
-            f"  Device Event Registration: Not available ({get_result_string(rc)})"
-        )
-    else:
-        print_verbose(
-            f"  Registered device events: {get_event_type_flags_string(events_to_register)}"
-        )
-        # Clear the device event registration made by this test
-        rc = pz.zesDeviceEventRegister(device_handle, 0)
-        check_rc(f"zesDeviceEventRegister(device {device_index}, clear)", rc)
-
-    firmware_count = c_uint32(0)
-    rc = pz.zesDeviceEnumFirmwares(device_handle, byref(firmware_count), None)
-    if check_rc(f"zesDeviceEnumFirmwares(device {device_index}, count)", rc):
-        print_verbose(f"  Found {firmware_count.value} firmware component(s)")
-        if firmware_count.value > 0:
-            FirmwareArray = pz.zes_firmware_handle_t * firmware_count.value
-            firmware_handles = FirmwareArray()
-            rc = pz.zesDeviceEnumFirmwares(
-                device_handle, byref(firmware_count), firmware_handles
-            )
-            check_rc(f"zesDeviceEnumFirmwares(device {device_index}, handles)", rc)
 
     return True
 
@@ -1578,8 +1585,11 @@ def run_all_tests():
             # Test global device operations (properties and processes)
             test_global_operation(drivers[driver_idx], devices[device_idx], device_idx)
 
-            # Test device state, health, events, and firmware enumeration
+            # Test device state, events, and firmware enumeration
             test_device_state_module(devices[device_idx], device_idx)
+
+            # Test device health status
+            test_device_health_module(devices[device_idx], device_idx)
 
             # Test PCI module
             test_pci_module(devices[device_idx], device_idx)
@@ -1614,8 +1624,9 @@ def main():
   %(prog)s -a                 # Run all tests
   %(prog)s -m                 # Memory tests only
   %(prog)s -g                 # Global operations (device properties, processes, and state) only
-  %(prog)s -g --set-health warning   # Global operations, set then restore health status (root)
-  %(prog)s --reset noforce --reset-device 0   # Warm reset of device 0 with zesDeviceResetExt (root)
+  %(prog)s -H                 # Device health tests only
+  %(prog)s -H --set-health warning   # Device health tests, set then restore health status (root)
+  %(prog)s -r noforce --reset-device 0   # Warm reset of device 0 with zesDeviceResetExt (root)
   %(prog)s -p                 # PCI tests only
   %(prog)s -C                 # ECC tests only
   %(prog)s -o                 # Power tests only
@@ -1637,11 +1648,15 @@ def main():
         help="Run only global operations (device properties, processes, and state)",
     )
     parser.add_argument(
-        "--set-health",
-        choices=sorted(HEALTH_STATUS_ARGS),
-        help="With -g, set the device health status, verify it and restore the original (requires root)",
+        "-H", "--health", action="store_true", help="Run only device health tests"
     )
     parser.add_argument(
+        "--set-health",
+        choices=sorted(HEALTH_STATUS_ARGS),
+        help="With -H, set the device health status, verify it and restore the original (requires root)",
+    )
+    parser.add_argument(
+        "-r",
         "--reset",
         choices=["force", "noforce"],
         help="Run only the device reset test with zesDeviceResetExt on all devices (requires root)",
@@ -1690,6 +1705,7 @@ def main():
     specific_test = (
         args.memory
         or getattr(args, "global", False)
+        or args.health
         or args.reset is not None
         or args.pci
         or args.ecc
@@ -1727,7 +1743,10 @@ def main():
             for device_idx in range(device_count):
                 if getattr(args, "global", False):
                     test_global_operation(drivers[0], devices[device_idx], device_idx)
-                    test_device_state_module(
+                    test_device_state_module(devices[device_idx], device_idx)
+
+                if args.health:
+                    test_device_health_module(
                         devices[device_idx],
                         device_idx,
                         set_health=(
