@@ -1116,69 +1116,95 @@ def test_power_module(
                 print_verbose(
                     "    Skipping power set operations due to insufficient permissions"
                 )
-        elif properties.canControl:
-            if limit_ext2_available and requested_limit is not None:
-                rc = pz.zesPowerSetLimitsExt2(power_handles[i], requested_limit)
-                if check_rc(f"zesPowerSetLimitsExt2(power {i}, {requested_limit})", rc):
-                    print_verbose(f"    Power limit (Ext2) set to {requested_limit} mW")
-                    read_back = c_uint32(0)
-                    rc = pz.zesPowerGetLimitsExt2(power_handles[i], byref(read_back))
-                    if check_rc(f"zesPowerGetLimitsExt2(power {i}, verify)", rc):
-                        if read_back.value == requested_limit:
-                            print_verbose(
-                                f"    Read back power limit (Ext2): {read_back.value} mW (OK)"
-                            )
-                        else:
-                            print_verbose(
-                                f"    Warning: requested power limit {requested_limit} mW "
-                                f"does not match applied limit {read_back.value} mW"
-                            )
-
-                # Restore the limit read before the test
-                rc = pz.zesPowerSetLimitsExt2(power_handles[i], limit_ext2.value)
-                if check_rc(f"zesPowerSetLimitsExt2(power {i}, restore)", rc):
+        else:
+            # Power limit control and energy threshold support are reported independently
+            if requested_limit is not None:
+                if not properties.canControl:
                     print_verbose(
-                        f"    Restored power limit (Ext2) to {limit_ext2.value} mW"
+                        "    Skipping zesPowerSetLimitsExt2 since the domain cannot be controlled"
                     )
-
-            if energy_threshold is not None and requested_threshold is not None:
-                rc = pz.zesPowerSetEnergyThreshold(
-                    power_handles[i], requested_threshold
-                )
-                if check_rc(
-                    f"zesPowerSetEnergyThreshold(power {i}, {requested_threshold})", rc
-                ):
+                elif not limit_ext2_available:
                     print_verbose(
-                        f"    Energy threshold set to {requested_threshold} J"
+                        "    Skipping zesPowerSetLimitsExt2 since zesPowerGetLimitsExt2 is not available"
                     )
-                    read_back_threshold = pz.zes_energy_threshold_t()
-                    rc = pz.zesPowerGetEnergyThreshold(
-                        power_handles[i], byref(read_back_threshold)
-                    )
-                    if check_rc(f"zesPowerGetEnergyThreshold(power {i}, verify)", rc):
-                        print_verbose(
-                            f"    Read back energy threshold: {read_back_threshold.threshold} J "
-                            f"(enabled: {bool(read_back_threshold.enable)}, "
-                            f"process ID: 0x{read_back_threshold.processId:X})"
-                        )
-
-                # An energy threshold cannot be disabled, so only an enabled one can be restored
-                if energy_threshold.enable:
-                    rc = pz.zesPowerSetEnergyThreshold(
-                        power_handles[i], energy_threshold.threshold
-                    )
-                    if check_rc(f"zesPowerSetEnergyThreshold(power {i}, restore)", rc):
-                        print_verbose(
-                            f"    Restored energy threshold to {energy_threshold.threshold} J"
-                        )
                 else:
+                    rc = pz.zesPowerSetLimitsExt2(power_handles[i], requested_limit)
+                    if check_rc(
+                        f"zesPowerSetLimitsExt2(power {i}, {requested_limit})", rc
+                    ):
+                        print_verbose(
+                            f"    Power limit (Ext2) set to {requested_limit} mW"
+                        )
+                        read_back = c_uint32(0)
+                        rc = pz.zesPowerGetLimitsExt2(
+                            power_handles[i], byref(read_back)
+                        )
+                        if check_rc(f"zesPowerGetLimitsExt2(power {i}, verify)", rc):
+                            if read_back.value == requested_limit:
+                                print_verbose(
+                                    f"    Read back power limit (Ext2): {read_back.value} mW (OK)"
+                                )
+                            else:
+                                print_verbose(
+                                    f"    Warning: requested power limit {requested_limit} mW "
+                                    f"does not match applied limit {read_back.value} mW"
+                                )
+
+                    # Restore the limit read before the test
+                    rc = pz.zesPowerSetLimitsExt2(power_handles[i], limit_ext2.value)
+                    if check_rc(f"zesPowerSetLimitsExt2(power {i}, restore)", rc):
+                        print_verbose(
+                            f"    Restored power limit (Ext2) to {limit_ext2.value} mW"
+                        )
+
+            if requested_threshold is not None:
+                if not properties.isEnergyThresholdSupported:
                     print_verbose(
-                        "    Energy threshold was not enabled before the test and cannot be disabled"
+                        "    Skipping zesPowerSetEnergyThreshold since the domain does not support energy thresholds"
                     )
-        elif requested_limit is not None or requested_threshold is not None:
-            print_verbose(
-                "    Skipping power set operations since the domain cannot be controlled"
-            )
+                elif energy_threshold is None:
+                    print_verbose(
+                        "    Skipping zesPowerSetEnergyThreshold since zesPowerGetEnergyThreshold failed"
+                    )
+                else:
+                    rc = pz.zesPowerSetEnergyThreshold(
+                        power_handles[i], requested_threshold
+                    )
+                    if check_rc(
+                        f"zesPowerSetEnergyThreshold(power {i}, {requested_threshold})",
+                        rc,
+                    ):
+                        print_verbose(
+                            f"    Energy threshold set to {requested_threshold} J"
+                        )
+                        read_back_threshold = pz.zes_energy_threshold_t()
+                        rc = pz.zesPowerGetEnergyThreshold(
+                            power_handles[i], byref(read_back_threshold)
+                        )
+                        if check_rc(
+                            f"zesPowerGetEnergyThreshold(power {i}, verify)", rc
+                        ):
+                            print_verbose(
+                                f"    Read back energy threshold: {read_back_threshold.threshold} J "
+                                f"(enabled: {bool(read_back_threshold.enable)}, "
+                                f"process ID: 0x{read_back_threshold.processId:X})"
+                            )
+
+                    # An energy threshold cannot be disabled, so only an enabled one can be restored
+                    if energy_threshold.enable:
+                        rc = pz.zesPowerSetEnergyThreshold(
+                            power_handles[i], energy_threshold.threshold
+                        )
+                        if check_rc(
+                            f"zesPowerSetEnergyThreshold(power {i}, restore)", rc
+                        ):
+                            print_verbose(
+                                f"    Restored energy threshold to {energy_threshold.threshold} J"
+                            )
+                    else:
+                        print_verbose(
+                            "    Energy threshold was not enabled before the test and cannot be disabled"
+                        )
 
         if properties.onSubdevice or limit_descs is None:
             continue
