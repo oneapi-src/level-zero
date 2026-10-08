@@ -1657,8 +1657,8 @@ def main():
     )
 
     args = parser.parse_args()
-    if args.set_threshold is not None and args.set_threshold < 0:
-        parser.error("--set-threshold must be a non-negative integer")
+    if args.set_threshold is not None and not 0 <= args.set_threshold <= 2**64 - 1:
+        parser.error("--set-threshold must be an integer between 0 and 2^64 - 1")
 
     # Check if any specific test is requested
     specific_test = (
