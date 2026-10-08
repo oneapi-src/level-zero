@@ -1375,7 +1375,7 @@ def test_info_log_module(
 
     if mode is None:
         print_verbose(
-            "\nRecords are collected with --instance-api, --instance-peek or --instance-read"
+            "\nRecords are collected with --instanceapi, --instancepeek or --instanceread"
         )
         return True
 
@@ -1981,9 +1981,9 @@ def main():
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
-  %(prog)s -l                 # Info log properties tests only
-  %(prog)s -l --instance-api  # Info log tests, verify peek and read on a named collection instance
-  %(prog)s -l --instance-read --instance mylog --buffer-size 1024   # Info log tests, read the records of a named 1 MB collection instance
+  %(prog)s -L                 # Info log properties tests only
+  %(prog)s -L --instanceapi   # Info log tests, verify peek and read on a named collection instance
+  %(prog)s -L --instanceread --instance mylog --buffersize 1024   # Info log tests, read the records of a named 1 MB collection instance
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -2022,60 +2022,60 @@ def main():
     )
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
     parser.add_argument(
-        "-l",
+        "-L",
         "--infolog",
         action="store_true",
         help="Run only info log tests, reporting what each info log supports",
     )
     instance_mode = parser.add_mutually_exclusive_group()
     instance_mode.add_argument(
-        "--instance-api",
+        "--instanceapi",
         action="store_const",
         const="api",
         dest="instance_mode",
-        help="With -l, create a named collection instance, wait for CPER records, then verify peek and read (requires root)",
+        help="With -L, create a named collection instance, wait for CPER records, then verify peek and read (requires root)",
     )
     instance_mode.add_argument(
-        "--instance-peek",
+        "--instancepeek",
         action="store_const",
         const="peek",
         dest="instance_mode",
-        help="With -l, create a collection instance and peek the records (requires root)",
+        help="With -L, create a collection instance and peek the records (requires root)",
     )
     instance_mode.add_argument(
-        "--instance-read",
+        "--instanceread",
         action="store_const",
         const="read",
         dest="instance_mode",
-        help="With -l, create a collection instance and read the records (requires root)",
+        help="With -L, create a collection instance and read the records (requires root)",
     )
     parser.add_argument(
         "--instance",
         metavar="NAME",
-        help="With --instance-peek/--instance-read, collect into a named instance instead of the default buffer",
+        help="With --instancepeek/--instanceread, collect into a named instance instead of the default buffer",
     )
     parser.add_argument(
-        "--buffer-size",
+        "--buffersize",
         type=int,
         metavar="KB",
-        help="With --instance-peek/--instance-read, request a total collection buffer size in kilobytes",
+        help="With --instancepeek/--instanceread, request a total collection buffer size in kilobytes",
     )
     parser.add_argument(
         "--timeout",
         type=int,
         default=INFO_LOG_READ_TIMEOUT_MS,
         metavar="MS",
-        help=f"With -l, maximum time in milliseconds to search for records, default is {INFO_LOG_READ_TIMEOUT_MS}",
+        help=f"With -L, maximum time in milliseconds to search for records, default is {INFO_LOG_READ_TIMEOUT_MS}",
     )
 
     args = parser.parse_args()
-    if args.buffer_size is not None and args.buffer_size <= 0:
-        parser.error("--buffer-size must be a positive integer")
+    if args.buffersize is not None and args.buffersize <= 0:
+        parser.error("--buffersize must be a positive integer")
     if (
-        args.instance is not None or args.buffer_size is not None
+        args.instance is not None or args.buffersize is not None
     ) and args.instance_mode not in ("peek", "read"):
         parser.error(
-            "--instance and --buffer-size are used with --instance-peek or --instance-read"
+            "--instance and --buffersize are used with --instancepeek or --instanceread"
         )
     if args.timeout < 0:
         parser.error("--timeout must be a non-negative integer")
@@ -2123,7 +2123,7 @@ def main():
                         driver_idx,
                         mode=args.instance_mode,
                         instance_name=args.instance,
-                        buffer_size_kb=args.buffer_size,
+                        buffer_size_kb=args.buffersize,
                         timeout=args.timeout,
                     ):
                         success = False
