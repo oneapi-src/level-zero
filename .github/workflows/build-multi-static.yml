@@ -50,19 +50,22 @@ jobs:
       fail-fast: false
       matrix:
         os: [
-          {name: ubuntu, vmaj: 20, vmin: '04'},
           {name: ubuntu, vmaj: 22, vmin: '04'},
           {name: ubuntu, vmaj: 24, vmin: '04'},
+          {name: ubuntu, vmaj: 26, vmin: '04'},
           {name: sles, vmaj: 15, vmin: 4},
           {name: sles, vmaj: 15, vmin: 6},
+          {name: sles, vmaj: 15, vmin: 7},
           {name: rhel, vmaj: 8, vmin: 6},
+          {name: rhel, vmaj: 8, vmin: 10},
+          {name: rhel, vmaj: 9, vmin: 6},
           {name: windows}
         ]
         target: [install, package]
         arch: ['']
         include: [
-          {os: {name: ubuntu, vmaj: 20, vmin: '04'}, target: install, arch: arm64},
-          {os: {name: ubuntu, vmaj: 20, vmin: '04'}, target: package, arch: arm64}
+          {os: {name: ubuntu, vmaj: 22, vmin: '04'}, target: install, arch: arm64},
+          {os: {name: ubuntu, vmaj: 22, vmin: '04'}, target: package, arch: arm64}
         ]
     env:
       MSYS_NO_PATHCONV: 1
@@ -109,35 +112,38 @@ jobs:
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} |
         docker login -u sys-lzdev --password-stdin ghcr.io
-    - name: Build image
+    - name: Get image
       if: matrix.os.name != 'windows'
-      # Retry the build to ride out transient Docker Hub registry timeouts
-      # (e.g. `dial tcp ...:443: i/o timeout` resolving docker/dockerfile:1.4).
+      # Pull the image published by ci-images.yml; a PR that changes
+      # .github/docker/ci builds it instead so the change is tested.
+      env:
+        CI_IMAGE: ghcr.io/${{ github.repository }}/ci/${{ matrix.os.name }}:${{ matrix.os.vmaj }}.${{ matrix.os.vmin }}
+        BASE_REF: ${{ github.base_ref }}
       run: |
-        docker info
-        build_image() {
-          docker build \
-            --platform linux/amd64 \
-          ${{ matrix.os.vmaj != '' && format('  \
-            --build-arg VMAJ={0} \
-            --build-arg VMIN={1} ', matrix.os.vmaj, matrix.os.vmin) || '  '
-          }}\
-            --pull \
-            --tag ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
-            - < .github/docker/${{ matrix.os.name }}.Dockerfile
-        }
-        attempt=0
-        max_attempts=3
-        until build_image; do
-          attempt=$((attempt+1))
-          if [ "$attempt" -ge "$max_attempts" ]; then
-            echo "docker build failed after ${attempt} attempts" >&2
+        if [ -n "${BASE_REF}" ] && ! git diff --quiet "origin/${BASE_REF}...HEAD" -- .github/docker/ci; then
+          get_image() {
+            docker build \
+              --platform linux/amd64 \
+              --pull \
+              --build-arg VMAJ=${{ matrix.os.vmaj }} \
+              --build-arg VMIN=${{ matrix.os.vmin }} \
+              --tag "${CI_IMAGE}" \
+              - < .github/docker/ci/${{ matrix.os.name }}.Dockerfile
+          }
+        else
+          get_image() { docker pull --platform linux/amd64 "${CI_IMAGE}"; }
+        fi
+        # Retry to ride out transient registry timeouts.
+        for attempt in 1 2 3; do
+          get_image && break
+          if [ "$attempt" -eq 3 ]; then
+            echo "getting ${CI_IMAGE} failed after ${attempt} attempts" >&2
             exit 1
           fi
-          delay=$((attempt*15))
-          echo "docker build attempt ${attempt} failed; retrying in ${delay}s" >&2
-          sleep "$delay"
+          echo "attempt ${attempt} failed; retrying in $((attempt*15))s" >&2
+          sleep $((attempt*15))
         done
+        docker tag "${CI_IMAGE}" ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }}
     - name: Setup Windows build environment
       if: matrix.os.name == 'windows'
       uses: ./.github/actions/msvc-env
