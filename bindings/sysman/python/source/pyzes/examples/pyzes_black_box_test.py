@@ -1560,7 +1560,7 @@ def main():
   %(prog)s -p                 # PCI tests only
   %(prog)s -C                 # ECC tests only
   %(prog)s -o                 # Power tests only
-  %(prog)s -o --set-global-limit 0 150000       # Power tests, set then restore device 0 limit (root)
+  %(prog)s -o --setlimit --global-limit 0 150000   # Power tests, set then restore device 0 limit (root)
   %(prog)s -o --set-energy-threshold 0 5000.0   # Power tests, set device 0 energy threshold (root)
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
@@ -1583,11 +1583,16 @@ def main():
         "-o", "--power", action="store_true", help="Run only power-related tests"
     )
     parser.add_argument(
-        "--set-global-limit",
+        "--setlimit",
+        action="store_true",
+        help="With -o, set a power limit, verify it and restore the original; the level is given by --global-limit (requires root)",
+    )
+    parser.add_argument(
+        "--global-limit",
         nargs=2,
         type=int,
         metavar=("DEVICE", "LIMIT_MW"),
-        help="With -o, set the power limit (Ext2) of a device in mW, verify it and restore the original (requires root)",
+        help="With -o --setlimit, the device index and the global power limit (Ext2) in mW to set",
     )
     parser.add_argument(
         "--set-energy-threshold",
@@ -1618,8 +1623,10 @@ def main():
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
 
     args = parser.parse_args()
-    if args.set_global_limit is not None and min(args.set_global_limit) < 0:
-        parser.error("--set-global-limit values must be non-negative integers")
+    if args.setlimit != (args.global_limit is not None):
+        parser.error("--setlimit and --global-limit DEVICE LIMIT_MW are used together")
+    if args.global_limit is not None and min(args.global_limit) < 0:
+        parser.error("--global-limit values must be non-negative integers")
     if args.set_energy_threshold is not None and (
         args.set_energy_threshold[0] < 0
         or not args.set_energy_threshold[0].is_integer()
@@ -1686,7 +1693,7 @@ def main():
                     test_power_module(
                         devices[device_idx],
                         device_idx,
-                        set_global_limit=args.set_global_limit,
+                        set_global_limit=args.global_limit,
                         set_energy_threshold=args.set_energy_threshold,
                     )
 
