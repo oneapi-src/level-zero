@@ -1877,9 +1877,9 @@ def print_received_events(device_count, num_device_events, events, driver_events
         )
 
 
-def test_driver_module(driver_handle, driver_index, listen_timeout=0):
-    """Test driver properties, extensions, and event operations"""
-    print(f"\n---- Driver {driver_index} Driver Test ----")
+def test_driver_properties_module(driver_handle, driver_index):
+    """Test driver properties, extensions, and the extension function lookup"""
+    print(f"\n---- Driver {driver_index} Driver Properties Test ----")
 
     props = pz.zes_driver_properties_t()
     props.stype = pz.ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES
@@ -1929,6 +1929,13 @@ def test_driver_module(driver_handle, driver_index, listen_timeout=0):
             f"  Extension Function Address ({function_name.decode()}): "
             f"Not available ({get_result_string(rc)})"
         )
+
+    return True
+
+
+def test_event_module(driver_handle, driver_index, listen_timeout=0):
+    """Test driver event registration and listening"""
+    print(f"\n---- Driver {driver_index} Event Test ----")
 
     device_info = get_devices(driver_handle)
     if device_info is None:
@@ -2705,8 +2712,9 @@ def run_all_tests():
         if not test_info_log_module(drivers[driver_idx], driver_idx):
             success = False
 
-        # Test driver properties, extensions, and events (driver scoped)
-        test_driver_module(drivers[driver_idx], driver_idx)
+        # Test driver properties and events (driver scoped)
+        test_driver_properties_module(drivers[driver_idx], driver_idx)
+        test_event_module(drivers[driver_idx], driver_idx)
 
     print("\n=== Test Completed ===")
     return success
@@ -2736,8 +2744,9 @@ def main():
   %(prog)s -L                 # Info log properties tests only
   %(prog)s -L --instanceapi   # Info log tests, verify peek and read on a named collection instance
   %(prog)s -L --instanceread --instance mylog --buffersize 1024   # Info log tests, read the records of a named 1 MB collection instance
-  %(prog)s -d                 # Driver tests only
-  %(prog)s -d --listen-timeout 0       # Driver tests, return from event listen immediately
+  %(prog)s -D                 # Driver properties tests only
+  %(prog)s -E                 # Event tests only
+  %(prog)s -E --listen-timeout 0       # Event tests, return from event listen immediately
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -2861,14 +2870,20 @@ def main():
         help=f"With -L, maximum time in milliseconds to search for records, default is {INFO_LOG_READ_TIMEOUT_MS}",
     )
     parser.add_argument(
-        "-d", "--driver", action="store_true", help="Run only driver tests"
+        "-D",
+        "--driverproperties",
+        action="store_true",
+        help="Run only driver properties tests",
+    )
+    parser.add_argument(
+        "-E", "--event", action="store_true", help="Run only event tests"
     )
     parser.add_argument(
         "--listen-timeout",
         type=int,
         default=10000,
         metavar="MS",
-        help="With -d, time in milliseconds to wait for events, default 10000, 0 returns immediately",
+        help="With -E, time in milliseconds to wait for events, default 10000, 0 returns immediately",
     )
 
     args = parser.parse_args()
@@ -2913,7 +2928,8 @@ def main():
         or args.standby
         or args.vftelemetry
         or args.infolog
-        or args.driver
+        or args.driverproperties
+        or args.event
         or args.all
     )
 
@@ -2951,9 +2967,12 @@ def main():
                         success = False
 
             # Driver tests are driver scoped, so run them once per driver before the device check
-            if args.driver:
-                for driver_idx in range(driver_count):
-                    test_driver_module(
+            for driver_idx in range(driver_count):
+                if args.driverproperties:
+                    test_driver_properties_module(drivers[driver_idx], driver_idx)
+
+                if args.event:
+                    test_event_module(
                         drivers[driver_idx],
                         driver_idx,
                         listen_timeout=args.listen_timeout,
