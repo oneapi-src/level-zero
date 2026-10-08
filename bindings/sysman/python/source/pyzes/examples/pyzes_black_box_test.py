@@ -1658,7 +1658,7 @@ def main():
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
   %(prog)s -s                 # Standby tests only
-  %(prog)s -V                 # VF management tests only
+  %(prog)s -v                 # VF management tests only
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1700,7 +1700,7 @@ def main():
         "-s", "--standby", action="store_true", help="Run only standby tests"
     )
     parser.add_argument(
-        "-V", "--vf", action="store_true", help="Run only VF management tests"
+        "-v", "--vftelemetry", action="store_true", help="Run only VF management tests"
     )
 
     args = parser.parse_args()
@@ -1716,7 +1716,7 @@ def main():
         or args.temperature
         or args.engine
         or args.standby
-        or args.vf
+        or args.vftelemetry
         or args.all
     )
 
@@ -1772,7 +1772,7 @@ def main():
                 if args.standby:
                     test_standby_module(devices[device_idx], device_idx)
 
-                if args.vf:
+                if args.vftelemetry:
                     test_vf_management_module(devices[device_idx], device_idx)
 
             success = True
