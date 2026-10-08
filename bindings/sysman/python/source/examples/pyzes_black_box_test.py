@@ -1532,11 +1532,11 @@ def run_all_tests():
     for driver_idx in range(driver_count):
         print(f"\n=== Driver {driver_idx} Tests ===")
 
-        # Get devices for this driver
+        # Get devices for this driver, driver scoped tests still run without them
         device_info = get_devices(drivers[driver_idx])
         if device_info is None:
             print(f"No devices found for driver {driver_idx}")
-            continue
+            device_info = (None, 0)
 
         devices, device_count = device_info
 
@@ -1676,11 +1676,7 @@ def main():
                 print("No drivers available for testing")
                 return 1
 
-            if not devices or device_count == 0:
-                print("No devices available for testing")
-                return 1
-
-            # Driver tests are driver scoped, so run them once per driver
+            # Driver tests are driver scoped, so run them once per driver before the device check
             if args.driver:
                 for driver_idx in range(driver_count):
                     test_driver_module(
@@ -1688,6 +1684,10 @@ def main():
                         driver_idx,
                         listen_timeout=args.listen_timeout,
                     )
+
+            if not devices or device_count == 0:
+                print("No devices available for testing")
+                return 1
 
             # Run selected tests on all devices
             for device_idx in range(device_count):
