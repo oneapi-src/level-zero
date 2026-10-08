@@ -911,13 +911,31 @@ def query_info_log_records(collect_fn, instance_handle, timeout):
     """Query the records held by the instance without consuming them.
 
     A call with *pSize and *pRecordCount zero on input is a query call for both read and peek.
+    ZE_RESULT_WARNING_DROPPED_DATA still returns a valid query result, so it is reported as success.
     Returns (rc, size, record_count).
     """
     size = c_uint32(0)
     record_count = c_uint32(0)
+    status = pz.zes_info_log_read_status_ext_t()
+    status.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT
+    status.pNext = None
     rc = collect_fn(
-        instance_handle, timeout, byref(size), None, byref(record_count), None, None
+        instance_handle,
+        timeout,
+        byref(size),
+        None,
+        byref(record_count),
+        None,
+        byref(status),
     )
+    if rc == pz.ZE_RESULT_WARNING_DROPPED_DATA:
+        dropped = status.droppedRecordCount
+        if dropped == -1:
+            dropped = "unknown"
+        print_verbose(
+            f"  query: records were dropped, readStatus.droppedRecordCount = {dropped}"
+        )
+        rc = pz.ZE_RESULT_SUCCESS
     return rc, size.value, record_count.value
 
 
