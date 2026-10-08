@@ -1603,9 +1603,9 @@ def main():
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
-  %(prog)s -r                 # RAS tests only
-  %(prog)s -r --set-threshold 5   # RAS tests, set then restore threshold 5 (root)
-  %(prog)s -r --clear-ras-state   # RAS tests, clear all error counters (root)
+  %(prog)s -re                # RAS tests only
+  %(prog)s -re --set-threshold 5  # RAS tests, set then restore threshold 5 (root)
+  %(prog)s -re --clear-ras-state  # RAS tests, clear all error counters (root)
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1643,17 +1643,19 @@ def main():
         version="Python Level Zero Sysman Black Box Test v1.0",
     )
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
-    parser.add_argument("-r", "--ras", action="store_true", help="Run only RAS tests")
+    parser.add_argument(
+        "-re", "--rasexp", action="store_true", help="Run only RAS tests"
+    )
     parser.add_argument(
         "--set-threshold",
         type=int,
         metavar="VALUE",
-        help="With -r, set the RAS threshold of all categories, verify it and restore the original (requires root)",
+        help="With -re, set the RAS threshold of all categories, verify it and restore the original (requires root)",
     )
     parser.add_argument(
         "--clear-ras-state",
         action="store_true",
-        help="With -r, clear all RAS error counters and print them before and after (requires root)",
+        help="With -re, clear all RAS error counters and print them before and after (requires root)",
     )
 
     args = parser.parse_args()
@@ -1670,7 +1672,7 @@ def main():
         or args.frequency
         or args.temperature
         or args.engine
-        or args.ras
+        or args.rasexp
         or args.all
     )
 
@@ -1723,7 +1725,7 @@ def main():
                 if args.temperature:
                     test_temperature_sensors(devices[device_idx], device_idx)
 
-                if args.ras:
+                if args.rasexp:
                     test_ras_module(
                         devices[device_idx],
                         device_idx,
