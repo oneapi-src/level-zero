@@ -2467,16 +2467,17 @@ def run_all_tests():
         return False
 
     drivers, driver_count = driver_info
+    success = True
 
     # Test each driver
     for driver_idx in range(driver_count):
         print(f"\n=== Driver {driver_idx} Tests ===")
 
-        # Get devices for this driver
+        # Get devices for this driver, driver scoped tests still run without them
         device_info = get_devices(drivers[driver_idx])
         if device_info is None:
             print(f"No devices found for driver {driver_idx}")
-            continue
+            device_info = (None, 0)
 
         devices, device_count = device_info
 
@@ -2515,10 +2516,11 @@ def run_all_tests():
             test_vf_management_module(devices[device_idx], device_idx)
 
         # Test info logs (driver scoped)
-        test_info_log_module(drivers[driver_idx], driver_idx)
+        if not test_info_log_module(drivers[driver_idx], driver_idx):
+            success = False
 
     print("\n=== Test Completed ===")
-    return True
+    return success
 
 
 def main():
@@ -2730,21 +2732,24 @@ def main():
                 print("No drivers available for testing")
                 return 1
 
-            if not devices or device_count == 0:
-                print("No devices available for testing")
-                return 1
+            success = True
 
-            # Info logs are driver scoped, so run them once per driver
+            # Info logs are driver scoped, so run them once per driver before the device check
             if args.infolog:
                 for driver_idx in range(driver_count):
-                    test_info_log_module(
+                    if not test_info_log_module(
                         drivers[driver_idx],
                         driver_idx,
                         mode=args.instance_mode,
                         instance_name=args.instance,
                         buffer_size_kb=args.buffer_size,
                         timeout=args.timeout,
-                    )
+                    ):
+                        success = False
+
+            if not devices or device_count == 0:
+                print("No devices available for testing")
+                return 1
 
             # Run selected tests on all devices
             for device_idx in range(device_count):
@@ -2790,8 +2795,6 @@ def main():
 
                 if args.vftelemetry:
                     test_vf_management_module(devices[device_idx], device_idx)
-
-            success = True
 
         return 0 if success else 1
 
