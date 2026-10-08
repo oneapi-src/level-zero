@@ -933,7 +933,7 @@ def test_driver_module(driver_handle, driver_index, listen_timeout=0):
                     )
 
     # Only the address of this extension function is queried, the function is not called
-    function_name = b"zesIntelDriverGetPropertiesExp"
+    function_name = b"zesIntelDriverRescanDevicesExp"
     function_address = c_void_p()
     rc = pz.zesDriverGetExtensionFunctionAddress(
         driver_handle, function_name, byref(function_address)
