@@ -240,6 +240,14 @@ public:
         GlobalTimingState::getInstance().recordEnd("zeDeviceGetAggregatedCopyOffloadIncrementValue");
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeDeviceGetCounterBasedEventMaxValuePrologue( ze_device_handle_t hDevice, uint64_t* maxValue ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceGetCounterBasedEventMaxValueEpilogue( ze_device_handle_t hDevice, uint64_t* maxValue , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeDeviceGetCounterBasedEventMaxValue");
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeDeviceGetRuntimeRequirementsPrologue( ze_device_handle_t hDevice, const void* pObjDesc, size_t* pSize, char* pRequirements ) override {
         GlobalTimingState::getInstance().recordStart();
         return ZE_RESULT_SUCCESS;
@@ -344,6 +352,30 @@ public:
         GlobalTimingState::getInstance().recordEnd("zeCommandQueueGetIndex");
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandQueueGetFlagsPrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_flags_t* pFlags ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetFlagsEpilogue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_flags_t* pFlags , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandQueueGetFlags");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetModePrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_mode_t* pMode ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetModeEpilogue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_mode_t* pMode , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandQueueGetMode");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetPriorityPrologue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_priority_t* pPriority ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetPriorityEpilogue( ze_command_queue_handle_t hCmdQueue, ze_command_queue_priority_t* pPriority , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandQueueGetPriority");
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandListCreatePrologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_list_desc_t* desc, ze_command_list_handle_t* phCommandList ) override {
         GlobalTimingState::getInstance().recordStart();
         return ZE_RESULT_SUCCESS;
@@ -438,6 +470,38 @@ public:
     }
     virtual ze_result_t zeCommandListIsImmediateEpilogue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsImmediate , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zeCommandListIsImmediate");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListGetFlagsPrologue( ze_command_list_handle_t hCommandList, ze_command_list_flags_t* pFlags ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListGetFlagsEpilogue( ze_command_list_handle_t hCommandList, ze_command_list_flags_t* pFlags , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListGetFlags");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListImmediateGetFlagsPrologue( ze_command_list_handle_t hCommandList, ze_command_queue_flags_t* pFlags ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListImmediateGetFlagsEpilogue( ze_command_list_handle_t hCommandList, ze_command_queue_flags_t* pFlags , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListImmediateGetFlags");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListImmediateGetModePrologue( ze_command_list_handle_t hCommandList, ze_command_queue_mode_t* pMode ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListImmediateGetModeEpilogue( ze_command_list_handle_t hCommandList, ze_command_queue_mode_t* pMode , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListImmediateGetMode");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListImmediateGetPriorityPrologue( ze_command_list_handle_t hCommandList, ze_command_queue_priority_t* pPriority ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListImmediateGetPriorityEpilogue( ze_command_list_handle_t hCommandList, ze_command_queue_priority_t* pPriority , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListImmediateGetPriority");
         return ZE_RESULT_SUCCESS;
     }
     virtual ze_result_t zeCommandListAppendBarrierPrologue( ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
@@ -672,12 +736,28 @@ public:
         GlobalTimingState::getInstance().recordEnd("zeCommandListAppendSignalEvent");
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandListAppendSignalEventWithParametersPrologue( ze_command_list_handle_t hCommandList, const void * pNext, ze_event_handle_t hEvent ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendSignalEventWithParametersEpilogue( ze_command_list_handle_t hCommandList, const void * pNext, ze_event_handle_t hEvent , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendSignalEventWithParameters");
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandListAppendWaitOnEventsPrologue( ze_command_list_handle_t hCommandList, uint32_t numEvents, ze_event_handle_t* phEvents ) override {
         GlobalTimingState::getInstance().recordStart();
         return ZE_RESULT_SUCCESS;
     }
     virtual ze_result_t zeCommandListAppendWaitOnEventsEpilogue( ze_command_list_handle_t hCommandList, uint32_t numEvents, ze_event_handle_t* phEvents , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zeCommandListAppendWaitOnEvents");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendWaitOnEventsWithParametersPrologue( ze_command_list_handle_t hCommandList, const void * pNext, uint32_t numEvents, ze_event_handle_t* phEvents ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendWaitOnEventsWithParametersEpilogue( ze_command_list_handle_t hCommandList, const void * pNext, uint32_t numEvents, ze_event_handle_t* phEvents , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendWaitOnEventsWithParameters");
         return ZE_RESULT_SUCCESS;
     }
     virtual ze_result_t zeEventHostSignalPrologue( ze_event_handle_t hEvent ) override {
@@ -774,6 +854,14 @@ public:
     }
     virtual ze_result_t zeEventPoolGetFlagsEpilogue( ze_event_pool_handle_t hEventPool, ze_event_pool_flags_t* pFlags , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zeEventPoolGetFlags");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeEventGetCounterBasedFlagsPrologue( ze_event_handle_t hEvent, ze_event_counter_based_flags_t* pFlags ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeEventGetCounterBasedFlagsEpilogue( ze_event_handle_t hEvent, ze_event_counter_based_flags_t* pFlags , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeEventGetCounterBasedFlags");
         return ZE_RESULT_SUCCESS;
     }
     virtual ze_result_t zeFenceCreatePrologue( ze_command_queue_handle_t hCommandQueue, const ze_fence_desc_t* desc, ze_fence_handle_t* phFence ) override {
@@ -1024,6 +1112,14 @@ public:
         GlobalTimingState::getInstance().recordEnd("zeModuleGetProperties");
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeModuleGetDeviceHandlePrologue( ze_module_handle_t hModule, ze_device_handle_t* phDevice ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeModuleGetDeviceHandleEpilogue( ze_module_handle_t hModule, ze_device_handle_t* phDevice , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeModuleGetDeviceHandle");
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeKernelCreatePrologue( ze_module_handle_t hModule, const ze_kernel_desc_t* desc, ze_kernel_handle_t* phKernel ) override {
         GlobalTimingState::getInstance().recordStart();
         return ZE_RESULT_SUCCESS;
@@ -1126,6 +1222,14 @@ public:
     }
     virtual ze_result_t zeKernelGetNameEpilogue( ze_kernel_handle_t hKernel, size_t* pSize, char* pName , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zeKernelGetName");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetModuleHandlePrologue( ze_kernel_handle_t hKernel, ze_module_handle_t* phModule ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetModuleHandleEpilogue( ze_kernel_handle_t hKernel, ze_module_handle_t* phModule , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeKernelGetModuleHandle");
         return ZE_RESULT_SUCCESS;
     }
     virtual ze_result_t zeCommandListAppendLaunchKernelPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
@@ -1310,150 +1414,6 @@ public:
     }
     virtual ze_result_t zeKernelSetGlobalOffsetExpEpilogue( ze_kernel_handle_t hKernel, uint32_t offsetX, uint32_t offsetY, uint32_t offsetZ , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zeKernelSetGlobalOffsetExp");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeKernelGetBinaryExpPrologue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeKernelGetBinaryExpEpilogue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeKernelGetBinaryExp");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDeviceImportExternalSemaphoreExtPrologue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDeviceImportExternalSemaphoreExtEpilogue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeDeviceImportExternalSemaphoreExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtPrologue( ze_external_semaphore_ext_handle_t hSemaphore ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtEpilogue( ze_external_semaphore_ext_handle_t hSemaphore , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeDeviceReleaseExternalSemaphoreExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendSignalExternalSemaphoreExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendWaitExternalSemaphoreExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderCreateExtPrologue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderCreateExtEpilogue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderCreateExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderGetBuildPropertiesExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtPrologue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeDriverRTASFormatCompatibilityCheckExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderBuildExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderBuildExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderBuildExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtEpilogue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderCommandListAppendCopyExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderDestroyExtPrologue( ze_rtas_builder_ext_handle_t hBuilder ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASBuilderDestroyExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderDestroyExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationCreateExtPrologue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationCreateExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationCreateExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationGetPropertiesExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationJoinExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationJoinExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationJoinExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationDestroyExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeRTASParallelOperationDestroyExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationDestroyExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtEpilogue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeDeviceGetVectorWidthPropertiesExt");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeKernelGetAllocationPropertiesExpEpilogue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeKernelGetAllocationPropertiesExp");
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeMemGetIpcHandleWithPropertiesPrologue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zeMemGetIpcHandleWithPropertiesEpilogue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zeMemGetIpcHandleWithProperties");
         return ZE_RESULT_SUCCESS;
     }
     virtual ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) override {
@@ -1768,6 +1728,14 @@ public:
         GlobalTimingState::getInstance().recordEnd("zeCommandListUpdateMutableCommandsExp");
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandListIsMutableExpPrologue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsMutable ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListIsMutableExpEpilogue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsMutable , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListIsMutableExp");
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandListUpdateMutableCommandSignalEventExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override {
         GlobalTimingState::getInstance().recordStart();
         return ZE_RESULT_SUCCESS;
@@ -1790,6 +1758,334 @@ public:
     }
     virtual ze_result_t zeCommandListUpdateMutableCommandKernelsExpEpilogue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zeCommandListUpdateMutableCommandKernelsExp");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetBinaryExpPrologue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetBinaryExpEpilogue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeKernelGetBinaryExp");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceImportExternalSemaphoreExtPrologue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceImportExternalSemaphoreExtEpilogue( ze_device_handle_t hDevice, const ze_external_semaphore_ext_desc_t* desc, ze_external_semaphore_ext_handle_t* phSemaphore , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeDeviceImportExternalSemaphoreExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtPrologue( ze_external_semaphore_ext_handle_t hSemaphore ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceReleaseExternalSemaphoreExtEpilogue( ze_external_semaphore_ext_handle_t hSemaphore , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeDeviceReleaseExternalSemaphoreExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendSignalExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendSignalExternalSemaphoreExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendWaitExternalSemaphoreExtEpilogue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendWaitExternalSemaphoreExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderCreateExtPrologue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderCreateExtEpilogue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderCreateExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderGetBuildPropertiesExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtPrologue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeDriverRTASFormatCompatibilityCheckExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderBuildExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderBuildExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderBuildExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderCommandListAppendCopyExtEpilogue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderCommandListAppendCopyExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderDestroyExtPrologue( ze_rtas_builder_ext_handle_t hBuilder ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASBuilderDestroyExtEpilogue( ze_rtas_builder_ext_handle_t hBuilder , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASBuilderDestroyExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationCreateExtPrologue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationCreateExtEpilogue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationCreateExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationGetPropertiesExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationGetPropertiesExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationJoinExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationJoinExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationJoinExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationDestroyExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeRTASParallelOperationDestroyExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeRTASParallelOperationDestroyExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtEpilogue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeDeviceGetVectorWidthPropertiesExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetAllocationPropertiesExpEpilogue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeKernelGetAllocationPropertiesExp");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeMemGetIpcHandleWithPropertiesPrologue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeMemGetIpcHandleWithPropertiesEpilogue( ze_context_handle_t hContext, const void* ptr, void* pNext, ze_ipc_mem_handle_t* pIpcHandle , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeMemGetIpcHandleWithProperties");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphCreateExtPrologue( ze_context_handle_t hContext, const void* pNext, ze_graph_handle_t* phGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphCreateExtEpilogue( ze_context_handle_t hContext, const void* pNext, ze_graph_handle_t* phGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphCreateExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListBeginGraphCaptureExtPrologue( ze_command_list_handle_t hCommandList, const void* pNext ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListBeginGraphCaptureExtEpilogue( ze_command_list_handle_t hCommandList, const void* pNext , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListBeginGraphCaptureExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListBeginCaptureIntoGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_graph_handle_t hGraph, const void* pNext ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListBeginCaptureIntoGraphExtEpilogue( ze_command_list_handle_t hCommandList, ze_graph_handle_t hGraph, const void* pNext , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListBeginCaptureIntoGraphExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListIsGraphCaptureEnabledExtPrologue( ze_command_list_handle_t hCommandList ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListIsGraphCaptureEnabledExtEpilogue( ze_command_list_handle_t hCommandList , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListIsGraphCaptureEnabledExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListEndGraphCaptureExtPrologue( ze_command_list_handle_t hCommandList, const void* pNext, ze_graph_handle_t* phGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListEndGraphCaptureExtEpilogue( ze_command_list_handle_t hCommandList, const void* pNext, ze_graph_handle_t* phGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListEndGraphCaptureExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListGetGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_graph_handle_t* phGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListGetGraphExtEpilogue( ze_command_list_handle_t hCommandList, ze_graph_handle_t* phGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListGetGraphExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphGetPrimaryCommandListExtPrologue( ze_graph_handle_t hGraph, ze_command_list_handle_t* phCommandList ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphGetPrimaryCommandListExtEpilogue( ze_graph_handle_t hGraph, ze_command_list_handle_t* phCommandList , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphGetPrimaryCommandListExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphSetDestructionCallbackExtPrologue( ze_graph_handle_t hGraph, zex_mem_graph_free_callback_fn_t pfnCallback, void* pUserData, const void* pNext ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphSetDestructionCallbackExtEpilogue( ze_graph_handle_t hGraph, zex_mem_graph_free_callback_fn_t pfnCallback, void* pUserData, const void* pNext , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphSetDestructionCallbackExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphInstantiateExtPrologue( ze_graph_handle_t hGraph, const void* pNext, ze_executable_graph_handle_t* phExecutableGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphInstantiateExtEpilogue( ze_graph_handle_t hGraph, const void* pNext, ze_executable_graph_handle_t* phExecutableGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphInstantiateExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendGraphExtPrologue( ze_command_list_handle_t hCommandList, ze_executable_graph_handle_t hGraph, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendGraphExtEpilogue( ze_command_list_handle_t hCommandList, ze_executable_graph_handle_t hGraph, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendGraphExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeExecutableGraphGetSourceGraphExtPrologue( ze_executable_graph_handle_t hGraph, ze_graph_handle_t* phSourceGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeExecutableGraphGetSourceGraphExtEpilogue( ze_executable_graph_handle_t hGraph, ze_graph_handle_t* phSourceGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeExecutableGraphGetSourceGraphExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphIsEmptyExtPrologue( ze_graph_handle_t hGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphIsEmptyExtEpilogue( ze_graph_handle_t hGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphIsEmptyExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphDumpContentsExtPrologue( ze_graph_handle_t hGraph, const char* filePath, const void* pNext ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphDumpContentsExtEpilogue( ze_graph_handle_t hGraph, const char* filePath, const void* pNext , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphDumpContentsExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeExecutableGraphDestroyExtPrologue( ze_executable_graph_handle_t hGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeExecutableGraphDestroyExtEpilogue( ze_executable_graph_handle_t hGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeExecutableGraphDestroyExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphDestroyExtPrologue( ze_graph_handle_t hGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphDestroyExtEpilogue( ze_graph_handle_t hGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphDestroyExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphPauseCaptureExtPrologue( ze_graph_handle_t hGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphPauseCaptureExtEpilogue( ze_graph_handle_t hGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphPauseCaptureExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphResumeCaptureExtPrologue( ze_graph_handle_t hGraph ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphResumeCaptureExtEpilogue( ze_graph_handle_t hGraph , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphResumeCaptureExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphGetIdExtPrologue( ze_graph_handle_t hGraph, uint64_t* pGraphId ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphGetIdExtEpilogue( ze_graph_handle_t hGraph, uint64_t* pGraphId , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeGraphGetIdExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendHostFunctionPrologue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendHostFunctionEpilogue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandListAppendHostFunction");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueSetPriorityExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_priority_t priority ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueSetPriorityExtEpilogue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_priority_t priority , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandQueueSetPriorityExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceGetCompilerInfoPrologue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, size_t* pSize, void* pData ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceGetCompilerInfoEpilogue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, size_t* pSize, void* pData , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeDeviceGetCompilerInfo");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueSetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueSetQosExtEpilogue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandQueueSetQosExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetQosExtEpilogue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zeCommandQueueGetQosExt");
         return ZE_RESULT_SUCCESS;
     }
     // Experimental Intel extension for counter-based events

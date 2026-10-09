@@ -32,6 +32,14 @@ public:
         GlobalTimingState::getInstance().recordEnd("zesDriverGet");
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zesDriverGetPropertiesPrologue( zes_driver_handle_t hDriver, zes_driver_properties_t* pDriverProperties ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverGetPropertiesEpilogue( zes_driver_handle_t hDriver, zes_driver_properties_t* pDriverProperties , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesDriverGetProperties");
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override {
         GlobalTimingState::getInstance().recordStart();
         return ZE_RESULT_SUCCESS;
@@ -358,6 +366,22 @@ public:
     }
     virtual ze_result_t zesDriverEventListenExEpilogue( ze_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zesDriverEventListenEx");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEventRegisterExtPrologue( zes_driver_handle_t hDriver, zes_event_type_flags_t events ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEventRegisterExtEpilogue( zes_driver_handle_t hDriver, zes_event_type_flags_t events , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesDriverEventRegisterExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEventListenExtPrologue( zes_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents, zes_event_type_flags_t* pDriverEvents ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEventListenExtEpilogue( zes_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents, zes_event_type_flags_t* pDriverEvents , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesDriverEventListenExt");
         return ZE_RESULT_SUCCESS;
     }
     virtual ze_result_t zesDeviceEnumFabricPortsPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_fabric_port_handle_t* phPort ) override {
@@ -1056,14 +1080,6 @@ public:
         GlobalTimingState::getInstance().recordEnd("zesTemperatureGetState");
         return ZE_RESULT_SUCCESS;
     }
-    virtual ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) override {
-        GlobalTimingState::getInstance().recordStart();
-        return ZE_RESULT_SUCCESS;
-    }
-    virtual ze_result_t zesDevicePciLinkSpeedUpdateExtEpilogue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction , ze_result_t result) override {
-        GlobalTimingState::getInstance().recordEnd("zesDevicePciLinkSpeedUpdateExt");
-        return ZE_RESULT_SUCCESS;
-    }
     virtual ze_result_t zesPowerGetLimitsExtPrologue( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) override {
         GlobalTimingState::getInstance().recordStart();
         return ZE_RESULT_SUCCESS;
@@ -1270,6 +1286,78 @@ public:
     }
     virtual ze_result_t zesVFManagementGetVFCapabilitiesExp2Epilogue( zes_vf_handle_t hVFhandle, zes_vf_exp2_capabilities_t* pCapability , ze_result_t result) override {
         GlobalTimingState::getInstance().recordEnd("zesVFManagementGetVFCapabilitiesExp2");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDevicePciLinkSpeedUpdateExtEpilogue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesDevicePciLinkSpeedUpdateExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDeviceGetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDeviceGetHealthStatusExtEpilogue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesDeviceGetHealthStatusExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDeviceSetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDeviceSetHealthStatusExtEpilogue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesDeviceSetHealthStatusExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEnumInfoLogsExtPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_info_log_handle_t* phInfoLogs ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEnumInfoLogsExtEpilogue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_info_log_handle_t* phInfoLogs , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesDriverEnumInfoLogsExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogGetPropertiesExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_ext_properties_t* pProperties ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogGetPropertiesExtEpilogue( zes_info_log_handle_t hInfoLog, zes_info_log_ext_properties_t* pProperties , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesInfoLogGetPropertiesExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogCreateInstanceExtPrologue( zes_info_log_handle_t hInfoLog, const char* pInstanceName, zes_info_log_instance_ext_desc_t* pDesc, zes_info_log_instance_handle_t* phInfoLogInstance ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogCreateInstanceExtEpilogue( zes_info_log_handle_t hInfoLog, const char* pInstanceName, zes_info_log_instance_ext_desc_t* pDesc, zes_info_log_instance_handle_t* phInfoLogInstance , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesInfoLogCreateInstanceExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstanceReadWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstanceReadWithMetadataExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesInfoLogInstanceReadWithMetadataExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstancePeekWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstancePeekWithMetadataExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesInfoLogInstancePeekWithMetadataExt");
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) override {
+        GlobalTimingState::getInstance().recordStart();
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstanceDeleteExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance , ze_result_t result) override {
+        GlobalTimingState::getInstance().recordEnd("zesInfoLogInstanceDeleteExt");
         return ZE_RESULT_SUCCESS;
     }
 };
