@@ -182,6 +182,7 @@ validation_files = {
     'handle_lifetime.h.mako' : ('handle_lifetime_tracking', 'handle_lifetime.h'),
     'handle_lifetime.cpp.mako' : ('handle_lifetime_tracking', 'handle_lifetime.cpp'),
     'certification.h.mako' : ('checkers/certification/generated', 'certification.h'),
+    'timing.h.mako' : ('checkers/timing/generated', 'timing.h'),
     'to_string.h.mako' : ('../../utils', 'to_string.h'),
 }
 
