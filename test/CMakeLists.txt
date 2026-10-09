@@ -1214,3 +1214,19 @@ if(UNIX AND NOT APPLE)
   target_link_libraries(ze_logger_teardown_unit_tests PRIVATE pthread)
 endif()
 add_test(NAME ze_logger_teardown_unit_tests COMMAND ze_logger_teardown_unit_tests)
+
+# -----------------------------------------------------------------------------
+# Standalone unit test for the ZEL_LOADER_LOG_FILE filename-pattern expansion
+# (%P / %N / %T / %% tokens). Links ONLY level_zero_utils, so it is a true unit
+# test independent of the static/dynamic build model and of any hardware.
+# -----------------------------------------------------------------------------
+add_executable(ze_logger_filename_pattern_unit_tests ze_logger_filename_pattern_unit_tests.cpp)
+target_include_directories(ze_logger_filename_pattern_unit_tests PRIVATE
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/source/inc
+)
+target_link_libraries(ze_logger_filename_pattern_unit_tests PRIVATE GTest::gtest_main level_zero_utils)
+if(UNIX AND NOT APPLE)
+  target_link_libraries(ze_logger_filename_pattern_unit_tests PRIVATE pthread)
+endif()
+add_test(NAME ze_logger_filename_pattern_unit_tests COMMAND ze_logger_filename_pattern_unit_tests)

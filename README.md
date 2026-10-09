@@ -67,7 +67,7 @@ The Level Zero Loader provides built-in logging controlled via environment varia
 | `ZEL_LOADER_LOG_CONSOLE` | `0` | Set to `1` to enable console (stderr) logging, overrides file logging |
 | `ZEL_LOADER_LOGGING_LEVEL` | `warn` | Log level: `trace`, `debug`, `info`, `warn`, `error`, `critical`, `off` |
 | `ZEL_LOADER_LOG_DIR` | `~/.oneapi_logs` | Directory to write the log file into |
-| `ZEL_LOADER_LOG_FILE` | `ze_loader.log` | Log filename |
+| `ZEL_LOADER_LOG_FILE` | `ze_loader.log` | Log filename, supports runtime pattern tokens (see below) |
 | `ZEL_LOADER_LOG_PATTERN` | see below | Custom log format pattern |
 
 ## Output destination
@@ -86,6 +86,27 @@ The two flags control output as follows:
 > capture is required, set `ZEL_LOADER_LOG_CONSOLE=0`.
 
 The log directory (`ZEL_LOADER_LOG_DIR`) is created automatically on first use if it does not exist.
+
+## Log file pattern
+
+`ZEL_LOADER_LOG_FILE` may contain runtime tokens that the loader expands when resolving the log
+filename. This makes it possible to keep separate log files per process or per run. A filename
+without tokens (the default `ze_loader.log`) is used unchanged.
+
+Supported filename pattern tokens:
+- `%P` — process id
+- `%N` — process executable base name
+- `%T` — logger startup timestamp formatted as `YYYYMMDD-HHMMSS`
+- `%%` — literal percent sign
+
+A `%` not followed by `P`, `N`, `T`, or `%` is kept verbatim in the filename.
+
+Examples:
+```
+ZEL_LOADER_LOG_FILE=ze_loader-%P.log
+ZEL_LOADER_LOG_FILE=%N-%P.log
+ZEL_LOADER_LOG_FILE=%N-%T-%P.log
+```
 
 ## Log pattern
 
