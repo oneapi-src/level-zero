@@ -158,6 +158,13 @@ SUPPORTED APIs
 | `zesDeviceGetProperties` | Device | 0.1.0 | None |
 | `zesDriverGetDeviceByUuidExp` | Device | 0.1.0 | Experimental API |
 | `zesDeviceProcessesGetState` | Device | 0.1.0 | None |
+| **Driver Management** |-|-|-|
+| `zesDriverGetProperties` | Driver | 0.1.3 | None |
+| `zesDriverGetExtensionProperties` | Driver | 0.1.3 | None |
+| `zesDriverGetExtensionFunctionAddress` | Driver | 0.1.3 | Returns a raw function address |
+| `zesDriverEventListenEx` | Driver | 0.1.3 | None |
+| `zesDriverEventRegisterExt` | Driver | 0.1.3 | None |
+| `zesDriverEventListenExt` | Driver | 0.1.3 | None |
 | **Memory Management** |-|-|-|
 | `zesDeviceEnumMemoryModules` | Memory | 0.1.0 | None |
 | `zesMemoryGetProperties` | Memory | 0.1.0 | None |
