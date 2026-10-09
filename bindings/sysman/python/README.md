@@ -182,10 +182,22 @@ SUPPORTED APIs
 | `zesTemperatureGetProperties` | Temperature | 0.1.0 | None |
 | `zesTemperatureGetConfig` | Temperature | 0.1.0 | None |
 | `zesTemperatureGetState` | Temperature | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesTemperatureSetConfig` | Temperature | 0.1.3 | Linux: Requires superuser |
 | **Engine Management** |-|-|-|
 | `zesDeviceEnumEngineGroups` | Engine | 0.1.0 | Linux: Shows "no handles found" error when not in superuser mode |
 | `zesEngineGetProperties` | Engine | 0.1.0 | None |
 | `zesEngineGetActivity` | Engine | 0.1.0 | None |
+| `zesEngineGetActivityExt` | Engine | 0.1.3 | None |
+| **Standby Management** |-|-|-|
+| `zesDeviceEnumStandbyDomains` | Standby | 0.1.3 | None |
+| `zesStandbyGetProperties` | Standby | 0.1.3 | None |
+| `zesStandbyGetMode` | Standby | 0.1.3 | None |
+| `zesStandbySetMode` | Standby | 0.1.3 | Linux: Requires superuser |
+| **Virtual Function (VF) Management** |-|-|-|
+| `zesDeviceEnumEnabledVFExp` | VF Management | 0.1.3 | Experimental API |
+| `zesVFManagementGetVFCapabilitiesExp2` | VF Management | 0.1.3 | Experimental API |
+| `zesVFManagementGetVFEngineUtilizationExp2` | VF Management | 0.1.3 | Experimental API |
+| `zesVFManagementGetVFMemoryUtilizationExp2` | VF Management | 0.1.3 | Experimental API |
 | **PCI Management** |-|-|-|
 | `zesDevicePciGetProperties` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
 | `zesDevicePciGetState` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
