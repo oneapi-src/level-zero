@@ -48,6 +48,41 @@ namespace driver
         };
 
         //////////////////////////////////////////////////////////////////////////
+        // Custom extension-function resolver. Returns real driver pointers by name
+        // for the setter and the sample extension function (the generic intercept
+        // in ze_nullddi.cpp defers to this hook and forwards *ppFunctionAddress).
+        zeDdiTable.Driver.pfnGetExtensionFunctionAddress = [](
+            ze_driver_handle_t,
+            const char* name,
+            void** ppFunctionAddress )
+        {
+            if( nullptr == name || nullptr == ppFunctionAddress )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+            if( 0 == strcmp( name, "zelDriverSetLoaderCallbackForExtension" ) ) {
+                *ppFunctionAddress = reinterpret_cast<void*>( &driver::zelDriverSetLoaderCallbackForExtension );
+                return ZE_RESULT_SUCCESS;
+            }
+            if( 0 == strcmp( name, "zelDriverEnableTracing" ) ) {
+                *ppFunctionAddress = reinterpret_cast<void*>( &driver::zelDriverEnableTracing );
+                return ZE_RESULT_SUCCESS;
+            }
+            if( 0 == strcmp( name, "zeSampleExtFunc" ) ) {
+                *ppFunctionAddress = reinterpret_cast<void*>( &driver::zeSampleExtFunc );
+                return ZE_RESULT_SUCCESS;
+            }
+            if( 0 == strcmp( name, "zelTestGetDriverTracingEnableCount" ) ) {
+                *ppFunctionAddress = reinterpret_cast<void*>( &driver::zelTestGetDriverTracingEnableCount );
+                return ZE_RESULT_SUCCESS;
+            }
+            if( 0 == strcmp( name, "zelTestGetDriverExtensionInstallState" ) ) {
+                *ppFunctionAddress = reinterpret_cast<void*>( &driver::zelTestGetDriverExtensionInstallState );
+                return ZE_RESULT_SUCCESS;
+            }
+            *ppFunctionAddress = nullptr;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
         zeDdiTable.Device.pfnGet = [](
             ze_driver_handle_t,
             uint32_t* pCount,
@@ -680,6 +715,127 @@ namespace driver
         pRuntime.version = ZE_API_VERSION_CURRENT;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    /// @brief Sample extension function reachable only by name. Its body invokes
+    ///        any registered prologue/epilogue with a typed params block.
+    ze_result_t ZE_APICALL zeSampleExtFunc(
+        ze_driver_handle_t hDriver, uint32_t input, uint32_t* pOutput )
+    {
+        // Snapshot the single loader wrapper registered for this function.
+        context_t::loader_extension_callbacks_t cbs;
+        bool haveCbs = false;
+        {
+            std::lock_guard<std::mutex> lock( context.extensionCallbackMutex );
+            auto it = context.extensionCallbacks.find( "zeSampleExtFunc" );
+            if( it != context.extensionCallbacks.end() ) {
+                cbs = it->second;
+                haveCbs = true;
+            }
+        }
+
+        // Two-level gate: the wrapper fires only when tracing is globally enabled
+        // AND a loader wrapper is registered for this function.
+        const bool fire = haveCbs && context.extensionCallbacksEnabled.load();
+
+        // Typed parameter block the driver exposes to the callbacks.
+        ze_sample_ext_func_params_t params = { &hDriver, &input, &pOutput };
+        void* pInstanceData = nullptr;
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        if( fire && nullptr != cbs.loaderPrologue )
+            cbs.loaderPrologue( &params, result, cbs.pLoaderContext, &pInstanceData );
+
+        // The (trivial) work of the extension function.
+        if( nullptr != pOutput )
+            *pOutput = input * 2;
+
+        if( fire && nullptr != cbs.loaderEpilogue )
+            cbs.loaderEpilogue( &params, result, cbs.pLoaderContext, &pInstanceData );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// @brief Enable/disable this driver's extension-function callbacks (the
+    ///        global gate). Called by the loader when the tracing layer is
+    ///        enabled/disabled.
+    ze_result_t ZE_APICALL zelDriverEnableTracing(
+        ze_driver_handle_t /*hDriver*/, ze_bool_t enable )
+    {
+        // Test hook: emulate a driver that advertises the "zelDriverEnableTracing"
+        // symbol but does not actually implement the capability. The loader's
+        // load-time probe invokes this with enable=false; returning UNSUPPORTED
+        // (without touching the gate) makes the loader treat this driver as
+        // unsupported and leave its gate permanently closed.
+        if( getenv_tobool( "ZEL_TEST_NULL_DRIVER_TRACING_UNSUPPORTED" ) )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( enable )
+            context.enableTracingTrueCount.fetch_add( 1 );
+        context.extensionCallbacksEnabled.store( enable != 0 );
+        return ZE_RESULT_SUCCESS;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// @brief Test-only: report how many times the loader opened this driver's
+    ///        extension-tracing gate (zelDriverEnableTracing with enable=true).
+    ze_result_t ZE_APICALL zelTestGetDriverTracingEnableCount(
+        ze_driver_handle_t /*hDriver*/, uint32_t* pCount )
+    {
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        *pCount = context.enableTracingTrueCount.load();
+        return ZE_RESULT_SUCCESS;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// @brief Test-only: report which loader wrapper phases are currently
+    ///        installed for a named extension function. *pFlags bit0 = prologue
+    ///        wrapper installed, bit1 = epilogue wrapper installed; 0 if the
+    ///        function has no loader wrapper registered at all.
+    ze_result_t ZE_APICALL zelTestGetDriverExtensionInstallState(
+        ze_driver_handle_t /*hDriver*/, const char* functionName, uint32_t* pFlags )
+    {
+        if( nullptr == functionName || nullptr == pFlags )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        uint32_t flags = 0;
+        std::lock_guard<std::mutex> lock( context.extensionCallbackMutex );
+        auto it = context.extensionCallbacks.find( functionName );
+        if( it != context.extensionCallbacks.end() ) {
+            if( nullptr != it->second.loaderPrologue )
+                flags |= 0x1u;
+            if( nullptr != it->second.loaderEpilogue )
+                flags |= 0x2u;
+        }
+        *pFlags = flags;
+        return ZE_RESULT_SUCCESS;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// @brief Driver-side loader-callback registration entry (resolved by name
+    ///        from the tracing layer). Stores the single loader wrapper (+ opaque
+    ///        context) per function name; null+null unregisters.
+    ze_result_t ZE_APICALL zelDriverSetLoaderCallbackForExtension(
+        ze_driver_handle_t, const char* functionName,
+        zel_pfnDriverExtensionFunctionCb_t loaderPrologue,
+        zel_pfnDriverExtensionFunctionCb_t loaderEpilogue,
+        void* pLoaderContext )
+    {
+        if( nullptr == functionName )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        std::lock_guard<std::mutex> lock( context.extensionCallbackMutex );
+        if( nullptr == loaderPrologue && nullptr == loaderEpilogue ) {
+            context.extensionCallbacks.erase( functionName );
+        } else {
+            auto& entry = context.extensionCallbacks[ functionName ];
+            entry.loaderPrologue = loaderPrologue;
+            entry.loaderEpilogue = loaderEpilogue;
+            entry.pLoaderContext = pLoaderContext;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+
     char *context_t::setenv_var_with_driver_id(const std::string &key, uint32_t driverId)
     {
         std::string env = key + "=" + std::to_string(driverId);
@@ -690,6 +846,20 @@ namespace driver
 
     context_t::~context_t()
     {
+        // Sever any link back into the loader/tracing layer before this driver
+        // goes away. The loader wrappers we were handed via
+        // zelDriverSetLoaderCallbackForExtension live in the tracing-layer .so,
+        // which may be unloaded around teardown. Close the gate and drop the
+        // stored wrapper pointers here, in our own destructor, so nothing can
+        // dereference them afterwards. This is done driver-side on purpose: the
+        // loader must not call into a driver during teardown (the driver's
+        // static state may already be gone), so each side cleans up its own.
+        {
+            std::lock_guard<std::mutex> lock( extensionCallbackMutex );
+            extensionCallbacksEnabled.store( false );
+            extensionCallbacks.clear();
+        }
+
         for (auto handle : globalBaseNullHandle)
         {
             delete handle;

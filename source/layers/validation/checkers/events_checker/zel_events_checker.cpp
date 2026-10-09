@@ -64,7 +64,7 @@ eventsChecker::ZEeventsChecker::zeEventDestroyEpilogue(
     }
 
     if (eventToDagID.find(hEvent) != eventToDagID.end()) {
-        // Delete event from eventToDagID but not from the dagIDToAction map as it may be needed for printing the discription of the action when printing path in the DAG.
+        // Delete event from eventToDagID but not from the dagIDToAction map as it may be needed for printing the description of the action when printing path in the DAG.
         eventToDagID.erase(hEvent);
     }
 
@@ -283,7 +283,7 @@ eventsChecker::ZEeventsChecker::zeEventHostSignalPrologue(
 }
 
 void eventsChecker::ZEeventsChecker::resetEventInEventToDagID(
-    const std::string &zeCallDisc, /// action discription
+    const std::string &zeCallDisc, /// action description
     const ze_event_handle_t hEvent ///< [in] handle of the event
 ) {
     auto it = eventToDagID.find(hEvent);
@@ -501,7 +501,7 @@ void eventsChecker::ZEeventsChecker::validateSignalEventOwnership(const std::str
 }
 
 void eventsChecker::ZEeventsChecker::checkForDeadlock(
-    const std::string &zeCallDisc,        /// action discription
+    const std::string &zeCallDisc,        /// action description
     const ze_event_handle_t hSignalEvent, ///< [in][optional] handle of the event to forming the outgoing edge in the DAG
     const uint32_t numWaitEvents,         ///< [in][optional] number of events that point to this action.
     const ze_event_handle_t *phWaitEvents ///< [in][optional][range(0, numWaitEvents)] handle of the events that point to this action.

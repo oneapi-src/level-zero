@@ -81,7 +81,7 @@ Basic leak checker in the validation layer which tracks the Create and Destroy c
                       zeMemAllocShared = 0     \--->               zeMemFree = 1
         ```
 
-### `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemeneted)
+### `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
 
 Validates:
 - Objects are not concurrently reused in free-threaded API calls

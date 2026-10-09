@@ -35,9 +35,9 @@ namespace loader
     typedef enum _zel_driver_type_t
     {
         ZEL_DRIVER_TYPE_DISCRETE_GPU= 0,          ///< The driver has Discrete GPUs only
-        ZEL_DRIVER_TYPE_GPU = 1,                  ///< The driver has Heterogenous GPU types
+        ZEL_DRIVER_TYPE_GPU = 1,                  ///< The driver has Heterogeneous GPU types
         ZEL_DRIVER_TYPE_INTEGRATED_GPU = 2,       ///< The driver has Integrated GPUs only
-        ZEL_DRIVER_TYPE_MIXED = 3,                ///< The driver has Heterogenous driver types not limited to GPU or NPU.
+        ZEL_DRIVER_TYPE_MIXED = 3,                ///< The driver has Heterogeneous driver types not limited to GPU or NPU.
         ZEL_DRIVER_TYPE_OTHER = 4,                ///< The driver has No GPU Devices and has other device types only
         ZEL_DRIVER_TYPE_NPU = 5,                  ///< The driver has NPU devices only
         ZEL_DRIVER_TYPE_FORCE_UINT32 = 0x7fffffff
@@ -67,6 +67,14 @@ namespace loader
         ze_result_t zetddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
         ze_result_t zesddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
         ze_result_t zerddiInitResult = ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // Resolved gate hook; null = driver doesn't support extension tracing.
+        zel_pfnDriverEnableTracing_t pfnDriverEnableTracing = nullptr;
+        // Native driver handle used to invoke the gate hook. The loader calls the
+        // driver's zelDriverEnableTracing directly (bypassing loader dispatch), so
+        // it must pass a real driver handle -- drivers reject a null handle.
+        ze_driver_handle_t enableTracingDriverHandle = nullptr;
+        bool driverEnableTracingResolved = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;
@@ -108,6 +116,8 @@ namespace loader
         zes_fan_factory_t                   zes_fan_factory;
         zes_firmware_factory_t              zes_firmware_factory;
         zes_freq_factory_t                  zes_freq_factory;
+        zes_info_log_factory_t              zes_info_log_factory;
+        zes_info_log_instance_factory_t     zes_info_log_instance_factory;
         zes_led_factory_t                   zes_led_factory;
         zes_mem_factory_t                   zes_mem_factory;
         zes_overclock_factory_t             zes_overclock_factory;
@@ -170,6 +180,11 @@ namespace loader
         bool debugTraceAdvanced = false;  // true when ZE_ENABLE_LOADER_DEBUG_TRACE=2 or ZEL_ENABLE_LOADER_LOGGING=2
         bool driverDDIPathDefault = false;
         bool tracingLayerEnabled = false;
+        // Monotonic latch set on the first extension-callback registration. While
+        // false, the enable/disable toggle skips per-driver gate propagation, so
+        // the common case (no extension callbacks, e.g. VTune) stays a cheap
+        // DDI-table swap. Never reset.
+        std::atomic<bool> anyExtensionCallbackRegistered{false};
         std::once_flag coreDriverSortOnce;
         std::once_flag sysmanDriverSortOnce;
         std::atomic<bool> sortingInProgress = {false};
@@ -184,4 +199,7 @@ namespace loader
     extern ze_handle_t* loaderDispatch;
     extern zer_dditable_t* defaultZerDdiTable;
     extern context_t *context;
+
+    // Toggles one driver's "zelDriverEnableTracing" gate; UNSUPPORTED if absent.
+    ze_result_t enableDriverExtensionTracing(driver_t &driver, ze_bool_t enable);
 }

@@ -756,7 +756,7 @@ zetDebugGetRegisterSetProperties(
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + the thread argument specifies more than one or a non-existant thread
+///         + the thread argument specifies more than one or a non-existent thread
 ze_result_t ZE_APICALL
 zetDebugGetThreadRegisterSetProperties(
     zet_debug_session_handle_t hDebug,              ///< [in] debug session handle

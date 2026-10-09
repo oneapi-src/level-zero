@@ -30,7 +30,7 @@ The returned `zel_component_version_t` structure contains:
 
 ###  zelLoaderGetVersions
 
-This API is used to retreive the version information of the loader itself and of any layers that are enabled.
+This API is used to retrieve the version information of the loader itself and of any layers that are enabled.
 
 - __*num_elems__  Is a pointer to the number of version components to get. 
 - __*versions__   Pointer to address to write version components to. If set to `nullptr`, `num_elems` will be set to the total number of version components available. 
@@ -45,7 +45,7 @@ There are currently 3 versioned components assigned the following name strings:
 
 When a system has multiple L0 drivers, raw handles returned from the L0 drivers are modified by the loader before being returned to the application.  This allows the loader to determine which handles belong to which driver and forward API calls appropriately.  In most cases the loader will perform this handle translation completely transparently to the application and no manual translation is ever needed.
 
-In some rare cases when the application needs to occasionally bypass the loader, handle conflicts can arise. One such case is when an application wants to call a driver extension function whose address has been retreived with `zeDriverGetExtensionFunctionAddress`
+In some rare cases when the application needs to occasionally bypass the loader, handle conflicts can arise. One such case is when an application wants to call a driver extension function whose address has been retrieved with `zeDriverGetExtensionFunctionAddress`
 
 To solve this issue, `zelLoaderTranslateHandle` is used to retrieve the raw driver handle associated with a loader handle.  
 

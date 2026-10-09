@@ -1,6 +1,9 @@
 on:
   push:
-    branches: [ master,release_branch* ]
+    branches: [ release_branch* ]
+  # Weekly master build keeps the PR ccache warm (unused caches expire after 7 days).
+  schedule:
+    - cron: '47 4 * * 1'
   pull_request:
     branches: [ master,release_branch* ]
   workflow_dispatch:
@@ -14,15 +17,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Use ccache-action for ccache setup and caching
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           path: pr
-      - uses: hendrikmuhs/ccache-action@v1
+      - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
 
       # Checkout master branch for static loader source
       - name: Checkout master branch for static loader
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
           fetch-depth: 0
@@ -73,23 +76,21 @@ jobs:
     runs-on: windows-latest
     steps:
       # Checkout PR branch (dynamic loader source)
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           path: pr
 
       # Checkout master branch for static loader source
       - name: Checkout master branch for static loader
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
           fetch-depth: 0
           path: master
 
       - name: Setup Windows build environment
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
+        uses: ./pr/.github/actions/msvc-env
 
       # Build static loader from master branch
       - name: Build Static Loader from master

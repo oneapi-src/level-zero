@@ -54,7 +54,7 @@ namespace validation_layer
             {{"zeKernelCreate"}, {"zeKernelDestroy"}},
             {{"zeEventPoolCreate"}, {"zeEventPoolDestroy"}},
             {{"zeCommandListCreateImmediate", "zeCommandListCreate"}, {"zeCommandListDestroy"}},
-            {{"zeEventCreate", "zexCounterBasedEventCreate2"}, {"zeEventDestroy"}},
+            {{"zeEventCreate", "zeEventCounterBasedCreate", "zexCounterBasedEventCreate2"}, {"zeEventDestroy"}},
             {{"zeFenceCreate"}, {"zeFenceDestroy"}},
             {{"zeImageCreate", "zeImageViewCreateExt"}, {"zeImageDestroy"}},
             {{"zeSamplerCreate"}, {"zeSamplerDestroy"}},
@@ -173,6 +173,13 @@ namespace validation_layer
         return result;
     }
 
+    ze_result_t basic_leakChecker::ZEbasic_leakChecker::zeEventCounterBasedCreateEpilogue(ze_context_handle_t, ze_device_handle_t, const ze_event_counter_based_desc_t *, ze_event_handle_t *, ze_result_t result) {
+        if (result == ZE_RESULT_SUCCESS) {
+            countFunctionCall("zeEventCounterBasedCreate");
+        }
+        return result;
+    }
+
     ze_result_t basic_leakChecker::ZEbasic_leakChecker::zeEventDestroyEpilogue(ze_event_handle_t, ze_result_t result) {
         if (result == ZE_RESULT_SUCCESS) {
             countFunctionCall("zeEventDestroy");
@@ -275,7 +282,7 @@ namespace validation_layer
     {
         auto it = counts.find(functionName);
 
-        // make sure there is no insertion happening during program exeuction
+        // make sure there is no insertion happening during program execution
         // as inserting to the map is not thread safe
         if (it == counts.end()) {
             return;

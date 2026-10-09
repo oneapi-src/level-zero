@@ -1,6 +1,7 @@
 on:
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 permissions: read-all
 
@@ -16,21 +17,21 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y elfutils universal-ctags vtable-dumper
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0 # Required due to the way Git works, without it this action won't be able to find any or the correct tags
-    - uses: actions-ecosystem/action-get-latest-tag@v1
+    - uses: actions-ecosystem/action-get-latest-tag@b7c32daec3395a9616f88548363a42652b22d435 # v1.6.0
       id: get-latest-tag
       with:
         semver_only: true
     - name: Checkout base
-      uses: actions/checkout@v3
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         ref: ${{ steps.get-latest-tag.outputs.tag }}
         clean: true
         path: base
     - name: Checkout head
-      uses: actions/checkout@v3
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         clean: true
         path: head
@@ -78,7 +79,7 @@ jobs:
           -old base.dump \
           -new head.dump \
           -report-path release_report.html
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: always()
       with:
         name: abi-report-last-release
@@ -92,13 +93,13 @@ jobs:
         sudo apt update
         sudo apt install -y elfutils universal-ctags vtable-dumper
     - name: Checkout base
-      uses: actions/checkout@v3
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
-        ref: ${{ github.base_ref }}
+        ref: ${{ github.base_ref || 'master' }}
         clean: true
         path: base
     - name: Checkout head
-      uses: actions/checkout@v3
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         clean: true
         path: head
@@ -146,7 +147,7 @@ jobs:
           -old base.dump \
           -new head.dump \
           -report-path master_report.html
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: always()
       with:
         name: abi-report-master

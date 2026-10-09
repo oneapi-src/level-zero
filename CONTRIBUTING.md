@@ -28,25 +28,83 @@ review these for proper alignment with the
 
 ## Generating Level Zero Loader and Layer files from scripts
 
-As part of each Level Zero specification update, .mako scripts are updated which generate the code for the Level Zero Loader and layers.
-When one contributes updates to the Level Zero Loader or Layers, one must update the code in [Level Zero Loader Mako Scripts](scripts/templates) to ensure that the new code is not lost in the next specification update.
+Most of the files under `source/`, plus `include/layers/zel_tracing_register_cb.h`, are **generated** from the Mako templates in [scripts/templates](scripts/templates). They are committed to git, so an ordinary build never regenerates them.
 
-To generate the code from the scripts, run the following commands:
+**If you edit a generated file directly, your change is deleted the next time anyone regenerates**, and the build usually breaks then rather than now. Put the change in the matching `scripts/templates/*.mako` instead, then regenerate. See [scripts/README.md](scripts/README.md) for how the generators fit together.
+
+The metadata needed to regenerate is archived in the repository under `scripts/spec_metadata/`, so no clone of the specification repository is required:
+
+```bash
+python3 scripts/spec_metadata.py regen
+```
+
+This rewrites the generated files in place from the spec release the loader currently targets. Review `git diff` and commit the result along with your template change.
+
+### Regenerating against a different specification release
+
+Only needed when moving the loader to a new specification release; this is normally done by the `Update Spec` workflow rather than by hand.
 
 * Clone the specification repo: `git clone https://github.com/oneapi-src/level-zero-spec.git level-zero-spec`
-* Checkout the specification version in the specification repo, for example:
-  * `cd level-zero-spec`
-  * `git checkout v1.17.24`
-* Generate the specification JSON file and Headers:
-  * `cd level-zero-spec/scripts`
-  * `python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver 1.16`
-* Copy the Headers From Spec to Loader repo
-  * `cp level-zero-spec/include/* level-zero/include/`
-* Execute the json2src script in the level-zero repo with the input.json in the specification repo with the corresponding spec version, for example (be sure you're inside the level-zero repository folder)
-  * `cd level-zero`
-  * `./scripts/json2src.py --ver 1.16 --api-json ../level-zero-spec/scripts/input.json .`
+* Check out the release to move to, for example:
+  * `cd level-zero-spec && git checkout v1.17.24`
+* Copy the headers from the spec repo into the loader: `cp level-zero-spec/include/* level-zero/include/`
+* Re-archive the metadata and regenerate, from the loader repo:
+  * `python3 scripts/spec_metadata.py refresh --spec-repo ../level-zero-spec`
+  * `python3 scripts/spec_metadata.py regen`
 
-These scripts update the code with what would be generated in the next specification update.
+`refresh` derives the API version from the release tag that is checked out. Do not
+pass a `--ver` below that release: the version is a maximum-version filter over the
+specification metadata, so a value that is too low silently drops every function
+added after it. The result still compiles — it is simply a loader missing those
+exports.
+
+## Vetting a change before CI
+
+CI regenerates the loader sources from the archived metadata and then builds and
+tests the result, so a hand-edit to a generated file fails there even though it
+built fine locally. These checks run the same things locally, cheapest first.
+
+**1. Would a regeneration change anything you did not expect?**
+
+```bash
+python3 scripts/spec_metadata.py check
+```
+
+Lists files that a regeneration would rewrite, and never fails. Some drift is
+normal — comment and doc-string wording changes upstream in the spec between
+releases. What matters is whether *your* file is in that list. If it is, the change
+belongs in a template. Add `--diff` to see exactly what would change.
+
+**2. Does the regenerated tree still build and test?**
+
+This is the check that actually gates a pull request.
+
+```bash
+python3 scripts/spec_metadata.py regen
+mkdir -p build && cd build
+cmake -D CMAKE_BUILD_TYPE=Release -D BUILD_L0_LOADER_TESTS=1 -D INSTALL_NULL_DRIVER=1 ..
+make -j$(nproc)
+ZEL_LIBRARY_PATH=$PWD/lib ctest -V
+```
+
+A compile error naming a symbol you added is the signature of the failure this
+guards against: the symbol was written into a generated file, and regeneration
+removed it. `ZEL_LIBRARY_PATH` is required — without it the suite runs against a
+system loader and fails misleadingly.
+
+`regen` rewrites committed files in the working tree. Run it on a clean tree so
+`git diff` shows only what regeneration changed, and use `git checkout -- source/
+include/` to undo it.
+
+**3. Spelling.**
+
+```bash
+codespell
+```
+
+Configuration lives in [.codespellrc](.codespellrc), so no arguments are needed.
+Note that spelling fixes applied to a *generated* file are lost on regeneration —
+they have to go upstream into the specification repository.
 
 ## Updating the Loader Version
 
@@ -139,7 +197,7 @@ When performing a code review please refer to this checklist to guide your comme
 * Is the code "Vendor & Platform agnostic"? ie Are the changes in the loader or in the layers ignorant of the implementation in the L0 drivers?
 * Is the Code Modular or can the code be Modular? ie Can the code be added to common functions used in loader or layer common functions or is it for a specific usecase?
 * Can the code handle Multiple Driver or Device environments? Verify that the changes work within the [Intercept Layer](source/loader/ze_ldrddi.cpp) which is used when multiple drivers are present and that support works across devices.
-* Has the code updated the templates? see here [Generating Level Zero Loader and Layer files from scripts](#generating-level-zero-loader-and-layer-files-from-scripts)
+* Has the code updated the templates? see here [Generating Level Zero Loader and Layer files from scripts](#generating-level-zero-loader-and-layer-files-from-scripts). If a file under `source/` was changed, check whether that file is generated: a hand-edit there is lost on the next regeneration and must move into the matching `scripts/templates/*.mako`. See [Vetting a change before CI](#vetting-a-change-before-ci).
 
 ## Sign Your Work
 

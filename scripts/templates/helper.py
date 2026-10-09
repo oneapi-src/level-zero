@@ -514,7 +514,7 @@ class function_traits:
 
 """
 Public:
-    substitues each tag['key'] with tag['value']
+    substitutes each tag['key'] with tag['value']
     if cpp, then remove each tag['key'] if matches namespace
     if comment, then insert doxygen '::' notation at beginning (for autogen links)
 """
@@ -1610,8 +1610,8 @@ def make_tracing_func_name(namespace, tags, obj):
     cname = obj_traits.class_name(obj)
     x_tag = tags['$x']
     r_tag = tags['$r']
-    tags['$x'] = '' #temporaly remove namespace tag so funx doesn't contain "ze"
-    tags['$r'] = '' #temporaly remove namespace tag so funx doesn't contain "zer"
+    tags['$x'] = '' #temporarily remove namespace tag so funx doesn't contain "ze"
+    tags['$r'] = '' #temporarily remove namespace tag so funx doesn't contain "zer"
     fname =  subt(namespace, tags, "%s%s"%(cname, obj['name']), cpp=False)
     fname = "zelTracer" + fname + "RegisterCallback" 
     tags['$x'] = x_tag

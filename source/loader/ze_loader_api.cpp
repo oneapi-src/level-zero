@@ -9,6 +9,7 @@
  */
 
 #include "ze_loader_internal.h"
+#include "../lib/ze_lib.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -57,6 +58,32 @@ zeLoaderGetTracingHandle()
 ZE_DLLEXPORT loader::context_t *ZE_APICALL
 zelLoaderGetContext() {
     return loader::context;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Notify the loader that an extension-function tracing callback was
+///        registered (see ze_loader_api.h).
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderTracingLayerRegisterExtensionCallback() {
+    if (nullptr == loader::context)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    // Latch the first registration; later ones are no-ops here.
+    bool wasRegistered = loader::context->anyExtensionCallbackRegistered.exchange(true);
+    if (wasRegistered)
+        return ZE_RESULT_SUCCESS;
+
+    // If the layer is already active, the enable path skipped the per-driver loop
+    // while the latch was false, so open the gates now (install-after-enable).
+    // Runs inside the loader, so tracingLayerEnableCounter is authoritative for
+    // both static and dynamic builds.
+    if (loader::context->tracingLayerEnabled ||
+        (ze_lib::context && ze_lib::context->tracingLayerEnableCounter.load() > 0)) {
+        for (auto &drv : loader::context->zeDrivers) {
+            loader::enableDriverExtensionTracing(drv, true);
+        }
+    }
+    return ZE_RESULT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

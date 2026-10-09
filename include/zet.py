@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.17-r1.17.24
+ @version v1.19-r1.19.12
 
  """
 import platform
@@ -518,7 +518,7 @@ class zet_metric_query_pool_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief Supportted profile features
+## @brief Supported profile features
 class zet_profile_flags_v(IntEnum):
     REGISTER_REALLOCATION = ZE_BIT(0)                                       ## request the compiler attempt to minimize register usage as much as
                                                                             ## possible to allow for instrumentation
@@ -972,13 +972,32 @@ class zet_metric_group_type_exp_t(Structure):
 ###############################################################################
 ## @brief Exported dma_buf properties queried using `pNext` of
 ##        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+## 
+## @details
+##     - This structure must be passed via the `pNext` member of
+##       ::zet_metric_group_properties_t or ::zet_metric_properties_t
+##     - The implementation retains ownership of `fd` for its entire lifetime.
+##       The application must not close `fd`; it is closed by the
+##       implementation when the metric or metric group that exported it is
+##       destroyed, or when metrics are disabled on the device.
+##     - The application must free any allocation it imported from `fd` before
+##       destroying the exporting metric or metric group, or disabling metrics
+##       on the device. Otherwise the imported allocation outlives `fd` and any
+##       subsequent use of it is undefined.
+##     - `fd` refers to a shared resource. The same `fd` may be reported by
+##       repeated queries and by queries on different metric or metric group
+##       handles. The implementation performs no synchronization on `fd` or on
+##       the memory it exports; if the application uses either from more than
+##       one thread it must serialize that access itself, for example with a
+##       mutex or by confining access to a single thread.
 class zet_export_dma_buf_exp_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("fd", c_int),                                                  ## [out] the file descriptor handle that could be used to import the
-                                                                        ## memory by the host process.
+        ("fd", c_int),                                                  ## [out] the file descriptor handle provided for importing memory by the
+                                                                        ## host process.
+                                                                        ## Owned by the implementation; must not be closed by the application.
         ("size", c_size_t)                                              ## [out] size in bytes of the dma_buf
     ]
 
@@ -998,17 +1017,6 @@ class zet_metric_group_marker_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Query the metric source unique identifier using `pNext` of
-##        ::zet_metric_group_properties_t
-class zet_metric_source_id_exp_t(Structure):
-    _fields_ = [
-        ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
-    ]
-
-###############################################################################
 ## @brief Runtime Enabling and Disabling Metrics Extension Name
 ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME = "ZET_experimental_metrics_runtime_enable_disable"
 
@@ -1022,6 +1030,32 @@ class zet_metrics_runtime_enable_disable_exp_version_t(c_int):
     def __str__(self):
         return str(zet_metrics_runtime_enable_disable_exp_version_v(self.value))
 
+
+###############################################################################
+## @brief Metric Source Id Experimental Extension Name
+ZET_METRIC_SOURCE_ID_EXP_NAME = "ZET_experimental_metric_source_id"
+
+###############################################################################
+## @brief Metric Source Id Experimental Extension Version(s)
+class zet_metric_source_id_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_source_id_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_source_id_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Query the metric source unique identifier using `pNext` of
+##        ::zet_metric_group_properties_t
+class zet_metric_source_id_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
+    ]
 
 ###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]

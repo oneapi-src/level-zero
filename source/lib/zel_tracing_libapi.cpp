@@ -10,6 +10,8 @@
  * Perhaps generate this from scripts in the future.
  */
 #include "ze_lib.h"
+#include "loader/ze_loader.h"
+#include "../loader/ze_loader_api.h"
 
 extern "C" {
 
@@ -173,6 +175,54 @@ zelTracerSetEnabled(
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetEnabled( hTracer, enable );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Registers a prologue/epilogue callback on a tracer for a named
+///        extension function of a specific driver. See loader/ze_loader.h.
+ze_result_t ZE_APICALL
+zelTracerDriverExtensionRegisterCallback(
+    zel_tracer_handle_t hTracer,                ///< [in] handle of the tracer
+    ze_driver_handle_t hDriver,                 ///< [in] handle of the driver instance
+    const char* functionName,                   ///< [in] extension function name to intercept
+    zel_tracer_reg_t callback_type,             ///< [in] prologue or epilogue
+    zel_pfnDriverExtensionFunctionCb_t pCallback ///< [in][optional] handler (null clears slot)
+    )
+{
+    if(ze_lib::destruction)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    typedef ze_result_t (ZE_APICALL *ze_pfnRegisterExtCallback_t)(
+        zel_tracer_handle_t, ze_driver_handle_t, const char*,
+        zel_tracer_reg_t, zel_pfnDriverExtensionFunctionCb_t );
+
+    auto func = reinterpret_cast<ze_pfnRegisterExtCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib,
+                         "zelTracerDriverExtensionRegisterCallback") );
+    if(!func)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    ze_result_t result = func( hTracer, hDriver, functionName, callback_type, pCallback );
+    if( result == ZE_RESULT_SUCCESS ) {
+        // Latch the first extension callback in the loader (which owns the gate),
+        // so the toggle paths resume gate propagation. Must reach loader code in
+        // both builds; handles install-after-enable ordering.
+    #ifdef L0_STATIC_LOADER_BUILD
+        if( ze_lib::context->loader ) {
+            typedef ze_result_t (ZE_APICALL *notify_t)();
+            auto notify = reinterpret_cast<notify_t>(
+                GET_FUNCTION_PTR(ze_lib::context->loader,
+                                 "zelLoaderTracingLayerRegisterExtensionCallback") );
+            if( notify )
+                notify();
+        }
+    #else
+        zelLoaderTracingLayerRegisterExtensionCallback();
+    #endif
+    }
+    return result;
 }
 
 } // extern "C"

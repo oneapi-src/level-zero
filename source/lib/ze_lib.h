@@ -28,6 +28,10 @@
 #include <typeinfo>
 #include <iostream>
 
+// Forward declaration: the full definition lives in ze_loader_internal.h, which
+// ze_lib.cpp includes. Here we only need it for a pointer member.
+namespace loader { class context_t; }
+
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -184,6 +188,10 @@ namespace ze_lib
         bool debugTraceEnabled = false;
         bool dynamicTracingSupported = true;
         ze_pfnDriverGet_t loaderDriverGet = nullptr;
+        // Loader context, resolved in a build-portable way during Init: directly
+        // in the dynamic build, or via zelLoaderGetContext() in the static build
+        // (where the loader symbols are not link-time visible). May be null.
+        loader::context_t *loaderContext = nullptr;
         std::atomic<uint32_t> teardownCallbacksCount{0};
         std::map<uint32_t, zel_loader_teardown_callback_t> teardownCallbacks;
         std::mutex teardownCallbacksMutex;

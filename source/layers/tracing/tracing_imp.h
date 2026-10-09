@@ -10,12 +10,15 @@
 #include "tracing.h"
 #include "ze_api.h"
 #include "ze_tracing_cb_structs.h"
+#include "loader/ze_loader.h"
 
 #include <atomic>
 #include <chrono>
 #include <iostream>
 #include <list>
+#include <map>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -32,12 +35,50 @@ namespace tracing_layer {
 extern thread_local ze_bool_t tracingInProgress;
 extern struct APITracerContextImp *pGlobalAPITracerContextImp;
 
+// Keys registration and per-call fan-out by (hDriver, functionName) so a callback
+// for one driver never fires for another driver's same-named function.
+struct ExtensionFunctionKey {
+    ze_driver_handle_t hDriver;
+    std::string functionName;
+    bool operator<(const ExtensionFunctionKey &rhs) const {
+        if (hDriver != rhs.hDriver)
+            return hDriver < rhs.hDriver;
+        return functionName < rhs.functionName;
+    }
+};
+
+// A single tracer's prologue/epilogue for one extension function.
+struct ExtensionFunctionCallbacks {
+    zel_pfnDriverExtensionFunctionCb_t prologue = nullptr;
+    zel_pfnDriverExtensionFunctionCb_t epilogue = nullptr;
+};
+
+// Loader-owned context echoed back by the driver to the wrapper functions so the
+// wrapper can recover which (hDriver, functionName) fired. Lives for process life
+// in a tracing-layer registry (addresses must stay stable).
+struct LoaderExtensionContext {
+    ze_driver_handle_t hDriver;
+    std::string functionName;
+    // Precomputed here to avoid rebuilding the key (a heap alloc) on every call.
+    ExtensionFunctionKey key;
+    // True while the driver has the epilogue trampoline. Read lock-free by the
+    // prologue wrapper to decide whether to build a per-call instance frame;
+    // written under the registry mutex, ordered in ze_tracing.cpp so a concurrent
+    // call never builds a frame the driver won't hand back to an epilogue.
+    std::atomic<bool> epilogueInstalled{false};
+    LoaderExtensionContext(ze_driver_handle_t driver, const char *name)
+        : hDriver(driver), functionName(name), key{driver, name} {}
+};
+
 typedef struct tracer_array_entry {
     zel_ze_all_callbacks_t corePrologues;
     zel_ze_all_callbacks_t coreEpilogues;
     zel_zer_all_callbacks_t runtimePrologues;
     zel_zer_all_callbacks_t runtimeEpilogues;
     void *pUserData;
+    // Per-tracer extension-function callbacks, copied by value into the active
+    // tracer array so the lock-free fan-out can walk them.
+    std::map<ExtensionFunctionKey, ExtensionFunctionCallbacks> extensionCallbacks;
 } tracer_array_entry_t;
 
 typedef struct tracerArray {
@@ -59,6 +100,18 @@ struct APITracerImp : APITracer {
     zel_zer_all_callbacks_t &getZerProEpilogues(zel_tracer_reg_t callback_type, ze_result_t &result) override;
     ze_result_t resetAllCallbacks() override;
     ze_result_t enableTracer(ze_bool_t enable) override;
+
+    // Registers/clears one extension-function prologue or epilogue slot for
+    // (hDriver, functionName). Only valid while the tracer is disabled.
+    ze_result_t registerExtensionCallback(ze_driver_handle_t hDriver,
+                                          const char *functionName,
+                                          zel_tracer_reg_t callback_type,
+                                          zel_pfnDriverExtensionFunctionCb_t pCallback,
+                                          int *pPrologueDelta = nullptr,
+                                          int *pEpilogueDelta = nullptr) override;
+
+    std::vector<TracerExtensionRegistration>
+    snapshotExtensionRegistrations() override;
 
     tracer_array_entry_t tracerFunctions;
     tracingState_t tracingState;
@@ -267,5 +320,43 @@ APITracerWrapperImp(TFunction_pointer zeApiPtr, TParams paramsStruct,
     tracing_layer::pGlobalAPITracerContextImp->releaseActivetracersList();
     return ret;
 }
+
+// Returns the stable, process-lifetime loader context for (hDriver,
+// functionName), creating it on first use. The returned pointer is handed to the
+// driver and echoed back to the wrapper functions below.
+LoaderExtensionContext *getOrCreateLoaderExtensionContext(ze_driver_handle_t hDriver,
+                                                          const char *functionName);
+
+// Result of applying per-phase reference deltas to a (hDriver, functionName)
+// install entry: the desired install state for each phase, whether each phase
+// just crossed its 0<->1 boundary (so the caller must re-issue the driver setter),
+// and the stable loader context to hand the driver.
+struct LoaderExtensionInstallState {
+    bool wantPrologue;
+    bool wantEpilogue;
+    bool prologueInstallChanged;
+    bool epilogueInstallChanged;
+    LoaderExtensionContext *ctx;
+};
+
+// Applies prologue/epilogue reference deltas to the install refcounts for
+// (hDriver, functionName), counting how many tracers currently hold a live
+// callback of each phase. The single shared driver-side wrapper installs a phase
+// trampoline on that phase's 0->1 edge and removes it on 1->0. The registry entry
+// is never erased, so any in-flight driver call keeps a valid ctx.
+LoaderExtensionInstallState updateLoaderExtensionInstall(ze_driver_handle_t hDriver,
+                                                         const char *functionName,
+                                                         int prologueDelta,
+                                                         int epilogueDelta);
+
+// Loader-owned wrappers registered with the driver. The driver calls these from
+// the body of the intercepted extension function; pLoaderContext is the
+// LoaderExtensionContext* returned by getOrCreateLoaderExtensionContext.
+void ZE_APICALL loaderExtensionPrologue(void *pParams, ze_result_t result,
+                                        void *pLoaderContext,
+                                        void **ppTracerInstanceUserData);
+void ZE_APICALL loaderExtensionEpilogue(void *pParams, ze_result_t result,
+                                        void *pLoaderContext,
+                                        void **ppTracerInstanceUserData);
 
 } // namespace tracing_layer

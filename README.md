@@ -37,11 +37,11 @@ To build the Loader statically one must set `-DBUILD_STATIC=1` during the cmake 
 
 The build of the static loader creates a ze_loader.a/.lib which will link the source/lib source code into your application or library.
 
-This enables for inclusion of all L0 symbols into your application/library allowing for backwards compatability with older versions of the Loader.
+This enables for inclusion of all L0 symbols into your application/library allowing for backwards compatibility with older versions of the Loader.
 
 The static loader "shim" dynamically loads the ze_loader.so/.dll on the system enabling plugin like behavior where the init will fail gracefully given a usable loader or L0 driver is not found.
 
-When the `-DBUILD_STATIC=1` is executed, the dynamic loader and layers are not built to avoid conflicts during local test execution which requires the dynamic loader and layers to all be the same version for compatability.
+When the `-DBUILD_STATIC=1` is executed, the dynamic loader and layers are not built to avoid conflicts during local test execution which requires the dynamic loader and layers to all be the same version for compatibility.
 
 Testing with the static loader requires a build of the dynamic loader or an installation of the dynamic loader to exist in the library path.
 

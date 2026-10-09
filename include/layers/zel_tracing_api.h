@@ -54,7 +54,7 @@ typedef enum _zel_structure_type_t
 {
     ZEL_STRUCTURE_TYPE_TRACER_DESC = 0x1  ,///< ::zel_tracer_desc_t
     // This enumeration value is deprecated.
-    // Pluse use ZEL_STRUCTURE_TYPE_TRACER_DESC.
+    // Please use ZEL_STRUCTURE_TYPE_TRACER_DESC.
     ZEL_STRUCTURE_TYPE_TRACER_EXP_DESC = 0x1  ,///< ::zel_tracer_desc_t
     ZEL_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 

@@ -88,6 +88,21 @@ zelLoaderTranslateHandleInternal(
    void **handleOut);                      //Output: Pointer to handleOut is set to driver handle if successful
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Notify the loader that an extension-function tracing callback was
+///        registered.
+///
+/// @details
+///     - Sets the monotonic "any extension callback registered" latch so the
+///       tracing-layer enable/disable toggle paths resume propagating the
+///       per-driver extension-tracing gate (they skip it while the latch is
+///       false). On the first registration, if the tracing layer is already
+///       active, the driver-side gate is opened immediately (the enable path
+///       skipped it while the latch was false - install-after-enable ordering).
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderTracingLayerRegisterExtensionCallback();
+
+
 #if defined(__cplusplus)
 }
 #endif

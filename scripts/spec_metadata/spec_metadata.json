@@ -1,0 +1,17 @@
+{
+    "_comment": [
+        "Pinned Level Zero specification metadata for the spec release this loader targets.",
+        "'input.json' is the verbatim intermediate produced by the spec repository's",
+        "scripts/run.py; it is the sole input needed to regenerate every loader source file",
+        "that scripts/templates/*.mako owns. Refresh both files together whenever the spec",
+        "is updated -- see scripts/spec_metadata.py refresh."
+    ],
+    "api_version": "1.19",
+    "generated_by": "scripts/spec_metadata.py refresh --spec-repo <clone> --ref v1.19.12 --ver 1.19",
+    "input_json": "input.json",
+    "input_json_sha256": "88659dfe97b0e687e7c4f677223ce42d123691d3f50d41eb9eacd22baf16cb61",
+    "spec_commit": "143853c129b66d337d3823db7f1ec1abd61c6940",
+    "spec_repository": "https://github.com/oneapi-src/level-zero-spec",
+    "spec_revision": "1.19.12",
+    "spec_tag": "v1.19.12"
+}

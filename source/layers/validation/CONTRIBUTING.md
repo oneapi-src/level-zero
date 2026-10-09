@@ -31,7 +31,7 @@ review these for proper alignment with the
 * * An `EXAMPLE` Checker is located [here](./checkers/template/zel_template_checker.cpp)
 * Once one has generated the checker files, one can define intercepts for any of the functions in the Level Zero Specification.
 * Each function allows for Prologue and Epilogue intercepts to check both the pre and post call parameters.
-* In your generated class, one can overide any functions with:
+* In your generated class, one can override any functions with:
 * * `<L0API>Prologue(`
 * * `<L0API>Epilogue(`
 * Once your checker meets your needs, include your checker in the compile by adding your new checker folder to:

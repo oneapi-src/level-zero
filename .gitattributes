@@ -1,0 +1,7 @@
+# The archived specification metadata is checksummed byte-for-byte --
+# 'input_json_sha256' in scripts/spec_metadata/spec_metadata.json -- so it has to
+# check out identically on every platform. Without this, a Windows checkout with
+# core.autocrlf enabled (the default on the GitHub Windows runners) rewrites its
+# ~138k LFs to CRLF, which changes the file's hash and fails the integrity check
+# before regeneration even starts.
+scripts/spec_metadata/input.json -text

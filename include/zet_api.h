@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.17-r1.17.24
+ * @version v1.19-r1.19.12
  *
  */
 #ifndef _ZET_API_H
@@ -925,7 +925,7 @@ zetDebugGetRegisterSetProperties(
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + the thread argument specifies more than one or a non-existant thread
+///         + the thread argument specifies more than one or a non-existent thread
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetDebugGetThreadRegisterSetProperties(
     zet_debug_session_handle_t hDebug,                                      ///< [in] debug session handle
@@ -1886,7 +1886,7 @@ zetMetricQueryGetData(
 #pragma region pin
 #endif
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Supportted profile features
+/// @brief Supported profile features
 typedef uint32_t zet_profile_flags_t;
 typedef enum _zet_profile_flag_t
 {
@@ -3810,13 +3810,32 @@ typedef struct _zet_metric_group_type_exp_t
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported dma_buf properties queried using `pNext` of
 ///        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+/// 
+/// @details
+///     - This structure must be passed via the `pNext` member of
+///       ::zet_metric_group_properties_t or ::zet_metric_properties_t
+///     - The implementation retains ownership of `fd` for its entire lifetime.
+///       The application must not close `fd`; it is closed by the
+///       implementation when the metric or metric group that exported it is
+///       destroyed, or when metrics are disabled on the device.
+///     - The application must free any allocation it imported from `fd` before
+///       destroying the exporting metric or metric group, or disabling metrics
+///       on the device. Otherwise the imported allocation outlives `fd` and any
+///       subsequent use of it is undefined.
+///     - `fd` refers to a shared resource. The same `fd` may be reported by
+///       repeated queries and by queries on different metric or metric group
+///       handles. The implementation performs no synchronization on `fd` or on
+///       the memory it exports; if the application uses either from more than
+///       one thread it must serialize that access itself, for example with a
+///       mutex or by confining access to a single thread.
 typedef struct _zet_export_dma_buf_exp_properties_t
 {
     zet_structure_type_t stype;                                             ///< [in] type of this structure
     void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
-    int fd;                                                                 ///< [out] the file descriptor handle that could be used to import the
-                                                                            ///< memory by the host process.
+    int fd;                                                                 ///< [out] the file descriptor handle provided for importing memory by the
+                                                                            ///< host process.
+                                                                            ///< Owned by the implementation; must not be closed by the application.
     size_t size;                                                            ///< [out] size in bytes of the dma_buf
 
 } zet_export_dma_buf_exp_properties_t;
@@ -3843,18 +3862,6 @@ typedef enum _zet_metric_group_marker_exp_version_t
     ZET_METRIC_GROUP_MARKER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_MARKER_EXP_VERSION_* ENUMs
 
 } zet_metric_group_marker_exp_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Query the metric source unique identifier using `pNext` of
-///        ::zet_metric_group_properties_t
-typedef struct _zet_metric_source_id_exp_t
-{
-    zet_structure_type_t stype;                                             ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint32_t sourceId;                                                      ///< [out] unique number representing the Metric Source.
-
-} zet_metric_source_id_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Append a Marker based on the Metric source of the Metric Group, to a
@@ -3983,6 +3990,41 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zetDeviceDisableMetricsExp(
     zet_device_handle_t hDevice                                             ///< [in] handle of the device where metrics collection has to be disabled
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension to support Metric Source Id
+#if !defined(__GNUC__)
+#pragma region metricSourceId
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_METRIC_SOURCE_ID_EXP_NAME
+/// @brief Metric Source Id Experimental Extension Name
+#define ZET_METRIC_SOURCE_ID_EXP_NAME  "ZET_experimental_metric_source_id"
+#endif // ZET_METRIC_SOURCE_ID_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Source Id Experimental Extension Version(s)
+typedef enum _zet_metric_source_id_exp_version_t
+{
+    ZET_METRIC_SOURCE_ID_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
+    ZET_METRIC_SOURCE_ID_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
+    ZET_METRIC_SOURCE_ID_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_SOURCE_ID_EXP_VERSION_* ENUMs
+
+} zet_metric_source_id_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query the metric source unique identifier using `pNext` of
+///        ::zet_metric_group_properties_t
+typedef struct _zet_metric_source_id_exp_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t sourceId;                                                      ///< [out] unique number representing the Metric Source.
+
+} zet_metric_source_id_exp_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

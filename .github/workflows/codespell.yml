@@ -1,0 +1,56 @@
+name: Codespell
+
+# Spell-checks pull requests with codespell. This job runs in the (untrusted)
+# pull_request context, so it only produces results that need no write access:
+#   * inline warning annotations on the changed files, and
+#   * a failed check so the problem is not easy to miss.
+# The PR comment is posted by the companion "Codespell Comment" workflow, which
+# runs from the base repo via workflow_run and therefore has a writable token
+# even for fork PRs. Configuration (skip/ignore lists) lives in .codespellrc.
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codespell:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        python-version: '3.x'
+    - name: Install codespell
+      run: pip install codespell==2.4.3
+    - name: Run codespell
+      run: |
+        codespell > codespell.txt 2>&1 || true
+        cat codespell.txt
+        # Emit an inline warning annotation for each finding.
+        awk -F: 'NF>=3 {
+          f=$1; sub(/^\.\//,"",f);
+          l=$2;
+          msg=$0; sub(/^[^:]*:[^:]*: /,"",msg);
+          printf "::warning file=%s,line=%s::codespell: %s\n", f, l, msg
+        }' codespell.txt
+    - name: Save PR number
+      run: echo "${{ github.event.number }}" > pr_number.txt
+    - name: Upload report
+      # Consumed by the "Codespell Comment" workflow to post the PR comment.
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: codespell-report
+        path: |
+          codespell.txt
+          pr_number.txt
+        retention-days: 1
+    - name: Fail if spelling issues were found
+      run: |
+        if [ -s codespell.txt ]; then
+          echo "codespell found spelling issues; see the annotations above and the PR comment."
+          exit 1
+        fi

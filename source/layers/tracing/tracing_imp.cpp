@@ -7,6 +7,8 @@
 
 #include "tracing_imp.h"
 
+#include <tuple>
+
 namespace tracing_layer {
 
 thread_local ze_bool_t tracingInProgress = 0;
@@ -118,12 +120,75 @@ ze_result_t APITracerImp::resetAllCallbacks() {
     this->tracerFunctions.coreEpilogues = {};
     this->tracerFunctions.runtimePrologues = {};
     this->tracerFunctions.runtimeEpilogues = {};
+    this->tracerFunctions.extensionCallbacks.clear();
 
     return ZE_RESULT_SUCCESS;
 }
 
 ze_result_t APITracerImp::enableTracer(ze_bool_t enable) {
     return pGlobalAPITracerContextImp->enableTracingImp(this, enable);
+}
+
+ze_result_t APITracerImp::registerExtensionCallback(
+    ze_driver_handle_t hDriver, const char *functionName,
+    zel_tracer_reg_t callback_type,
+    zel_pfnDriverExtensionFunctionCb_t pCallback, int *pPrologueDelta,
+    int *pEpilogueDelta) {
+
+    if (pPrologueDelta != nullptr)
+        *pPrologueDelta = 0;
+    if (pEpilogueDelta != nullptr)
+        *pEpilogueDelta = 0;
+
+    // Disabled-only, like the per-API register calls, so the active tracer array
+    // is never mutated while in use.
+    if (this->tracingState != disabledState)
+        return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+
+    ExtensionFunctionKey key{hDriver, functionName};
+    auto &callbacks = this->tracerFunctions.extensionCallbacks;
+
+    // Before/after presence per phase, so the caller can refcount the shared
+    // prologue and epilogue driver wrappers independently.
+    auto it = callbacks.find(key);
+    const bool hadPrologue = it != callbacks.end() && it->second.prologue != nullptr;
+    const bool hadEpilogue = it != callbacks.end() && it->second.epilogue != nullptr;
+
+    auto &entry = callbacks[key];
+    if (callback_type == ZEL_REGISTER_PROLOGUE)
+        entry.prologue = pCallback;
+    else
+        entry.epilogue = pCallback;
+
+    const bool hasPrologue = entry.prologue != nullptr;
+    const bool hasEpilogue = entry.epilogue != nullptr;
+
+    // Drop fully-cleared entries so the fan-out never carries dead keys.
+    if (!hasPrologue && !hasEpilogue)
+        callbacks.erase(key);
+
+    if (pPrologueDelta != nullptr)
+        *pPrologueDelta = static_cast<int>(hasPrologue) - static_cast<int>(hadPrologue);
+    if (pEpilogueDelta != nullptr)
+        *pEpilogueDelta = static_cast<int>(hasEpilogue) - static_cast<int>(hadEpilogue);
+
+    return ZE_RESULT_SUCCESS;
+}
+
+std::vector<TracerExtensionRegistration>
+APITracerImp::snapshotExtensionRegistrations() {
+    std::vector<TracerExtensionRegistration> out;
+    auto &callbacks = this->tracerFunctions.extensionCallbacks;
+    out.reserve(callbacks.size());
+    for (auto &kv : callbacks) {
+        TracerExtensionRegistration reg;
+        reg.hDriver = kv.first.hDriver;
+        reg.functionName = kv.first.functionName;
+        reg.hasPrologue = kv.second.prologue != nullptr;
+        reg.hasEpilogue = kv.second.epilogue != nullptr;
+        out.push_back(std::move(reg));
+    }
+    return out;
 }
 
 void APITracerImp::copyCoreCbsToAllCbs(zel_ze_all_callbacks_t& allCbs, zel_core_callbacks_t& cbs) {
@@ -495,6 +560,223 @@ void APITracerContextImp::releaseActivetracersList() {
             .testAndSetThreadTracerDataInitializedAndOnList())
         myThreadPrivateTracerData.tracerArrayPointer.store(
             nullptr, std::memory_order_relaxed);
+}
+
+namespace {
+// Registry of loader contexts, one per (hDriver, functionName). Entries are
+// never erased: the ctx pointer is handed to the driver and must stay valid for
+// process life (std::map keeps node addresses stable). Refcounts gate the
+// prologue/epilogue driver-wrapper install.
+struct LoaderExtensionRegistryEntry {
+    LoaderExtensionContext ctx;
+    uint32_t prologueRefCount = 0;
+    uint32_t epilogueRefCount = 0;
+    LoaderExtensionRegistryEntry(ze_driver_handle_t hDriver,
+                                 const char *functionName)
+        : ctx(hDriver, functionName) {}
+};
+std::mutex loaderExtensionContextMutex;
+std::map<ExtensionFunctionKey, LoaderExtensionRegistryEntry> loaderExtensionContexts;
+
+// Caller must hold loaderExtensionContextMutex.
+LoaderExtensionRegistryEntry &
+getOrCreateRegistryEntryLocked(const ExtensionFunctionKey &key,
+                               ze_driver_handle_t hDriver,
+                               const char *functionName) {
+    auto it = loaderExtensionContexts.find(key);
+    if (it == loaderExtensionContexts.end()) {
+        it = loaderExtensionContexts
+                 .emplace(std::piecewise_construct,
+                          std::forward_as_tuple(key),
+                          std::forward_as_tuple(hDriver, functionName))
+                 .first;
+    }
+    return it->second;
+}
+
+// Applies a signed delta to an unsigned refcount, clamping at zero.
+uint32_t applyRefDelta(uint32_t count, int delta) {
+    if (delta > 0)
+        return count + static_cast<uint32_t>(delta);
+    if (delta < 0) {
+        uint32_t dec = static_cast<uint32_t>(-delta);
+        return dec > count ? 0u : count - dec;
+    }
+    return count;
+}
+
+// Prologue->epilogue scratch (via the driver's ppTracerInstanceUserData slot):
+// a snapshot of each tracer's epilogue + instance data, so the epilogue never
+// touches the (possibly retired) active tracer array.
+struct ExtensionCallFrame {
+    std::vector<APITracerCallbackStateImp<zel_pfnDriverExtensionFunctionCb_t>>
+        epilogCallbacks;
+    std::vector<void *> instanceUserData;
+};
+} // namespace
+
+LoaderExtensionContext *
+getOrCreateLoaderExtensionContext(ze_driver_handle_t hDriver,
+                                  const char *functionName) {
+    ExtensionFunctionKey key{hDriver, functionName};
+    std::lock_guard<std::mutex> lock(loaderExtensionContextMutex);
+    return &getOrCreateRegistryEntryLocked(key, hDriver, functionName).ctx;
+}
+
+LoaderExtensionInstallState
+updateLoaderExtensionInstall(ze_driver_handle_t hDriver,
+                             const char *functionName, int prologueDelta,
+                             int epilogueDelta) {
+    ExtensionFunctionKey key{hDriver, functionName};
+    std::lock_guard<std::mutex> lock(loaderExtensionContextMutex);
+    auto &entry = getOrCreateRegistryEntryLocked(key, hDriver, functionName);
+
+    const bool hadPrologue = entry.prologueRefCount > 0;
+    const bool hadEpilogue = entry.epilogueRefCount > 0;
+    entry.prologueRefCount = applyRefDelta(entry.prologueRefCount, prologueDelta);
+    entry.epilogueRefCount = applyRefDelta(entry.epilogueRefCount, epilogueDelta);
+
+    LoaderExtensionInstallState state;
+    state.wantPrologue = entry.prologueRefCount > 0;
+    state.wantEpilogue = entry.epilogueRefCount > 0;
+    state.prologueInstallChanged = state.wantPrologue != hadPrologue;
+    state.epilogueInstallChanged = state.wantEpilogue != hadEpilogue;
+    state.ctx = &entry.ctx;
+    return state;
+}
+
+// Runs one phase (prologue or epilogue) inline over the active tracer snapshot
+// with a throwaway instance slot. Shared by the prologue-only and epilogue-only
+// fast paths (no cross-phase instance data). Acquires/releases the tracer array.
+static void runInlineExtensionPhase(
+    const ExtensionFunctionKey &key, void *pParams, ze_result_t result,
+    zel_pfnDriverExtensionFunctionCb_t ExtensionFunctionCallbacks::*phase) {
+    tracer_array_t *currentTracerArray =
+        (tracer_array_t *)pGlobalAPITracerContextImp->getActiveTracersList();
+    if (currentTracerArray && currentTracerArray->tracerArrayCount) {
+        for (size_t i = 0; i < currentTracerArray->tracerArrayCount; i++) {
+            auto &tracerEntry = currentTracerArray->tracerArrayEntries[i];
+            if (tracerEntry.extensionCallbacks.empty())
+                continue;
+            auto cbIt = tracerEntry.extensionCallbacks.find(key);
+            if (cbIt == tracerEntry.extensionCallbacks.end() ||
+                cbIt->second.*phase == nullptr)
+                continue;
+            void *instanceUserData = nullptr;
+            (cbIt->second.*phase)(pParams, result, tracerEntry.pUserData,
+                                  &instanceUserData);
+        }
+    }
+    pGlobalAPITracerContextImp->releaseActivetracersList();
+}
+
+void ZE_APICALL loaderExtensionPrologue(void *pParams, ze_result_t result,
+                                        void *pLoaderContext,
+                                        void **ppTracerInstanceUserData) {
+    if (ppTracerInstanceUserData != nullptr)
+        *ppTracerInstanceUserData = nullptr;
+    if (pLoaderContext == nullptr || ppTracerInstanceUserData == nullptr)
+        return;
+
+    // Recursion guard, cleared before the driver body runs so the body's own
+    // core-API calls stay traceable; the epilogue re-establishes it.
+    if (tracingInProgress)
+        return;
+    tracingInProgress = 1;
+
+    auto *ctx = static_cast<LoaderExtensionContext *>(pLoaderContext);
+    const ExtensionFunctionKey &key = ctx->key;
+
+    // Fast path: no epilogue installed, so no instance data to thread -> run
+    // prologues inline with no frame allocation.
+    if (!ctx->epilogueInstalled.load(std::memory_order_relaxed)) {
+        runInlineExtensionPhase(key, pParams, result,
+                                &ExtensionFunctionCallbacks::prologue);
+        tracingInProgress = 0;
+        return;
+    }
+
+    // Epilogue installed: build a frame of epilogue snapshots + instance slots
+    // for the epilogue wrapper to consume.
+    auto *frame = new ExtensionCallFrame();
+
+    tracer_array_t *currentTracerArray =
+        (tracer_array_t *)pGlobalAPITracerContextImp->getActiveTracersList();
+    if (currentTracerArray && currentTracerArray->tracerArrayCount) {
+        const size_t count = currentTracerArray->tracerArrayCount;
+        // Reserve so push_back never reallocates: the &instanceUserData.back()
+        // slot handed to each prologue must stay valid through the loop.
+        frame->epilogCallbacks.reserve(count);
+        frame->instanceUserData.reserve(count);
+        for (size_t i = 0; i < count; i++) {
+            auto &tracerEntry = currentTracerArray->tracerArrayEntries[i];
+            if (tracerEntry.extensionCallbacks.empty())
+                continue;
+            auto cbIt = tracerEntry.extensionCallbacks.find(key);
+            if (cbIt == tracerEntry.extensionCallbacks.end())
+                continue;
+            // Snapshot epilogue + a shared instance slot, then run the prologue
+            // into that slot so its value reaches the matching epilogue.
+            APITracerCallbackStateImp<zel_pfnDriverExtensionFunctionCb_t> epilog;
+            epilog.current_api_callback = cbIt->second.epilogue;
+            epilog.pUserData = tracerEntry.pUserData;
+            frame->epilogCallbacks.push_back(epilog);
+            frame->instanceUserData.push_back(nullptr);
+            if (cbIt->second.prologue != nullptr)
+                cbIt->second.prologue(pParams, result, tracerEntry.pUserData,
+                                      &frame->instanceUserData.back());
+        }
+    }
+    pGlobalAPITracerContextImp->releaseActivetracersList();
+
+    // No participating tracer: drop the frame; a null instance handle no-ops the epilogue.
+    if (frame->epilogCallbacks.empty()) {
+        delete frame;
+        tracingInProgress = 0;
+        return;
+    }
+
+    *ppTracerInstanceUserData = frame;
+    tracingInProgress = 0;
+}
+
+void ZE_APICALL loaderExtensionEpilogue(void *pParams, ze_result_t result,
+                                        void *pLoaderContext,
+                                        void **ppTracerInstanceUserData) {
+    if (ppTracerInstanceUserData == nullptr)
+        return;
+
+    // Non-null handle: a frame the prologue built -> run its epilogue snapshots
+    // and free it.
+    auto *frame =
+        static_cast<ExtensionCallFrame *>(*ppTracerInstanceUserData);
+    if (frame != nullptr) {
+        tracingInProgress = 1;
+        for (size_t i = 0; i < frame->epilogCallbacks.size(); i++) {
+            if (frame->epilogCallbacks[i].current_api_callback != nullptr)
+                frame->epilogCallbacks[i].current_api_callback(
+                    pParams, result, frame->epilogCallbacks[i].pUserData,
+                    &frame->instanceUserData[i]);
+        }
+        tracingInProgress = 0;
+
+        delete frame;
+        *ppTracerInstanceUserData = nullptr;
+        return;
+    }
+
+    // No frame (epilogue-only, or no participants): self-gather epilogues with a
+    // fresh instance slot.
+    if (pLoaderContext == nullptr)
+        return;
+    if (tracingInProgress)
+        return;
+    tracingInProgress = 1;
+
+    auto *ctx = static_cast<LoaderExtensionContext *>(pLoaderContext);
+    runInlineExtensionPhase(ctx->key, pParams, result,
+                            &ExtensionFunctionCallbacks::epilogue);
+    tracingInProgress = 0;
 }
 
 } // namespace tracing_layer

@@ -24,7 +24,7 @@ from templates import helper as th
 namespace validation_layer
 {
     %for obj in th.extract_objs(specs, r"function"):
-    ## don't genrate function if it has no handles as parameters
+    ## don't generate function if it has no handles as parameters
     %if th.obj_traits.is_function_with_input_handles(obj):
     ${x}_result_t
     ${N}HandleLifetimeValidation::${th.make_func_name(n, tags, obj)}Prologue(
