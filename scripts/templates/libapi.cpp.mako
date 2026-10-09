@@ -64,7 +64,7 @@ ${th.make_func_name(n, tags, obj)}(
 {
 %if re.match("Init", obj['name']):
 %if re.match("zes", n):
-    #ifdef L0_STATIC_LOADER_BUILD
+    #if defined(L0_STATIC_LOADER_BUILD) || defined(L0_STATIC_LOADER_BUILD_NO_DLL)
     if (!${x}_lib::context) {
         ${x}_lib::context = new ${x}_lib::context_t;
     }
@@ -95,7 +95,7 @@ ${th.make_func_name(n, tags, obj)}(
 %else:
 %if re.match("InitDrivers", obj['name']):
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
-    #ifdef L0_STATIC_LOADER_BUILD
+    #if defined(L0_STATIC_LOADER_BUILD) || defined(L0_STATIC_LOADER_BUILD_NO_DLL)
     if (!${x}_lib::context) {
         ${x}_lib::context = new ${x}_lib::context_t;
     }
@@ -136,7 +136,7 @@ ${th.make_func_name(n, tags, obj)}(
     return result;
 %else:
     static ${x}_result_t result = ${X}_RESULT_SUCCESS;
-    #ifdef L0_STATIC_LOADER_BUILD
+    #if defined(L0_STATIC_LOADER_BUILD) || defined(L0_STATIC_LOADER_BUILD_NO_DLL)
     if (!${x}_lib::context) {
         ${x}_lib::context = new ${x}_lib::context_t;
     }
