@@ -169,7 +169,7 @@ SUPPORTED APIs
 | `zesPowerGetProperties` | Power | 0.1.2 | None |
 | `zesPowerGetLimitsExt` | Power | 0.1.2 | Extended power limits API |
 | `zesPowerSetLimitsExt` | Power | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes |
-| `zesPowerGetUsage` | Power | 0.1.3 | None |
+| `zesPowerGetUsage` | Power | 0.1.3 | Linux: Requires superuser or read permissions for telem nodes |
 | `zesPowerGetLimitsExt2` | Power | 0.1.3 | None |
 | `zesPowerSetLimitsExt2` | Power | 0.1.3 | Linux: Requires superuser |
 | `zesPowerGetEnergyThreshold` | Power | 0.1.3 | None |
@@ -230,6 +230,7 @@ Version 0.1.0 (Initial Release)
 Notes:
   Linux:
     zesPowerGetEnergyCounter
+    zesPowerGetUsage
     zesTemperatureGetState
     zesMemoryGetBandwidth
 
