@@ -256,48 +256,69 @@ namespace loader
                         if (drv.zerddiInitResult == ZE_RESULT_SUCCESS)
                             drv.zerDriverHandle = phDrivers[ driver_index ];
                         if (drv.driverDDIHandleSupportQueried == false) {
-                            uint32_t extensionCount = 0;
-                            ze_result_t res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
-                            if (res != ZE_RESULT_SUCCESS) {
-                                if (loader::context->debugTraceEnabled) {
-                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
-                                    loader::context->debug_trace_message(message, loader::to_string(res));
-                                }
-                                return res;
-                            }
-                            std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
-                            res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, extensionProperties.data());
-                            if (res != ZE_RESULT_SUCCESS) {
-                                if (loader::context->debugTraceEnabled) {
-                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
-                                    loader::context->debug_trace_message(message, loader::to_string(res));
-                                }
-                                return res;
-                            }
-                            if (extensionCount > 0) {
-                                for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
-                                    if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
-                                        // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
-                                        drv.zerDriverHandle = nullptr;
-                                        drv.zerDriverDDISupported = false;
-                                        break;
+                            // Drivers reporting API version 1.17 or newer are required to support the Driver DDI
+                            // Handles extension (ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES) at version 1.1,
+                            // so the zeDriverGetExtensionProperties check can be skipped for them.
+                            bool ddiHandlesExtImplied = false;
+                            if (drv.dditable.ze.Driver.pfnGetApiVersion) {
+                                ze_api_version_t driverApiVersion = ZE_API_VERSION_FORCE_UINT32;
+                                ze_result_t versionRes = drv.dditable.ze.Driver.pfnGetApiVersion(phDrivers[ driver_index ], &driverApiVersion);
+                                if (versionRes == ZE_RESULT_SUCCESS && driverApiVersion >= ZE_MAKE_VERSION(1, 17)) {
+                                    ddiHandlesExtImplied = true;
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " reports API version >= 1.17, assuming Driver DDI Handles Ext v1.1 support";
+                                        loader::context->debug_trace_message(message, "");
                                     }
                                 }
                             }
+                            ze_result_t res = ZE_RESULT_SUCCESS;
                             drv.properties = {};
                             drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
                             drv.properties.pNext = nullptr;
-                            ze_driver_properties_t driverProperties = {};
-                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-                            driverProperties.pNext = nullptr;
-                            driverProperties.pNext = &drv.properties;
-                            res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
-                            if (res != ZE_RESULT_SUCCESS) {
-                                if (loader::context->debugTraceEnabled) {
-                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
-                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                            if (ddiHandlesExtImplied) {
+                                // API version >= 1.17 implies Driver DDI Handles Ext v1.1 support, so the
+                                // properties query can be skipped and the supported flag assumed (superset).
+                                drv.properties.flags = ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
+                            } else {
+                                uint32_t extensionCount = 0;
+                                res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
+                                if (res != ZE_RESULT_SUCCESS) {
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                        loader::context->debug_trace_message(message, loader::to_string(res));
+                                    }
+                                    return res;
                                 }
-                                return res;
+                                std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
+                                res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, extensionProperties.data());
+                                if (res != ZE_RESULT_SUCCESS) {
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                        loader::context->debug_trace_message(message, loader::to_string(res));
+                                    }
+                                    return res;
+                                }
+                                if (extensionCount > 0) {
+                                    for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
+                                        if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
+                                            // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
+                                            drv.zerDriverHandle = nullptr;
+                                            drv.zerDriverDDISupported = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                ze_driver_properties_t driverProperties = {};
+                                driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                                driverProperties.pNext = &drv.properties;
+                                res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
+                                if (res != ZE_RESULT_SUCCESS) {
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
+                                        loader::context->debug_trace_message(message, loader::to_string(res));
+                                    }
+                                    return res;
+                                }
                             }
                             drv.driverDDIHandleSupportQueried = true;
                         }
@@ -421,48 +442,69 @@ namespace loader
                         if (drv.zerddiInitResult == ZE_RESULT_SUCCESS)
                             drv.zerDriverHandle = phDrivers[ driver_index ];
                         if (drv.driverDDIHandleSupportQueried == false) {
-                            uint32_t extensionCount = 0;
-                            ze_result_t res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
-                            if (res != ZE_RESULT_SUCCESS) {
-                                if (loader::context->debugTraceEnabled) {
-                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
-                                    loader::context->debug_trace_message(message, loader::to_string(res));
-                                }
-                                return res;
-                            }
-                            std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
-                            res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, extensionProperties.data());
-                            if (res != ZE_RESULT_SUCCESS) {
-                                if (loader::context->debugTraceEnabled) {
-                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
-                                    loader::context->debug_trace_message(message, loader::to_string(res));
-                                }
-                                return res;
-                            }
-                            if (extensionCount > 0) {
-                                for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
-                                    if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
-                                        // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
-                                        drv.zerDriverHandle = nullptr;
-                                        drv.zerDriverDDISupported = false;
-                                        break;
+                            // Drivers reporting API version 1.17 or newer are required to support the Driver DDI
+                            // Handles extension (ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES) at version 1.1,
+                            // so the zeDriverGetExtensionProperties check can be skipped for them.
+                            bool ddiHandlesExtImplied = false;
+                            if (drv.dditable.ze.Driver.pfnGetApiVersion) {
+                                ze_api_version_t driverApiVersion = ZE_API_VERSION_FORCE_UINT32;
+                                ze_result_t versionRes = drv.dditable.ze.Driver.pfnGetApiVersion(phDrivers[ driver_index ], &driverApiVersion);
+                                if (versionRes == ZE_RESULT_SUCCESS && driverApiVersion >= ZE_MAKE_VERSION(1, 17)) {
+                                    ddiHandlesExtImplied = true;
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " reports API version >= 1.17, assuming Driver DDI Handles Ext v1.1 support";
+                                        loader::context->debug_trace_message(message, "");
                                     }
                                 }
                             }
+                            ze_result_t res = ZE_RESULT_SUCCESS;
                             drv.properties = {};
                             drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
                             drv.properties.pNext = nullptr;
-                            ze_driver_properties_t driverProperties = {};
-                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-                            driverProperties.pNext = nullptr;
-                            driverProperties.pNext = &drv.properties;
-                            res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
-                            if (res != ZE_RESULT_SUCCESS) {
-                                if (loader::context->debugTraceEnabled) {
-                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
-                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                            if (ddiHandlesExtImplied) {
+                                // API version >= 1.17 implies Driver DDI Handles Ext v1.1 support, so the
+                                // properties query can be skipped and the supported flag assumed (superset).
+                                drv.properties.flags = ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
+                            } else {
+                                uint32_t extensionCount = 0;
+                                res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
+                                if (res != ZE_RESULT_SUCCESS) {
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                        loader::context->debug_trace_message(message, loader::to_string(res));
+                                    }
+                                    return res;
                                 }
-                                return res;
+                                std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
+                                res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, extensionProperties.data());
+                                if (res != ZE_RESULT_SUCCESS) {
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                        loader::context->debug_trace_message(message, loader::to_string(res));
+                                    }
+                                    return res;
+                                }
+                                if (extensionCount > 0) {
+                                    for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
+                                        if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
+                                            // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
+                                            drv.zerDriverHandle = nullptr;
+                                            drv.zerDriverDDISupported = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                ze_driver_properties_t driverProperties = {};
+                                driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                                driverProperties.pNext = &drv.properties;
+                                res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
+                                if (res != ZE_RESULT_SUCCESS) {
+                                    if (loader::context->debugTraceEnabled) {
+                                        std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
+                                        loader::context->debug_trace_message(message, loader::to_string(res));
+                                    }
+                                    return res;
+                                }
                             }
                             drv.driverDDIHandleSupportQueried = true;
                         }
