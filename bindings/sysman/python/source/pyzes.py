@@ -69,7 +69,42 @@ def _LoadZeLibrary():
         # load the library
         libName = "ze_loader"
         if sys.platform.startswith("linux"):
-            libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
+            soName = "lib" + libName + ".so.1"
+            # Try the bare soname first so the dynamic linker resolves it via
+            # the standard search path (LD_LIBRARY_PATH, ld.so.cache, RUNPATH).
+            # This works on every Linux distro. The explicit paths are kept as
+            # fallbacks: the Debian/Ubuntu multiarch location and the
+            # RHEL/SUSE/Fedora lib64 location. Hardcoding only the Debian path
+            # broke on non-Debian systems (e.g. HPC RHEL/SLES images), where
+            # the loader lives in /usr/lib64.
+            possible_paths = [
+                soName,
+                "/usr/lib/x86_64-linux-gnu/" + soName,
+                "/usr/lib64/" + soName,
+                "/usr/lib/" + soName,
+            ]
+
+            library_loaded = False
+            load_errors = []
+            last_error = None
+            for path in possible_paths:
+                try:
+                    gpuLib = CDLL(path)
+                    library_loaded = True
+                    break
+                except OSError as error:
+                    load_errors.append(f"{path}: {error}")
+                    last_error = error
+
+            if not library_loaded:
+                # Raise OSError (the type ctypes.CDLL itself raises on a failed
+                # dlopen) so callers that handle OSError specifically keep
+                # working, while still surfacing the aggregated per-path
+                # diagnostics.
+                raise OSError(
+                    "Failed to load Level Zero loader on Linux. "
+                    f"Tried paths: {possible_paths}. Errors: {load_errors}"
+                ) from last_error
         else:
             libName = libName + ".dll"
 
@@ -106,9 +141,6 @@ def _LoadZeLibrary():
                     "Failed to load Level Zero loader on Windows. "
                     f"Tried paths: {possible_paths}. Errors: {load_errors}"
                 )
-
-        if sys.platform.startswith("linux"):
-            gpuLib = CDLL(libName)
 
         if gpuLib is None:
             raise Exception("Failed to load library: " + str(libName))
