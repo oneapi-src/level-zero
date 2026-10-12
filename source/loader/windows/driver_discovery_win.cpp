@@ -166,7 +166,9 @@ zel_driver_type_t readDxCoreHardwareType(DEVINST dnDevNode) {
         regOpStatus = RegQueryValueExA(hkey, dxCoreAttributesKey, NULL,
                                        &regValueType, (LPBYTE) & *attributes.begin(),
                                        &attributesSize);
-        if (ERROR_SUCCESS != regOpStatus) {
+        if (ERROR_SUCCESS == regOpStatus) {
+            attributes.resize(attributesSize);
+        } else {
             attributes.clear();
         }
     }
@@ -174,9 +176,16 @@ zel_driver_type_t readDxCoreHardwareType(DEVINST dnDevNode) {
     regOpStatus = RegCloseKey(hkey);
     assert((ERROR_SUCCESS == regOpStatus) && "RegCloseKey failed");
 
-    for (size_t pos = 0; pos < attributes.size();) {
-        const char *entry = attributes.c_str() + pos;
-        const size_t entryLength = strlen(entry);
+    const char *data = attributes.data();
+    const size_t dataSize = attributes.size();
+    for (size_t pos = 0; pos < dataSize;) {
+        const char *entry = data + pos;
+        // Registry data is not guaranteed to be NUL-terminated; an unterminated entry is invalid.
+        const char *terminator = static_cast<const char *>(memchr(entry, '\0', dataSize - pos));
+        if (nullptr == terminator) {
+            break;
+        }
+        const size_t entryLength = static_cast<size_t>(terminator - entry);
         if (0 == entryLength) {
             break;
         }
