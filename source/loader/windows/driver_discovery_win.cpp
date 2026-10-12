@@ -124,13 +124,17 @@ DriverLibraryPath readDriverPathForDisplayAdapter(DEVINST dnDevNode) {
                                            &regValueType, NULL, &pathSize);
 
     std::string driverPath;
-    if ((ERROR_SUCCESS == regOpStatus) && (REG_SZ == regValueType)) {
+    if ((ERROR_SUCCESS == regOpStatus) && (REG_SZ == regValueType) && (pathSize > 0)) {
         driverPath.resize(pathSize);
         regOpStatus = RegQueryValueExA(hkey, levelZeroDriverPathKey, NULL,
                                        &regValueType, (LPBYTE) & *driverPath.begin(),
                                        &pathSize);
-        if (ERROR_SUCCESS != regOpStatus) {
-            assert(false && "RegQueryValueExA failed");
+        if ((ERROR_SUCCESS == regOpStatus) && (REG_SZ == regValueType)) {
+            // REG_SZ data may lack a NUL; keep only the bytes returned, up to the first NUL.
+            const char *terminator = static_cast<const char *>(memchr(driverPath.data(), '\0', pathSize));
+            driverPath.resize(terminator ? static_cast<size_t>(terminator - driverPath.data()) : pathSize);
+        } else {
+            assert((ERROR_SUCCESS == regOpStatus) && "RegQueryValueExA failed");
             driverPath.clear();
         }
     }
@@ -200,10 +204,10 @@ zel_driver_type_t readDxCoreHardwareType(DEVINST dnDevNode) {
     return ZEL_DRIVER_TYPE_FORCE_UINT32;
 }
 
-// Fallback for drivers without DXCoreAttributes: a token counts only if bounded by non-alphanumerics or the name's ends.
+// Fallback for drivers without DXCoreAttributes: a token counts only if not inside a longer word, so
+// digits may border it (e.g. "ze_intel_gpu64.dll") but letters may not (e.g. "debugpu.dll").
 zel_driver_type_t driverTypeFromFileName(const std::string &driverPath) {
-    // c_str() drops the trailing NUL kept from the registry read.
-    std::string fileName = driverPath.c_str();
+    std::string fileName = driverPath;
     const size_t lastSeparator = fileName.find_last_of("\\/");
     if (std::string::npos != lastSeparator) {
         fileName = fileName.substr(lastSeparator + 1);
@@ -215,8 +219,8 @@ zel_driver_type_t driverTypeFromFileName(const std::string &driverPath) {
         const size_t tokenLength = strlen(token);
         for (size_t pos = fileName.find(token); std::string::npos != pos; pos = fileName.find(token, pos + 1)) {
             const size_t end = pos + tokenLength;
-            const bool startBounded = (0 == pos) || !std::isalnum(static_cast<unsigned char>(fileName[pos - 1]));
-            const bool endBounded = (fileName.size() == end) || !std::isalnum(static_cast<unsigned char>(fileName[end]));
+            const bool startBounded = (0 == pos) || !std::isalpha(static_cast<unsigned char>(fileName[pos - 1]));
+            const bool endBounded = (fileName.size() == end) || !std::isalpha(static_cast<unsigned char>(fileName[end]));
             if (startBounded && endBounded) {
                 return true;
             }
