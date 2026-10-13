@@ -22,9 +22,9 @@ import os
 import sys
 from ctypes import *
 
-# Add the source directory to Python path so we can import pyzes
+# Add the source directory (two levels up: source/pyzes/examples) to Python path so we can import pyzes
 script_dir = os.path.dirname(os.path.abspath(__file__))
-source_dir = os.path.join(script_dir, "..")
+source_dir = os.path.join(script_dir, "..", "..")
 source_dir = os.path.abspath(source_dir)
 if source_dir not in sys.path:
     sys.path.insert(0, source_dir)

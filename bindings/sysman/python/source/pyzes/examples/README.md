@@ -2,7 +2,7 @@
 
 This directory contains example scripts demonstrating how to use the pyzes module.
 
-**IMPORTANT:** The usage instructions below apply to pyzes installed via pip. If you've cloned this repository locally, you should run the examples directly from the `test/` directory in the repository root instead.
+The examples are installed as the `pyzes.examples` subpackage, so they don't add a top-level `examples` package to `site-packages` that could conflict with other projects.
 
 ## Using Examples After Installation
 
@@ -15,8 +15,8 @@ pip install pyzes
 
 You can run examples directly:
 ```bash
-python3 -m examples.pyzes_example
-python3 -m examples.pyzes_black_box_test -h
+python3 -m pyzes.examples.pyzes_example
+python3 -m pyzes.examples.pyzes_black_box_test -h
 ```
 
 ---
@@ -26,12 +26,12 @@ python3 -m examples.pyzes_black_box_test -h
 If you cloned the level-zero repository locally, run the examples directly from the repository:
 
 ```bash
-cd bindings/sysman/python/source/examples
+cd bindings/sysman/python/source/pyzes/examples
 python3 pyzes_example.py
 python3 pyzes_black_box_test.py -h
 ```
 
-The examples in this `source/examples/` directory are packaged for pip distribution only.
+The scripts add `bindings/sysman/python/source` to `sys.path`, so they import the local `pyzes` without installing it.
 
 ---
 
