@@ -176,7 +176,7 @@ SUPPORTED APIs
 | `zesDriverEventListenExt` | Driver | 0.1.4 | Linux: Requires superuser |
 | `zesDeviceGetState` | Device | 0.1.3 | None |
 | `zesDeviceResetExt` | Device | 0.1.3 | Linux: Requires superuser; all device state is lost |
-| `zesDeviceEventRegister` | Device | 0.1.3 | None |
+| `zesDeviceEventRegister` | Device | 0.1.3 | Linux: Requires superuser |
 | `zesDeviceGetHealthStatusExt` | Device | 0.1.3 | None |
 | `zesDeviceSetHealthStatusExt` | Device | 0.1.3 | Linux: Requires superuser; persisted to non-volatile memory |
 | `zesDeviceEnumFirmwares` | Device | 0.1.3 | None |
