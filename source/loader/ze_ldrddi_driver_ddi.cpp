@@ -31,11 +31,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Driver == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetApiVersion = dditable->Driver->pfnGetApiVersion;
         if( nullptr == pfnGetApiVersion ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetApiVersion( hDriver, version );
@@ -62,11 +62,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Driver == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetProperties = dditable->Driver->pfnGetProperties;
         if( nullptr == pfnGetProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetProperties( hDriver, pDriverProperties );
@@ -93,11 +93,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Driver == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIpcProperties = dditable->Driver->pfnGetIpcProperties;
         if( nullptr == pfnGetIpcProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIpcProperties( hDriver, pIpcProperties );
@@ -133,11 +133,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Driver == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetExtensionProperties = dditable->Driver->pfnGetExtensionProperties;
         if( nullptr == pfnGetExtensionProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
@@ -165,11 +165,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Driver == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetExtensionFunctionAddress = dditable->Driver->pfnGetExtensionFunctionAddress;
         if( nullptr == pfnGetExtensionFunctionAddress ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
@@ -197,11 +197,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Driver == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetLastErrorDescription = dditable->Driver->pfnGetLastErrorDescription;
         if( nullptr == pfnGetLastErrorDescription ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetLastErrorDescription( hDriver, ppString );
@@ -265,11 +265,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGet = dditable->Device->pfnGet;
         if( nullptr == pfnGet ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGet( hDriver, pCount, phDevices );
@@ -296,11 +296,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetRootDevice = dditable->Device->pfnGetRootDevice;
         if( nullptr == pfnGetRootDevice ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetRootDevice( hDevice, phRootDevice );
@@ -334,11 +334,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetSubDevices = dditable->Device->pfnGetSubDevices;
         if( nullptr == pfnGetSubDevices ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
@@ -365,11 +365,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetProperties = dditable->Device->pfnGetProperties;
         if( nullptr == pfnGetProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetProperties( hDevice, pDeviceProperties );
@@ -396,11 +396,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetComputeProperties = dditable->Device->pfnGetComputeProperties;
         if( nullptr == pfnGetComputeProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetComputeProperties( hDevice, pComputeProperties );
@@ -427,11 +427,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetModuleProperties = dditable->Device->pfnGetModuleProperties;
         if( nullptr == pfnGetModuleProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetModuleProperties( hDevice, pModuleProperties );
@@ -472,11 +472,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetCommandQueueGroupProperties = dditable->Device->pfnGetCommandQueueGroupProperties;
         if( nullptr == pfnGetCommandQueueGroupProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
@@ -512,11 +512,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetMemoryProperties = dditable->Device->pfnGetMemoryProperties;
         if( nullptr == pfnGetMemoryProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
@@ -543,11 +543,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetMemoryAccessProperties = dditable->Device->pfnGetMemoryAccessProperties;
         if( nullptr == pfnGetMemoryAccessProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
@@ -582,11 +582,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetCacheProperties = dditable->Device->pfnGetCacheProperties;
         if( nullptr == pfnGetCacheProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
@@ -613,11 +613,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetImageProperties = dditable->Device->pfnGetImageProperties;
         if( nullptr == pfnGetImageProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetImageProperties( hDevice, pImageProperties );
@@ -644,11 +644,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetExternalMemoryProperties = dditable->Device->pfnGetExternalMemoryProperties;
         if( nullptr == pfnGetExternalMemoryProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
@@ -676,11 +676,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetP2PProperties = dditable->Device->pfnGetP2PProperties;
         if( nullptr == pfnGetP2PProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
@@ -708,11 +708,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCanAccessPeer = dditable->Device->pfnCanAccessPeer;
         if( nullptr == pfnCanAccessPeer ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCanAccessPeer( hDevice, hPeerDevice, value );
@@ -738,11 +738,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetStatus = dditable->Device->pfnGetStatus;
         if( nullptr == pfnGetStatus ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetStatus( hDevice );
@@ -777,11 +777,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetGlobalTimestamps = dditable->Device->pfnGetGlobalTimestamps;
         if( nullptr == pfnGetGlobalTimestamps ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
@@ -807,11 +807,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSynchronize = dditable->Device->pfnSynchronize;
         if( nullptr == pfnSynchronize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSynchronize( hDevice );
@@ -838,11 +838,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetAggregatedCopyOffloadIncrementValue = dditable->Device->pfnGetAggregatedCopyOffloadIncrementValue;
         if( nullptr == pfnGetAggregatedCopyOffloadIncrementValue ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetAggregatedCopyOffloadIncrementValue( hDevice, incrementValue );
@@ -871,11 +871,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetCounterBasedEventMaxValue = dditable->Device->pfnGetCounterBasedEventMaxValue;
         if( nullptr == pfnGetCounterBasedEventMaxValue ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetCounterBasedEventMaxValue( hDevice, maxValue );
@@ -905,11 +905,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetRuntimeRequirements = dditable->Device->pfnGetRuntimeRequirements;
         if( nullptr == pfnGetRuntimeRequirements ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetRuntimeRequirements( hDevice, pObjDesc, pSize, pRequirements );
@@ -936,11 +936,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetRuntimeRequirementsKey = dditable->Device->pfnGetRuntimeRequirementsKey;
         if( nullptr == pfnGetRuntimeRequirementsKey ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetRuntimeRequirementsKey( hDevice, pKey );
@@ -970,11 +970,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnValidateRuntimeRequirements = dditable->Device->pfnValidateRuntimeRequirements;
         if( nullptr == pfnValidateRuntimeRequirements ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnValidateRuntimeRequirements( hDevice, pRequirements, pOut );
@@ -1002,11 +1002,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->Context->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hDriver, desc, phContext );
@@ -1044,11 +1044,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateEx = dditable->Context->pfnCreateEx;
         if( nullptr == pfnCreateEx ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
@@ -1074,11 +1074,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->Context->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hContext );
@@ -1104,11 +1104,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetStatus = dditable->Context->pfnGetStatus;
         if( nullptr == pfnGetStatus ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetStatus( hContext );
@@ -1137,11 +1137,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->CommandQueue->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
@@ -1167,11 +1167,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->CommandQueue->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hCommandQueue );
@@ -1201,11 +1201,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnExecuteCommandLists = dditable->CommandQueue->pfnExecuteCommandLists;
         if( nullptr == pfnExecuteCommandLists ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
@@ -1238,11 +1238,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSynchronize = dditable->CommandQueue->pfnSynchronize;
         if( nullptr == pfnSynchronize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSynchronize( hCommandQueue, timeout );
@@ -1269,11 +1269,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetOrdinal = dditable->CommandQueue->pfnGetOrdinal;
         if( nullptr == pfnGetOrdinal ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetOrdinal( hCommandQueue, pOrdinal );
@@ -1300,11 +1300,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIndex = dditable->CommandQueue->pfnGetIndex;
         if( nullptr == pfnGetIndex ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIndex( hCommandQueue, pIndex );
@@ -1331,11 +1331,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetFlags = dditable->CommandQueue->pfnGetFlags;
         if( nullptr == pfnGetFlags ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetFlags( hCmdQueue, pFlags );
@@ -1362,11 +1362,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetMode = dditable->CommandQueue->pfnGetMode;
         if( nullptr == pfnGetMode ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetMode( hCmdQueue, pMode );
@@ -1393,11 +1393,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetPriority = dditable->CommandQueue->pfnGetPriority;
         if( nullptr == pfnGetPriority ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetPriority( hCmdQueue, pPriority );
@@ -1426,11 +1426,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->CommandList->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phCommandList );
@@ -1459,11 +1459,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateImmediate = dditable->CommandList->pfnCreateImmediate;
         if( nullptr == pfnCreateImmediate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
@@ -1489,11 +1489,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->CommandList->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hCommandList );
@@ -1519,11 +1519,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnClose = dditable->CommandList->pfnClose;
         if( nullptr == pfnClose ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnClose( hCommandList );
@@ -1549,11 +1549,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnReset = dditable->CommandList->pfnReset;
         if( nullptr == pfnReset ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnReset( hCommandList );
@@ -1586,11 +1586,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendWriteGlobalTimestamp = dditable->CommandList->pfnAppendWriteGlobalTimestamp;
         if( nullptr == pfnAppendWriteGlobalTimestamp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -1623,11 +1623,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnHostSynchronize = dditable->CommandList->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnHostSynchronize( hCommandList, timeout );
@@ -1654,11 +1654,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetDeviceHandle = dditable->CommandList->pfnGetDeviceHandle;
         if( nullptr == pfnGetDeviceHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetDeviceHandle( hCommandList, phDevice );
@@ -1685,11 +1685,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetContextHandle = dditable->CommandList->pfnGetContextHandle;
         if( nullptr == pfnGetContextHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetContextHandle( hCommandList, phContext );
@@ -1716,11 +1716,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetOrdinal = dditable->CommandList->pfnGetOrdinal;
         if( nullptr == pfnGetOrdinal ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetOrdinal( hCommandList, pOrdinal );
@@ -1748,11 +1748,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnImmediateGetIndex = dditable->CommandList->pfnImmediateGetIndex;
         if( nullptr == pfnImmediateGetIndex ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnImmediateGetIndex( hCommandListImmediate, pIndex );
@@ -1780,11 +1780,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnIsImmediate = dditable->CommandList->pfnIsImmediate;
         if( nullptr == pfnIsImmediate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnIsImmediate( hCommandList, pIsImmediate );
@@ -1811,11 +1811,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetFlags = dditable->CommandList->pfnGetFlags;
         if( nullptr == pfnGetFlags ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetFlags( hCommandList, pFlags );
@@ -1842,11 +1842,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnImmediateGetFlags = dditable->CommandList->pfnImmediateGetFlags;
         if( nullptr == pfnImmediateGetFlags ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnImmediateGetFlags( hCommandList, pFlags );
@@ -1873,11 +1873,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnImmediateGetMode = dditable->CommandList->pfnImmediateGetMode;
         if( nullptr == pfnImmediateGetMode ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnImmediateGetMode( hCommandList, pMode );
@@ -1904,11 +1904,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnImmediateGetPriority = dditable->CommandList->pfnImmediateGetPriority;
         if( nullptr == pfnImmediateGetPriority ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnImmediateGetPriority( hCommandList, pPriority );
@@ -1939,11 +1939,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendBarrier = dditable->CommandList->pfnAppendBarrier;
         if( nullptr == pfnAppendBarrier ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -1977,11 +1977,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryRangesBarrier = dditable->CommandList->pfnAppendMemoryRangesBarrier;
         if( nullptr == pfnAppendMemoryRangesBarrier ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2008,11 +2008,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSystemBarrier = dditable->Context->pfnSystemBarrier;
         if( nullptr == pfnSystemBarrier ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSystemBarrier( hContext, hDevice );
@@ -2046,11 +2046,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryCopy = dditable->CommandList->pfnAppendMemoryCopy;
         if( nullptr == pfnAppendMemoryCopy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2085,11 +2085,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryCopyWithParameters = dditable->CommandList->pfnAppendMemoryCopyWithParameters;
         if( nullptr == pfnAppendMemoryCopyWithParameters ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryCopyWithParameters( hCommandList, dstptr, srcptr, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2124,11 +2124,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryFill = dditable->CommandList->pfnAppendMemoryFill;
         if( nullptr == pfnAppendMemoryFill ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2164,11 +2164,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryFillWithParameters = dditable->CommandList->pfnAppendMemoryFillWithParameters;
         if( nullptr == pfnAppendMemoryFillWithParameters ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryFillWithParameters( hCommandList, ptr, pattern, pattern_size, size, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2211,11 +2211,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryCopyRegion = dditable->CommandList->pfnAppendMemoryCopyRegion;
         if( nullptr == pfnAppendMemoryCopyRegion ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2250,11 +2250,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryCopyFromContext = dditable->CommandList->pfnAppendMemoryCopyFromContext;
         if( nullptr == pfnAppendMemoryCopyFromContext ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2287,11 +2287,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendImageCopy = dditable->CommandList->pfnAppendImageCopy;
         if( nullptr == pfnAppendImageCopy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2326,11 +2326,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendImageCopyRegion = dditable->CommandList->pfnAppendImageCopyRegion;
         if( nullptr == pfnAppendImageCopyRegion ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2364,11 +2364,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendImageCopyToMemory = dditable->CommandList->pfnAppendImageCopyToMemory;
         if( nullptr == pfnAppendImageCopyToMemory ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2402,11 +2402,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendImageCopyFromMemory = dditable->CommandList->pfnAppendImageCopyFromMemory;
         if( nullptr == pfnAppendImageCopyFromMemory ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2434,11 +2434,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemoryPrefetch = dditable->CommandList->pfnAppendMemoryPrefetch;
         if( nullptr == pfnAppendMemoryPrefetch ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemoryPrefetch( hCommandList, ptr, size );
@@ -2468,11 +2468,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendMemAdvise = dditable->CommandList->pfnAppendMemAdvise;
         if( nullptr == pfnAppendMemAdvise ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
@@ -2506,11 +2506,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->EventPool->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
@@ -2536,11 +2536,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->EventPool->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hEventPool );
@@ -2568,11 +2568,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->Event->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hEventPool, desc, phEvent );
@@ -2601,11 +2601,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCounterBasedCreate = dditable->Event->pfnCounterBasedCreate;
         if( nullptr == pfnCounterBasedCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCounterBasedCreate( hContext, hDevice, desc, phEvent );
@@ -2631,11 +2631,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->Event->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hEvent );
@@ -2662,11 +2662,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIpcHandle = dditable->EventPool->pfnGetIpcHandle;
         if( nullptr == pfnGetIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIpcHandle( hEventPool, phIpc );
@@ -2694,11 +2694,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnPutIpcHandle = dditable->EventPool->pfnPutIpcHandle;
         if( nullptr == pfnPutIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnPutIpcHandle( hContext, hIpc );
@@ -2727,11 +2727,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnOpenIpcHandle = dditable->EventPool->pfnOpenIpcHandle;
         if( nullptr == pfnOpenIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnOpenIpcHandle( hContext, hIpc, phEventPool );
@@ -2757,11 +2757,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCloseIpcHandle = dditable->EventPool->pfnCloseIpcHandle;
         if( nullptr == pfnCloseIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCloseIpcHandle( hEventPool );
@@ -2788,11 +2788,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCounterBasedGetIpcHandle = dditable->Event->pfnCounterBasedGetIpcHandle;
         if( nullptr == pfnCounterBasedGetIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCounterBasedGetIpcHandle( hEvent, phIpc );
@@ -2821,11 +2821,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCounterBasedOpenIpcHandle = dditable->Event->pfnCounterBasedOpenIpcHandle;
         if( nullptr == pfnCounterBasedOpenIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCounterBasedOpenIpcHandle( hContext, hIpc, phEvent );
@@ -2851,11 +2851,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCounterBasedCloseIpcHandle = dditable->Event->pfnCounterBasedCloseIpcHandle;
         if( nullptr == pfnCounterBasedCloseIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCounterBasedCloseIpcHandle( hEvent );
@@ -2883,11 +2883,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCounterBasedGetDeviceAddress = dditable->Event->pfnCounterBasedGetDeviceAddress;
         if( nullptr == pfnCounterBasedGetDeviceAddress ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCounterBasedGetDeviceAddress( hEvent, completionValue, deviceAddress );
@@ -2914,11 +2914,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendSignalEvent = dditable->CommandList->pfnAppendSignalEvent;
         if( nullptr == pfnAppendSignalEvent ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendSignalEvent( hCommandList, hEvent );
@@ -2946,11 +2946,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendSignalEventWithParameters = dditable->CommandList->pfnAppendSignalEventWithParameters;
         if( nullptr == pfnAppendSignalEventWithParameters ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendSignalEventWithParameters( hCommandList, pNext, hEvent );
@@ -2979,11 +2979,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendWaitOnEvents = dditable->CommandList->pfnAppendWaitOnEvents;
         if( nullptr == pfnAppendWaitOnEvents ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
@@ -3013,11 +3013,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendWaitOnEventsWithParameters = dditable->CommandList->pfnAppendWaitOnEventsWithParameters;
         if( nullptr == pfnAppendWaitOnEventsWithParameters ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendWaitOnEventsWithParameters( hCommandList, pNext, numEvents, phEvents );
@@ -3043,11 +3043,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnHostSignal = dditable->Event->pfnHostSignal;
         if( nullptr == pfnHostSignal ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnHostSignal( hEvent );
@@ -3080,11 +3080,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnHostSynchronize = dditable->Event->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnHostSynchronize( hEvent, timeout );
@@ -3110,11 +3110,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnQueryStatus = dditable->Event->pfnQueryStatus;
         if( nullptr == pfnQueryStatus ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnQueryStatus( hEvent );
@@ -3141,11 +3141,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendEventReset = dditable->CommandList->pfnAppendEventReset;
         if( nullptr == pfnAppendEventReset ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendEventReset( hCommandList, hEvent );
@@ -3171,11 +3171,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnHostReset = dditable->Event->pfnHostReset;
         if( nullptr == pfnHostReset ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnHostReset( hEvent );
@@ -3202,11 +3202,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnQueryKernelTimestamp = dditable->Event->pfnQueryKernelTimestamp;
         if( nullptr == pfnQueryKernelTimestamp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnQueryKernelTimestamp( hEvent, dstptr );
@@ -3244,11 +3244,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendQueryKernelTimestamps = dditable->CommandList->pfnAppendQueryKernelTimestamps;
         if( nullptr == pfnAppendQueryKernelTimestamps ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -3275,11 +3275,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetEventPool = dditable->Event->pfnGetEventPool;
         if( nullptr == pfnGetEventPool ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetEventPool( hEvent, phEventPool );
@@ -3308,11 +3308,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetSignalScope = dditable->Event->pfnGetSignalScope;
         if( nullptr == pfnGetSignalScope ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetSignalScope( hEvent, pSignalScope );
@@ -3341,11 +3341,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetWaitScope = dditable->Event->pfnGetWaitScope;
         if( nullptr == pfnGetWaitScope ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetWaitScope( hEvent, pWaitScope );
@@ -3372,11 +3372,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetContextHandle = dditable->EventPool->pfnGetContextHandle;
         if( nullptr == pfnGetContextHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetContextHandle( hEventPool, phContext );
@@ -3404,11 +3404,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventPool == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetFlags = dditable->EventPool->pfnGetFlags;
         if( nullptr == pfnGetFlags ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetFlags( hEventPool, pFlags );
@@ -3436,11 +3436,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetCounterBasedFlags = dditable->Event->pfnGetCounterBasedFlags;
         if( nullptr == pfnGetCounterBasedFlags ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetCounterBasedFlags( hEvent, pFlags );
@@ -3468,11 +3468,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Fence == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->Fence->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hCommandQueue, desc, phFence );
@@ -3498,11 +3498,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Fence == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->Fence->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hFence );
@@ -3535,11 +3535,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Fence == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnHostSynchronize = dditable->Fence->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnHostSynchronize( hFence, timeout );
@@ -3565,11 +3565,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Fence == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnQueryStatus = dditable->Fence->pfnQueryStatus;
         if( nullptr == pfnQueryStatus ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnQueryStatus( hFence );
@@ -3595,11 +3595,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Fence == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnReset = dditable->Fence->pfnReset;
         if( nullptr == pfnReset ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnReset( hFence );
@@ -3627,11 +3627,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Image == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetProperties = dditable->Image->pfnGetProperties;
         if( nullptr == pfnGetProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetProperties( hDevice, desc, pImageProperties );
@@ -3660,11 +3660,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Image == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->Image->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phImage );
@@ -3690,11 +3690,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Image == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->Image->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hImage );
@@ -3728,11 +3728,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAllocShared = dditable->Mem->pfnAllocShared;
         if( nullptr == pfnAllocShared ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
@@ -3765,11 +3765,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAllocDevice = dditable->Mem->pfnAllocDevice;
         if( nullptr == pfnAllocDevice ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
@@ -3801,11 +3801,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAllocHost = dditable->Mem->pfnAllocHost;
         if( nullptr == pfnAllocHost ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAllocHost( hContext, host_desc, size, alignment, pptr );
@@ -3832,11 +3832,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnFree = dditable->Mem->pfnFree;
         if( nullptr == pfnFree ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnFree( hContext, ptr );
@@ -3865,11 +3865,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetAllocProperties = dditable->Mem->pfnGetAllocProperties;
         if( nullptr == pfnGetAllocProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
@@ -3898,11 +3898,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetAddressRange = dditable->Mem->pfnGetAddressRange;
         if( nullptr == pfnGetAddressRange ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetAddressRange( hContext, ptr, pBase, pSize );
@@ -3930,11 +3930,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIpcHandle = dditable->Mem->pfnGetIpcHandle;
         if( nullptr == pfnGetIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
@@ -3962,11 +3962,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->MemExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIpcHandleFromFileDescriptorExp = dditable->MemExp->pfnGetIpcHandleFromFileDescriptorExp;
         if( nullptr == pfnGetIpcHandleFromFileDescriptorExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
@@ -3994,11 +3994,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->MemExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetFileDescriptorFromIpcHandleExp = dditable->MemExp->pfnGetFileDescriptorFromIpcHandleExp;
         if( nullptr == pfnGetFileDescriptorFromIpcHandleExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
@@ -4025,11 +4025,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnPutIpcHandle = dditable->Mem->pfnPutIpcHandle;
         if( nullptr == pfnPutIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnPutIpcHandle( hContext, handle );
@@ -4060,11 +4060,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnOpenIpcHandle = dditable->Mem->pfnOpenIpcHandle;
         if( nullptr == pfnOpenIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
@@ -4091,11 +4091,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCloseIpcHandle = dditable->Mem->pfnCloseIpcHandle;
         if( nullptr == pfnCloseIpcHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCloseIpcHandle( hContext, ptr );
@@ -4126,11 +4126,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->MemExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetAtomicAccessAttributeExp = dditable->MemExp->pfnSetAtomicAccessAttributeExp;
         if( nullptr == pfnSetAtomicAccessAttributeExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
@@ -4160,11 +4160,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->MemExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetAtomicAccessAttributeExp = dditable->MemExp->pfnGetAtomicAccessAttributeExp;
         if( nullptr == pfnGetAtomicAccessAttributeExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
@@ -4194,11 +4194,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->Module->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
@@ -4224,11 +4224,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->Module->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hModule );
@@ -4257,11 +4257,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDynamicLink = dditable->Module->pfnDynamicLink;
         if( nullptr == pfnDynamicLink ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDynamicLink( numModules, phModules, phLinkLog );
@@ -4287,11 +4287,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->ModuleBuildLog == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->ModuleBuildLog->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hModuleBuildLog );
@@ -4319,11 +4319,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->ModuleBuildLog == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetString = dditable->ModuleBuildLog->pfnGetString;
         if( nullptr == pfnGetString ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetString( hModuleBuildLog, pSize, pBuildLog );
@@ -4351,11 +4351,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetNativeBinary = dditable->Module->pfnGetNativeBinary;
         if( nullptr == pfnGetNativeBinary ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
@@ -4384,11 +4384,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetGlobalPointer = dditable->Module->pfnGetGlobalPointer;
         if( nullptr == pfnGetGlobalPointer ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
@@ -4422,11 +4422,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetKernelNames = dditable->Module->pfnGetKernelNames;
         if( nullptr == pfnGetKernelNames ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetKernelNames( hModule, pCount, pNames );
@@ -4453,11 +4453,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetProperties = dditable->Module->pfnGetProperties;
         if( nullptr == pfnGetProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetProperties( hModule, pModuleProperties );
@@ -4484,11 +4484,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetDeviceHandle = dditable->Module->pfnGetDeviceHandle;
         if( nullptr == pfnGetDeviceHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetDeviceHandle( hModule, phDevice );
@@ -4516,11 +4516,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->Kernel->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hModule, desc, phKernel );
@@ -4546,11 +4546,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->Kernel->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hKernel );
@@ -4578,11 +4578,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetFunctionPointer = dditable->Module->pfnGetFunctionPointer;
         if( nullptr == pfnGetFunctionPointer ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
@@ -4611,11 +4611,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetGroupSize = dditable->Kernel->pfnSetGroupSize;
         if( nullptr == pfnSetGroupSize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
@@ -4647,11 +4647,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSuggestGroupSize = dditable->Kernel->pfnSuggestGroupSize;
         if( nullptr == pfnSuggestGroupSize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
@@ -4678,11 +4678,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSuggestMaxCooperativeGroupCount = dditable->Kernel->pfnSuggestMaxCooperativeGroupCount;
         if( nullptr == pfnSuggestMaxCooperativeGroupCount ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
@@ -4712,11 +4712,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetArgumentValue = dditable->Kernel->pfnSetArgumentValue;
         if( nullptr == pfnSetArgumentValue ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
@@ -4743,11 +4743,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetIndirectAccess = dditable->Kernel->pfnSetIndirectAccess;
         if( nullptr == pfnSetIndirectAccess ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetIndirectAccess( hKernel, flags );
@@ -4774,11 +4774,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIndirectAccess = dditable->Kernel->pfnGetIndirectAccess;
         if( nullptr == pfnGetIndirectAccess ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIndirectAccess( hKernel, pFlags );
@@ -4817,11 +4817,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetSourceAttributes = dditable->Kernel->pfnGetSourceAttributes;
         if( nullptr == pfnGetSourceAttributes ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetSourceAttributes( hKernel, pSize, pString );
@@ -4849,11 +4849,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetCacheConfig = dditable->Kernel->pfnSetCacheConfig;
         if( nullptr == pfnSetCacheConfig ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetCacheConfig( hKernel, flags );
@@ -4880,11 +4880,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetProperties = dditable->Kernel->pfnGetProperties;
         if( nullptr == pfnGetProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetProperties( hKernel, pKernelProperties );
@@ -4913,11 +4913,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetName = dditable->Kernel->pfnGetName;
         if( nullptr == pfnGetName ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetName( hKernel, pSize, pName );
@@ -4944,11 +4944,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Kernel == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetModuleHandle = dditable->Kernel->pfnGetModuleHandle;
         if( nullptr == pfnGetModuleHandle ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetModuleHandle( hKernel, phModule );
@@ -4981,11 +4981,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendLaunchKernel = dditable->CommandList->pfnAppendLaunchKernel;
         if( nullptr == pfnAppendLaunchKernel ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5019,11 +5019,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendLaunchKernelWithParameters = dditable->CommandList->pfnAppendLaunchKernelWithParameters;
         if( nullptr == pfnAppendLaunchKernelWithParameters ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendLaunchKernelWithParameters( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5059,11 +5059,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendLaunchKernelWithArguments = dditable->CommandList->pfnAppendLaunchKernelWithArguments;
         if( nullptr == pfnAppendLaunchKernelWithArguments ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendLaunchKernelWithArguments( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5096,11 +5096,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendLaunchCooperativeKernel = dditable->CommandList->pfnAppendLaunchCooperativeKernel;
         if( nullptr == pfnAppendLaunchCooperativeKernel ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5134,11 +5134,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendLaunchKernelIndirect = dditable->CommandList->pfnAppendLaunchKernelIndirect;
         if( nullptr == pfnAppendLaunchKernelIndirect ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5176,11 +5176,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendLaunchMultipleKernelsIndirect = dditable->CommandList->pfnAppendLaunchMultipleKernelsIndirect;
         if( nullptr == pfnAppendLaunchMultipleKernelsIndirect ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5209,11 +5209,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnMakeMemoryResident = dditable->Context->pfnMakeMemoryResident;
         if( nullptr == pfnMakeMemoryResident ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnMakeMemoryResident( hContext, hDevice, ptr, size );
@@ -5242,11 +5242,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnEvictMemory = dditable->Context->pfnEvictMemory;
         if( nullptr == pfnEvictMemory ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnEvictMemory( hContext, hDevice, ptr, size );
@@ -5274,11 +5274,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnMakeImageResident = dditable->Context->pfnMakeImageResident;
         if( nullptr == pfnMakeImageResident ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnMakeImageResident( hContext, hDevice, hImage );
@@ -5306,11 +5306,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Context == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnEvictImage = dditable->Context->pfnEvictImage;
         if( nullptr == pfnEvictImage ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnEvictImage( hContext, hDevice, hImage );
@@ -5339,11 +5339,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Sampler == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->Sampler->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phSampler );
@@ -5369,11 +5369,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Sampler == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->Sampler->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hSampler );
@@ -5403,11 +5403,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->VirtualMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnReserve = dditable->VirtualMem->pfnReserve;
         if( nullptr == pfnReserve ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnReserve( hContext, pStart, size, pptr );
@@ -5435,11 +5435,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->VirtualMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnFree = dditable->VirtualMem->pfnFree;
         if( nullptr == pfnFree ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnFree( hContext, ptr, size );
@@ -5469,11 +5469,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->VirtualMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnQueryPageSize = dditable->VirtualMem->pfnQueryPageSize;
         if( nullptr == pfnQueryPageSize ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnQueryPageSize( hContext, hDevice, size, pagesize );
@@ -5501,11 +5501,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->PhysicalMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetProperties = dditable->PhysicalMem->pfnGetProperties;
         if( nullptr == pfnGetProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetProperties( hContext, hPhysicalMem, pMemProperties );
@@ -5535,11 +5535,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->PhysicalMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreate = dditable->PhysicalMem->pfnCreate;
         if( nullptr == pfnCreate ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
@@ -5566,11 +5566,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->PhysicalMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroy = dditable->PhysicalMem->pfnDestroy;
         if( nullptr == pfnDestroy ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroy( hContext, hPhysicalMemory );
@@ -5604,11 +5604,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->VirtualMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnMap = dditable->VirtualMem->pfnMap;
         if( nullptr == pfnMap ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
@@ -5636,11 +5636,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->VirtualMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnUnmap = dditable->VirtualMem->pfnUnmap;
         if( nullptr == pfnUnmap ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnUnmap( hContext, ptr, size );
@@ -5670,11 +5670,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->VirtualMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetAccessAttribute = dditable->VirtualMem->pfnSetAccessAttribute;
         if( nullptr == pfnSetAccessAttribute ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetAccessAttribute( hContext, ptr, size, access );
@@ -5705,11 +5705,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->VirtualMem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetAccessAttribute = dditable->VirtualMem->pfnGetAccessAttribute;
         if( nullptr == pfnGetAccessAttribute ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
@@ -5738,11 +5738,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->KernelExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetGlobalOffsetExp = dditable->KernelExp->pfnSetGlobalOffsetExp;
         if( nullptr == pfnSetGlobalOffsetExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
@@ -5773,11 +5773,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnReserveCacheExt = dditable->Device->pfnReserveCacheExt;
         if( nullptr == pfnReserveCacheExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
@@ -5806,11 +5806,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetCacheAdviceExt = dditable->Device->pfnSetCacheAdviceExt;
         if( nullptr == pfnSetCacheAdviceExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
@@ -5845,11 +5845,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->EventExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnQueryTimestampsExp = dditable->EventExp->pfnQueryTimestampsExp;
         if( nullptr == pfnQueryTimestampsExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
@@ -5876,11 +5876,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->ImageExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetMemoryPropertiesExp = dditable->ImageExp->pfnGetMemoryPropertiesExp;
         if( nullptr == pfnGetMemoryPropertiesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
@@ -5910,11 +5910,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Image == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnViewCreateExt = dditable->Image->pfnViewCreateExt;
         if( nullptr == pfnViewCreateExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
@@ -5944,11 +5944,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->ImageExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnViewCreateExp = dditable->ImageExp->pfnViewCreateExp;
         if( nullptr == pfnViewCreateExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
@@ -5975,11 +5975,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->KernelExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSchedulingHintExp = dditable->KernelExp->pfnSchedulingHintExp;
         if( nullptr == pfnSchedulingHintExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSchedulingHintExp( hKernel, pHint );
@@ -6006,11 +6006,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnPciGetPropertiesExt = dditable->Device->pfnPciGetPropertiesExt;
         if( nullptr == pfnPciGetPropertiesExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
@@ -6048,11 +6048,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendImageCopyToMemoryExt = dditable->CommandList->pfnAppendImageCopyToMemoryExt;
         if( nullptr == pfnAppendImageCopyToMemoryExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -6090,11 +6090,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendImageCopyFromMemoryExt = dditable->CommandList->pfnAppendImageCopyFromMemoryExt;
         if( nullptr == pfnAppendImageCopyFromMemoryExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -6122,11 +6122,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Image == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetAllocPropertiesExt = dditable->Image->pfnGetAllocPropertiesExt;
         if( nullptr == pfnGetAllocPropertiesExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
@@ -6157,11 +6157,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Module == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnInspectLinkageExt = dditable->Module->pfnInspectLinkageExt;
         if( nullptr == pfnInspectLinkageExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
@@ -6189,11 +6189,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnFreeExt = dditable->Mem->pfnFreeExt;
         if( nullptr == pfnFreeExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
@@ -6228,11 +6228,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->FabricVertexExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetExp = dditable->FabricVertexExp->pfnGetExp;
         if( nullptr == pfnGetExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetExp( hDriver, pCount, phVertices );
@@ -6267,11 +6267,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->FabricVertexExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetSubVerticesExp = dditable->FabricVertexExp->pfnGetSubVerticesExp;
         if( nullptr == pfnGetSubVerticesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
@@ -6298,11 +6298,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->FabricVertexExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetPropertiesExp = dditable->FabricVertexExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetPropertiesExp( hVertex, pVertexProperties );
@@ -6329,11 +6329,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->FabricVertexExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetDeviceExp = dditable->FabricVertexExp->pfnGetDeviceExp;
         if( nullptr == pfnGetDeviceExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetDeviceExp( hVertex, phDevice );
@@ -6360,11 +6360,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->DeviceExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetFabricVertexExp = dditable->DeviceExp->pfnGetFabricVertexExp;
         if( nullptr == pfnGetFabricVertexExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetFabricVertexExp( hDevice, phVertex );
@@ -6400,11 +6400,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->FabricEdgeExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetExp = dditable->FabricEdgeExp->pfnGetExp;
         if( nullptr == pfnGetExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
@@ -6432,11 +6432,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->FabricEdgeExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetVerticesExp = dditable->FabricEdgeExp->pfnGetVerticesExp;
         if( nullptr == pfnGetVerticesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
@@ -6463,11 +6463,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->FabricEdgeExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetPropertiesExp = dditable->FabricEdgeExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
@@ -6509,11 +6509,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Event == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnQueryKernelTimestampsExt = dditable->Event->pfnQueryKernelTimestampsExt;
         if( nullptr == pfnQueryKernelTimestampsExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
@@ -6541,11 +6541,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilderExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateExp = dditable->RTASBuilderExp->pfnCreateExp;
         if( nullptr == pfnCreateExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
@@ -6573,11 +6573,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilderExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetBuildPropertiesExp = dditable->RTASBuilderExp->pfnGetBuildPropertiesExp;
         if( nullptr == pfnGetBuildPropertiesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
@@ -6605,11 +6605,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->DriverExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnRTASFormatCompatibilityCheckExp = dditable->DriverExp->pfnRTASFormatCompatibilityCheckExp;
         if( nullptr == pfnRTASFormatCompatibilityCheckExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
@@ -6647,11 +6647,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilderExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnBuildExp = dditable->RTASBuilderExp->pfnBuildExp;
         if( nullptr == pfnBuildExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
@@ -6677,11 +6677,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilderExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroyExp = dditable->RTASBuilderExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroyExp( hBuilder );
@@ -6708,11 +6708,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperationExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateExp = dditable->RTASParallelOperationExp->pfnCreateExp;
         if( nullptr == pfnCreateExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateExp( hDriver, phParallelOperation );
@@ -6739,11 +6739,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperationExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetPropertiesExp = dditable->RTASParallelOperationExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetPropertiesExp( hParallelOperation, pProperties );
@@ -6769,11 +6769,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperationExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnJoinExp = dditable->RTASParallelOperationExp->pfnJoinExp;
         if( nullptr == pfnJoinExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnJoinExp( hParallelOperation );
@@ -6799,11 +6799,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperationExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroyExp = dditable->RTASParallelOperationExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroyExp( hParallelOperation );
@@ -6834,11 +6834,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetPitchFor2dImage = dditable->Mem->pfnGetPitchFor2dImage;
         if( nullptr == pfnGetPitchFor2dImage ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
@@ -6865,11 +6865,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->ImageExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetDeviceOffsetExp = dditable->ImageExp->pfnGetDeviceOffsetExp;
         if( nullptr == pfnGetDeviceOffsetExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
@@ -6896,11 +6896,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateCloneExp = dditable->CommandListExp->pfnCreateCloneExp;
         if( nullptr == pfnCreateCloneExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateCloneExp( hCommandList, phClonedCommandList );
@@ -6937,11 +6937,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnImmediateAppendCommandListsExp = dditable->CommandListExp->pfnImmediateAppendCommandListsExp;
         if( nullptr == pfnImmediateAppendCommandListsExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -6979,11 +6979,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnImmediateAppendCommandListsWithParameters = dditable->CommandList->pfnImmediateAppendCommandListsWithParameters;
         if( nullptr == pfnImmediateAppendCommandListsWithParameters ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnImmediateAppendCommandListsWithParameters( hCommandListImmediate, numCommandLists, phCommandLists, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -7011,11 +7011,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetNextCommandIdExp = dditable->CommandListExp->pfnGetNextCommandIdExp;
         if( nullptr == pfnGetNextCommandIdExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
@@ -7047,11 +7047,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetNextCommandIdWithKernelsExp = dditable->CommandListExp->pfnGetNextCommandIdWithKernelsExp;
         if( nullptr == pfnGetNextCommandIdWithKernelsExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetNextCommandIdWithKernelsExp( hCommandList, desc, numKernels, phKernels, pCommandId );
@@ -7079,11 +7079,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnUpdateMutableCommandsExp = dditable->CommandListExp->pfnUpdateMutableCommandsExp;
         if( nullptr == pfnUpdateMutableCommandsExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnUpdateMutableCommandsExp( hCommandList, desc );
@@ -7111,11 +7111,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnIsMutableExp = dditable->CommandListExp->pfnIsMutableExp;
         if( nullptr == pfnIsMutableExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnIsMutableExp( hCommandList, pIsMutable );
@@ -7143,11 +7143,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnUpdateMutableCommandSignalEventExp = dditable->CommandListExp->pfnUpdateMutableCommandSignalEventExp;
         if( nullptr == pfnUpdateMutableCommandSignalEventExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
@@ -7177,11 +7177,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnUpdateMutableCommandWaitEventsExp = dditable->CommandListExp->pfnUpdateMutableCommandWaitEventsExp;
         if( nullptr == pfnUpdateMutableCommandWaitEventsExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
@@ -7211,11 +7211,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandListExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnUpdateMutableCommandKernelsExp = dditable->CommandListExp->pfnUpdateMutableCommandKernelsExp;
         if( nullptr == pfnUpdateMutableCommandKernelsExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnUpdateMutableCommandKernelsExp( hCommandList, numKernels, pCommandId, phKernels );
@@ -7243,11 +7243,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->KernelExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetBinaryExp = dditable->KernelExp->pfnGetBinaryExp;
         if( nullptr == pfnGetBinaryExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
@@ -7275,11 +7275,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnImportExternalSemaphoreExt = dditable->Device->pfnImportExternalSemaphoreExt;
         if( nullptr == pfnImportExternalSemaphoreExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
@@ -7305,11 +7305,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnReleaseExternalSemaphoreExt = dditable->Device->pfnReleaseExternalSemaphoreExt;
         if( nullptr == pfnReleaseExternalSemaphoreExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnReleaseExternalSemaphoreExt( hSemaphore );
@@ -7345,11 +7345,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendSignalExternalSemaphoreExt = dditable->CommandList->pfnAppendSignalExternalSemaphoreExt;
         if( nullptr == pfnAppendSignalExternalSemaphoreExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -7385,11 +7385,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendWaitExternalSemaphoreExt = dditable->CommandList->pfnAppendWaitExternalSemaphoreExt;
         if( nullptr == pfnAppendWaitExternalSemaphoreExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -7417,11 +7417,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilder == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateExt = dditable->RTASBuilder->pfnCreateExt;
         if( nullptr == pfnCreateExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
@@ -7449,11 +7449,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilder == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetBuildPropertiesExt = dditable->RTASBuilder->pfnGetBuildPropertiesExt;
         if( nullptr == pfnGetBuildPropertiesExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
@@ -7481,11 +7481,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Driver == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnRTASFormatCompatibilityCheckExt = dditable->Driver->pfnRTASFormatCompatibilityCheckExt;
         if( nullptr == pfnRTASFormatCompatibilityCheckExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
@@ -7523,11 +7523,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilder == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnBuildExt = dditable->RTASBuilder->pfnBuildExt;
         if( nullptr == pfnBuildExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
@@ -7563,11 +7563,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilder == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCommandListAppendCopyExt = dditable->RTASBuilder->pfnCommandListAppendCopyExt;
         if( nullptr == pfnCommandListAppendCopyExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -7593,11 +7593,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASBuilder == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroyExt = dditable->RTASBuilder->pfnDestroyExt;
         if( nullptr == pfnDestroyExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroyExt( hBuilder );
@@ -7624,11 +7624,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperation == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateExt = dditable->RTASParallelOperation->pfnCreateExt;
         if( nullptr == pfnCreateExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateExt( hDriver, phParallelOperation );
@@ -7655,11 +7655,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperation == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetPropertiesExt = dditable->RTASParallelOperation->pfnGetPropertiesExt;
         if( nullptr == pfnGetPropertiesExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetPropertiesExt( hParallelOperation, pProperties );
@@ -7685,11 +7685,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperation == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnJoinExt = dditable->RTASParallelOperation->pfnJoinExt;
         if( nullptr == pfnJoinExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnJoinExt( hParallelOperation );
@@ -7715,11 +7715,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->RTASParallelOperation == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroyExt = dditable->RTASParallelOperation->pfnDestroyExt;
         if( nullptr == pfnDestroyExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroyExt( hParallelOperation );
@@ -7754,11 +7754,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetVectorWidthPropertiesExt = dditable->Device->pfnGetVectorWidthPropertiesExt;
         if( nullptr == pfnGetVectorWidthPropertiesExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
@@ -7794,11 +7794,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->KernelExp == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetAllocationPropertiesExp = dditable->KernelExp->pfnGetAllocationPropertiesExp;
         if( nullptr == pfnGetAllocationPropertiesExp ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
@@ -7827,11 +7827,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Mem == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIpcHandleWithProperties = dditable->Mem->pfnGetIpcHandleWithProperties;
         if( nullptr == pfnGetIpcHandleWithProperties ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIpcHandleWithProperties( hContext, ptr, pNext, pIpcHandle );
@@ -7860,11 +7860,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnCreateExt = dditable->Graph->pfnCreateExt;
         if( nullptr == pfnCreateExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnCreateExt( hContext, pNext, phGraph );
@@ -7892,11 +7892,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnBeginGraphCaptureExt = dditable->CommandList->pfnBeginGraphCaptureExt;
         if( nullptr == pfnBeginGraphCaptureExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnBeginGraphCaptureExt( hCommandList, pNext );
@@ -7925,11 +7925,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnBeginCaptureIntoGraphExt = dditable->CommandList->pfnBeginCaptureIntoGraphExt;
         if( nullptr == pfnBeginCaptureIntoGraphExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnBeginCaptureIntoGraphExt( hCommandList, hGraph, pNext );
@@ -7955,11 +7955,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnIsGraphCaptureEnabledExt = dditable->CommandList->pfnIsGraphCaptureEnabledExt;
         if( nullptr == pfnIsGraphCaptureEnabledExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnIsGraphCaptureEnabledExt( hCommandList );
@@ -7988,11 +7988,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnEndGraphCaptureExt = dditable->CommandList->pfnEndGraphCaptureExt;
         if( nullptr == pfnEndGraphCaptureExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnEndGraphCaptureExt( hCommandList, pNext, phGraph );
@@ -8019,11 +8019,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetGraphExt = dditable->CommandList->pfnGetGraphExt;
         if( nullptr == pfnGetGraphExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetGraphExt( hCommandList, phGraph );
@@ -8051,11 +8051,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetPrimaryCommandListExt = dditable->Graph->pfnGetPrimaryCommandListExt;
         if( nullptr == pfnGetPrimaryCommandListExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetPrimaryCommandListExt( hGraph, phCommandList );
@@ -8085,11 +8085,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetDestructionCallbackExt = dditable->Graph->pfnSetDestructionCallbackExt;
         if( nullptr == pfnSetDestructionCallbackExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetDestructionCallbackExt( hGraph, pfnCallback, pUserData, pNext );
@@ -8118,11 +8118,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnInstantiateExt = dditable->Graph->pfnInstantiateExt;
         if( nullptr == pfnInstantiateExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnInstantiateExt( hGraph, pNext, phExecutableGraph );
@@ -8156,11 +8156,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendGraphExt = dditable->CommandList->pfnAppendGraphExt;
         if( nullptr == pfnAppendGraphExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendGraphExt( hCommandList, hGraph, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -8187,11 +8187,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->ExecutableGraph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetSourceGraphExt = dditable->ExecutableGraph->pfnGetSourceGraphExt;
         if( nullptr == pfnGetSourceGraphExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetSourceGraphExt( hGraph, phSourceGraph );
@@ -8217,11 +8217,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnIsEmptyExt = dditable->Graph->pfnIsEmptyExt;
         if( nullptr == pfnIsEmptyExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnIsEmptyExt( hGraph );
@@ -8250,11 +8250,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDumpContentsExt = dditable->Graph->pfnDumpContentsExt;
         if( nullptr == pfnDumpContentsExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDumpContentsExt( hGraph, filePath, pNext );
@@ -8280,11 +8280,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->ExecutableGraph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroyExt = dditable->ExecutableGraph->pfnDestroyExt;
         if( nullptr == pfnDestroyExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroyExt( hGraph );
@@ -8310,11 +8310,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnDestroyExt = dditable->Graph->pfnDestroyExt;
         if( nullptr == pfnDestroyExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnDestroyExt( hGraph );
@@ -8340,11 +8340,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnPauseCaptureExt = dditable->Graph->pfnPauseCaptureExt;
         if( nullptr == pfnPauseCaptureExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnPauseCaptureExt( hGraph );
@@ -8370,11 +8370,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnResumeCaptureExt = dditable->Graph->pfnResumeCaptureExt;
         if( nullptr == pfnResumeCaptureExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnResumeCaptureExt( hGraph );
@@ -8401,11 +8401,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Graph == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetIdExt = dditable->Graph->pfnGetIdExt;
         if( nullptr == pfnGetIdExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetIdExt( hGraph, pGraphId );
@@ -8441,11 +8441,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandList == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnAppendHostFunction = dditable->CommandList->pfnAppendHostFunction;
         if( nullptr == pfnAppendHostFunction ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnAppendHostFunction( hCommandList, pfnHostFunction, pUserData, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -8472,11 +8472,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetPriorityExt = dditable->CommandQueue->pfnSetPriorityExt;
         if( nullptr == pfnSetPriorityExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetPriorityExt( hCommandQueue, priority );
@@ -8511,11 +8511,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->Device == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetCompilerInfo = dditable->Device->pfnGetCompilerInfo;
         if( nullptr == pfnGetCompilerInfo ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetCompilerInfo( hDevice, paramName, pNext, pSize, pData );
@@ -8542,11 +8542,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnSetQosExt = dditable->CommandQueue->pfnSetQosExt;
         if( nullptr == pfnSetQosExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnSetQosExt( hCommandQueue, desc );
@@ -8573,11 +8573,11 @@ namespace loader_driver_ddi
         }
         // Check that the driver has the function pointer table init
         if (dditable->CommandQueue == nullptr) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         auto pfnGetQosExt = dditable->CommandQueue->pfnGetQosExt;
         if( nullptr == pfnGetQosExt ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetQosExt( hCommandQueue, pProperties );
