@@ -46,6 +46,15 @@ USAGE
 
 ```
 
+EXAMPLES
+--------
+Example scripts are installed with the package under `pyzes.examples`:
+```bash
+python3 -m pyzes.examples.pyzes_example
+python3 -m pyzes.examples.pyzes_black_box_test -h
+```
+See the [examples README](https://github.com/oneapi-src/level-zero/blob/master/bindings/sysman/python/source/pyzes/examples/README.md) for details.
+
 ## C Structure and its python module class ##
 struct zes_process_state_t {
 
@@ -198,6 +207,12 @@ SUPPORTED APIs
 
 RELEASE NOTES
 -------------
+Version 0.1.3
+- **Packaging:**
+  - `pyzes` is now a package (`pyzes/__init__.py`) instead of a single `pyzes.py` module. `import pyzes` and `from pyzes import *` are unchanged.
+  - Example scripts moved from the top-level `examples` package to `pyzes.examples`, so installing pyzes no longer puts an `examples` package in `site-packages` that conflicts with other projects.
+  - Run the examples with `python3 -m pyzes.examples.pyzes_example` and `python3 -m pyzes.examples.pyzes_black_box_test` (previously `python3 -m examples.<name>`).
+
 Version 0.1.2
 - **New API Functions:**
   - `zesDevicePciGetProperties`, `zesDevicePciGetStats`, `zesDevicePciGetState`

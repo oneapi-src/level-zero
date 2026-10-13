@@ -7,7 +7,7 @@
 ##
 
 """
-Validates that Python ctypes structures in pyzes.py match the C structures
+Validates that Python ctypes structures in pyzes/__init__.py match the C structures
 defined in the Level-Zero headers (include/zes_api.h, include/ze_api.h).
 """
 
@@ -86,7 +86,7 @@ def parse_python_structure(
     pyzes_content: str, struct_name: str
 ) -> Optional[List[Tuple[str, str]]]:
     """
-    Parse a Python ctypes structure definition from pyzes.py.
+    Parse a Python ctypes structure definition from pyzes/__init__.py.
     Returns list of (field_name, field_type) tuples.
     """
     # Find the class definition
@@ -220,7 +220,7 @@ def compare_structures(
 
 def get_all_structures_from_pyzes(pyzes_content: str) -> List[str]:
     """
-    Extract all structure names that inherit from _PrintableStructure in pyzes.py.
+    Extract all structure names that inherit from _PrintableStructure in pyzes/__init__.py.
     Returns list of structure names.
     """
     structures = []
@@ -241,7 +241,7 @@ def main():
     # Paths
     zes_header = repo_root / "include" / "zes_api.h"
     ze_header = repo_root / "include" / "ze_api.h"
-    pyzes_file = repo_root / "bindings" / "sysman" / "python" / "source" / "pyzes.py"
+    pyzes_file = script_dir.parent / "source" / "pyzes" / "__init__.py"
 
     # Check files exist
     for file_path in [zes_header, ze_header, pyzes_file]:
@@ -254,14 +254,14 @@ def main():
     ze_content = ze_header.read_text()
     pyzes_content = pyzes_file.read_text()
 
-    # Dynamically discover all structures from pyzes.py
+    # Dynamically discover all structures from pyzes/__init__.py
     structures_to_check = get_all_structures_from_pyzes(pyzes_content)
 
     if not structures_to_check:
-        print("❌ FAIL: No structures found in pyzes.py")
+        print("❌ FAIL: No structures found in pyzes/__init__.py")
         return 1
 
-    print(f"Found {len(structures_to_check)} structures in pyzes.py")
+    print(f"Found {len(structures_to_check)} structures in pyzes/__init__.py")
 
     all_errors = {}
     structures_checked = 0
@@ -281,8 +281,8 @@ def main():
         # Parse from Python
         py_fields = parse_python_structure(pyzes_content, struct_name)
         if py_fields is None:
-            print(f"❌ FAIL: Structure '{struct_name}' not found in pyzes.py")
-            all_errors[struct_name] = ["Structure not found in pyzes.py"]
+            print(f"❌ FAIL: Structure '{struct_name}' not found in pyzes/__init__.py")
+            all_errors[struct_name] = ["Structure not found in pyzes/__init__.py"]
             continue
 
         # Compare
@@ -297,7 +297,7 @@ def main():
     print("=" * 70)
     print("Structure Validation Summary")
     print("=" * 70)
-    print(f"Total structures found in pyzes.py: {len(structures_to_check)}")
+    print(f"Total structures found in pyzes/__init__.py: {len(structures_to_check)}")
     print(f"Structures validated successfully: {structures_checked}")
 
     if structures_not_in_headers:
