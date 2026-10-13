@@ -6,6 +6,21 @@ We encourage anyone who wants to contribute to submit
 review these for proper alignment with the
 [Level Zero Specification](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/index.html).
 
+## Git Hooks Setup
+
+To enable automatic copyright year updates and other git hooks, run:
+
+```bash
+python3 .githooks/setup.py
+```
+
+Or on Windows:
+```cmd
+python .githooks\setup.py
+```
+
+This configures your local repository to use the shared git hooks. The pre-commit hook will automatically update copyright years in modified files before each commit.
+
 ## C++ Coding Standards
 
 * C++14 maximum support
