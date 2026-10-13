@@ -210,7 +210,7 @@ SUPPORTED APIs
 | **Virtual Function (VF) Management** |-|-|-|
 | `zesDeviceEnumEnabledVFExp` | VF Management | 0.1.3 | Experimental API |
 | `zesVFManagementGetVFCapabilitiesExp2` | VF Management | 0.1.3 | Experimental API |
-| `zesVFManagementGetVFEngineUtilizationExp2` | VF Management | 0.1.3 | Experimental API |
+| `zesVFManagementGetVFEngineUtilizationExp2` | VF Management | 0.1.3 | Experimental API. Linux: Requires superuser |
 | `zesVFManagementGetVFMemoryUtilizationExp2` | VF Management | 0.1.3 | Experimental API |
 | **PCI Management** |-|-|-|
 | `zesDevicePciGetProperties` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
