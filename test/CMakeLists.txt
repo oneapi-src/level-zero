@@ -33,7 +33,7 @@ endif()
 
 # For static builds, we need to include the loader source files directly
 # since they are not built into the library when BUILD_STATIC=1
-if(BUILD_STATIC)
+if(BUILD_STATIC AND NOT BUILD_STATIC_NO_DLL)
   target_sources(tests PRIVATE
     ${PROJECT_SOURCE_DIR}/source/loader/ze_loader.cpp
     ${PROJECT_SOURCE_DIR}/source/loader/ze_loader_api.cpp
@@ -61,12 +61,18 @@ if(BUILD_STATIC)
     )
   endif()
   
-  # Add the same definitions as the source CMakeLists.txt
+endif()
+
+if(BUILD_STATIC)
   target_compile_definitions(tests PRIVATE
     L0_LOADER_VERSION="${PROJECT_VERSION_MAJOR}"
     L0_VALIDATION_LAYER_SUPPORTED_VERSION="${PROJECT_VERSION_MAJOR}"
-    L0_STATIC_LOADER_BUILD="1"
   )
+  if(BUILD_STATIC_NO_DLL)
+    target_compile_definitions(tests PRIVATE L0_STATIC_LOADER_BUILD_NO_DLL="1")
+  else()
+    target_compile_definitions(tests PRIVATE L0_STATIC_LOADER_BUILD="1")
+  endif()
 endif()
 
 target_include_directories(tests PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/source/inc)
