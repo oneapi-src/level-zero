@@ -148,6 +148,14 @@ class zes_engine_handle_t(c_void_p):
     pass
 
 
+class zes_info_log_handle_t(c_void_p):
+    pass
+
+
+class zes_info_log_instance_handle_t(c_void_p):
+    pass
+
+
 ##
 
 ze_bool_t = c_uint8
@@ -294,6 +302,23 @@ ZES_ENGINE_GROUP_3D_ALL = 13
 ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14
 ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7FFFFFFF
 
+## Info log enums ##
+zes_info_log_type_ext_t = c_int32
+ZES_INFO_LOG_TYPE_EXT_DEVICE = 0
+ZES_INFO_LOG_TYPE_EXT_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_info_log_format_ext_t = c_int32
+ZES_INFO_LOG_FORMAT_EXT_CPER = 0
+ZES_INFO_LOG_FORMAT_EXT_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_info_log_record_type_ext_t = c_int32
+ZES_INFO_LOG_RECORD_TYPE_EXT_UNKNOWN = 0
+ZES_INFO_LOG_RECORD_TYPE_EXT_INFORMATIONAL = 1
+ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_CORRECTED = 2
+ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_RECOVERABLE = 3
+ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_FATAL = 4
+ZES_INFO_LOG_RECORD_TYPE_EXT_FORCE_UINT32 = 0x7FFFFFFF
+
 ze_result_t = c_int32
 ZE_RESULT_SUCCESS = 0
 ZE_RESULT_NOT_READY = 1
@@ -376,6 +401,12 @@ ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
 ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
 ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
+ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES = 0x00020020  # Info log properties
+ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC = (
+    0x00020021  # Info log instance descriptor
+)
+ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT = 0x00020022  # Info log record metadata
+ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT = 0x00020023  # Info log read status
 
 
 ## Core ze_device UUID struct ##
@@ -777,6 +808,51 @@ class zes_engine_stats_t(_PrintableStructure):
         ("timestamp", c_uint64),  # timestamp
     ]
     _fmt_ = {"activeTime": "%d", "timestamp": "%d"}
+
+
+## Info log structures ##
+class zes_info_log_ext_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES
+        ("pNext", c_void_p),
+        ("infoLogType", zes_info_log_type_ext_t),  # type of info carried
+        ("infoLogFormat", zes_info_log_format_ext_t),  # format of records
+        ("isNamedInstanceSupported", ze_bool_t),  # named instances supported
+        ("isPeekDataSupported", ze_bool_t),  # peek without consuming supported
+    ]
+
+
+class zes_info_log_instance_ext_desc_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC
+        ("pNext", c_void_p),
+        ("pBufferSizeInKb", POINTER(c_uint32)),  # optional buffer size in KB
+    ]
+
+
+class zes_info_log_metadata_ext_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT
+        ("pNext", c_void_p),
+        ("address", zes_pci_address_t),  # PCI address of originating device
+        ("uuid", zes_uuid_t),  # UUID of originating device
+        ("timestamp", c_uint64),  # record time in nanoseconds
+        ("lengthOfData", c_uint32),  # record length in bytes
+        ("offset", c_uint32),  # record byte offset in data buffer
+        ("recordType", zes_info_log_record_type_ext_t),  # record type
+    ]
+    _fmt_ = {"timestamp": "%d ns", "lengthOfData": "%d bytes"}
+
+
+class zes_info_log_read_status_ext_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT
+        ("pNext", c_void_p),
+        ("droppedRecordCount", c_int64),  # dropped records, -1 if unknown
+        ("consumedDataSize", c_uint64),  # bytes read out of the instance
+        ("hasDataToRead", ze_bool_t),  # records remain to be read
+    ]
+    _fmt_ = {"consumedDataSize": "%d bytes"}
 
 
 ## Function access ##
@@ -1555,4 +1631,197 @@ def zesEngineGetActivity(hEngine, pStats):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hEngine, pStats)
+    return retVal
+
+
+## Info log functions ##
+
+
+def zesDriverEnumInfoLogsExt(hDriver, pCount, phInfoLogs):
+    """Wraps API:
+    ze_result_t zesDriverEnumInfoLogsExt(
+        zes_driver_handle_t hDriver,
+        uint32_t* pCount,
+        zes_info_log_handle_t* phInfoLogs)
+
+    Parameters:
+      hDriver: driver handle
+      pCount: POINTER(c_uint32)
+      phInfoLogs: POINTER(zes_info_log_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDriverEnumInfoLogsExt")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_info_log_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDriver, pCount, phInfoLogs)
+    return retVal
+
+
+def zesInfoLogGetPropertiesExt(hInfoLog, pProperties):
+    """Wraps API:
+    ze_result_t zesInfoLogGetPropertiesExt(
+        zes_info_log_handle_t hInfoLog,
+        zes_info_log_ext_properties_t* pProperties)
+
+    Parameters:
+      hInfoLog: info log handle
+      pProperties: POINTER(zes_info_log_ext_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogGetPropertiesExt")
+    funcPtr.argtypes = [zes_info_log_handle_t, POINTER(zes_info_log_ext_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hInfoLog, pProperties)
+    return retVal
+
+
+def zesInfoLogCreateInstanceExt(hInfoLog, pInstanceName, pDesc, phInfoLogInstance):
+    """Wraps API:
+    ze_result_t zesInfoLogCreateInstanceExt(
+        zes_info_log_handle_t hInfoLog,
+        const char* pInstanceName,
+        zes_info_log_instance_ext_desc_t* pDesc,
+        zes_info_log_instance_handle_t* phInfoLogInstance)
+
+    Parameters:
+      hInfoLog: info log handle
+      pInstanceName: bytes or None - name of the instance; None uses the default buffer
+      pDesc: POINTER(zes_info_log_instance_ext_desc_t) - instance descriptor
+      phInfoLogInstance: POINTER(zes_info_log_instance_handle_t) - created instance handle
+    Returns:
+      ze_result_t - return code only, instance handle is filled into phInfoLogInstance
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogCreateInstanceExt")
+    funcPtr.argtypes = [
+        zes_info_log_handle_t,
+        c_char_p,
+        POINTER(zes_info_log_instance_ext_desc_t),
+        POINTER(zes_info_log_instance_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hInfoLog, pInstanceName, pDesc, phInfoLogInstance)
+    return retVal
+
+
+def zesInfoLogInstanceReadWithMetadataExt(
+    hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus
+):
+    """Wraps API:
+    ze_result_t zesInfoLogInstanceReadWithMetadataExt(
+        zes_info_log_instance_handle_t hInfoLogInstance,
+        uint64_t timeout,
+        uint32_t* pSize,
+        uint8_t* pBuffer,
+        uint32_t* pRecordCount,
+        zes_info_log_metadata_ext_t* pDescriptors,
+        zes_info_log_read_status_ext_t* pReadStatus)
+
+    Records returned are consumed and are not returned again.
+
+    Parameters:
+      hInfoLogInstance: info log collection instance handle
+      timeout: c_uint64 - maximum search time in milliseconds
+      pSize: POINTER(c_uint32) - size of pBuffer in bytes; 0 makes this a query call
+      pBuffer: POINTER(c_uint8) or None - buffer for record data
+      pRecordCount: POINTER(c_uint32) - number of elements in pDescriptors; 0 makes this a query call
+      pDescriptors: POINTER(zes_info_log_metadata_ext_t) or None - metadata for each record
+      pReadStatus: POINTER(zes_info_log_read_status_ext_t) or None - status of this call
+    Returns:
+      ze_result_t - return code only, records are filled into pBuffer and pDescriptors
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogInstanceReadWithMetadataExt")
+    funcPtr.argtypes = [
+        zes_info_log_instance_handle_t,
+        c_uint64,
+        POINTER(c_uint32),
+        POINTER(c_uint8),
+        POINTER(c_uint32),
+        POINTER(zes_info_log_metadata_ext_t),
+        POINTER(zes_info_log_read_status_ext_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(
+        hInfoLogInstance,
+        timeout,
+        pSize,
+        pBuffer,
+        pRecordCount,
+        pDescriptors,
+        pReadStatus,
+    )
+    return retVal
+
+
+def zesInfoLogInstancePeekWithMetadataExt(
+    hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus
+):
+    """Wraps API:
+    ze_result_t zesInfoLogInstancePeekWithMetadataExt(
+        zes_info_log_instance_handle_t hInfoLogInstance,
+        uint64_t timeout,
+        uint32_t* pSize,
+        uint8_t* pBuffer,
+        uint32_t* pRecordCount,
+        zes_info_log_metadata_ext_t* pDescriptors,
+        zes_info_log_read_status_ext_t* pReadStatus)
+
+    Records returned are not consumed.
+
+    Parameters:
+      hInfoLogInstance: info log collection instance handle
+      timeout: c_uint64 - maximum search time in milliseconds
+      pSize: POINTER(c_uint32) - size of pBuffer in bytes; 0 makes this a query call
+      pBuffer: POINTER(c_uint8) or None - buffer for record data
+      pRecordCount: POINTER(c_uint32) - number of elements in pDescriptors; 0 makes this a query call
+      pDescriptors: POINTER(zes_info_log_metadata_ext_t) or None - metadata for each record
+      pReadStatus: POINTER(zes_info_log_read_status_ext_t) or None - status of this call
+    Returns:
+      ze_result_t - return code only, records are filled into pBuffer and pDescriptors
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogInstancePeekWithMetadataExt")
+    funcPtr.argtypes = [
+        zes_info_log_instance_handle_t,
+        c_uint64,
+        POINTER(c_uint32),
+        POINTER(c_uint8),
+        POINTER(c_uint32),
+        POINTER(zes_info_log_metadata_ext_t),
+        POINTER(zes_info_log_read_status_ext_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(
+        hInfoLogInstance,
+        timeout,
+        pSize,
+        pBuffer,
+        pRecordCount,
+        pDescriptors,
+        pReadStatus,
+    )
+    return retVal
+
+
+def zesInfoLogInstanceDeleteExt(hInfoLogInstance):
+    """Wraps API:
+    ze_result_t zesInfoLogInstanceDeleteExt(
+        zes_info_log_instance_handle_t hInfoLogInstance)
+
+    Parameters:
+      hInfoLogInstance: info log collection instance handle to delete
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogInstanceDeleteExt")
+    funcPtr.argtypes = [zes_info_log_instance_handle_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hInfoLogInstance)
     return retVal

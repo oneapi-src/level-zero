@@ -204,6 +204,13 @@ SUPPORTED APIs
 | `zesDeviceEccConfigurable` | ECC | 0.1.2 | None |
 | `zesDeviceGetEccState` | ECC | 0.1.2 | None |
 | `zesDeviceSetEccState` | ECC | 0.1.2 | None |
+| **Info Log Management** |-|-|-|
+| `zesDriverEnumInfoLogsExt` | Info Log | 0.1.3 | Linux: Requires superuser |
+| `zesInfoLogGetPropertiesExt` | Info Log | 0.1.3 | None |
+| `zesInfoLogCreateInstanceExt` | Info Log | 0.1.3 | Linux: Requires superuser |
+| `zesInfoLogInstanceReadWithMetadataExt` | Info Log | 0.1.3 | Records returned are consumed. Linux: Requires superuser |
+| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.3 | Requires `isPeekDataSupported`. Linux: Requires superuser |
+| `zesInfoLogInstanceDeleteExt` | Info Log | 0.1.3 | Linux: Requires superuser |
 
 RELEASE NOTES
 -------------
