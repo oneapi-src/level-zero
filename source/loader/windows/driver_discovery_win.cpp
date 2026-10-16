@@ -10,8 +10,11 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <cfgmgr32.h>
+#include <cstring>
 #include <devpkey.h>
 #include <devguid.h>
 #include <iostream>
@@ -121,13 +124,17 @@ DriverLibraryPath readDriverPathForDisplayAdapter(DEVINST dnDevNode) {
                                            &regValueType, NULL, &pathSize);
 
     std::string driverPath;
-    if ((ERROR_SUCCESS == regOpStatus) && (REG_SZ == regValueType)) {
+    if ((ERROR_SUCCESS == regOpStatus) && (REG_SZ == regValueType) && (pathSize > 0)) {
         driverPath.resize(pathSize);
         regOpStatus = RegQueryValueExA(hkey, levelZeroDriverPathKey, NULL,
                                        &regValueType, (LPBYTE) & *driverPath.begin(),
                                        &pathSize);
-        if (ERROR_SUCCESS != regOpStatus) {
-            assert(false && "RegQueryValueExA failed");
+        if ((ERROR_SUCCESS == regOpStatus) && (REG_SZ == regValueType)) {
+            // REG_SZ data may lack a NUL; keep only the bytes returned, up to the first NUL.
+            const char *terminator = static_cast<const char *>(memchr(driverPath.data(), '\0', pathSize));
+            driverPath.resize(terminator ? static_cast<size_t>(terminator - driverPath.data()) : pathSize);
+        } else {
+            assert((ERROR_SUCCESS == regOpStatus) && "RegQueryValueExA failed");
             driverPath.clear();
         }
     }
@@ -136,6 +143,97 @@ DriverLibraryPath readDriverPathForDisplayAdapter(DEVINST dnDevNode) {
     assert((ERROR_SUCCESS == regOpStatus) && "RegCloseKey failed");
 
     return DriverLibraryPath(driverPath, false);
+}
+
+zel_driver_type_t readDxCoreHardwareType(DEVINST dnDevNode) {
+    static constexpr char dxCoreAttributesKey[] = "DXCoreAttributes";
+    // DXCORE_HARDWARE_TYPE_ATTRIBUTE_GPU and _NPU from dxcore_interface.h
+    static constexpr char gpuHardwareType[] = "{B69EB219-3DED-4464-979F-A00BD4687006}";
+    static constexpr char npuHardwareType[] = "{D46140C4-ADD7-451B-9E56-06FE8C3B58ED}";
+
+    HKEY hkey = {};
+    CONFIGRET configErr = CM_Open_DevNode_Key(dnDevNode, KEY_QUERY_VALUE, 0,
+                                              RegDisposition_OpenExisting, &hkey,
+                                              CM_REGISTRY_SOFTWARE);
+    if (CR_SUCCESS != configErr) {
+        return ZEL_DRIVER_TYPE_FORCE_UINT32;
+    }
+
+    DWORD regValueType = {};
+    DWORD attributesSize = {};
+    LSTATUS regOpStatus = RegQueryValueExA(hkey, dxCoreAttributesKey, NULL,
+                                           &regValueType, NULL, &attributesSize);
+
+    std::string attributes;
+    if ((ERROR_SUCCESS == regOpStatus) && (REG_MULTI_SZ == regValueType) && (attributesSize > 0)) {
+        attributes.resize(attributesSize);
+        regOpStatus = RegQueryValueExA(hkey, dxCoreAttributesKey, NULL,
+                                       &regValueType, (LPBYTE) & *attributes.begin(),
+                                       &attributesSize);
+        if (ERROR_SUCCESS == regOpStatus) {
+            attributes.resize(attributesSize);
+        } else {
+            attributes.clear();
+        }
+    }
+
+    regOpStatus = RegCloseKey(hkey);
+    assert((ERROR_SUCCESS == regOpStatus) && "RegCloseKey failed");
+
+    const char *data = attributes.data();
+    const size_t dataSize = attributes.size();
+    for (size_t pos = 0; pos < dataSize;) {
+        const char *entry = data + pos;
+        // Registry data is not guaranteed to be NUL-terminated; an unterminated entry is invalid.
+        const char *terminator = static_cast<const char *>(memchr(entry, '\0', dataSize - pos));
+        if (nullptr == terminator) {
+            break;
+        }
+        const size_t entryLength = static_cast<size_t>(terminator - entry);
+        if (0 == entryLength) {
+            break;
+        }
+        if (0 == _stricmp(entry, gpuHardwareType)) {
+            return ZEL_DRIVER_TYPE_GPU;
+        }
+        if (0 == _stricmp(entry, npuHardwareType)) {
+            return ZEL_DRIVER_TYPE_NPU;
+        }
+        pos += entryLength + 1;
+    }
+    return ZEL_DRIVER_TYPE_FORCE_UINT32;
+}
+
+// Fallback for drivers without DXCoreAttributes: a token counts only if bounded by non-alphanumerics or the name's ends.
+zel_driver_type_t driverTypeFromFileName(const std::string &driverPath) {
+    std::string fileName = driverPath;
+    const size_t lastSeparator = fileName.find_last_of("\\/");
+    if (std::string::npos != lastSeparator) {
+        fileName = fileName.substr(lastSeparator + 1);
+    }
+    std::transform(fileName.begin(), fileName.end(), fileName.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+    auto hasToken = [&fileName](const char *token) {
+        const size_t tokenLength = strlen(token);
+        for (size_t pos = fileName.find(token); std::string::npos != pos; pos = fileName.find(token, pos + 1)) {
+            const size_t end = pos + tokenLength;
+            const bool startBounded = (0 == pos) || !std::isalnum(static_cast<unsigned char>(fileName[pos - 1]));
+            const bool endBounded = (fileName.size() == end) || !std::isalnum(static_cast<unsigned char>(fileName[end]));
+            if (startBounded && endBounded) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    if (hasToken("npu") || hasToken("vpu")) {
+        return ZEL_DRIVER_TYPE_NPU;
+    }
+    if (hasToken("gpu")) {
+        return ZEL_DRIVER_TYPE_GPU;
+    }
+    return ZEL_DRIVER_TYPE_FORCE_UINT32;
 }
 
 std::wstring readDisplayAdaptersDeviceIdsList(const GUID rguid) {
@@ -208,7 +306,12 @@ std::vector<DriverLibraryPath> discoverDriversBasedOnDisplayAdapters(const GUID 
         if (rguid == GUID_DEVCLASS_DISPLAY) {
             driverPath.driverType = ZEL_DRIVER_TYPE_GPU;
         } else if (rguid == GUID_DEVCLASS_COMPUTEACCELERATOR) {
-            driverPath.driverType = ZEL_DRIVER_TYPE_NPU;
+            // MCDM devices can be GPUs or NPUs; older NPU drivers set neither marker, so NPU stays the default.
+            auto driverType = readDxCoreHardwareType(devinst);
+            if (ZEL_DRIVER_TYPE_FORCE_UINT32 == driverType) {
+                driverType = driverTypeFromFileName(driverPath.path);
+            }
+            driverPath.driverType = (ZEL_DRIVER_TYPE_FORCE_UINT32 == driverType) ? ZEL_DRIVER_TYPE_NPU : driverType;
         } else {
             driverPath.driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
         }
