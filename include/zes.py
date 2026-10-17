@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.18-r1.18.31
+ @version v1.19-r1.19.12
 
  """
 import platform
@@ -158,6 +158,7 @@ class zes_structure_type_v(IntEnum):
     RESET_PROPERTIES = 0x2c                                                 ## ::zes_reset_properties_t
     DEVICE_EXT_PROPERTIES = 0x2d                                            ## ::zes_device_ext_properties_t
     DEVICE_UUID = 0x2e                                                      ## ::zes_uuid_t
+    DRIVER_PROPERTIES = 0x2f                                                ## ::zes_driver_properties_t
     POWER_DOMAIN_EXP_PROPERTIES = 0x00020001                                ## ::zes_power_domain_exp_properties_t
     MEM_BANDWIDTH_COUNTER_BITS_EXP_PROPERTIES = 0x00020002                  ## ::zes_mem_bandwidth_counter_bits_exp_properties_t
     MEMORY_PAGE_OFFLINE_STATE_EXP = 0x00020003                              ## ::zes_mem_page_offline_state_exp_t
@@ -177,6 +178,10 @@ class zes_structure_type_v(IntEnum):
     OEM_SERIAL_ID_EXT_PROPERTIES = 0x00020017                               ## ::zes_oem_serial_id_ext_properties_t
     DEVICE_EXT_STATE = 0x00020018                                           ## ::zes_device_ext_state_t
     MEMORY_VENDOR_INFO_EXT_PROPERTIES = 0x00020019                          ## ::zes_memory_vendor_info_ext_properties_t
+    INFO_LOG_EXT_PROPERTIES = 0x00020020                                    ## ::zes_info_log_ext_properties_t
+    INFO_LOG_INSTANCE_EXT_DESC = 0x00020021                                 ## ::zes_info_log_instance_ext_desc_t
+    INFO_LOG_METADATA_EXT = 0x00020022                                      ## ::zes_info_log_metadata_ext_t
+    INFO_LOG_READ_STATUS_EXT = 0x00020023                                   ## ::zes_info_log_read_status_ext_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -229,6 +234,17 @@ class zes_base_capability_t(Structure):
     ]
 
 ###############################################################################
+## @brief Maximum device universal unique id (UUID) size in bytes.
+ZES_MAX_UUID_SIZE = 16
+
+###############################################################################
+## @brief Device universal unique id (UUID)
+class zes_uuid_t(Structure):
+    _fields_ = [
+        ("id", c_ubyte * ZES_MAX_UUID_SIZE)                             ## [out] Data representing a device UUID
+    ]
+
+###############################################################################
 ## @brief Supported sysman initialization flags
 class zes_init_flags_v(IntEnum):
     GPU_ONLY = ZE_BIT(0)                                                    ## Initialize sysman for GPU devices only
@@ -241,6 +257,23 @@ class zes_init_flags_t(c_int):
     def __str__(self):
         return hex(self.value)
 
+
+###############################################################################
+## @brief Maximum system driver version string size
+ZES_MAX_SYSTEM_DRIVER_VERSION = 256
+
+###############################################################################
+## @brief Sysman driver properties queried using ::zesDriverGetProperties
+class zes_driver_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("uuid", zes_uuid_t),                                           ## [out] universal unique identifier of the sysman driver instance.
+        ("driverVersion", c_ulong)                                      ## [out] sysman driver version
+                                                                        ## The sysman driver version is a non-zero, monotonically increasing
+                                                                        ## value where higher values always indicate a more recent version.
+    ]
 
 ###############################################################################
 ## @brief Maximum extension name string size
@@ -257,10 +290,6 @@ class zes_driver_extension_properties_t(Structure):
 ###############################################################################
 ## @brief Maximum number of characters in string properties.
 ZES_STRING_PROPERTY_SIZE = 64
-
-###############################################################################
-## @brief Maximum device universal unique id (UUID) size in bytes.
-ZES_MAX_UUID_SIZE = 16
 
 ###############################################################################
 ## @brief Types of accelerator engines
@@ -336,13 +365,6 @@ class zes_reset_properties_t(Structure):
         ("force", ze_bool_t),                                           ## [in] If set to true, all applications that are currently using the
                                                                         ## device will be forcibly killed.
         ("resetType", zes_reset_type_t)                                 ## [in] Type of reset needs to be performed
-    ]
-
-###############################################################################
-## @brief Device universal unique id (UUID)
-class zes_uuid_t(Structure):
-    _fields_ = [
-        ("id", c_ubyte * ZES_MAX_UUID_SIZE)                             ## [out] opaque data representing a device UUID
     ]
 
 ###############################################################################
@@ -1010,6 +1032,7 @@ class zes_event_type_flags_v(IntEnum):
     DEVICE_RESET_REQUIRED = ZE_BIT(14)                                      ## Event is triggered when the device needs to be reset (use
                                                                             ## ::zesDeviceGetState() to determine the reasons for the reset).
     SURVIVABILITY_MODE_DETECTED = ZE_BIT(15)                                ## Event is triggered when graphics driver encounter an error condition.
+    INFO_LOG_CPER_DATA_AVAILABLE_EXT = ZE_BIT(16)                           ## Event is triggered when the CPER format info log data is available.
 
 class zes_event_type_flags_t(c_int):
     def __str__(self):
@@ -2126,6 +2149,8 @@ class zes_temp_sensors_v(IntEnum):
     VOLTAGE_REGULATOR = 8                                                   ## The maximum temperature across all sensors in the Voltage Regulator
     COMPOSITE = 9                                                           ## The normalized temperature across the SOC, Memory and Voltage
                                                                             ## Regulators at which shutdown will occur
+    GPU_BOARD_SINGLE = 10                                                   ## The temperature measured by a single sensor on the GPU Board
+    VOLTAGE_REGULATOR_SINGLE = 11                                           ## The temperature measured by a single sensor on a Voltage Regulator
 
 class zes_temp_sensors_t(c_int):
     def __str__(self):
@@ -2852,6 +2877,200 @@ class zes_memory_vendor_info_ext_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Info Logs Extension Name
+ZES_INFO_LOGS_EXT_NAME = "ZES_extension_info_logs"
+
+###############################################################################
+## @brief Info Logs Extension Version(s)
+class zes_info_logs_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_info_logs_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_info_logs_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Handle for a Sysman info log
+class zes_info_log_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Handle for a Sysman info log collection instance
+class zes_info_log_instance_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Info log types
+class zes_info_log_type_ext_v(IntEnum):
+    DEVICE = 0                                                              ## Log of device reported errors and other device reported information.
+
+class zes_info_log_type_ext_t(c_int):
+    def __str__(self):
+        return str(zes_info_log_type_ext_v(self.value))
+
+
+###############################################################################
+## @brief Info log record formats
+class zes_info_log_format_ext_v(IntEnum):
+    CPER = 0                                                                ## Each record is a UEFI Common Platform Error Record (CPER). The
+                                                                            ## application is responsible for decoding the record contents.
+
+class zes_info_log_format_ext_t(c_int):
+    def __str__(self):
+        return str(zes_info_log_format_ext_v(self.value))
+
+
+###############################################################################
+## @brief Info log record types
+class zes_info_log_record_type_ext_v(IntEnum):
+    UNKNOWN = 0                                                             ## The type of the record could not be determined.
+    INFORMATIONAL = 1                                                       ## The record does not report an error.
+    ERROR_CORRECTED = 2                                                     ## The record reports an error that was corrected by the device.
+    ERROR_RECOVERABLE = 3                                                   ## The record reports an error that was not corrected by the device and
+                                                                            ## that is not fatal.
+    ERROR_FATAL = 4                                                         ## The record reports an error that was not corrected by the device and
+                                                                            ## that is fatal.
+
+class zes_info_log_record_type_ext_t(c_int):
+    def __str__(self):
+        return str(zes_info_log_record_type_ext_v(self.value))
+
+
+###############################################################################
+## @brief Info log properties
+## 
+## @details
+##     - This structure is returned by ::zesInfoLogGetPropertiesExt
+class zes_info_log_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("infoLogType", zes_info_log_type_ext_t),                       ## [out] Type of the information carried by this info log.
+        ("infoLogFormat", zes_info_log_format_ext_t),                   ## [out] Format of the records returned by this info log.
+        ("isNamedInstanceSupported", ze_bool_t),                        ## [out] Indicates whether named collection instances are supported for
+                                                                        ## this info log.
+                                                                        ## If false, then ::zesInfoLogCreateInstanceExt must be called with
+                                                                        ## `pInstanceName` set to nullptr.
+        ("isPeekDataSupported", ze_bool_t)                              ## [out] Indicates whether the records of this info log can be read
+                                                                        ## without being consumed.
+                                                                        ## If false, then ::zesInfoLogInstancePeekWithMetadataExt shall return ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE.
+    ]
+
+###############################################################################
+## @brief Info log collection instance descriptor
+## 
+## @details
+##     - This structure is passed to ::zesInfoLogCreateInstanceExt to configure
+##       the collection instance.
+##     - Each member is optional. If a member is nullptr, then the driver shall
+##       use its default value for that setting.
+##     - On input, each non-null member points to the value requested by the
+##       application. On output, the driver shall update the pointed-to value
+##       with the value that was actually applied, which may be rounded to the
+##       closest value the driver supports.
+class zes_info_log_instance_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("pBufferSizeInKb", POINTER(c_ulong))                           ## [in,out][optional] pointer to the size, in kilobytes, of the buffer
+                                                                        ## used to collect records.
+                                                                        ## if nullptr, then the driver shall use its default buffer size.
+                                                                        ## if *pBufferSizeInKb == 0, then implementation shall update
+                                                                        ## pBufferSizeInKb with the default buffer size.
+    ]
+
+###############################################################################
+## @brief Metadata describing a single info log record
+## 
+## @details
+##     - An array of these structures is returned by
+##       ::zesInfoLogInstanceReadWithMetadataExt and by
+##       ::zesInfoLogInstancePeekWithMetadataExt, one element per record.
+##     - A record is located within the data buffer returned by those functions
+##       using `offset` and `lengthOfData`.
+##     - `recordType` is derived by the driver from the contents of the record.
+##       The record itself is the authoritative source of this information, and
+##       takes precedence if the two disagree.
+##     - For an info log whose format is ::ZES_INFO_LOG_FORMAT_EXT_CPER,
+##       `recordType` reflects the severity reported in the header of the
+##       record. An individual section of that record may report a higher
+##       severity than the header does.
+##     - The application must treat a value of `recordType` that it does not
+##       recognize as ::ZES_INFO_LOG_RECORD_TYPE_EXT_UNKNOWN. The numeric
+##       values of ::zes_info_log_record_type_ext_t do not express an order of
+##       severity and must not be compared for magnitude.
+class zes_info_log_metadata_ext_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("address", zes_pci_address_t),                                 ## [out] PCI address of the device that generated the record.
+                                                                        ## A value of 0 for `domain`, `bus`, `device`, and `function` indicates
+                                                                        ## that the PCI address could not be determined.
+        ("uuid", zes_uuid_t),                                           ## [out] universal unique identifier of the device that generated the record.
+                                                                        ## A value of 0 indicates that the UUID could not be determined.
+        ("timestamp", c_ulonglong),                                     ## [out] Time when the record was generated, in nanoseconds.
+                                                                        ## The reference point of this timestamp is implementation specific and
+                                                                        ## is only guaranteed to be consistent across records returned by the
+                                                                        ## same info log.
+                                                                        ## A value of 0 indicates that the timestamp could not be determined.
+        ("lengthOfData", c_ulong),                                      ## [out] Length of the record, in bytes.
+        ("offset", c_ulong),                                            ## [out] Byte offset of the record from the start of the returned data
+                                                                        ## buffer.
+        ("recordType", zes_info_log_record_type_ext_t)                  ## [out] Type of the information reported by the record.
+                                                                        ## ::ZES_INFO_LOG_RECORD_TYPE_EXT_UNKNOWN indicates that the type could
+                                                                        ## not be determined.
+    ]
+
+###############################################################################
+## @brief Status of a read from an info log collection instance
+## 
+## @details
+##     - This structure is optionally returned by
+##       ::zesInfoLogInstanceReadWithMetadataExt and by
+##       ::zesInfoLogInstancePeekWithMetadataExt.
+##     - `consumedDataSize` reports the progress made through the data held by
+##       the collection instance, which is not related to the amount of record
+##       data returned by the call.
+class zes_info_log_read_status_ext_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("droppedRecordCount", c_int64_t),                              ## [out] Number of records that were dropped because the collection
+                                                                        ## buffer overflowed.
+                                                                        ## A value of `-1` indicates that one or more records were dropped and
+                                                                        ## that their number could not be determined.
+                                                                        ## The application must check whether
+                                                                        ## ::zesInfoLogInstanceReadWithMetadataExt or
+                                                                        ## ::zesInfoLogInstancePeekWithMetadataExt returned
+                                                                        ## ::ZE_RESULT_WARNING_DROPPED_DATA before inspecting
+                                                                        ## `droppedRecordCount`, since a value of `0` is otherwise ambiguous
+                                                                        ## between no records dropped and the status not having been reported.
+        ("consumedDataSize", c_ulonglong),                              ## [out] Number of bytes that this call read out of the data held by the
+                                                                        ## collection instance.
+                                                                        ## This value counts all of the data that was searched, including data
+                                                                        ## that does not belong to a record, and is therefore not related to the
+                                                                        ## size of the record data returned by the call.
+                                                                        ## For ::zesInfoLogInstanceReadWithMetadataExt, this data is consumed and
+                                                                        ## shall not be searched again by a subsequent call.
+                                                                        ## If consumedDataSize = 0, then ::zesInfoLogInstanceReadWithMetadataExt
+                                                                        ## did not consume any data, similar to ::zesInfoLogInstancePeekWithMetadataExt.
+        ("hasDataToRead", ze_bool_t)                                    ## [out] Indicates whether the collection instance holds records that
+                                                                        ## were not returned by this call.
+                                                                        ## This is true when the call stopped before all records were examined,
+                                                                        ## for example because `timeout` elapsed, because `pBuffer` or
+                                                                        ## `pDescriptors` was too small to hold all of the records that were
+                                                                        ## found, or because the next record available was larger than `*pSize`.
+                                                                        ## This value is a hint. Records may be collected, and for
+                                                                        ## ::zesInfoLogInstanceReadWithMetadataExt consumed, after this function returns.
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -3262,6 +3481,34 @@ if __use_win_types:
 else:
     _zesDriverGetExtensionFunctionAddress_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, c_char_p, POINTER(c_void_p) )
 
+###############################################################################
+## @brief Function-pointer for zesDriverGetProperties
+if __use_win_types:
+    _zesDriverGetProperties_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(zes_driver_properties_t) )
+else:
+    _zesDriverGetProperties_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(zes_driver_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDriverEventRegisterExt
+if __use_win_types:
+    _zesDriverEventRegisterExt_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, zes_event_type_flags_t )
+else:
+    _zesDriverEventRegisterExt_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, zes_event_type_flags_t )
+
+###############################################################################
+## @brief Function-pointer for zesDriverEventListenExt
+if __use_win_types:
+    _zesDriverEventListenExt_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t), POINTER(zes_event_type_flags_t) )
+else:
+    _zesDriverEventListenExt_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t), POINTER(zes_event_type_flags_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDriverEnumInfoLogsExt
+if __use_win_types:
+    _zesDriverEnumInfoLogsExt_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_info_log_handle_t) )
+else:
+    _zesDriverEnumInfoLogsExt_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_info_log_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of Driver functions pointers
@@ -3271,7 +3518,11 @@ class _zes_driver_dditable_t(Structure):
         ("pfnEventListenEx", c_void_p),                                 ## _zesDriverEventListenEx_t
         ("pfnGet", c_void_p),                                           ## _zesDriverGet_t
         ("pfnGetExtensionProperties", c_void_p),                        ## _zesDriverGetExtensionProperties_t
-        ("pfnGetExtensionFunctionAddress", c_void_p)                    ## _zesDriverGetExtensionFunctionAddress_t
+        ("pfnGetExtensionFunctionAddress", c_void_p),                   ## _zesDriverGetExtensionFunctionAddress_t
+        ("pfnGetProperties", c_void_p),                                 ## _zesDriverGetProperties_t
+        ("pfnEventRegisterExt", c_void_p),                              ## _zesDriverEventRegisterExt_t
+        ("pfnEventListenExt", c_void_p),                                ## _zesDriverEventListenExt_t
+        ("pfnEnumInfoLogsExt", c_void_p)                                ## _zesDriverEnumInfoLogsExt_t
     ]
 
 ###############################################################################
@@ -4295,6 +4546,60 @@ class _zes_vf_management_exp_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zesInfoLogGetPropertiesExt
+if __use_win_types:
+    _zesInfoLogGetPropertiesExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_handle_t, POINTER(zes_info_log_ext_properties_t) )
+else:
+    _zesInfoLogGetPropertiesExt_t = CFUNCTYPE( ze_result_t, zes_info_log_handle_t, POINTER(zes_info_log_ext_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogCreateInstanceExt
+if __use_win_types:
+    _zesInfoLogCreateInstanceExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_handle_t, c_char_p, POINTER(zes_info_log_instance_ext_desc_t), POINTER(zes_info_log_instance_handle_t) )
+else:
+    _zesInfoLogCreateInstanceExt_t = CFUNCTYPE( ze_result_t, zes_info_log_handle_t, c_char_p, POINTER(zes_info_log_instance_ext_desc_t), POINTER(zes_info_log_instance_handle_t) )
+
+
+###############################################################################
+## @brief Table of InfoLog functions pointers
+class _zes_info_log_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetPropertiesExt", c_void_p),                              ## _zesInfoLogGetPropertiesExt_t
+        ("pfnCreateInstanceExt", c_void_p)                              ## _zesInfoLogCreateInstanceExt_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogInstanceReadWithMetadataExt
+if __use_win_types:
+    _zesInfoLogInstanceReadWithMetadataExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+else:
+    _zesInfoLogInstanceReadWithMetadataExt_t = CFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogInstancePeekWithMetadataExt
+if __use_win_types:
+    _zesInfoLogInstancePeekWithMetadataExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+else:
+    _zesInfoLogInstancePeekWithMetadataExt_t = CFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogInstanceDeleteExt
+if __use_win_types:
+    _zesInfoLogInstanceDeleteExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t )
+else:
+    _zesInfoLogInstanceDeleteExt_t = CFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t )
+
+
+###############################################################################
+## @brief Table of InfoLogInstance functions pointers
+class _zes_info_log_instance_dditable_t(Structure):
+    _fields_ = [
+        ("pfnReadWithMetadataExt", c_void_p),                           ## _zesInfoLogInstanceReadWithMetadataExt_t
+        ("pfnPeekWithMetadataExt", c_void_p),                           ## _zesInfoLogInstancePeekWithMetadataExt_t
+        ("pfnDeleteExt", c_void_p)                                      ## _zesInfoLogInstanceDeleteExt_t
+    ]
+
+###############################################################################
 class _zes_dditable_t(Structure):
     _fields_ = [
         ("Global", _zes_global_dditable_t),
@@ -4320,7 +4625,9 @@ class _zes_dditable_t(Structure):
         ("Ras", _zes_ras_dditable_t),
         ("RasExp", _zes_ras_exp_dditable_t),
         ("Diagnostics", _zes_diagnostics_dditable_t),
-        ("VFManagementExp", _zes_vf_management_exp_dditable_t)
+        ("VFManagementExp", _zes_vf_management_exp_dditable_t),
+        ("InfoLog", _zes_info_log_dditable_t),
+        ("InfoLogInstance", _zes_info_log_instance_dditable_t)
     ]
 
 ###############################################################################
@@ -4420,6 +4727,10 @@ class ZES_DDI:
         self.zesDriverGet = _zesDriverGet_t(self.__dditable.Driver.pfnGet)
         self.zesDriverGetExtensionProperties = _zesDriverGetExtensionProperties_t(self.__dditable.Driver.pfnGetExtensionProperties)
         self.zesDriverGetExtensionFunctionAddress = _zesDriverGetExtensionFunctionAddress_t(self.__dditable.Driver.pfnGetExtensionFunctionAddress)
+        self.zesDriverGetProperties = _zesDriverGetProperties_t(self.__dditable.Driver.pfnGetProperties)
+        self.zesDriverEventRegisterExt = _zesDriverEventRegisterExt_t(self.__dditable.Driver.pfnEventRegisterExt)
+        self.zesDriverEventListenExt = _zesDriverEventListenExt_t(self.__dditable.Driver.pfnEventListenExt)
+        self.zesDriverEnumInfoLogsExt = _zesDriverEnumInfoLogsExt_t(self.__dditable.Driver.pfnEnumInfoLogsExt)
 
         # call driver to get function pointers
         _DriverExp = _zes_driver_exp_dditable_t()
@@ -4710,5 +5021,28 @@ class ZES_DDI:
         self.zesVFManagementGetVFMemoryUtilizationExp2 = _zesVFManagementGetVFMemoryUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp2)
         self.zesVFManagementGetVFEngineUtilizationExp2 = _zesVFManagementGetVFEngineUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp2)
         self.zesVFManagementGetVFCapabilitiesExp2 = _zesVFManagementGetVFCapabilitiesExp2_t(self.__dditable.VFManagementExp.pfnGetVFCapabilitiesExp2)
+
+        # call driver to get function pointers
+        _InfoLog = _zes_info_log_dditable_t()
+        r = ze_result_v(self.__dll.zesGetInfoLogProcAddrTable(version, byref(_InfoLog)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.InfoLog = _InfoLog
+
+        # attach function interface to function address
+        self.zesInfoLogGetPropertiesExt = _zesInfoLogGetPropertiesExt_t(self.__dditable.InfoLog.pfnGetPropertiesExt)
+        self.zesInfoLogCreateInstanceExt = _zesInfoLogCreateInstanceExt_t(self.__dditable.InfoLog.pfnCreateInstanceExt)
+
+        # call driver to get function pointers
+        _InfoLogInstance = _zes_info_log_instance_dditable_t()
+        r = ze_result_v(self.__dll.zesGetInfoLogInstanceProcAddrTable(version, byref(_InfoLogInstance)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.InfoLogInstance = _InfoLogInstance
+
+        # attach function interface to function address
+        self.zesInfoLogInstanceReadWithMetadataExt = _zesInfoLogInstanceReadWithMetadataExt_t(self.__dditable.InfoLogInstance.pfnReadWithMetadataExt)
+        self.zesInfoLogInstancePeekWithMetadataExt = _zesInfoLogInstancePeekWithMetadataExt_t(self.__dditable.InfoLogInstance.pfnPeekWithMetadataExt)
+        self.zesInfoLogInstanceDeleteExt = _zesInfoLogInstanceDeleteExt_t(self.__dditable.InfoLogInstance.pfnDeleteExt)
 
         # success!

@@ -8522,6 +8522,68 @@ namespace loader_driver_ddi
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandQueue == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnSetQosExt = dditable->CommandQueue->pfnSetQosExt;
+        if( nullptr == pfnSetQosExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnSetQosExt( hCommandQueue, desc );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandQueue == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        auto pfnGetQosExt = dditable->CommandQueue->pfnGetQosExt;
+        if( nullptr == pfnGetQosExt ) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        // forward to device-driver
+        result = pfnGetQosExt( hCommandQueue, pProperties );
+        return result;
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief function for removing the ddi driver tables for ze

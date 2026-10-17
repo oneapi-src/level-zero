@@ -11,4 +11,4 @@ extend-ignore =
     E266
 per-file-ignores =
     # Allow module-level imports not at top of file in examples
-    source/examples/pyzes_example.py:E402
+    source/pyzes/examples/pyzes_example.py:E402

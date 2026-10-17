@@ -2,7 +2,8 @@
 
 ARG VMAJ
 ARG VMIN
-FROM ghcr.io/oneapi-src/level-zero-linux-compute/ubuntu:${VMAJ}.${VMIN}
+# Public base image only; see .github/workflows/ci-images.yml.
+FROM ubuntu:${VMAJ}.${VMIN}
 
 ARG VMAJ
 ARG VMIN

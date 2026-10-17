@@ -1,0 +1,92 @@
+name: CI Images
+
+# Builds the Linux CI images from public base images only (Docker Hub ubuntu,
+# Red Hat UBI + EPEL, SUSE BCI) and publishes them to
+# ghcr.io/<repo>/ci/<distro>:<version>. Pull requests build and verify the
+# images without publishing; the weekly run picks up base image updates.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 2 * * 1'
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/docker/ci/**'
+      - '.github/workflows/ci-images.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/docker/ci/**'
+      - '.github/workflows/ci-images.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os.name }}-${{ matrix.os.vmaj }}.${{ matrix.os.vmin }}
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'oneapi-src'
+    permissions:
+      contents: read
+      # Needed to publish the images to ghcr.io.
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [
+          {name: ubuntu, vmaj: 22, vmin: '04'},
+          {name: ubuntu, vmaj: 24, vmin: '04'},
+          {name: ubuntu, vmaj: 26, vmin: '04'},
+          {name: sles, vmaj: 15, vmin: 4},
+          {name: sles, vmaj: 15, vmin: 6},
+          {name: sles, vmaj: 15, vmin: 7},
+          {name: rhel, vmaj: 8, vmin: 6},
+          {name: rhel, vmaj: 8, vmin: 10},
+          {name: rhel, vmaj: 9, vmin: 6}
+        ]
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}/ci/${{ matrix.os.name }}:${{ matrix.os.vmaj }}.${{ matrix.os.vmin }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Build image
+      # Retry to ride out transient registry timeouts on the public base images.
+      run: |
+        for attempt in 1 2 3; do
+          docker build \
+            --platform linux/amd64 \
+            --pull \
+            --build-arg VMAJ=${{ matrix.os.vmaj }} \
+            --build-arg VMIN=${{ matrix.os.vmin }} \
+            --label org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }} \
+            --tag "${IMAGE}" \
+            - < .github/docker/ci/${{ matrix.os.name }}.Dockerfile && exit 0
+          echo "docker build attempt ${attempt} failed; retrying in $((attempt*15))s" >&2
+          sleep $((attempt*15))
+        done
+        exit 1
+
+    - name: Verify the image builds the loader
+      run: |
+        docker run --rm -v "${{ github.workspace }}":/src:ro "${IMAGE}" bash -e -x -c '
+          cp -r /src /tmp/l0 && cd /tmp/l0 && mkdir build && cd build
+          gcc --version | head -1
+          cmake -G Ninja \
+            -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D CMAKE_INSTALL_PREFIX=../install ..
+          cmake --build . --target install'
+
+    - name: Publish image
+      if: github.event_name != 'pull_request'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_ACTOR: ${{ github.actor }}
+      run: |
+        echo "${GH_TOKEN}" | docker login ghcr.io -u "${GH_ACTOR}" --password-stdin
+        docker push "${IMAGE}"

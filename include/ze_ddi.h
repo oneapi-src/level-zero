@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.18-r1.18.31
+ * @version v1.19-r1.19.12
  *
  */
 #ifndef _ZE_DDI_H
@@ -963,6 +963,20 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueSetPriorityExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandQueueSetQosExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueSetQosExt_t)(
+    ze_command_queue_handle_t,
+    const ze_command_queue_qos_ext_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandQueueGetQosExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueGetQosExt_t)(
+    ze_command_queue_handle_t,
+    ze_command_queue_qos_ext_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandQueue functions pointers
 typedef struct _ze_command_queue_dditable_t
 {
@@ -976,6 +990,8 @@ typedef struct _ze_command_queue_dditable_t
     ze_pfnCommandQueueGetMode_t                                 pfnGetMode;
     ze_pfnCommandQueueGetPriority_t                             pfnGetPriority;
     ze_pfnCommandQueueSetPriorityExt_t                          pfnSetPriorityExt;
+    ze_pfnCommandQueueSetQosExt_t                               pfnSetQosExt;
+    ze_pfnCommandQueueGetQosExt_t                               pfnGetQosExt;
 } ze_command_queue_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

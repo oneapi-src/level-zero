@@ -254,6 +254,10 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeCommandQueueGetPriority") );
             initialzeDdiTable.CommandQueue.pfnSetPriorityExt = reinterpret_cast<ze_pfnCommandQueueSetPriorityExt_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandQueueSetPriorityExt") );
+            initialzeDdiTable.CommandQueue.pfnSetQosExt = reinterpret_cast<ze_pfnCommandQueueSetQosExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandQueueSetQosExt") );
+            initialzeDdiTable.CommandQueue.pfnGetQosExt = reinterpret_cast<ze_pfnCommandQueueGetQosExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandQueueGetQosExt") );
             initialzeDdiTable.CommandQueue.pfnGetOrdinal = reinterpret_cast<ze_pfnCommandQueueGetOrdinal_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandQueueGetOrdinal") );
             initialzeDdiTable.CommandQueue.pfnGetIndex = reinterpret_cast<ze_pfnCommandQueueGetIndex_t>(

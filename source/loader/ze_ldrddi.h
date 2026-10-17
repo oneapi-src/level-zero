@@ -2000,6 +2000,16 @@ namespace loader_driver_ddi
         void* pData                                     ///< [in,out][optional][range(0, *pSize)] pointer to the result buffer.
                                                         ///< If pData is nullptr, then only the required size is returned in pSize.
         );
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        );
 }
 
 #if defined(__cplusplus)

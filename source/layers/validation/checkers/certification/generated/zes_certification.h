@@ -27,6 +27,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zesDriverGetPropertiesPrologue( zes_driver_handle_t hDriver, zes_driver_properties_t* pDriverProperties ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_8) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -269,6 +275,18 @@ public:
     }
     virtual ze_result_t zesDriverEventListenExPrologue( ze_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_1) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEventRegisterExtPrologue( zes_driver_handle_t hDriver, zes_event_type_flags_t events ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEventListenExtPrologue( zes_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents, zes_event_type_flags_t* pDriverEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;
@@ -965,6 +983,42 @@ public:
     }
     virtual ze_result_t zesDeviceSetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_18) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverEnumInfoLogsExtPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_info_log_handle_t* phInfoLogs ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogGetPropertiesExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_ext_properties_t* pProperties ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogCreateInstanceExtPrologue( zes_info_log_handle_t hInfoLog, const char* pInstanceName, zes_info_log_instance_ext_desc_t* pDesc, zes_info_log_instance_handle_t* phInfoLogInstance ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstanceReadWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstancePeekWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

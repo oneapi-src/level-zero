@@ -19,7 +19,8 @@ namespace validation_layer
 
     class ZESHandleLifetimeValidation : public ZESValidationEntryPoints {
     public:
-                        ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
+                        ze_result_t zesDriverGetPropertiesPrologue( zes_driver_handle_t hDriver, zes_driver_properties_t* pDriverProperties ) override;
+        ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
         ze_result_t zesDriverGetExtensionFunctionAddressPrologue( zes_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) override;
         ze_result_t zesDeviceGetPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_device_handle_t* phDevices ) override;
         ze_result_t zesDeviceGetPropertiesPrologue( zes_device_handle_t hDevice, zes_device_properties_t* pProperties ) override;
@@ -60,6 +61,8 @@ namespace validation_layer
         ze_result_t zesDeviceEventRegisterPrologue( zes_device_handle_t hDevice, zes_event_type_flags_t events ) override;
         ze_result_t zesDriverEventListenPrologue( ze_driver_handle_t hDriver, uint32_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) override;
         ze_result_t zesDriverEventListenExPrologue( ze_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) override;
+        ze_result_t zesDriverEventRegisterExtPrologue( zes_driver_handle_t hDriver, zes_event_type_flags_t events ) override;
+        ze_result_t zesDriverEventListenExtPrologue( zes_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents, zes_event_type_flags_t* pDriverEvents ) override;
         ze_result_t zesDeviceEnumFabricPortsPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_fabric_port_handle_t* phPort ) override;
         ze_result_t zesFabricPortGetPropertiesPrologue( zes_fabric_port_handle_t hPort, zes_fabric_port_properties_t* pProperties ) override;
         ze_result_t zesFabricPortGetLinkTypePrologue( zes_fabric_port_handle_t hPort, zes_fabric_link_type_t* pLinkType ) override;
@@ -176,6 +179,12 @@ namespace validation_layer
         ze_result_t zesDevicePciLinkSpeedUpdateExtPrologue( zes_device_handle_t hDevice, ze_bool_t shouldDowngrade, zes_device_action_t* pendingAction ) override;
         ze_result_t zesDeviceGetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth ) override;
         ze_result_t zesDeviceSetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health ) override;
+        ze_result_t zesDriverEnumInfoLogsExtPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_info_log_handle_t* phInfoLogs ) override;
+        ze_result_t zesInfoLogGetPropertiesExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_ext_properties_t* pProperties ) override;
+        ze_result_t zesInfoLogCreateInstanceExtPrologue( zes_info_log_handle_t hInfoLog, const char* pInstanceName, zes_info_log_instance_ext_desc_t* pDesc, zes_info_log_instance_handle_t* phInfoLogInstance ) override;
+        ze_result_t zesInfoLogInstanceReadWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override;
+        ze_result_t zesInfoLogInstancePeekWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override;
+        ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) override;
     };
 
 }

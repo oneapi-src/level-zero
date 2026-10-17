@@ -4131,5 +4131,37 @@ zelTracerDeviceGetCompilerInfoRegisterCallback(
 }
 
 
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandQueueSetQosExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandQueueSetQosExtCb_t pfnSetQosExtCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandQueue.pfnSetQosExtCb = pfnSetQosExtCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandQueueGetQosExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandQueueGetQosExtCb_t pfnGetQosExtCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getZeProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandQueue.pfnGetQosExtCb = pfnGetQosExtCb;
+
+    return result;
+}
+
+
 
 } //extern C

@@ -1557,5 +1557,17 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandQueueSetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueGetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
 };
 } // namespace validation_layer

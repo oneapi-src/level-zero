@@ -134,6 +134,8 @@ typedef struct _zel_ze_command_queue_callbacks_t
     ze_pfnCommandQueueGetModeCb_t                                   pfnGetModeCb;
     ze_pfnCommandQueueGetPriorityCb_t                               pfnGetPriorityCb;
     ze_pfnCommandQueueSetPriorityExtCb_t                            pfnSetPriorityExtCb;
+    ze_pfnCommandQueueSetQosExtCb_t                                 pfnSetQosExtCb;
+    ze_pfnCommandQueueGetQosExtCb_t                                 pfnGetQosExtCb;
     ze_pfnCommandQueueGetOrdinalCb_t                                pfnGetOrdinalCb;
     ze_pfnCommandQueueGetIndexCb_t                                  pfnGetIndexCb;
 } zel_ze_command_queue_callbacks_t;

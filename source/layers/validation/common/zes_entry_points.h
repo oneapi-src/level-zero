@@ -21,6 +21,8 @@ public:
     virtual ze_result_t zesInitEpilogue( zes_init_flags_t flags , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGetPrologue( uint32_t* pCount, zes_driver_handle_t* phDrivers ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGetEpilogue( uint32_t* pCount, zes_driver_handle_t* phDrivers , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverGetPropertiesPrologue( zes_driver_handle_t hDriver, zes_driver_properties_t* pDriverProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverGetPropertiesEpilogue( zes_driver_handle_t hDriver, zes_driver_properties_t* pDriverProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGetExtensionPropertiesEpilogue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGetExtensionFunctionAddressPrologue( zes_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) {return ZE_RESULT_SUCCESS;}
@@ -103,6 +105,10 @@ public:
     virtual ze_result_t zesDriverEventListenEpilogue( ze_driver_handle_t hDriver, uint32_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverEventListenExPrologue( ze_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverEventListenExEpilogue( ze_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverEventRegisterExtPrologue( zes_driver_handle_t hDriver, zes_event_type_flags_t events ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverEventRegisterExtEpilogue( zes_driver_handle_t hDriver, zes_event_type_flags_t events , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverEventListenExtPrologue( zes_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents, zes_event_type_flags_t* pDriverEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverEventListenExtEpilogue( zes_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents, zes_event_type_flags_t* pDriverEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumFabricPortsPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_fabric_port_handle_t* phPort ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumFabricPortsEpilogue( zes_device_handle_t hDevice, uint32_t* pCount, zes_fabric_port_handle_t* phPort , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFabricPortGetPropertiesPrologue( zes_fabric_port_handle_t hPort, zes_fabric_port_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
@@ -335,6 +341,18 @@ public:
     virtual ze_result_t zesDeviceGetHealthStatusExtEpilogue( zes_device_handle_t hDevice, zes_device_health_status_ext_t* pHealth , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceSetHealthStatusExtPrologue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceSetHealthStatusExtEpilogue( zes_device_handle_t hDevice, zes_device_health_status_ext_t health , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverEnumInfoLogsExtPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_info_log_handle_t* phInfoLogs ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverEnumInfoLogsExtEpilogue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_info_log_handle_t* phInfoLogs , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogGetPropertiesExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_ext_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogGetPropertiesExtEpilogue( zes_info_log_handle_t hInfoLog, zes_info_log_ext_properties_t* pProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogCreateInstanceExtPrologue( zes_info_log_handle_t hInfoLog, const char* pInstanceName, zes_info_log_instance_ext_desc_t* pDesc, zes_info_log_instance_handle_t* phInfoLogInstance ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogCreateInstanceExtEpilogue( zes_info_log_handle_t hInfoLog, const char* pInstanceName, zes_info_log_instance_ext_desc_t* pDesc, zes_info_log_instance_handle_t* phInfoLogInstance , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogInstanceReadWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogInstanceReadWithMetadataExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogInstancePeekWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogInstancePeekWithMetadataExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesInfoLogInstanceDeleteExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }

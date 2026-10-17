@@ -4369,6 +4369,30 @@ namespace validation_layer
         }
         return ZE_RESULT_SUCCESS;
     }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueSetQosExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueGetQosExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     ze_result_t ZEHandleLifetimeValidation::zexCounterBasedEventCreate2Prologue(
         ze_context_handle_t hContext,   ///< [in] handle of the context object
         ze_device_handle_t hDevice,     ///< [in] handle of the device

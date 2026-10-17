@@ -7,7 +7,7 @@
 ##
 
 ##
-# Python Black Box Test for pyzes.py - Level Zero Sysman Python Bindings
+# Python Black Box Test for the pyzes package - Level Zero Sysman Python Bindings
 ##
 
 import argparse
@@ -16,9 +16,9 @@ import sys
 import time
 from ctypes import *
 
-# Add the source directory to Python path so we can import pyzes
+# Add the source directory (two levels up: source/pyzes/examples) to Python path so we can import pyzes
 script_dir = os.path.dirname(os.path.abspath(__file__))
-source_dir = os.path.join(script_dir, "..")
+source_dir = os.path.join(script_dir, "..", "..")
 source_dir = os.path.abspath(source_dir)
 if source_dir not in sys.path:
     sys.path.insert(0, source_dir)
@@ -29,7 +29,7 @@ try:
 except ImportError as e:
     print("Error: Could not import pyzes module")
     print(f"Import error: {e}")
-    print(f"Make sure pyzes.py is in the source directory: {source_dir}")
+    print(f"Make sure the pyzes package is in the source directory: {source_dir}")
     print(f"Current working directory: {os.getcwd()}")
     print(f"Script directory: {script_dir}")
     print(f"Source directory: {source_dir}")

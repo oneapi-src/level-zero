@@ -141,6 +141,14 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zesDriverEventListen") );
             initialzesDdiTable.Driver.pfnEventListenEx = reinterpret_cast<zes_pfnDriverEventListenEx_t>(
                 GET_FUNCTION_PTR(loader, "zesDriverEventListenEx") );
+            initialzesDdiTable.Driver.pfnGetProperties = reinterpret_cast<zes_pfnDriverGetProperties_t>(
+                GET_FUNCTION_PTR(loader, "zesDriverGetProperties") );
+            initialzesDdiTable.Driver.pfnEventRegisterExt = reinterpret_cast<zes_pfnDriverEventRegisterExt_t>(
+                GET_FUNCTION_PTR(loader, "zesDriverEventRegisterExt") );
+            initialzesDdiTable.Driver.pfnEventListenExt = reinterpret_cast<zes_pfnDriverEventListenExt_t>(
+                GET_FUNCTION_PTR(loader, "zesDriverEventListenExt") );
+            initialzesDdiTable.Driver.pfnEnumInfoLogsExt = reinterpret_cast<zes_pfnDriverEnumInfoLogsExt_t>(
+                GET_FUNCTION_PTR(loader, "zesDriverEnumInfoLogsExt") );
             initialzesDdiTable.Driver.pfnGet = reinterpret_cast<zes_pfnDriverGet_t>(
                 GET_FUNCTION_PTR(loader, "zesDriverGet") );
             initialzesDdiTable.Driver.pfnGetExtensionProperties = reinterpret_cast<zes_pfnDriverGetExtensionProperties_t>(
@@ -514,6 +522,32 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zesVFManagementSetVFTelemetrySamplingIntervalExp") );
         }
 
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            auto getTable = reinterpret_cast<zes_pfnGetInfoLogProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetInfoLogProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzesDdiTable.InfoLog );
+            initialzesDdiTable.InfoLog.pfnGetPropertiesExt = reinterpret_cast<zes_pfnInfoLogGetPropertiesExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogGetPropertiesExt") );
+            initialzesDdiTable.InfoLog.pfnCreateInstanceExt = reinterpret_cast<zes_pfnInfoLogCreateInstanceExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogCreateInstanceExt") );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            auto getTable = reinterpret_cast<zes_pfnGetInfoLogInstanceProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetInfoLogInstanceProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzesDdiTable.InfoLogInstance );
+            initialzesDdiTable.InfoLogInstance.pfnReadWithMetadataExt = reinterpret_cast<zes_pfnInfoLogInstanceReadWithMetadataExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogInstanceReadWithMetadataExt") );
+            initialzesDdiTable.InfoLogInstance.pfnPeekWithMetadataExt = reinterpret_cast<zes_pfnInfoLogInstancePeekWithMetadataExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogInstancePeekWithMetadataExt") );
+            initialzesDdiTable.InfoLogInstance.pfnDeleteExt = reinterpret_cast<zes_pfnInfoLogInstanceDeleteExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogInstanceDeleteExt") );
+        }
+
         return result;
     }
 #else
@@ -646,6 +680,18 @@ namespace ze_lib
         {
             // Optional
             zesGetVFManagementExpProcAddrTable( version, &initialzesDdiTable.VFManagementExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zesGetInfoLogProcAddrTable( version, &initialzesDdiTable.InfoLog );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zesGetInfoLogInstanceProcAddrTable( version, &initialzesDdiTable.InfoLogInstance );
         }
 
         return result;

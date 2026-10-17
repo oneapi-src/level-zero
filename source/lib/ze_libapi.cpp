@@ -19230,4 +19230,147 @@ zeDeviceGetCompilerInfo(
     #endif
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Sets the Quality of Service level of a command queue.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - This function changes the QoS level of an existing command queue,
+///       overriding both the driver default and any level specified at creation
+///       through ::ze_command_queue_qos_ext_desc_t; the updated value is
+///       reported by ::zeCommandQueueGetQosExt.
+///     - Setting `qos` of the descriptor to ::ZE_COMMAND_QUEUE_QOS_EXT_DEFAULT
+///       clears any active override and returns the queue to the
+///       driver/OS-selected default.
+///     - Whether the new QoS level affects commands already submitted to the
+///       command queue, or only commands submitted after this call, is
+///       implementation-defined.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_COMMAND_QUEUE_QOS_EXT_ECO < desc->qos`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+ze_result_t ZE_APICALL
+zeCommandQueueSetQosExt(
+    ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+    const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandQueueSetQosExt_t pfnSetQosExt = [&result] {
+        auto pfnSetQosExt = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnSetQosExt;
+        if( nullptr == pfnSetQosExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetQosExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetQosExt( hCommandQueue, desc );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetQosExt = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnSetQosExt;
+    if( nullptr == pfnSetQosExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetQosExt( hCommandQueue, desc );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the effective Quality of Service level of a command queue.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - Reports the effective QoS level after resolving any
+///       application-specified level against the driver/OS default, and whether
+///       that level was application-specified.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ze_result_t ZE_APICALL
+zeCommandQueueGetQosExt(
+    ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+    ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const ze_pfnCommandQueueGetQosExt_t pfnGetQosExt = [&result] {
+        auto pfnGetQosExt = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetQosExt;
+        if( nullptr == pfnGetQosExt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetQosExt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetQosExt( hCommandQueue, pProperties );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetQosExt = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetQosExt;
+    if( nullptr == pfnGetQosExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetQosExt( hCommandQueue, pProperties );
+    #endif
+}
+
 } // extern "C"

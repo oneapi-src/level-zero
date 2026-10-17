@@ -10285,6 +10285,76 @@ namespace tracing_layer
                                                   *tracerParams.ppData);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        )
+    {
+        auto pfnSetQosExt = context.zeDdiTable.CommandQueue.pfnSetQosExt;
+
+        if( nullptr == pfnSetQosExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandQueue.pfnSetQosExt, hCommandQueue, desc);
+
+        // capture parameters
+        ze_command_queue_set_qos_ext_params_t tracerParams = {
+            &hCommandQueue,
+            &desc
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandQueueSetQosExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueSetQosExtCb_t, CommandQueue, pfnSetQosExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnSetQosExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandQueue,
+                                                  *tracerParams.pdesc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        )
+    {
+        auto pfnGetQosExt = context.zeDdiTable.CommandQueue.pfnGetQosExt;
+
+        if( nullptr == pfnGetQosExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandQueue.pfnGetQosExt, hCommandQueue, pProperties);
+
+        // capture parameters
+        ze_command_queue_get_qos_ext_params_t tracerParams = {
+            &hCommandQueue,
+            &pProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandQueueGetQosExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandQueueGetQosExtCb_t, CommandQueue, pfnGetQosExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp<ze_result_t>(context.zeDdiTable.CommandQueue.pfnGetQosExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandQueue,
+                                                  *tracerParams.ppProperties);
+    }
+
 } // namespace tracing_layer
 
 #if defined(__cplusplus)
@@ -10888,6 +10958,14 @@ zeGetCommandQueueProcAddrTable(
     if (version >= ZE_API_VERSION_1_18) {
         dditable.pfnSetPriorityExt                           = pDdiTable->pfnSetPriorityExt;
         pDdiTable->pfnSetPriorityExt                         = tracing_layer::zeCommandQueueSetPriorityExt;
+    }
+    if (version >= ZE_API_VERSION_1_19) {
+        dditable.pfnSetQosExt                                = pDdiTable->pfnSetQosExt;
+        pDdiTable->pfnSetQosExt                              = tracing_layer::zeCommandQueueSetQosExt;
+    }
+    if (version >= ZE_API_VERSION_1_19) {
+        dditable.pfnGetQosExt                                = pDdiTable->pfnGetQosExt;
+        pDdiTable->pfnGetQosExt                              = tracing_layer::zeCommandQueueGetQosExt;
     }
     if (version >= ZE_API_VERSION_1_9) {
         dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;

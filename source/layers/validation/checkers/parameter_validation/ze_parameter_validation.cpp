@@ -5320,4 +5320,39 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
 
+
+    ze_result_t
+    ZEParameterValidation::zeCommandQueueSetQosExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        )
+    {
+        if( nullptr == hCommandQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( ZE_COMMAND_QUEUE_QOS_EXT_ECO < desc->qos )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandQueueGetQosExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        )
+    {
+        if( nullptr == hCommandQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pProperties )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pProperties);
+    }
+
 }

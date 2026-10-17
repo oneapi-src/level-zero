@@ -8888,6 +8888,56 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
+        auto pfnSetQosExt = dditable->ze.CommandQueue.pfnSetQosExt;
+        if( nullptr == pfnSetQosExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandQueue = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->handle;
+
+        // forward to device-driver
+        result = pfnSetQosExt( hCommandQueue, desc );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetQosExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetQosExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        ze_command_queue_qos_ext_properties_t* pProperties  ///< [in,out] query result for QoS properties of the command queue
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
+        auto pfnGetQosExt = dditable->ze.CommandQueue.pfnGetQosExt;
+        if( nullptr == pfnGetQosExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandQueue = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->handle;
+
+        // forward to device-driver
+        result = pfnGetQosExt( hCommandQueue, pProperties );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -9056,6 +9106,8 @@ zeGetCommandQueueProcAddrTableLegacy()
     loader::loaderDispatch->pCore->CommandQueue->pfnGetMode                                  = loader::zeCommandQueueGetMode;
     loader::loaderDispatch->pCore->CommandQueue->pfnGetPriority                              = loader::zeCommandQueueGetPriority;
     loader::loaderDispatch->pCore->CommandQueue->pfnSetPriorityExt                           = loader::zeCommandQueueSetPriorityExt;
+    loader::loaderDispatch->pCore->CommandQueue->pfnSetQosExt                                = loader::zeCommandQueueSetQosExt;
+    loader::loaderDispatch->pCore->CommandQueue->pfnGetQosExt                                = loader::zeCommandQueueGetQosExt;
     loader::loaderDispatch->pCore->CommandQueue->pfnGetOrdinal                               = loader::zeCommandQueueGetOrdinal;
     loader::loaderDispatch->pCore->CommandQueue->pfnGetIndex                                 = loader::zeCommandQueueGetIndex;
 }
@@ -11728,6 +11780,20 @@ zeGetCommandQueueProcAddrTable(
                 pDdiTable->pfnSetPriorityExt                           = loader::zeCommandQueueSetPriorityExt;
             }
             }
+            if (version >= ZE_API_VERSION_1_19) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetQosExt                                = loader_driver_ddi::zeCommandQueueSetQosExt;
+            } else {
+                pDdiTable->pfnSetQosExt                                = loader::zeCommandQueueSetQosExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_19) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetQosExt                                = loader_driver_ddi::zeCommandQueueGetQosExt;
+            } else {
+                pDdiTable->pfnGetQosExt                                = loader::zeCommandQueueGetQosExt;
+            }
+            }
             if (version >= ZE_API_VERSION_1_9) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnGetOrdinal                               = loader_driver_ddi::zeCommandQueueGetOrdinal;
@@ -11770,6 +11836,12 @@ zeGetCommandQueueProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_18) {
                 pDdiTable->pfnSetPriorityExt                           = firstDriver->dditable.ze.CommandQueue.pfnSetPriorityExt;
+            }
+            if (version >= ZE_API_VERSION_1_19) {
+                pDdiTable->pfnSetQosExt                                = firstDriver->dditable.ze.CommandQueue.pfnSetQosExt;
+            }
+            if (version >= ZE_API_VERSION_1_19) {
+                pDdiTable->pfnGetQosExt                                = firstDriver->dditable.ze.CommandQueue.pfnGetQosExt;
             }
             if (version >= ZE_API_VERSION_1_9) {
                 pDdiTable->pfnGetOrdinal                               = firstDriver->dditable.ze.CommandQueue.pfnGetOrdinal;

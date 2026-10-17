@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # Keep workflow actions current; one grouped PR per week.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns: ["*"]
