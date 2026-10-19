@@ -178,11 +178,11 @@ SUPPORTED APIs
 | `zesPowerGetProperties` | Power | 0.1.2 | None |
 | `zesPowerGetLimitsExt` | Power | 0.1.2 | Extended power limits API |
 | `zesPowerSetLimitsExt` | Power | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes |
-| `zesPowerGetUsage` | Power | 0.1.3 | Linux: Requires superuser or read permissions for telem nodes |
-| `zesPowerGetLimitsExt2` | Power | 0.1.3 | None |
-| `zesPowerSetLimitsExt2` | Power | 0.1.3 | Linux: Requires superuser |
-| `zesPowerGetEnergyThreshold` | Power | 0.1.3 | None |
-| `zesPowerSetEnergyThreshold` | Power | 0.1.3 | Linux: Requires superuser |
+| `zesPowerGetUsage` | Power | 0.1.4 | Linux: Requires superuser or read permissions for telem nodes |
+| `zesPowerGetLimitsExt2` | Power | 0.1.4 | None |
+| `zesPowerSetLimitsExt2` | Power | 0.1.4 | Linux: Requires superuser |
+| `zesPowerGetEnergyThreshold` | Power | 0.1.4 | None |
+| `zesPowerSetEnergyThreshold` | Power | 0.1.4 | Linux: Requires superuser |
 | **Frequency Management** |-|-|-|
 | `zesDeviceEnumFrequencyDomains` | Frequency | 0.1.0 | None |
 | `zesFrequencyGetState` | Frequency | 0.1.0 | None |
