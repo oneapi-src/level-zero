@@ -205,13 +205,13 @@ SUPPORTED APIs
 | `zesDeviceGetEccState` | ECC | 0.1.2 | None |
 | `zesDeviceSetEccState` | ECC | 0.1.2 | None |
 | **RAS (Reliability, Availability, Serviceability)** |-|-|-|
-| `zesDeviceEnumRasErrorSets` | RAS | 0.1.3 | Linux: Requires superuser |
-| `zesRasGetProperties` | RAS | 0.1.3 | None |
-| `zesRasGetSupportedCategoriesExp` | RAS | 0.1.3 | Experimental API |
-| `zesRasGetStateExp2` | RAS | 0.1.3 | Experimental API. Linux: Requires superuser |
-| `zesRasGetConfigExp` | RAS | 0.1.3 | Experimental API. Linux: Requires superuser |
-| `zesRasSetConfigExp` | RAS | 0.1.3 | Experimental API. Linux: Requires superuser |
-| `zesRasClearStateExp` | RAS | 0.1.3 | Experimental API. Linux: Requires superuser |
+| `zesDeviceEnumRasErrorSets` | RAS | 0.1.4 | Linux: Requires superuser |
+| `zesRasGetProperties` | RAS | 0.1.4 | None |
+| `zesRasGetSupportedCategoriesExp` | RAS | 0.1.4 | Experimental API |
+| `zesRasGetStateExp2` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
+| `zesRasGetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
+| `zesRasSetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
+| `zesRasClearStateExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
 
 RELEASE NOTES
 -------------
