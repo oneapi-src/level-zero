@@ -230,12 +230,12 @@ SUPPORTED APIs
 | `zesRasSetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
 | `zesRasClearStateExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
 | **Info Log Management** |-|-|-|
-| `zesDriverEnumInfoLogsExt` | Info Log | 0.1.3 | Linux: Requires superuser |
-| `zesInfoLogGetPropertiesExt` | Info Log | 0.1.3 | None |
-| `zesInfoLogCreateInstanceExt` | Info Log | 0.1.3 | Linux: Requires superuser |
-| `zesInfoLogInstanceReadWithMetadataExt` | Info Log | 0.1.3 | Records returned are consumed. Linux: Requires superuser |
-| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.3 | Requires `isPeekDataSupported`. Linux: Requires superuser |
-| `zesInfoLogInstanceDeleteExt` | Info Log | 0.1.3 | Linux: Requires superuser |
+| `zesDriverEnumInfoLogsExt` | Info Log | 0.1.4 | Linux: Requires superuser |
+| `zesInfoLogGetPropertiesExt` | Info Log | 0.1.4 | None |
+| `zesInfoLogCreateInstanceExt` | Info Log | 0.1.4 | Linux: Requires superuser |
+| `zesInfoLogInstanceReadWithMetadataExt` | Info Log | 0.1.4 | Records returned are consumed. Linux: Requires superuser |
+| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.4 | Requires `isPeekDataSupported`. Linux: Requires superuser |
+| `zesInfoLogInstanceDeleteExt` | Info Log | 0.1.4 | Linux: Requires superuser |
 
 RELEASE NOTES
 -------------
