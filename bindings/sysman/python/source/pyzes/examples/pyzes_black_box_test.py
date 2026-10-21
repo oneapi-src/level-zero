@@ -1283,7 +1283,6 @@ def test_power_module(
                 )
                 energy_threshold = None
 
-        # Requested set operations only apply to the root power domain of the selected device
         requested_limit = None
         if set_global_limit is not None and set_global_limit[0] == device_index:
             requested_limit = set_global_limit[1]
@@ -1303,7 +1302,6 @@ def test_power_module(
                     "    Skipping power set operations due to insufficient permissions"
                 )
         else:
-            # Power limit control and energy threshold support are reported independently
             if requested_limit is not None:
                 if not properties.canControl:
                     print_verbose(
@@ -1336,7 +1334,6 @@ def test_power_module(
                                     f"does not match applied limit {read_back.value} mW"
                                 )
 
-                    # Restore the limit read before the test
                     rc = pz.zesPowerSetLimitsExt2(power_handles[i], limit_ext2.value)
                     if check_rc(f"zesPowerSetLimitsExt2(power {i}, restore)", rc):
                         print_verbose(
@@ -1376,7 +1373,6 @@ def test_power_module(
                                 f"process ID: 0x{read_back_threshold.processId:X})"
                             )
 
-                    # An energy threshold cannot be disabled, so only an enabled one can be restored
                     if energy_threshold.enable:
                         rc = pz.zesPowerSetEnergyThreshold(
                             power_handles[i], energy_threshold.threshold

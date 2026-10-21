@@ -699,9 +699,9 @@ class zes_power_energy_counter_t(_PrintableStructure):
 
 class zes_energy_threshold_t(_PrintableStructure):
     _fields_ = [
-        ("enable", ze_bool_t),  # is the energy threshold enabled
-        ("threshold", c_double),  # energy threshold in Joules, 0.0 if not set
-        ("processId", c_uint32),  # host process ID that set the threshold
+        ("enable", ze_bool_t),
+        ("threshold", c_double),
+        ("processId", c_uint32),
     ]
     _fmt_ = {"threshold": "%.3f J"}
 
