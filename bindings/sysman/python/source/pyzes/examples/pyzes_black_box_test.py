@@ -1913,7 +1913,6 @@ def test_driver_properties_module(driver_handle, driver_index):
                         f"v{version >> 16}.{version & 0xFFFF}"
                     )
 
-    # Only the address of this extension function is queried, the function is not called
     function_name = b"zesIntelDriverRescanDevicesExp"
     function_address = c_void_p()
     rc = pz.zesDriverGetExtensionFunctionAddress(
@@ -1945,7 +1944,6 @@ def test_event_module(driver_handle, driver_index, listen_timeout=0):
     devices, device_count = device_info
     EventsArray = pz.zes_event_type_flags_t * device_count
 
-    # A timeout of 0 checks for pending events and returns immediately
     print_verbose(
         f"  Listening for device events on {device_count} device(s) with a {listen_timeout} ms timeout"
     )
@@ -1994,7 +1992,6 @@ def test_event_module(driver_handle, driver_index, listen_timeout=0):
             device_count, num_device_events.value, events, driver_events.value
         )
 
-    # Clear the driver event registration made by this test
     rc = pz.zesDriverEventRegisterExt(driver_handle, 0)
     check_rc(f"zesDriverEventRegisterExt(driver {driver_index}, clear)", rc)
 
@@ -2667,7 +2664,7 @@ def run_all_tests():
     for driver_idx in range(driver_count):
         print(f"\n=== Driver {driver_idx} Tests ===")
 
-        # Get devices for this driver, driver scoped tests still run without them
+        # Get devices for this driver
         device_info = get_devices(drivers[driver_idx])
         if device_info is None:
             print(f"No devices found for driver {driver_idx}")
@@ -2712,7 +2709,6 @@ def run_all_tests():
         if not test_info_log_module(drivers[driver_idx], driver_idx):
             success = False
 
-        # Test driver properties and events (driver scoped)
         test_driver_properties_module(drivers[driver_idx], driver_idx)
         test_event_module(drivers[driver_idx], driver_idx)
 
@@ -2966,7 +2962,6 @@ def main():
                     ):
                         success = False
 
-            # Driver tests are driver scoped, so run them once per driver before the device check
             for driver_idx in range(driver_count):
                 if args.driverproperties:
                     test_driver_properties_module(drivers[driver_idx], driver_idx)

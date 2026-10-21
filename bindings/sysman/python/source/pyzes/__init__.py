@@ -282,7 +282,6 @@ ZES_FREQ_THROTTLE_REASON_FLAG_THERMAL = 1 << 8
 ZES_FREQ_THROTTLE_REASON_FLAG_POWER = 1 << 9
 ZES_FREQ_THROTTLE_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
 
-## Event type flags ##
 zes_event_type_flags_t = c_uint32
 ZES_EVENT_TYPE_FLAG_DEVICE_DETACH = 1 << 0
 ZES_EVENT_TYPE_FLAG_DEVICE_ATTACH = 1 << 1
@@ -444,7 +443,7 @@ ZE_MAX_DEVICE_UUID_SIZE = 16
 ZES_STRING_PROPERTY_SIZE = 64  # from zes_api.h
 ZE_MAX_DEVICE_NAME = 256  # from ze_api.h
 ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
-ZES_MAX_EXTENSION_NAME = 256  # from zes_api.h
+ZES_MAX_EXTENSION_NAME = 256
 
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
@@ -658,20 +657,19 @@ class zes_uuid_t(_PrintableStructure):
     _fields_ = [("id", c_ubyte * ZES_MAX_UUID_SIZE)]
 
 
-## Driver structures ##
 class zes_driver_properties_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("uuid", zes_uuid_t),  # sysman driver instance UUID
-        ("driverVersion", c_uint32),  # sysman driver version
+        ("uuid", zes_uuid_t),
+        ("driverVersion", c_uint32),
     ]
 
 
 class zes_driver_extension_properties_t(_PrintableStructure):
     _fields_ = [
-        ("name", c_char * ZES_MAX_EXTENSION_NAME),  # extension name
-        ("version", c_uint32),  # extension version using ZE_MAKE_VERSION
+        ("name", c_char * ZES_MAX_EXTENSION_NAME),
+        ("version", c_uint32),
     ]
 
 
@@ -2478,9 +2476,6 @@ def zesInfoLogInstanceDeleteExt(hInfoLogInstance):
 
     retVal = funcPtr(hInfoLogInstance)
     return retVal
-
-
-## Driver functions ##
 
 
 def zesDriverGetProperties(hDriver, pDriverProperties):
