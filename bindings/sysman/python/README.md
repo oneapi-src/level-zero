@@ -253,7 +253,6 @@ Version 0.1.0 (Initial Release)
 Notes:
   Linux:
     zesPowerGetEnergyCounter
-    zesPowerGetUsage
     zesTemperatureGetState
     zesMemoryGetBandwidth
 
