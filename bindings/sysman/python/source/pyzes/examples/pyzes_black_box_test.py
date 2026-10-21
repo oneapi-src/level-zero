@@ -1001,7 +1001,6 @@ def test_ras_module(device_handle, device_index, set_threshold=None, clear_state
                             f"      {get_ras_error_category_string(categories[j])}: {verify[j].threshold} ({status})"
                         )
 
-            # Restore the thresholds read before the test
             print_verbose("    Restoring original thresholds")
             rc = pz.zesRasSetConfigExp(ras_handles[i], count, configs)
             check_rc(f"zesRasSetConfigExp(ras {i}, restore)", rc)
@@ -1582,7 +1581,6 @@ def run_all_tests():
             # Test engine modules
             test_engine_modules(devices[device_idx], device_idx)
 
-            # Test RAS module
             test_ras_module(devices[device_idx], device_idx)
 
     print("\n=== Test Completed ===")

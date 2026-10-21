@@ -298,7 +298,6 @@ ZES_ENGINE_GROUP_3D_ALL = 13
 ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14
 ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7FFFFFFF
 
-## RAS enums ##
 zes_ras_error_type_t = c_int32
 ZES_RAS_ERROR_TYPE_CORRECTABLE = 0
 ZES_RAS_ERROR_TYPE_UNCORRECTABLE = 1
@@ -403,8 +402,8 @@ ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
 ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
 ZES_STRUCTURE_TYPE_RAS_PROPERTIES = 0xF
-ZES_STRUCTURE_TYPE_RAS_STATE_EXP2 = 0x00020015  # Experimental RAS state
-ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP = 0x00020016  # Experimental RAS config
+ZES_STRUCTURE_TYPE_RAS_STATE_EXP2 = 0x00020015
+ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP = 0x00020016
 
 
 ## Core ze_device UUID struct ##
@@ -808,32 +807,31 @@ class zes_engine_stats_t(_PrintableStructure):
     _fmt_ = {"activeTime": "%d", "timestamp": "%d"}
 
 
-## RAS structures ##
 class zes_ras_properties_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RAS_PROPERTIES
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("type", zes_ras_error_type_t),  # correctable/uncorrectable
-        ("onSubdevice", ze_bool_t),  # is on subdevice
-        ("subdeviceId", c_uint32),  # subdevice ID
+        ("type", zes_ras_error_type_t),
+        ("onSubdevice", ze_bool_t),
+        ("subdeviceId", c_uint32),
     ]
 
 
 class zes_ras_state_exp2_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RAS_STATE_EXP2
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("errorCounter", c_uint64),  # error counter for the requested category
+        ("errorCounter", c_uint64),
     ]
     _fmt_ = {"errorCounter": "%d"}
 
 
 class zes_ras_config_exp_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("category", zes_ras_error_category_exp_t),  # RAS error category
-        ("threshold", c_uint64),  # threshold to trigger RAS events (0 disables)
+        ("category", zes_ras_error_category_exp_t),
+        ("threshold", c_uint64),
     ]
     _fmt_ = {"threshold": "%d"}
 
@@ -1615,9 +1613,6 @@ def zesEngineGetActivity(hEngine, pStats):
 
     retVal = funcPtr(hEngine, pStats)
     return retVal
-
-
-## RAS functions ##
 
 
 def zesDeviceEnumRasErrorSets(hDevice, pCount, phRas):
