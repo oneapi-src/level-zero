@@ -347,7 +347,6 @@ ZES_STANDBY_PROMO_MODE_DEFAULT = 0
 ZES_STANDBY_PROMO_MODE_NEVER = 1
 ZES_STANDBY_PROMO_MODE_FORCE_UINT32 = 0x7FFFFFFF
 
-## Info log enums ##
 zes_info_log_type_ext_t = c_int32
 ZES_INFO_LOG_TYPE_EXT_DEVICE = 0
 ZES_INFO_LOG_TYPE_EXT_FORCE_UINT32 = 0x7FFFFFFF
@@ -453,12 +452,10 @@ ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES = 0x13
 ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2 = 0x00020009
 ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2 = 0x00020010
 ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES = 0x00020011
-ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES = 0x00020020  # Info log properties
-ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC = (
-    0x00020021  # Info log instance descriptor
-)
-ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT = 0x00020022  # Info log record metadata
-ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT = 0x00020023  # Info log read status
+ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES = 0x00020020
+ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC = 0x00020021
+ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT = 0x00020022
+ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT = 0x00020023
 
 
 ## Core ze_device UUID struct ##
@@ -942,47 +939,46 @@ class zes_vf_util_engine_exp2_t(_PrintableStructure):
     _fmt_ = {"activeCounterValue": "%d", "samplingCounterValue": "%d"}
 
 
-## Info log structures ##
 class zes_info_log_ext_properties_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("infoLogType", zes_info_log_type_ext_t),  # type of info carried
-        ("infoLogFormat", zes_info_log_format_ext_t),  # format of records
-        ("isNamedInstanceSupported", ze_bool_t),  # named instances supported
-        ("isPeekDataSupported", ze_bool_t),  # peek without consuming supported
+        ("infoLogType", zes_info_log_type_ext_t),
+        ("infoLogFormat", zes_info_log_format_ext_t),
+        ("isNamedInstanceSupported", ze_bool_t),
+        ("isPeekDataSupported", ze_bool_t),
     ]
 
 
 class zes_info_log_instance_ext_desc_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("pBufferSizeInKb", POINTER(c_uint32)),  # optional buffer size in KB
+        ("pBufferSizeInKb", POINTER(c_uint32)),
     ]
 
 
 class zes_info_log_metadata_ext_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("address", zes_pci_address_t),  # PCI address of originating device
-        ("uuid", zes_uuid_t),  # UUID of originating device
-        ("timestamp", c_uint64),  # record time in nanoseconds
-        ("lengthOfData", c_uint32),  # record length in bytes
-        ("offset", c_uint32),  # record byte offset in data buffer
-        ("recordType", zes_info_log_record_type_ext_t),  # record type
+        ("address", zes_pci_address_t),
+        ("uuid", zes_uuid_t),
+        ("timestamp", c_uint64),
+        ("lengthOfData", c_uint32),
+        ("offset", c_uint32),
+        ("recordType", zes_info_log_record_type_ext_t),
     ]
     _fmt_ = {"timestamp": "%d ns", "lengthOfData": "%d bytes"}
 
 
 class zes_info_log_read_status_ext_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("droppedRecordCount", c_int64),  # dropped records, -1 if unknown
-        ("consumedDataSize", c_uint64),  # bytes read out of the instance
-        ("hasDataToRead", ze_bool_t),  # records remain to be read
+        ("droppedRecordCount", c_int64),
+        ("consumedDataSize", c_uint64),
+        ("hasDataToRead", ze_bool_t),
     ]
     _fmt_ = {"consumedDataSize": "%d bytes"}
 
@@ -2252,9 +2248,6 @@ def zesVFManagementGetVFMemoryUtilizationExp2(hVFhandle, pCount, pMemUtil):
 
     retVal = funcPtr(hVFhandle, pCount, pMemUtil)
     return retVal
-
-
-## Info log functions ##
 
 
 def zesDriverEnumInfoLogsExt(hDriver, pCount, phInfoLogs):

@@ -1522,7 +1522,6 @@ def create_info_log_instance(info_log_handle, instance_name, buffer_size_kb):
     if not check_rc("zesInfoLogCreateInstanceExt", rc):
         return None
 
-    # The descriptor members are updated in place with the values which were actually applied
     if buffer_size is not None:
         print_verbose(f"  applied buffer size: {buffer_size.value} KB")
     return instance_handle
@@ -1548,8 +1547,6 @@ def test_info_log_instance_read_peek(info_log_handle, props, timeout):
         return
     print_verbose(f"Created collection instance '{INFO_LOG_INSTANCE_NAME}'")
 
-    # Only records generated after the instance was created are collected into it, so the
-    # instance is polled with the non-consuming query until it reports data
     print_verbose(
         f"\nWaiting up to {INFO_LOG_RECORD_WAIT_MS} ms for CPER records. Records are generated "
         "when the uncorrectable RAS counters are read, for example with "
@@ -1695,7 +1692,6 @@ def test_info_log_instance_collect(
     elif records is not None:
         print_info_log_records(records, 1)
         if use_peek:
-            # The peek left the records in place, so the same totals must still be reported
             rc, pending_size, pending_count = query_info_log_records(
                 collect_fn, instance_handle, timeout
             )
@@ -2491,7 +2487,7 @@ def run_all_tests():
     for driver_idx in range(driver_count):
         print(f"\n=== Driver {driver_idx} Tests ===")
 
-        # Get devices for this driver, driver scoped tests still run without them
+        # Get devices for this driver
         device_info = get_devices(drivers[driver_idx])
         if device_info is None:
             print(f"No devices found for driver {driver_idx}")
@@ -2533,7 +2529,6 @@ def run_all_tests():
 
             test_vf_management_module(devices[device_idx], device_idx)
 
-        # Test info logs (driver scoped)
         if not test_info_log_module(drivers[driver_idx], driver_idx):
             success = False
 
@@ -2752,7 +2747,6 @@ def main():
 
             success = True
 
-            # Info logs are driver scoped, so run them once per driver before the device check
             if args.infolog:
                 for driver_idx in range(driver_count):
                     if not test_info_log_module(

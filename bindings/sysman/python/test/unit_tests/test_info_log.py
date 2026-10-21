@@ -11,7 +11,6 @@ import unittest
 from ctypes import *
 from unittest.mock import MagicMock, patch
 
-# Add the source directory to Python path so we can import pyzes
 script_dir = os.path.dirname(os.path.abspath(__file__))
 source_dir = os.path.join(script_dir, "..", "..", "source")
 source_dir = os.path.abspath(source_dir)
@@ -91,7 +90,6 @@ class TestInfoLogFunctions(unittest.TestCase):
             self.assertEqual(
                 desc.stype, self.pyzes.ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC
             )
-            # Driver reports the buffer size it actually applied
             desc.pBufferSizeInKb[0] = 64
             instance_ptr._obj.value = 0x1234
             return self.pyzes.ZE_RESULT_SUCCESS
