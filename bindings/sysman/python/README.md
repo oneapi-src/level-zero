@@ -234,7 +234,7 @@ SUPPORTED APIs
 | `zesInfoLogGetPropertiesExt` | Info Log | 0.1.4 | None |
 | `zesInfoLogCreateInstanceExt` | Info Log | 0.1.4 | Linux: Requires superuser |
 | `zesInfoLogInstanceReadWithMetadataExt` | Info Log | 0.1.4 | Records returned are consumed. Linux: Requires superuser |
-| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.4 | Requires `isPeekDataSupported`. Linux: Requires superuser |
+| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.4 | Linux: Requires superuser |
 | `zesInfoLogInstanceDeleteExt` | Info Log | 0.1.4 | Linux: Requires superuser |
 
 RELEASE NOTES
