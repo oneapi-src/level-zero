@@ -196,7 +196,6 @@ ZES_DEVICE_TYPE_MCA = 4
 ZES_DEVICE_TYPE_VPU = 5
 ZES_DEVICE_TYPE_FORCE_UINT32 = 0x7FFFFFFF
 
-## Device state, reset and health enums ##
 zes_repair_status_t = c_int32
 ZES_REPAIR_STATUS_UNSUPPORTED = 0
 ZES_REPAIR_STATUS_NOT_PERFORMED = 1
@@ -311,8 +310,6 @@ ZES_FREQ_THROTTLE_REASON_FLAG_THERMAL = 1 << 8
 ZES_FREQ_THROTTLE_REASON_FLAG_POWER = 1 << 9
 ZES_FREQ_THROTTLE_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
 
-
-## Event type flags ##
 zes_event_type_flags_t = c_uint32
 ZES_EVENT_TYPE_FLAG_DEVICE_DETACH = 1 << 0
 ZES_EVENT_TYPE_FLAG_DEVICE_ATTACH = 1 << 1
@@ -561,23 +558,21 @@ class zes_device_properties_t(_PrintableStructure):
     ]
 
 
-## Sysman zes_device_state_t ##
 class zes_device_state_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_DEVICE_STATE
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("reset", zes_reset_reason_flags_t),  # reasons the device needs a reset
-        ("repaired", zes_repair_status_t),  # repair status
+        ("reset", zes_reset_reason_flags_t),
+        ("repaired", zes_repair_status_t),
     ]
 
 
-## Sysman zes_reset_properties_t ##
 class zes_reset_properties_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_RESET_PROPERTIES
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("force", ze_bool_t),  # forcibly kill applications using the device
-        ("resetType", zes_reset_type_t),  # type of reset to perform
+        ("force", ze_bool_t),
+        ("resetType", zes_reset_type_t),
     ]
 
 

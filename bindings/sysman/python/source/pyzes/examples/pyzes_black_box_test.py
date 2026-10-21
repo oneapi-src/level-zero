@@ -2104,9 +2104,6 @@ def test_device_state_module(device_handle, device_index):
 
     print_device_state(device_handle, device_index)
 
-    # zesDeviceResetExt is only exercised with --reset as a reset loses all device
-    # state and may kill applications using the device.
-
     events_to_register = pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED
     rc = pz.zesDeviceEventRegister(device_handle, events_to_register)
     if rc != pz.ZE_RESULT_SUCCESS:
@@ -2117,7 +2114,6 @@ def test_device_state_module(device_handle, device_index):
         print_verbose(
             f"  Registered device events: {get_event_type_flags_string(events_to_register)}"
         )
-        # Clear the device event registration made by this test
         rc = pz.zesDeviceEventRegister(device_handle, 0)
         check_rc(f"zesDeviceEventRegister(device {device_index}, clear)", rc)
 
@@ -2170,7 +2166,6 @@ def test_device_health_module(device_handle, device_index, set_health=None):
                         f"{get_health_status_string(read_back.value)} ({status})"
                     )
 
-            # Restore the health status read before the test
             rc = pz.zesDeviceSetHealthStatusExt(device_handle, health.value)
             if check_rc(
                 f"zesDeviceSetHealthStatusExt(device {device_index}, restore)", rc
@@ -2863,10 +2858,8 @@ def run_all_tests():
             # Test global device operations (properties and processes)
             test_global_operation(drivers[driver_idx], devices[device_idx], device_idx)
 
-            # Test device state, events, and firmware enumeration
             test_device_state_module(devices[device_idx], device_idx)
 
-            # Test device health status
             test_device_health_module(devices[device_idx], device_idx)
 
             # Test PCI module
@@ -3257,7 +3250,6 @@ def main():
                 if args.vftelemetry:
                     test_vf_management_module(devices[device_idx], device_idx)
 
-                # Run the reset last since it loses all device state
                 if args.reset is not None and args.reset_device in (None, device_idx):
                     test_device_reset(
                         devices[device_idx],
