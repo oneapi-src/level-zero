@@ -330,7 +330,6 @@ ZES_RAS_ERROR_CATEGORY_EXP_FABRIC_ERRORS = 11
 ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS = 12
 ZES_RAS_ERROR_CATEGORY_EXP_FORCE_UINT32 = 0x7FFFFFFF
 
-## Standby enums ##
 zes_standby_type_t = c_int32
 ZES_STANDBY_TYPE_GLOBAL = 0
 ZES_STANDBY_TYPE_FORCE_UINT32 = 0x7FFFFFFF
@@ -426,11 +425,9 @@ ZES_STRUCTURE_TYPE_RAS_PROPERTIES = 0xF
 ZES_STRUCTURE_TYPE_RAS_STATE_EXP2 = 0x00020015
 ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP = 0x00020016
 ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES = 0x13
-ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2 = 0x00020009  # Experimental VF memory utilization
-ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2 = (
-    0x00020010  # Experimental VF engine utilization
-)
-ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES = 0x00020011  # Experimental VF capabilities
+ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2 = 0x00020009
+ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2 = 0x00020010
+ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES = 0x00020011
 
 
 ## Core ze_device UUID struct ##
@@ -872,46 +869,44 @@ class zes_ras_config_exp_t(_PrintableStructure):
     _fmt_ = {"threshold": "%d"}
 
 
-## Standby structures ##
 class zes_standby_properties_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("type", zes_standby_type_t),  # standby hardware component
-        ("onSubdevice", ze_bool_t),  # is on subdevice
-        ("subdeviceId", c_uint32),  # subdevice ID
+        ("type", zes_standby_type_t),
+        ("onSubdevice", ze_bool_t),
+        ("subdeviceId", c_uint32),
     ]
 
 
-## VF management structures ##
 class zes_vf_exp2_capabilities_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("address", zes_pci_address_t),  # VF BDF address
-        ("vfDeviceMemSize", c_uint64),  # VF memory size in bytes
-        ("vfID", c_uint32),  # VF ID
+        ("address", zes_pci_address_t),
+        ("vfDeviceMemSize", c_uint64),
+        ("vfID", c_uint32),
     ]
     _fmt_ = {"vfDeviceMemSize": "%d bytes"}
 
 
 class zes_vf_util_mem_exp2_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("vfMemLocation", zes_mem_loc_t),  # memory location (system, device)
-        ("vfMemUtilized", c_uint64),  # utilized memory size in bytes
+        ("vfMemLocation", zes_mem_loc_t),
+        ("vfMemUtilized", c_uint64),
     ]
     _fmt_ = {"vfMemUtilized": "%d bytes"}
 
 
 class zes_vf_util_engine_exp2_t(_PrintableStructure):
     _fields_ = [
-        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2
+        ("stype", c_int32),
         ("pNext", c_void_p),
-        ("vfEngineType", zes_engine_group_t),  # engine group
-        ("activeCounterValue", c_uint64),  # active counter
-        ("samplingCounterValue", c_uint64),  # sampling counter
+        ("vfEngineType", zes_engine_group_t),
+        ("activeCounterValue", c_uint64),
+        ("samplingCounterValue", c_uint64),
     ]
     _fmt_ = {"activeCounterValue": "%d", "samplingCounterValue": "%d"}
 
@@ -2005,9 +2000,6 @@ def zesEngineGetActivityExt(hEngine, pCount, pStats):
     return retVal
 
 
-## Standby functions ##
-
-
 def zesDeviceEnumStandbyDomains(hDevice, pCount, phStandby):
     """Wraps API:
     ze_result_t zesDeviceEnumStandbyDomains(
@@ -2089,9 +2081,6 @@ def zesStandbySetMode(hStandby, mode):
 
     retVal = funcPtr(hStandby, mode)
     return retVal
-
-
-## VF management functions ##
 
 
 def zesDeviceEnumEnabledVFExp(hDevice, pCount, phVFhandle):

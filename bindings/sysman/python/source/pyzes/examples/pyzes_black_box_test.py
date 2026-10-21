@@ -900,7 +900,6 @@ def test_engine_modules(device_handle, device_index):
         if ext_count.value == 0:
             continue
 
-        # Take two samples to derive the utilization of the PF and each VF
         EngineStatsArray = pz.zes_engine_stats_t * ext_count.value
         ext_stats = EngineStatsArray()
         rc = pz.zesEngineGetActivityExt(engine_handles[i], byref(ext_count), ext_stats)
@@ -1002,7 +1001,6 @@ def test_standby_module(device_handle, device_index):
                     f"{get_standby_promo_mode_string(read_back.value)} ({status})"
                 )
 
-        # Restore the mode read before the test
         rc = pz.zesStandbySetMode(standby_handles[i], mode.value)
         if check_rc(f"zesStandbySetMode(standby {i}, restore)", rc):
             print_verbose(
@@ -1967,10 +1965,8 @@ def run_all_tests():
 
             test_ras_module(devices[device_idx], device_idx)
 
-            # Test standby domains
             test_standby_module(devices[device_idx], device_idx)
 
-            # Test VF management
             test_vf_management_module(devices[device_idx], device_idx)
 
     print("\n=== Test Completed ===")
