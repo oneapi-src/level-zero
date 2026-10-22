@@ -202,6 +202,124 @@ class TestPowerFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesPowerSetLimitsExt")
         mock_func.assert_called_once()
 
+    def test_GivenValidPowerHandleWhenCallingZesPowerGetUsageThenCallSucceedsWithUsageData(
+        self, mock_get_func
+    ):
+        def mock_get_usage(power_handle, instant_ptr, average_ptr):
+            instant_ptr._obj.value = 45000
+            average_ptr._obj.value = 40000
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_usage)
+        mock_get_func.return_value = mock_func
+
+        power_handle = self.pyzes.zes_pwr_handle_t()
+        instant_power = c_uint32(0)
+        average_power = c_uint32(0)
+
+        result = self.pyzes.zesPowerGetUsage(
+            power_handle, byref(instant_power), byref(average_power)
+        )
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(instant_power.value, 45000)
+        self.assertEqual(average_power.value, 40000)
+        mock_get_func.assert_called_with("zesPowerGetUsage")
+        mock_func.assert_called_once()
+
+    def test_GivenValidPowerHandleWhenCallingZesPowerGetUsageWithOnlyInstantPowerThenCallSucceeds(
+        self, mock_get_func
+    ):
+        def mock_get_usage(power_handle, instant_ptr, average_ptr):
+            self.assertIsNone(average_ptr)
+            instant_ptr._obj.value = 45000
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_usage)
+        mock_get_func.return_value = mock_func
+
+        power_handle = self.pyzes.zes_pwr_handle_t()
+        instant_power = c_uint32(0)
+
+        result = self.pyzes.zesPowerGetUsage(power_handle, byref(instant_power), None)
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(instant_power.value, 45000)
+        mock_get_func.assert_called_with("zesPowerGetUsage")
+        mock_func.assert_called_once()
+
+    def test_GivenValidPowerHandleWhenCallingZesPowerGetLimitsExt2ThenCallSucceedsWithLimit(
+        self, mock_get_func
+    ):
+        def mock_get_limits_ext2(power_handle, limit_ptr):
+            limit_ptr._obj.value = 250000
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_limits_ext2)
+        mock_get_func.return_value = mock_func
+
+        power_handle = self.pyzes.zes_pwr_handle_t()
+        limit = c_uint32(0)
+
+        result = self.pyzes.zesPowerGetLimitsExt2(power_handle, byref(limit))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(limit.value, 250000)
+        mock_get_func.assert_called_with("zesPowerGetLimitsExt2")
+        mock_func.assert_called_once()
+
+    def test_GivenValidPowerHandleWhenCallingZesPowerSetLimitsExt2ThenCallSucceeds(
+        self, mock_get_func
+    ):
+        mock_func = MagicMock(return_value=self.pyzes.ZE_RESULT_SUCCESS)
+        mock_get_func.return_value = mock_func
+
+        power_handle = self.pyzes.zes_pwr_handle_t()
+
+        result = self.pyzes.zesPowerSetLimitsExt2(power_handle, 275000)
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        mock_get_func.assert_called_with("zesPowerSetLimitsExt2")
+        mock_func.assert_called_once_with(power_handle, 275000)
+
+    def test_GivenValidPowerHandleWhenCallingZesPowerGetEnergyThresholdThenCallSucceedsWithThresholdData(
+        self, mock_get_func
+    ):
+        def mock_get_energy_threshold(power_handle, threshold_ptr):
+            threshold_ptr._obj.enable = 1
+            threshold_ptr._obj.threshold = 1500.5
+            threshold_ptr._obj.processId = 4321
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_energy_threshold)
+        mock_get_func.return_value = mock_func
+
+        power_handle = self.pyzes.zes_pwr_handle_t()
+        threshold = self.pyzes.zes_energy_threshold_t()
+
+        result = self.pyzes.zesPowerGetEnergyThreshold(power_handle, byref(threshold))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(threshold.enable, 1)
+        self.assertEqual(threshold.threshold, 1500.5)
+        self.assertEqual(threshold.processId, 4321)
+        mock_get_func.assert_called_with("zesPowerGetEnergyThreshold")
+        mock_func.assert_called_once()
+
+    def test_GivenValidPowerHandleWhenCallingZesPowerSetEnergyThresholdThenCallSucceeds(
+        self, mock_get_func
+    ):
+        mock_func = MagicMock(return_value=self.pyzes.ZE_RESULT_SUCCESS)
+        mock_get_func.return_value = mock_func
+
+        power_handle = self.pyzes.zes_pwr_handle_t()
+
+        result = self.pyzes.zesPowerSetEnergyThreshold(power_handle, 1500.5)
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        mock_get_func.assert_called_with("zesPowerSetEnergyThreshold")
+        mock_func.assert_called_once_with(power_handle, 1500.5)
+
 
 if __name__ == "__main__":
     unittest.main()
