@@ -43,8 +43,8 @@ endif()
 # conda-forge) sets this to the install prefix's lib dir so that a driver
 # co-installed in the same prefix is discovered by default.  CMake handles the
 # string quoting for the compile definition.
-if(DEFINED ZE_LOADER_EXTRA_DRIVER_DIR AND NOT ZE_LOADER_EXTRA_DRIVER_DIR STREQUAL "")
+if(DEFINED L0_LOADER_EXTRA_DRIVER_DIR AND NOT L0_LOADER_EXTRA_DRIVER_DIR STREQUAL "")
     target_compile_definitions(${TARGET_LOADER_NAME}
-        PRIVATE ZE_LOADER_EXTRA_DRIVER_DIR="${ZE_LOADER_EXTRA_DRIVER_DIR}")
+        PRIVATE L0_LOADER_EXTRA_DRIVER_DIR="${L0_LOADER_EXTRA_DRIVER_DIR}")
 endif()
 
