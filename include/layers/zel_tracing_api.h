@@ -187,6 +187,37 @@ zelTracerSetEnabled(
     ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
     );
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Overrides the value returned to the application by the API call
+///        currently being traced.
+/// 
+/// @details
+///     - Must be called from within an epilogue callback of an API that
+///       returns ::ze_result_t.
+///     - Epilogues run in tracer registration order. Each later epilogue
+///       receives the overridden value as its `result` parameter; the last
+///       override wins.
+///     - Loaders that predate this function do not provide it. A static
+///       loader built with this function returns
+///       ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE when the runtime loader lacks it.
+///     - The value is not checked. Replacing an error, including one from the
+///       validation layer, hides it from the application; override only the
+///       results you handle. See source/layers/tracing/README.md.
+///     - Other return types (for example ::ze_context_handle_t) are reserved
+///       for future type-specific zelTracerSet<Type>ReturnValue functions.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + the tracing layer in use does not support this function
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + not called from an epilogue of an API that returns ::ze_result_t
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerSetResultReturnValue(
+    ze_result_t value                           ///< [in] value the traced API returns to the application
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif

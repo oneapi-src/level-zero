@@ -175,6 +175,63 @@ Callback handlers are functions that are implemented by the application, and reg
 
     - __ppTracerInstanceUserData__ : a per-tracer, per-instance, per-thread storage location; typically used for passing data from the prologue to the epilogue. See example below.
 
+## Overriding the Return Value
+
+An epilogue callback can replace the value that the traced API returns to the application by calling __zelTracerSetResultReturnValue(ze_result_t value)__:
+
+```c
+void OnExitEventHostSynchronize(
+    ze_event_host_synchronize_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData )
+{
+    // Only handle NOT_READY; every other result passes through unchanged.
+    if (result != ZE_RESULT_NOT_READY)
+        return;
+    while (result == ZE_RESULT_NOT_READY) {
+        run_progress();
+        // Calls made from inside a callback are not traced again.
+        result = zeEventHostSynchronize(*params->phEvent, *params->ptimeout);
+    }
+    // Report the final result of the wait, which may itself be an error.
+    zelTracerSetResultReturnValue(result);
+}
+```
+
+Notes:
+- It is only valid from an epilogue of an API that returns `ze_result_t`. Anywhere else it returns `ZE_RESULT_ERROR_INVALID_ARGUMENT` and changes nothing.
+- Epilogues run in tracer registration order. Each later epilogue receives the overridden value as its `result` parameter. The last override wins.
+- APIs that return other types (`zeDriverGetDefaultContext`, `zerGetDefaultContext`, `zerTranslateIdentifierToDeviceHandle`, `zerTranslateDeviceHandleToIdentifier`) are reserved for future type-specific `zelTracerSet<Type>ReturnValue` functions.
+- Older loaders do not provide this function:
+    - Applications that link the static loader get `ZE_RESULT_ERROR_UNSUPPORTED_FEATURE` and the original return value is left unchanged.
+    - Applications that link the dynamic loader fail with an undefined symbol when the function is first called. To support older loaders, look the function up at runtime (`dlsym` / `GetProcAddress`) instead of calling it directly.
+
+### Warning: an override can hide real errors
+
+The value set by __zelTracerSetResultReturnValue__ is what the application sees. The loader does not check it and does not log it. If you replace an error with `ZE_RESULT_SUCCESS`, the application believes the call worked when it did not.
+
+The tracing layer sits above the validation layer (application → tracing layer → validation layer → driver). This means an epilogue can also hide errors that come from the validation layer:
+
+- The validation layer still runs first and still stops an invalid call before it reaches the driver.
+- The validation layer's own checks still see the real result.
+- The epilogue still receives the real error in its `result` parameter.
+- The application only sees the value from the last override. For example, an epilogue that always sets `ZE_RESULT_SUCCESS` turns `ZE_RESULT_ERROR_INVALID_NULL_POINTER` from a bad argument into `ZE_RESULT_SUCCESS`.
+
+When an error is hidden:
+
+- Output parameters are not written, but the application reads them as if they were. For example, a count stays 0, a handle stays null, or a buffer holds old data.
+- Handles and objects may not exist, so later calls fail far from the real cause, or crash.
+- Device loss and out-of-memory errors are masked, so the application keeps going on a device or allocation that is not usable.
+- Tools that depend on return codes, such as the validation layer's error reporting to the application or retry logic, no longer work.
+
+To use overrides safely:
+
+- Only replace the specific results you handle. For example, replace `ZE_RESULT_NOT_READY` after you have waited for completion. Do not override unconditionally.
+- Pass every other result through unchanged. Do not call __zelTracerSetResultReturnValue__ for results you do not handle.
+- Do not turn an error into `ZE_RESULT_SUCCESS` unless your callback has completed the work the application asked for, including all output parameters.
+- When you debug a failure with tracing enabled, first disable any tracer that overrides results, then run with `ZE_ENABLE_VALIDATION_LAYER=1` and `ZE_ENABLE_PARAMETER_VALIDATION=1`.
+
 ##  __zeInit__ is traceable for all calls subsequent from the creation and enabling of the tracer itself.
 
 ## Enabling, Disabling and Destruction

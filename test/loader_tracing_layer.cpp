@@ -1012,6 +1012,227 @@ namespace
         destroyTracer(hTracer);
     }
 
+    // Epilogue callbacks below record what zelTracerSetResultReturnValue returned.
+    ze_result_t setResultReturnValueStatus = ZE_RESULT_ERROR_UNKNOWN;
+
+    TEST_P(TracingParameterizedTest,
+           GivenEpilogueCallbackWhenSettingResultReturnValueThenCallerReceivesOverriddenValue)
+    {
+        InitMethod initMethod = GetParam();
+
+        setupTracing(TracingMode::STATIC_TRACING);
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        auto epilogOverride = [](ze_device_get_command_queue_group_properties_params_t *,
+                                 ze_result_t, void *, void **) {
+            setResultReturnValueStatus = zelTracerSetResultReturnValue(ZE_RESULT_ERROR_UNKNOWN);
+        };
+
+        zel_tracer_handle_t hTracer = createTracer();
+        EXPECT_EQ(ZE_RESULT_SUCCESS,
+                  zelTracerDeviceGetCommandQueueGroupPropertiesRegisterCallback(
+                      hTracer, ZEL_REGISTER_EPILOGUE,
+                      static_cast<ze_pfnDeviceGetCommandQueueGroupPropertiesCb_t>(epilogOverride)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
+
+        uint32_t deviceCount = 1;
+        std::vector<ze_device_handle_t> devices(deviceCount);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+        setResultReturnValueStatus = ZE_RESULT_ERROR_UNKNOWN;
+        uint32_t queueGroupCount = 0;
+        ze_result_t result = zeDeviceGetCommandQueueGroupProperties(devices[0], &queueGroupCount, nullptr);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, setResultReturnValueStatus);
+        EXPECT_EQ(ZE_RESULT_ERROR_UNKNOWN, result);
+
+        // Once the tracer is disabled the driver's own result comes back again.
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, false));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGetCommandQueueGroupProperties(devices[0], &queueGroupCount, nullptr));
+
+        destroyTracer(hTracer);
+    }
+
+    TEST_P(TracingParameterizedTest,
+           GivenDynamicTracingAndEpilogueCallbackWhenSettingResultReturnValueThenCallerReceivesOverriddenValue)
+    {
+        InitMethod initMethod = GetParam();
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        auto epilogOverride = [](ze_device_get_command_queue_group_properties_params_t *,
+                                 ze_result_t, void *, void **) {
+            setResultReturnValueStatus = zelTracerSetResultReturnValue(ZE_RESULT_ERROR_UNKNOWN);
+        };
+
+        EXPECT_EQ(ZE_RESULT_SUCCESS, enableDynamicTracing());
+        zel_tracer_handle_t hTracer = createTracer();
+        EXPECT_EQ(ZE_RESULT_SUCCESS,
+                  zelTracerDeviceGetCommandQueueGroupPropertiesRegisterCallback(
+                      hTracer, ZEL_REGISTER_EPILOGUE,
+                      static_cast<ze_pfnDeviceGetCommandQueueGroupPropertiesCb_t>(epilogOverride)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
+
+        uint32_t deviceCount = 1;
+        std::vector<ze_device_handle_t> devices(deviceCount);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+        setResultReturnValueStatus = ZE_RESULT_ERROR_UNKNOWN;
+        uint32_t queueGroupCount = 0;
+        ze_result_t result = zeDeviceGetCommandQueueGroupProperties(devices[0], &queueGroupCount, nullptr);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, setResultReturnValueStatus);
+        EXPECT_EQ(ZE_RESULT_ERROR_UNKNOWN, result);
+
+        destroyTracer(hTracer);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, disableDynamicTracing());
+    }
+
+    // Mirrors the Intel MPI use case: the prologue shortens the timeout, a first
+    // tracer stands in for a driver that is not ready yet, and a second tracer
+    // drives progress with nested (untraced) calls before reporting success.
+    int hostSyncNotReadyLeft = 0;
+    int hostSyncProgressCalls = 0;
+    uint64_t hostSyncTimeoutSeen = 0;
+
+    TEST_P(TracingParameterizedTest,
+           GivenMultipleTracersWhenEarlierEpilogueSetsResultReturnValueThenLaterEpilogueSeesItAndLastWriteWins)
+    {
+        InitMethod initMethod = GetParam();
+
+        setupTracing(TracingMode::STATIC_TRACING);
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC, nullptr, 0};
+        ze_context_handle_t hContext = nullptr;
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &contextDesc, &hContext));
+        ze_event_pool_desc_t poolDesc = {ZE_STRUCTURE_TYPE_EVENT_POOL_DESC, nullptr, ZE_EVENT_POOL_FLAG_HOST_VISIBLE, 1};
+        ze_event_pool_handle_t hPool = nullptr;
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeEventPoolCreate(hContext, &poolDesc, 0, nullptr, &hPool));
+        ze_event_desc_t eventDesc = {ZE_STRUCTURE_TYPE_EVENT_DESC, nullptr, 0, 0, 0};
+        ze_event_handle_t hEvent = nullptr;
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeEventCreate(hPool, &eventDesc, &hEvent));
+
+        auto fakeDriverEpilog = [](ze_event_host_synchronize_params_t *, ze_result_t, void *, void **) {
+            if (hostSyncNotReadyLeft > 0) {
+                --hostSyncNotReadyLeft;
+                zelTracerSetResultReturnValue(ZE_RESULT_NOT_READY);
+            }
+        };
+        auto progressProlog = [](ze_event_host_synchronize_params_t *params, ze_result_t, void *, void **) {
+            *params->ptimeout = 1000;
+        };
+        auto progressEpilog = [](ze_event_host_synchronize_params_t *params, ze_result_t result, void *, void **) {
+            hostSyncTimeoutSeen = *params->ptimeout;
+            while (result == ZE_RESULT_NOT_READY) {
+                ++hostSyncProgressCalls;
+                zeEventHostSynchronize(*params->phEvent, 1000);
+                if (hostSyncNotReadyLeft > 0)
+                    --hostSyncNotReadyLeft;
+                else
+                    result = ZE_RESULT_SUCCESS;
+            }
+            setResultReturnValueStatus = zelTracerSetResultReturnValue(ZE_RESULT_SUCCESS);
+        };
+
+        zel_tracer_handle_t hFakeDriverTracer = createTracer();
+        zel_tracer_handle_t hProgressTracer = createTracer();
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerEventHostSynchronizeRegisterCallback(
+                                         hFakeDriverTracer, ZEL_REGISTER_EPILOGUE,
+                                         static_cast<ze_pfnEventHostSynchronizeCb_t>(fakeDriverEpilog)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerEventHostSynchronizeRegisterCallback(
+                                         hProgressTracer, ZEL_REGISTER_PROLOGUE,
+                                         static_cast<ze_pfnEventHostSynchronizeCb_t>(progressProlog)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerEventHostSynchronizeRegisterCallback(
+                                         hProgressTracer, ZEL_REGISTER_EPILOGUE,
+                                         static_cast<ze_pfnEventHostSynchronizeCb_t>(progressEpilog)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hFakeDriverTracer, true));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hProgressTracer, true));
+
+        hostSyncNotReadyLeft = 3;
+        hostSyncProgressCalls = 0;
+        hostSyncTimeoutSeen = 0;
+        setResultReturnValueStatus = ZE_RESULT_ERROR_UNKNOWN;
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeEventHostSynchronize(hEvent, UINT64_MAX));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, setResultReturnValueStatus);
+        EXPECT_EQ(3, hostSyncProgressCalls);
+        EXPECT_EQ(1000u, hostSyncTimeoutSeen);
+
+        destroyTracer(hFakeDriverTracer);
+        destroyTracer(hProgressTracer);
+        zeEventDestroy(hEvent);
+        zeEventPoolDestroy(hPool);
+        zeContextDestroy(hContext);
+    }
+
+    TEST_P(TracingParameterizedTest,
+           GivenNoEpilogueInProgressWhenSettingResultReturnValueThenInvalidArgumentIsReturnedAndResultIsUnchanged)
+    {
+        InitMethod initMethod = GetParam();
+
+        setupTracing(TracingMode::STATIC_TRACING);
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        EXPECT_EQ(ZE_RESULT_ERROR_INVALID_ARGUMENT, zelTracerSetResultReturnValue(ZE_RESULT_ERROR_UNKNOWN));
+
+        auto prologOverride = [](ze_device_get_command_queue_group_properties_params_t *,
+                                 ze_result_t, void *, void **) {
+            setResultReturnValueStatus = zelTracerSetResultReturnValue(ZE_RESULT_ERROR_UNKNOWN);
+        };
+
+        zel_tracer_handle_t hTracer = createTracer();
+        EXPECT_EQ(ZE_RESULT_SUCCESS,
+                  zelTracerDeviceGetCommandQueueGroupPropertiesRegisterCallback(
+                      hTracer, ZEL_REGISTER_PROLOGUE,
+                      static_cast<ze_pfnDeviceGetCommandQueueGroupPropertiesCb_t>(prologOverride)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
+
+        uint32_t deviceCount = 1;
+        std::vector<ze_device_handle_t> devices(deviceCount);
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+        setResultReturnValueStatus = ZE_RESULT_SUCCESS;
+        uint32_t queueGroupCount = 0;
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGetCommandQueueGroupProperties(devices[0], &queueGroupCount, nullptr));
+        EXPECT_EQ(ZE_RESULT_ERROR_INVALID_ARGUMENT, setResultReturnValueStatus);
+
+        destroyTracer(hTracer);
+    }
+
+    TEST_P(TracingParameterizedTest,
+           GivenEpilogueOfApiNotReturningZeResultWhenSettingResultReturnValueThenInvalidArgumentIsReturned)
+    {
+        InitMethod initMethod = GetParam();
+
+        setupTracing(TracingMode::STATIC_TRACING);
+
+        std::vector<ze_driver_handle_t> drivers;
+        initializeLevelZero(initMethod, drivers);
+
+        auto epilogOverride = [](zer_translate_device_handle_to_identifier_params_t *,
+                                 uint32_t, void *, void **) {
+            setResultReturnValueStatus = zelTracerSetResultReturnValue(ZE_RESULT_ERROR_UNKNOWN);
+        };
+
+        zel_tracer_handle_t hTracer = createTracer();
+        EXPECT_EQ(ZE_RESULT_SUCCESS,
+                  zelTracerTranslateDeviceHandleToIdentifierRegisterCallback(
+                      hTracer, ZEL_REGISTER_EPILOGUE,
+                      static_cast<zer_pfnTranslateDeviceHandleToIdentifierCb_t>(epilogOverride)));
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zelTracerSetEnabled(hTracer, true));
+
+        setResultReturnValueStatus = ZE_RESULT_SUCCESS;
+        (void)zerTranslateDeviceHandleToIdentifier(nullptr);
+        EXPECT_EQ(ZE_RESULT_ERROR_INVALID_ARGUMENT, setResultReturnValueStatus);
+
+        destroyTracer(hTracer);
+    }
+
     INSTANTIATE_TEST_SUITE_P(
         InitMethods,
         TracingParameterizedTest,
