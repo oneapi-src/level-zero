@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2025 Intel Corporation
+# Copyright (C) 2020-2026 Intel Corporation
 # SPDX-License-Identifier: MIT
 
 
@@ -36,5 +36,15 @@ else()
             ${CMAKE_CURRENT_SOURCE_DIR}/linux/driver_discovery_lin.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/linux/loader_init.cpp
     )
+endif()
+
+# An optional build-time configured directory to search for drivers, in
+# addition to LD_LIBRARY_PATH and the system locations.  Packaging (e.g.
+# conda-forge) sets this to the install prefix's lib dir so that a driver
+# co-installed in the same prefix is discovered by default.  CMake handles the
+# string quoting for the compile definition.
+if(DEFINED L0_LOADER_EXTRA_DRIVER_DIR AND NOT L0_LOADER_EXTRA_DRIVER_DIR STREQUAL "")
+    target_compile_definitions(${TARGET_LOADER_NAME}
+        PRIVATE L0_LOADER_EXTRA_DRIVER_DIR="${L0_LOADER_EXTRA_DRIVER_DIR}")
 endif()
 

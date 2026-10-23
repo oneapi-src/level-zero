@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -46,6 +46,15 @@ static std::vector<std::string> getLibrarySearchPaths() {
     auto split = splitPaths(ldLibPath);
     paths.insert(paths.end(), split.begin(), split.end());
   }
+#ifdef L0_LOADER_EXTRA_DRIVER_DIR
+  // A driver directory configured at build time (e.g. the install prefix's lib
+  // dir, baked in at compile time and relocated on install).  Searched right
+  // after LD_LIBRARY_PATH -- so a user's LD_LIBRARY_PATH still takes precedence
+  // -- but before the system locations.  This lets a driver co-installed in the
+  // same prefix (e.g. a conda environment) be discovered by default, without
+  // having to set ZE_ENABLE_ALT_DRIVERS.
+  paths.push_back(L0_LOADER_EXTRA_DRIVER_DIR);
+#endif
 #if defined(ANDROID)
   paths.push_back("/vendor/lib64");
 #else
@@ -108,16 +117,20 @@ static std::vector<std::string> getLibrarySearchPaths() {
   return paths;
 }
 
-// Main function: search for a library file in all known library paths
-static bool libraryExistsInSearchPaths(const std::string& filename) {
+// Main function: search for a library file in all known library paths.
+// Returns the full path of the first match, or an empty string if none.
+// The full path is what gets passed to dlopen(), so the file that is loaded
+// is the one that was found here, not whatever the dynamic linker resolves
+// the bare soname to.
+static std::string findLibraryInSearchPaths(const std::string& filename) {
   auto paths = getLibrarySearchPaths();
   for (const auto& dir : paths) {
     std::string fullPath = dir + "/" + filename;
     if (fileExistsReadable(fullPath)) {
-      return true;
+      return fullPath;
     }
   }
-  return false;
+  return std::string();
 }
 
 namespace loader {
@@ -138,7 +151,8 @@ std::vector<DriverLibraryPath> discoverEnabledDrivers() {
   if (altDrivers == nullptr) {
     // Standard drivers - not custom
     for (auto path : knownDriverNames) {
-      if (libraryExistsInSearchPaths(path)) {
+      std::string fullPath = findLibraryInSearchPaths(path);
+      if (!fullPath.empty()) {
         // Extract the base library name for robust driver type detection
         // path is like "libze_intel_gpu.so.1"
         std::string libName = path;
@@ -165,7 +179,7 @@ std::vector<DriverLibraryPath> discoverEnabledDrivers() {
           driverType = ZEL_DRIVER_TYPE_NPU;
         }
 
-        enabledDrivers.emplace_back(path, false, driverType);
+        enabledDrivers.emplace_back(fullPath, false, driverType);
       }
     }
   } else {
