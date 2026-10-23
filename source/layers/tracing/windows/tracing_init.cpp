@@ -17,6 +17,9 @@ namespace tracing_layer {
  */
 extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
     if (fdwReason == DLL_PROCESS_DETACH) {
+      if (lpvReserved) {
+        return TRUE;
+      }
       delete pGlobalAPITracerContextImp;
     } else if (fdwReason == DLL_PROCESS_ATTACH) {
       pGlobalAPITracerContextImp = new APITracerContextImp;
