@@ -45,6 +45,8 @@ When the `-DBUILD_STATIC=1` is executed, the dynamic loader and layers are not b
 
 Testing with the static loader requires a build of the dynamic loader or an installation of the dynamic loader to exist in the library path.
 
+To embed the loader implementation in the static archive and avoid a runtime dependency on `ze_loader.dll`, configure with `-DBUILD_STATIC_NO_DLL=1`. This automatically enables the static build. The resulting archive still loads vendor Level Zero driver libraries and may load optional validation or tracing layers.
+
 # Debug Trace
 
 > **Deprecated:** `ZE_ENABLE_LOADER_DEBUG_TRACE` is deprecated and will be removed in a future release.
