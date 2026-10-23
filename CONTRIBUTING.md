@@ -6,6 +6,19 @@ We encourage anyone who wants to contribute to submit
 review these for proper alignment with the
 [Level Zero Specification](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/index.html).
 
+## Copyright Headers
+
+Files you change must carry the current year in their Intel copyright line. CI
+checks this on every pull request. To update the files changed on your branch
+before you commit, run:
+
+```bash
+python3 scripts/copyright_year.py update
+```
+
+Use `check` instead of `update` to report without changing anything. If a file
+under `source/` is generated, also update its template in `scripts/templates/`.
+
 ## C++ Coding Standards
 
 * C++14 maximum support
