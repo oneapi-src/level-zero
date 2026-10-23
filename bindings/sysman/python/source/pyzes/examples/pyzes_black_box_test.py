@@ -429,6 +429,49 @@ def get_event_type_flags_string(events):
     return " | ".join(names) if names else f"UNKNOWN_EVENTS_{events:#x}"
 
 
+def get_reset_reason_flags_string(reasons):
+    """Convert reset reason flags to a string of flag names"""
+    flag_map = {
+        pz.ZES_RESET_REASON_FLAG_WEDGED: "WEDGED",
+        pz.ZES_RESET_REASON_FLAG_REPAIR: "REPAIR",
+    }
+    if reasons == 0:
+        return "None"
+    names = [name for flag, name in flag_map.items() if reasons & flag]
+    return " | ".join(names) if names else f"UNKNOWN_RESET_REASONS_{reasons:#x}"
+
+
+def get_repair_status_string(status):
+    """Convert repair status enum to string"""
+    status_map = {
+        pz.ZES_REPAIR_STATUS_UNSUPPORTED: "ZES_REPAIR_STATUS_UNSUPPORTED",
+        pz.ZES_REPAIR_STATUS_NOT_PERFORMED: "ZES_REPAIR_STATUS_NOT_PERFORMED",
+        pz.ZES_REPAIR_STATUS_PERFORMED: "ZES_REPAIR_STATUS_PERFORMED",
+    }
+    return status_map.get(status, f"UNKNOWN_REPAIR_STATUS_{status}")
+
+
+def get_health_status_string(health):
+    """Convert device health status enum to string"""
+    health_map = {
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_OK: "ZES_DEVICE_HEALTH_STATUS_EXT_OK",
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_WARNING: "ZES_DEVICE_HEALTH_STATUS_EXT_WARNING",
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL: "ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL",
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_FAILED: "ZES_DEVICE_HEALTH_STATUS_EXT_FAILED",
+    }
+    return health_map.get(health, f"UNKNOWN_HEALTH_STATUS_{health}")
+
+
+def get_reset_type_string(reset_type):
+    """Convert reset type enum to string"""
+    type_map = {
+        pz.ZES_RESET_TYPE_WARM: "ZES_RESET_TYPE_WARM",
+        pz.ZES_RESET_TYPE_COLD: "ZES_RESET_TYPE_COLD",
+        pz.ZES_RESET_TYPE_FLR: "ZES_RESET_TYPE_FLR",
+    }
+    return type_map.get(reset_type, f"UNKNOWN_RESET_TYPE_{reset_type}")
+
+
 def is_root_user():
     """Return whether the current user has root privileges on platforms that support it"""
     geteuid = getattr(os, "geteuid", None)
@@ -1998,6 +2041,142 @@ def test_event_module(driver_handle, driver_index, listen_timeout=0):
     return True
 
 
+HEALTH_STATUS_ARGS = {
+    "ok": pz.ZES_DEVICE_HEALTH_STATUS_EXT_OK,
+    "warning": pz.ZES_DEVICE_HEALTH_STATUS_EXT_WARNING,
+    "critical": pz.ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL,
+    "failed": pz.ZES_DEVICE_HEALTH_STATUS_EXT_FAILED,
+}
+
+RESET_TYPE_ARGS = {
+    "warm": pz.ZES_RESET_TYPE_WARM,
+    "cold": pz.ZES_RESET_TYPE_COLD,
+    "flr": pz.ZES_RESET_TYPE_FLR,
+}
+
+
+def print_device_state(device_handle, device_index):
+    """Read and print the reset reasons and repair status of a device"""
+    state = pz.zes_device_state_t()
+    state.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_STATE
+    state.pNext = None
+
+    rc = pz.zesDeviceGetState(device_handle, byref(state))
+    if check_rc(f"zesDeviceGetState(device {device_index})", rc):
+        print_verbose("  State:")
+        print_verbose(
+            f"    Reset Reasons: {get_reset_reason_flags_string(state.reset)}"
+        )
+        print_verbose(f"    Repair Status: {get_repair_status_string(state.repaired)}")
+
+
+def test_device_reset(device_handle, device_index, force, reset_type):
+    """Reset a device with zesDeviceResetExt and print its state before and after"""
+    print(f"\n---- Device {device_index} Reset Test ----")
+
+    if not is_root_user():
+        print_verbose("Skipping zesDeviceResetExt due to insufficient permissions")
+        return True
+
+    print_device_state(device_handle, device_index)
+
+    reset_props = pz.zes_reset_properties_t()
+    reset_props.stype = pz.ZES_STRUCTURE_TYPE_RESET_PROPERTIES
+    reset_props.pNext = None
+    reset_props.force = force
+    reset_props.resetType = reset_type
+
+    print_verbose(
+        f"  Resetting device with type {get_reset_type_string(reset_type)} and force {bool(force)}"
+    )
+    rc = pz.zesDeviceResetExt(device_handle, byref(reset_props))
+    if not check_rc(f"zesDeviceResetExt(device {device_index})", rc):
+        return False
+
+    print_verbose("  Device reset successfully")
+    print_device_state(device_handle, device_index)
+    return True
+
+
+def test_device_state_module(device_handle, device_index):
+    """Test device state, event registration, and firmware enumeration"""
+    print(f"\n---- Device {device_index} Device State Test ----")
+
+    print_device_state(device_handle, device_index)
+
+    events_to_register = pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED
+    rc = pz.zesDeviceEventRegister(device_handle, events_to_register)
+    if rc != pz.ZE_RESULT_SUCCESS:
+        print_verbose(
+            f"  Device Event Registration: Not available ({get_result_string(rc)})"
+        )
+    else:
+        print_verbose(
+            f"  Registered device events: {get_event_type_flags_string(events_to_register)}"
+        )
+        rc = pz.zesDeviceEventRegister(device_handle, 0)
+        check_rc(f"zesDeviceEventRegister(device {device_index}, clear)", rc)
+
+    firmware_count = c_uint32(0)
+    rc = pz.zesDeviceEnumFirmwares(device_handle, byref(firmware_count), None)
+    if check_rc(f"zesDeviceEnumFirmwares(device {device_index}, count)", rc):
+        print_verbose(f"  Found {firmware_count.value} firmware component(s)")
+        if firmware_count.value > 0:
+            FirmwareArray = pz.zes_firmware_handle_t * firmware_count.value
+            firmware_handles = FirmwareArray()
+            rc = pz.zesDeviceEnumFirmwares(
+                device_handle, byref(firmware_count), firmware_handles
+            )
+            check_rc(f"zesDeviceEnumFirmwares(device {device_index}, handles)", rc)
+
+    return True
+
+
+def test_device_health_module(device_handle, device_index, set_health=None):
+    """Test the device health status read and, with --set-health, set and restore"""
+    print(f"\n---- Device {device_index} Device Health Test ----")
+
+    health = pz.zes_device_health_status_ext_t(0)
+    rc = pz.zesDeviceGetHealthStatusExt(device_handle, byref(health))
+    if rc != pz.ZE_RESULT_SUCCESS:
+        print_verbose(f"  Health Status: Not available ({get_result_string(rc)})")
+    else:
+        print_verbose(f"  Health Status: {get_health_status_string(health.value)}")
+
+        if set_health is None:
+            pass
+        elif not is_root_user():
+            print_verbose(
+                "  Skipping zesDeviceSetHealthStatusExt due to insufficient permissions"
+            )
+        else:
+            rc = pz.zesDeviceSetHealthStatusExt(device_handle, set_health)
+            if check_rc(
+                f"zesDeviceSetHealthStatusExt(device {device_index}, {get_health_status_string(set_health)})",
+                rc,
+            ):
+                read_back = pz.zes_device_health_status_ext_t(0)
+                rc = pz.zesDeviceGetHealthStatusExt(device_handle, byref(read_back))
+                if check_rc(
+                    f"zesDeviceGetHealthStatusExt(device {device_index}, verify)", rc
+                ):
+                    status = "OK" if read_back.value == set_health else "MISMATCH"
+                    print_verbose(
+                        f"  Set health status {get_health_status_string(set_health)}, read back "
+                        f"{get_health_status_string(read_back.value)} ({status})"
+                    )
+
+            rc = pz.zesDeviceSetHealthStatusExt(device_handle, health.value)
+            if check_rc(
+                f"zesDeviceSetHealthStatusExt(device {device_index}, restore)", rc
+            ):
+                print_verbose(
+                    f"  Restored health status to {get_health_status_string(health.value)}"
+                )
+
+    return True
+
+
 def test_memory_modules(device_handle, device_index):
     """Test memory module enumeration and operations"""
     print(f"\n---- Device {device_index} Memory Modules Test ----")
@@ -2679,6 +2858,10 @@ def run_all_tests():
             # Test global device operations (properties and processes)
             test_global_operation(drivers[driver_idx], devices[device_idx], device_idx)
 
+            test_device_state_module(devices[device_idx], device_idx)
+
+            test_device_health_module(devices[device_idx], device_idx)
+
             # Test PCI module
             test_pci_module(devices[device_idx], device_idx)
 
@@ -2723,7 +2906,10 @@ def main():
         epilog="""Examples:
   %(prog)s -a                 # Run all tests
   %(prog)s -m                 # Memory tests only
-  %(prog)s -g                 # Global operations (device properties and processes) only
+  %(prog)s -g                 # Global operations (device properties, processes, and state) only
+  %(prog)s -H                 # Device health tests only
+  %(prog)s -H --set-health warning   # Device health tests, set then restore health status (root)
+  %(prog)s -r noforce --reset-device 0   # Warm reset of device 0 with zesDeviceResetExt (root)
   %(prog)s -p                 # PCI tests only
   %(prog)s -C                 # ECC tests only
   %(prog)s -o                 # Power tests only
@@ -2755,7 +2941,33 @@ def main():
         "-g",
         "--global",
         action="store_true",
-        help="Run only global operations (device properties and processes)",
+        help="Run only global operations (device properties, processes, and state)",
+    )
+    parser.add_argument(
+        "-H", "--health", action="store_true", help="Run only device health tests"
+    )
+    parser.add_argument(
+        "--set-health",
+        choices=sorted(HEALTH_STATUS_ARGS),
+        help="With -H, set the device health status, verify it and restore the original (requires root)",
+    )
+    parser.add_argument(
+        "-r",
+        "--reset",
+        choices=["force", "noforce"],
+        help="Run only the device reset test with zesDeviceResetExt on all devices (requires root)",
+    )
+    parser.add_argument(
+        "--reset-type",
+        choices=list(RESET_TYPE_ARGS),
+        default="warm",
+        help="With --reset, type of reset to perform, default is warm",
+    )
+    parser.add_argument(
+        "--reset-device",
+        type=int,
+        metavar="DEVICE",
+        help="With --reset, only reset the given device",
     )
     parser.add_argument(
         "-o", "--power", action="store_true", help="Run only power-related tests"
@@ -2909,11 +3121,15 @@ def main():
         parser.error("--timeout must be a non-negative integer")
     if args.listen_timeout < 0:
         parser.error("--listen-timeout must be a non-negative integer")
+    if args.reset_device is not None and args.reset_device < 0:
+        parser.error("--reset-device must be a non-negative integer")
 
     # Check if any specific test is requested
     specific_test = (
         args.memory
         or getattr(args, "global", False)
+        or args.health
+        or args.reset is not None
         or args.pci
         or args.ecc
         or args.power
@@ -2981,6 +3197,18 @@ def main():
             for device_idx in range(device_count):
                 if getattr(args, "global", False):
                     test_global_operation(drivers[0], devices[device_idx], device_idx)
+                    test_device_state_module(devices[device_idx], device_idx)
+
+                if args.health:
+                    test_device_health_module(
+                        devices[device_idx],
+                        device_idx,
+                        set_health=(
+                            HEALTH_STATUS_ARGS[args.set_health]
+                            if args.set_health is not None
+                            else None
+                        ),
+                    )
 
                 if args.pci:
                     test_pci_module(devices[device_idx], device_idx)
@@ -3021,6 +3249,14 @@ def main():
 
                 if args.vftelemetry:
                     test_vf_management_module(devices[device_idx], device_idx)
+
+                if args.reset is not None and args.reset_device in (None, device_idx):
+                    test_device_reset(
+                        devices[device_idx],
+                        device_idx,
+                        args.reset == "force",
+                        RESET_TYPE_ARGS[args.reset_type],
+                    )
 
         return 0 if success else 1
 
