@@ -1,154 +1,235 @@
+name: Check ABI
+
 on:
   pull_request:
+    branches: [master]
+  # An approval review with the keyword re-runs the check, so the override
+  # below takes effect without a manual re-run.
+  pull_request_review:
+    types: [submitted]
+  # Seeds the base ABI dump cache from master. Caches saved by pull_request
+  # runs are visible only to that PR, so without this every new PR rebuilds
+  # the base.
+  push:
     branches: [master]
   workflow_dispatch:
 
 permissions: read-all
 
 jobs:
-  # Use https://lvc.github.io/abi-compliance-checker/ to compare builds
-  # of pull requests against master. Compares checkouts of github.base_ref and
-  # github.head_ref.
-  check-abi-last-release:
+  # Use https://lvc.github.io/abi-compliance-checker/ to compare builds of
+  # pull requests against the latest release and against master.
+  #
+  # A failure can be accepted by a reviewer: leave an approval review on the
+  # PR head commit with the keyword abi-failure-approved in the review body.
+  check-abi:
+    name: check-abi-${{ matrix.base }}
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'oneapi-src'
+    if: >-
+      github.repository_owner == 'oneapi-src' &&
+      (github.event_name != 'pull_request_review' ||
+       (github.event.review.state == 'approved' &&
+        contains(github.event.review.body, 'abi-failure-approved')))
+    strategy:
+      fail-fast: false
+      matrix:
+        base: [last-release, master]
+    env:
+      # Pinned so a new upstream commit cannot change the result between runs.
+      # The base dump cache key includes the abi-dumper version.
+      ABI_DUMPER_REF: 9ed641529d411ca0f824175489c1f67ec924edae # 1.4
+      ABI_CHECKER_VERSION: '2.3'
+      # A push to master only seeds the base dump cache; there is no head to compare.
+      COMPARE: ${{ github.event_name != 'push' }}
     steps:
     - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install -y elfutils universal-ctags vtable-dumper
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      if: matrix.base == 'last-release'
       with:
         fetch-depth: 0 # Required due to the way Git works, without it this action won't be able to find any or the correct tags
     - uses: actions-ecosystem/action-get-latest-tag@b7c32daec3395a9616f88548363a42652b22d435 # v1.6.0
+      if: matrix.base == 'last-release'
       id: get-latest-tag
       with:
         semver_only: true
     - name: Checkout base
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
-        ref: ${{ steps.get-latest-tag.outputs.tag }}
+        ref: ${{ matrix.base == 'last-release' && steps.get-latest-tag.outputs.tag || github.event.pull_request.base.ref || 'master' }}
         clean: true
         path: base
+    - name: Compute base ABI dump cache key
+      # The dump depends on the base commit, the compiler (runner image) and
+      # the abi-dumper version.
+      id: base-key
+      run: |
+        echo "key=abi-dump-$(git -C base rev-parse HEAD)-$ImageOS-$ImageVersion-$ABI_DUMPER_REF" >> "$GITHUB_OUTPUT"
+    - name: Restore base ABI dump cache
+      # On a hit the base build and dump below are skipped.
+      id: cache-base-dump
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: base.dump
+        key: ${{ steps.base-key.outputs.key }}
     - name: Checkout head
+      if: env.COMPARE == 'true'
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         clean: true
         path: head
         ref: ${{ github.event.pull_request.head.sha }}
     - name: Build debug base
+      if: steps.cache-base-dump.outputs.cache-hit != 'true'
       run: |
         mkdir base/build
         cd base/build
         cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
         make -j$(nproc)
     - name: Build debug head
+      if: env.COMPARE == 'true'
       run: |
         mkdir head/build
         cd head/build
         cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
+      if: steps.cache-base-dump.outputs.cache-hit != 'true' || env.COMPARE == 'true'
       run: |
         git clone https://github.com/lvc/abi-dumper.git abi-dumper
+        git -C abi-dumper checkout --detach "$ABI_DUMPER_REF"
         cp abi-dumper/abi-dumper.pl .
         chmod +x abi-dumper.pl
     - name: Generate dump for base
+      if: steps.cache-base-dump.outputs.cache-hit != 'true'
       run: |
         ./abi-dumper.pl \
           ./base/build/lib/libze_loader.so \
           -vnum $(cat ./base/build/VERSION) -lambda \
           -public-headers ./base/include \
           -o ./base.dump
+    - name: Save base ABI dump cache
+      if: steps.cache-base-dump.outputs.cache-hit != 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: base.dump
+        key: ${{ steps.base-key.outputs.key }}
     - name: Generate dump for head
+      if: env.COMPARE == 'true'
       run: |
         ./abi-dumper.pl \
           ./head/build/lib/libze_loader.so \
           -vnum $(cat ./head/build/VERSION)-1 -lambda \
           -public-headers ./head/include \
           -o ./head.dump
+    - name: Ignore ZE_API_VERSION_CURRENT bump
+      # ZE_API_VERSION_CURRENT is expected to move with every minor spec
+      # version. Copy the base value into head.dump so the bump is not
+      # reported as an ABI problem.
+      if: env.COMPARE == 'true'
+      run: python3 head/scripts/update_ze_api_version.py base.dump head.dump
     - name: Download and setup abi-compliance-checker
+      if: env.COMPARE == 'true'
       run: |
-        wget https://github.com/lvc/abi-compliance-checker/tarball/master -O abi-compliance-checker.tar.gz
-        tar -xzf abi-compliance-checker.tar.gz
-        chmod +x lvc-abi-compliance-checker-*/abi-compliance-checker.pl
+        wget https://github.com/lvc/abi-compliance-checker/tarball/$ABI_CHECKER_VERSION -O abi-compliance-checker.tar.gz
+        mkdir abi-compliance-checker
+        tar -xzf abi-compliance-checker.tar.gz --strip-components=1 -C abi-compliance-checker
+        chmod +x abi-compliance-checker/abi-compliance-checker.pl
+    - name: Downgrade DWARF storage-location rules to Low
+      # abi-dumper keeps the LAST entry of a DWARF location list, not the first,
+      # so these two rules report where -Og parked a value late in the function
+      # body, not how it was passed. On x86-64 the real argument registers and
+      # stack slots follow from parameter types and order alone, so any genuine
+      # break is already reported by Parameter_Type_*/Added_*/Removed_* rules.
+      # Low keeps both findings in the report without failing the job.
+      if: env.COMPARE == 'true'
+      shell: python3 {0}
+      run: |
+        import re
+        path = "abi-compliance-checker/modules/RulesBin.xml"
+        text = open(path).read()
+        # Fail only when the rule id is gone (the checker version changed).
+        for rule in ("Parameter_Changed_Register", "Parameter_Changed_Offset"):
+            text, count = re.subn(
+                r"(<id>\s*%s\s*</id>\s*<severity>\s*)(?:High|Low)(\s*</severity>)" % rule,
+                r"\1Low\2", text)
+            print("%s: %d rule(s) downgraded" % (rule, count))
+            assert count == 1, "rule %s not found -- checker version changed?" % rule
+        open(path, "w").write(text)
     - name: Compare dumps
+      if: env.COMPARE == 'true'
+      id: abi-check
+      continue-on-error: true
       run: |
-        lvc-abi-compliance-checker-*/abi-compliance-checker.pl \
+        set -o pipefail
+        abi-compliance-checker/abi-compliance-checker.pl \
           -l libze_loader \
           -old base.dump \
           -new head.dump \
-          -report-path release_report.html
+          -report-path ${{ matrix.base }}_report.html 2>&1 | tee compare.log
+    - name: Check for reviewer approval of ABI failure
+      # Only an approval from someone with write access, given on the commit
+      # that was checked, counts. A later push needs a new approval.
+      id: check-approval
+      if: steps.abi-check.outcome == 'failure' && github.event.pull_request
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      with:
+        script: |
+          const reviews = await github.paginate(github.rest.pulls.listReviews, {
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+          });
+          const approved = reviews.some(review =>
+            review.state === 'APPROVED' &&
+            review.commit_id === context.payload.pull_request.head.sha &&
+            ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(review.author_association) &&
+            (review.body || '').toLowerCase().includes('abi-failure-approved'));
+          core.info(approved ? 'ABI failure has been approved by a reviewer'
+                             : 'No reviewer approval found for ABI failure');
+          core.setOutput('approved', approved ? 'true' : 'false');
     - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-      if: always()
+      if: always() && env.COMPARE == 'true'
+      id: report
       with:
-        name: abi-report-last-release
-        path: release_report.html
-  check-abi-master:
-    runs-on: ubuntu-latest
-    if: github.repository_owner == 'oneapi-src'
-    steps:
-    - name: Install dependencies
+        name: abi-report-${{ matrix.base }}
+        path: ${{ matrix.base }}_report.html
+    - name: Write summary
+      # Read by the "Check ABI Comment" workflow, which posts it on the PR.
+      if: always() && env.COMPARE == 'true' && github.event.pull_request
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        OUTCOME: ${{ steps.abi-check.outcome }}
+        APPROVED: ${{ steps.check-approval.outputs.approved }}
+        REPORT_URL: ${{ steps.report.outputs.artifact-url }}
+        BASE_REF: ${{ matrix.base == 'last-release' && steps.get-latest-tag.outputs.tag || github.event.pull_request.base.ref }}
       run: |
-        sudo apt update
-        sudo apt install -y elfutils universal-ctags vtable-dumper
-    - name: Checkout base
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        ref: ${{ github.base_ref || 'master' }}
-        clean: true
-        path: base
-    - name: Checkout head
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        clean: true
-        path: head
-        ref: ${{ github.event.pull_request.head.sha }}
-    - name: Build debug base
-      run: |
-        mkdir base/build
-        cd base/build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
-        make -j$(nproc)
-    - name: Build debug head
-      run: |
-        mkdir head/build
-        cd head/build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Og -g -fno-lto" -DCMAKE_EXE_LINKER_FLAGS="-fno-lto" -DCMAKE_SHARED_LINKER_FLAGS="-fno-lto" ..
-        make -j$(nproc)
-    - name: Download and setup abi-dumper
-      run: |
-        git clone https://github.com/lvc/abi-dumper.git abi-dumper
-        cp abi-dumper/abi-dumper.pl .
-        chmod +x abi-dumper.pl
-    - name: Generate dump for base
-      run: |
-        ./abi-dumper.pl \
-          ./base/build/lib/libze_loader.so \
-          -vnum $(cat ./base/build/VERSION) -lambda \
-          -public-headers ./base/include \
-          -o ./base.dump
-    - name: Generate dump for head
-      run: |
-        ./abi-dumper.pl \
-          ./head/build/lib/libze_loader.so \
-          -vnum $(cat ./head/build/VERSION)-1 -lambda \
-          -public-headers ./head/include \
-          -o ./head.dump
-    - name: Download and setup abi-compliance-checker
-      run: |
-        wget https://github.com/lvc/abi-compliance-checker/tarball/master -O abi-compliance-checker.tar.gz
-        tar -xzf abi-compliance-checker.tar.gz
-        chmod +x lvc-abi-compliance-checker-*/abi-compliance-checker.pl
-    - name: Compare dumps
-      run: |
-        lvc-abi-compliance-checker-*/abi-compliance-checker.pl \
-          -l libze_loader \
-          -old base.dump \
-          -new head.dump \
-          -report-path master_report.html
+        mkdir -p abi-summary
+        echo "$PR_NUMBER" > abi-summary/pr_number.txt
+        case "$OUTCOME/$APPROVED" in
+          success/*)    status=":white_check_mark: no ABI problems" ;;
+          failure/true) status=":warning: ABI problems, approved by a reviewer" ;;
+          failure/*)    status=":x: ABI problems" ;;
+          *)            status=":grey_question: the check did not run to the end" ;;
+        esac
+        {
+          echo "**${{ matrix.base }}** (\`$BASE_REF\`): $status. [Report]($REPORT_URL)"
+          echo
+          echo '```'
+          grep -E 'compatibility' compare.log 2>/dev/null || echo "No result from abi-compliance-checker; see the job log."
+          echo '```'
+        } > abi-summary/${{ matrix.base }}.md
+        cat abi-summary/${{ matrix.base }}.md >> "$GITHUB_STEP_SUMMARY"
     - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-      if: always()
+      if: always() && env.COMPARE == 'true' && github.event.pull_request
       with:
-        name: abi-report-master
-        path: master_report.html
+        name: abi-summary-${{ matrix.base }}
+        path: abi-summary
+    - name: Fail if ABI check failed and not approved
+      if: steps.abi-check.outcome == 'failure' && steps.check-approval.outputs.approved != 'true'
+      run: |
+        echo "::error::ABI compliance check failed and no reviewer approval found."
+        echo "If the change is intended, a reviewer with write access can approve the PR head commit with 'abi-failure-approved' in the review body."
+        exit 1
