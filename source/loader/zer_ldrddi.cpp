@@ -62,7 +62,7 @@ namespace loader
 
         auto pfnGetLastErrorDescription = loader::defaultZerDdiTable->Global.pfnGetLastErrorDescription;
         if( nullptr == pfnGetLastErrorDescription ) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
         }
         // forward to device-driver
         result = pfnGetLastErrorDescription( ppString );
@@ -80,7 +80,7 @@ namespace loader
         
         auto pfnTranslateDeviceHandleToIdentifier = loader::defaultZerDdiTable->Global.pfnTranslateDeviceHandleToIdentifier;
         if( nullptr == pfnTranslateDeviceHandleToIdentifier ) {
-            error_state::setErrorDesc("ERROR UNINITIALIZED");
+            error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
             return UINT32_MAX;
         }
         // forward to device-driver
@@ -99,7 +99,7 @@ namespace loader
         
         auto pfnTranslateIdentifierToDeviceHandle = loader::defaultZerDdiTable->Global.pfnTranslateIdentifierToDeviceHandle;
         if( nullptr == pfnTranslateIdentifierToDeviceHandle ) {
-            error_state::setErrorDesc("ERROR UNINITIALIZED");
+            error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
             return nullptr;
         }
         // forward to device-driver
@@ -118,7 +118,7 @@ namespace loader
         
         auto pfnGetDefaultContext = loader::defaultZerDdiTable->Global.pfnGetDefaultContext;
         if( nullptr == pfnGetDefaultContext ) {
-            error_state::setErrorDesc("ERROR UNINITIALIZED");
+            error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
             return nullptr;
         }
         // forward to device-driver

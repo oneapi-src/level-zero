@@ -1,0 +1,26 @@
+name: Copyright Check
+
+# Fails a pull request if a file it changes still carries an old year in its
+# Intel copyright header. Only files changed by the PR are checked, so files
+# nobody touched are never flagged. To fix locally:
+#   python3 scripts/copyright_year.py update
+
+on:
+  pull_request:
+    branches: [ master,release_branch* ]
+
+permissions:
+  contents: read
+
+jobs:
+  copyright-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        # The merge base with the target branch is needed to find the changed files.
+        fetch-depth: 0
+    - name: Check copyright years of changed files
+      env:
+        BASE_REF: ${{ github.base_ref }}
+      run: python3 scripts/copyright_year.py --base "origin/$BASE_REF" check --github
