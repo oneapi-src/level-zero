@@ -402,6 +402,33 @@ def get_info_log_record_type_string(record_type):
     )
 
 
+def get_event_type_flags_string(events):
+    """Convert event type flags to a string of flag names"""
+    flag_map = {
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_DETACH: "DEVICE_DETACH",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_ATTACH: "DEVICE_ATTACH",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_ENTER: "DEVICE_SLEEP_STATE_ENTER",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_EXIT: "DEVICE_SLEEP_STATE_EXIT",
+        pz.ZES_EVENT_TYPE_FLAG_FREQ_THROTTLED: "FREQ_THROTTLED",
+        pz.ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED: "ENERGY_THRESHOLD_CROSSED",
+        pz.ZES_EVENT_TYPE_FLAG_TEMP_CRITICAL: "TEMP_CRITICAL",
+        pz.ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD1: "TEMP_THRESHOLD1",
+        pz.ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD2: "TEMP_THRESHOLD2",
+        pz.ZES_EVENT_TYPE_FLAG_MEM_HEALTH: "MEM_HEALTH",
+        pz.ZES_EVENT_TYPE_FLAG_FABRIC_PORT_HEALTH: "FABRIC_PORT_HEALTH",
+        pz.ZES_EVENT_TYPE_FLAG_PCI_LINK_HEALTH: "PCI_LINK_HEALTH",
+        pz.ZES_EVENT_TYPE_FLAG_RAS_CORRECTABLE_ERRORS: "RAS_CORRECTABLE_ERRORS",
+        pz.ZES_EVENT_TYPE_FLAG_RAS_UNCORRECTABLE_ERRORS: "RAS_UNCORRECTABLE_ERRORS",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED: "DEVICE_RESET_REQUIRED",
+        pz.ZES_EVENT_TYPE_FLAG_SURVIVABILITY_MODE_DETECTED: "SURVIVABILITY_MODE_DETECTED",
+        pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT: "INFO_LOG_CPER_DATA_AVAILABLE_EXT",
+    }
+    if events == 0:
+        return "None"
+    names = [name for flag, name in flag_map.items() if events & flag]
+    return " | ".join(names) if names else f"UNKNOWN_EVENTS_{events:#x}"
+
+
 def is_root_user():
     """Return whether the current user has root privileges on platforms that support it"""
     geteuid = getattr(os, "geteuid", None)
@@ -1821,6 +1848,156 @@ def test_info_log_module(
     return True
 
 
+def print_received_events(device_count, num_device_events, events, driver_events=None):
+    """Print the events reported by an event listen call"""
+    print_verbose(f"  Devices With Events: {num_device_events}")
+    for i in range(device_count):
+        if events[i] == 0:
+            continue
+        for bit in range(32):
+            flag = events[i] & (1 << bit)
+            if flag:
+                print_verbose(
+                    f"    Device {i} got {get_event_type_flags_string(flag)} event"
+                )
+
+    if driver_events is None:
+        return
+    if driver_events == 0:
+        print_verbose("  Driver Events: none")
+    if driver_events & pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT:
+        print_verbose("    Driver got INFO_LOG_CPER_DATA_AVAILABLE_EXT event")
+        print_verbose("    CPER records are available to read from the device info log")
+    other_events = (
+        driver_events & ~pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT
+    )
+    if other_events:
+        print_verbose(
+            f"    Driver got unexpected events: {get_event_type_flags_string(other_events)}"
+        )
+
+
+def test_driver_properties_module(driver_handle, driver_index):
+    """Test driver properties, extensions, and the extension function lookup"""
+    print(f"\n---- Driver {driver_index} Driver Properties Test ----")
+
+    props = pz.zes_driver_properties_t()
+    props.stype = pz.ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES
+    props.pNext = None
+
+    rc = pz.zesDriverGetProperties(driver_handle, byref(props))
+    if check_rc(f"zesDriverGetProperties(driver {driver_index})", rc):
+        print_verbose("  Properties:")
+        print_verbose(
+            f"    UUID: {'-'.join(f'{props.uuid.id[i]:02x}' for i in range(16))}"
+        )
+        print_verbose(f"    Driver Version: {props.driverVersion}")
+
+    ext_count = c_uint32(0)
+    rc = pz.zesDriverGetExtensionProperties(driver_handle, byref(ext_count), None)
+    if check_rc(f"zesDriverGetExtensionProperties(driver {driver_index}, count)", rc):
+        print_verbose(f"  Found {ext_count.value} extension(s)")
+        if ext_count.value > 0:
+            ExtensionArray = pz.zes_driver_extension_properties_t * ext_count.value
+            extensions = ExtensionArray()
+            rc = pz.zesDriverGetExtensionProperties(
+                driver_handle, byref(ext_count), extensions
+            )
+            if check_rc(
+                f"zesDriverGetExtensionProperties(driver {driver_index}, data)", rc
+            ):
+                for i in range(ext_count.value):
+                    version = extensions[i].version
+                    print_verbose(
+                        f"    {extensions[i].name.decode('utf-8', errors='replace')}: "
+                        f"v{version >> 16}.{version & 0xFFFF}"
+                    )
+
+    function_name = b"zesIntelDriverRescanDevicesExp"
+    function_address = c_void_p()
+    rc = pz.zesDriverGetExtensionFunctionAddress(
+        driver_handle, function_name, byref(function_address)
+    )
+    if rc == pz.ZE_RESULT_SUCCESS:
+        print_verbose(
+            f"  Extension Function Address ({function_name.decode()}): "
+            f"{function_address.value:#x}"
+        )
+    else:
+        print_verbose(
+            f"  Extension Function Address ({function_name.decode()}): "
+            f"Not available ({get_result_string(rc)})"
+        )
+
+    return True
+
+
+def test_event_module(driver_handle, driver_index, listen_timeout=0):
+    """Test driver event registration and listening"""
+    print(f"\n---- Driver {driver_index} Event Test ----")
+
+    device_info = get_devices(driver_handle)
+    if device_info is None:
+        print_verbose("  Skipping event listen tests as no devices were found")
+        return True
+
+    devices, device_count = device_info
+    EventsArray = pz.zes_event_type_flags_t * device_count
+
+    print_verbose(
+        f"  Listening for device events on {device_count} device(s) with a {listen_timeout} ms timeout"
+    )
+    num_device_events = c_uint32(0)
+    events = EventsArray()
+    rc = pz.zesDriverEventListenEx(
+        driver_handle,
+        listen_timeout,
+        device_count,
+        devices,
+        byref(num_device_events),
+        events,
+    )
+    if check_rc(f"zesDriverEventListenEx(driver {driver_index})", rc):
+        print_received_events(device_count, num_device_events.value, events)
+
+    driver_events_to_register = pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT
+    rc = pz.zesDriverEventRegisterExt(driver_handle, driver_events_to_register)
+    if rc != pz.ZE_RESULT_SUCCESS:
+        print_verbose(
+            f"  Driver Event Registration: Not available ({get_result_string(rc)})"
+        )
+        return True
+
+    print_verbose(
+        f"  Registered driver events: {get_event_type_flags_string(driver_events_to_register)}"
+    )
+
+    print_verbose(
+        f"  Listening for device and driver events with a {listen_timeout} ms timeout"
+    )
+    num_device_events = c_uint32(0)
+    events = EventsArray()
+    driver_events = pz.zes_event_type_flags_t(0)
+    rc = pz.zesDriverEventListenExt(
+        driver_handle,
+        listen_timeout,
+        device_count,
+        devices,
+        byref(num_device_events),
+        events,
+        byref(driver_events),
+    )
+    if check_rc(f"zesDriverEventListenExt(driver {driver_index})", rc):
+        print_received_events(
+            device_count, num_device_events.value, events, driver_events.value
+        )
+
+    rc = pz.zesDriverEventRegisterExt(driver_handle, 0)
+    check_rc(f"zesDriverEventRegisterExt(driver {driver_index}, clear)", rc)
+
+    return True
+
+
 def test_memory_modules(device_handle, device_index):
     """Test memory module enumeration and operations"""
     print(f"\n---- Device {device_index} Memory Modules Test ----")
@@ -2532,6 +2709,9 @@ def run_all_tests():
         if not test_info_log_module(drivers[driver_idx], driver_idx):
             success = False
 
+        test_driver_properties_module(drivers[driver_idx], driver_idx)
+        test_event_module(drivers[driver_idx], driver_idx)
+
     print("\n=== Test Completed ===")
     return success
 
@@ -2560,6 +2740,9 @@ def main():
   %(prog)s -L                 # Info log properties tests only
   %(prog)s -L --instanceapi   # Info log tests, verify peek and read on a named collection instance
   %(prog)s -L --instanceread --instance mylog --buffersize 1024   # Info log tests, read the records of a named 1 MB collection instance
+  %(prog)s -D                 # Driver properties tests only
+  %(prog)s -E                 # Event tests only
+  %(prog)s -E --listen-timeout 0       # Event tests, return from event listen immediately
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -2682,6 +2865,22 @@ def main():
         metavar="MS",
         help=f"With -L, maximum time in milliseconds to search for records, default is {INFO_LOG_READ_TIMEOUT_MS}",
     )
+    parser.add_argument(
+        "-D",
+        "--driverproperties",
+        action="store_true",
+        help="Run only driver properties tests",
+    )
+    parser.add_argument(
+        "-E", "--event", action="store_true", help="Run only event tests"
+    )
+    parser.add_argument(
+        "--listen-timeout",
+        type=int,
+        default=10000,
+        metavar="MS",
+        help="With -E, time in milliseconds to wait for events, default 10000, 0 returns immediately",
+    )
 
     args = parser.parse_args()
     if args.set_threshold is not None and not 0 <= args.set_threshold <= 2**64 - 1:
@@ -2708,6 +2907,8 @@ def main():
         )
     if args.timeout < 0:
         parser.error("--timeout must be a non-negative integer")
+    if args.listen_timeout < 0:
+        parser.error("--listen-timeout must be a non-negative integer")
 
     # Check if any specific test is requested
     specific_test = (
@@ -2723,6 +2924,8 @@ def main():
         or args.standby
         or args.vftelemetry
         or args.infolog
+        or args.driverproperties
+        or args.event
         or args.all
     )
 
@@ -2758,6 +2961,17 @@ def main():
                         timeout=args.timeout,
                     ):
                         success = False
+
+            for driver_idx in range(driver_count):
+                if args.driverproperties:
+                    test_driver_properties_module(drivers[driver_idx], driver_idx)
+
+                if args.event:
+                    test_event_module(
+                        drivers[driver_idx],
+                        driver_idx,
+                        listen_timeout=args.listen_timeout,
+                    )
 
             if not devices or device_count == 0:
                 print("No devices available for testing")
