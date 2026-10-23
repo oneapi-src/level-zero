@@ -229,6 +229,13 @@ SUPPORTED APIs
 | `zesRasGetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
 | `zesRasSetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
 | `zesRasClearStateExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
+| **Info Log Management** |-|-|-|
+| `zesDriverEnumInfoLogsExt` | Info Log | 0.1.4 | Linux: Requires superuser |
+| `zesInfoLogGetPropertiesExt` | Info Log | 0.1.4 | None |
+| `zesInfoLogCreateInstanceExt` | Info Log | 0.1.4 | Linux: Requires superuser |
+| `zesInfoLogInstanceReadWithMetadataExt` | Info Log | 0.1.4 | Records returned are consumed. Linux: Requires superuser |
+| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.4 | Linux: Requires superuser |
+| `zesInfoLogInstanceDeleteExt` | Info Log | 0.1.4 | Linux: Requires superuser |
 
 RELEASE NOTES
 -------------
