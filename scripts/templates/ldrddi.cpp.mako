@@ -353,7 +353,7 @@ namespace loader
         auto ${th.make_pfn_name(n, tags, obj)} = dditable->${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
             %if ret_type == "ze_result_t":
-            return ${X}_RESULT_ERROR_UNINITIALIZED;
+            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
             %else:
             return ${failure_return};
             %endif
@@ -519,9 +519,9 @@ namespace loader
         auto ${th.make_pfn_name(n, tags, obj)} = loader::defaultZerDdiTable->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
             %if ret_type == 'ze_result_t':
-            return ${X}_RESULT_ERROR_UNINITIALIZED;
+            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
             %else:
-            error_state::setErrorDesc("ERROR UNINITIALIZED");
+            error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
             return ${failure_return};
             %endif  
         }

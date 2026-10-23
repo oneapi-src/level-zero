@@ -148,6 +148,30 @@ class zes_engine_handle_t(c_void_p):
     pass
 
 
+class zes_ras_handle_t(c_void_p):
+    pass
+
+
+class zes_standby_handle_t(c_void_p):
+    pass
+
+
+class zes_vf_handle_t(c_void_p):
+    pass
+
+
+class zes_info_log_handle_t(c_void_p):
+    pass
+
+
+class zes_info_log_instance_handle_t(c_void_p):
+    pass
+
+
+class zes_firmware_handle_t(c_void_p):
+    pass
+
+
 ##
 
 ze_bool_t = c_uint8
@@ -171,6 +195,30 @@ ZES_DEVICE_TYPE_FPGA = 3
 ZES_DEVICE_TYPE_MCA = 4
 ZES_DEVICE_TYPE_VPU = 5
 ZES_DEVICE_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_repair_status_t = c_int32
+ZES_REPAIR_STATUS_UNSUPPORTED = 0
+ZES_REPAIR_STATUS_NOT_PERFORMED = 1
+ZES_REPAIR_STATUS_PERFORMED = 2
+ZES_REPAIR_STATUS_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_reset_reason_flags_t = c_uint32
+ZES_RESET_REASON_FLAG_WEDGED = 1 << 0
+ZES_RESET_REASON_FLAG_REPAIR = 1 << 1
+ZES_RESET_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_reset_type_t = c_int32
+ZES_RESET_TYPE_WARM = 0
+ZES_RESET_TYPE_COLD = 1
+ZES_RESET_TYPE_FLR = 2
+ZES_RESET_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_device_health_status_ext_t = c_int32
+ZES_DEVICE_HEALTH_STATUS_EXT_OK = 0
+ZES_DEVICE_HEALTH_STATUS_EXT_WARNING = 1
+ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL = 2
+ZES_DEVICE_HEALTH_STATUS_EXT_FAILED = 3
+ZES_DEVICE_HEALTH_STATUS_EXT_FORCE_UINT32 = 0x7FFFFFFF
 
 # Memory type enumeration
 zes_mem_type_t = c_int32
@@ -262,6 +310,26 @@ ZES_FREQ_THROTTLE_REASON_FLAG_THERMAL = 1 << 8
 ZES_FREQ_THROTTLE_REASON_FLAG_POWER = 1 << 9
 ZES_FREQ_THROTTLE_REASON_FLAG_FORCE_UINT32 = 0x7FFFFFFF
 
+zes_event_type_flags_t = c_uint32
+ZES_EVENT_TYPE_FLAG_DEVICE_DETACH = 1 << 0
+ZES_EVENT_TYPE_FLAG_DEVICE_ATTACH = 1 << 1
+ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_ENTER = 1 << 2
+ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_EXIT = 1 << 3
+ZES_EVENT_TYPE_FLAG_FREQ_THROTTLED = 1 << 4
+ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED = 1 << 5
+ZES_EVENT_TYPE_FLAG_TEMP_CRITICAL = 1 << 6
+ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD1 = 1 << 7
+ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD2 = 1 << 8
+ZES_EVENT_TYPE_FLAG_MEM_HEALTH = 1 << 9
+ZES_EVENT_TYPE_FLAG_FABRIC_PORT_HEALTH = 1 << 10
+ZES_EVENT_TYPE_FLAG_PCI_LINK_HEALTH = 1 << 11
+ZES_EVENT_TYPE_FLAG_RAS_CORRECTABLE_ERRORS = 1 << 12
+ZES_EVENT_TYPE_FLAG_RAS_UNCORRECTABLE_ERRORS = 1 << 13
+ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED = 1 << 14
+ZES_EVENT_TYPE_FLAG_SURVIVABILITY_MODE_DETECTED = 1 << 15
+ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT = 1 << 16
+ZES_EVENT_TYPE_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
 ## Temperature sensor enums ##
 zes_temp_sensors_t = c_int32
 ZES_TEMP_SENSORS_GLOBAL = 0
@@ -273,6 +341,9 @@ ZES_TEMP_SENSORS_MEMORY_MIN = 5
 ZES_TEMP_SENSORS_GPU_BOARD = 6
 ZES_TEMP_SENSORS_GPU_BOARD_MIN = 7
 ZES_TEMP_SENSORS_VOLTAGE_REGULATOR = 8
+ZES_TEMP_SENSORS_COMPOSITE = 9
+ZES_TEMP_SENSORS_GPU_BOARD_SINGLE = 10
+ZES_TEMP_SENSORS_VOLTAGE_REGULATOR_SINGLE = 11
 ZES_TEMP_SENSORS_FORCE_UINT32 = 0x7FFFFFFF
 
 ## Engine type enums ##
@@ -293,6 +364,52 @@ ZES_ENGINE_GROUP_RENDER_ALL = 12
 ZES_ENGINE_GROUP_3D_ALL = 13
 ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14
 ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_ras_error_type_t = c_int32
+ZES_RAS_ERROR_TYPE_CORRECTABLE = 0
+ZES_RAS_ERROR_TYPE_UNCORRECTABLE = 1
+ZES_RAS_ERROR_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_ras_error_category_exp_t = c_int32
+ZES_RAS_ERROR_CATEGORY_EXP_RESET = 0
+ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS = 1
+ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS = 2
+ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS = 3
+ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS = 4
+ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS = 5
+ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS = 6
+ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS = 7
+ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS = 8
+ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS = 9
+ZES_RAS_ERROR_CATEGORY_EXP_PCIE_ERRORS = 10
+ZES_RAS_ERROR_CATEGORY_EXP_FABRIC_ERRORS = 11
+ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS = 12
+ZES_RAS_ERROR_CATEGORY_EXP_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_standby_type_t = c_int32
+ZES_STANDBY_TYPE_GLOBAL = 0
+ZES_STANDBY_TYPE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_standby_promo_mode_t = c_int32
+ZES_STANDBY_PROMO_MODE_DEFAULT = 0
+ZES_STANDBY_PROMO_MODE_NEVER = 1
+ZES_STANDBY_PROMO_MODE_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_info_log_type_ext_t = c_int32
+ZES_INFO_LOG_TYPE_EXT_DEVICE = 0
+ZES_INFO_LOG_TYPE_EXT_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_info_log_format_ext_t = c_int32
+ZES_INFO_LOG_FORMAT_EXT_CPER = 0
+ZES_INFO_LOG_FORMAT_EXT_FORCE_UINT32 = 0x7FFFFFFF
+
+zes_info_log_record_type_ext_t = c_int32
+ZES_INFO_LOG_RECORD_TYPE_EXT_UNKNOWN = 0
+ZES_INFO_LOG_RECORD_TYPE_EXT_INFORMATIONAL = 1
+ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_CORRECTED = 2
+ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_RECOVERABLE = 3
+ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_FATAL = 4
+ZES_INFO_LOG_RECORD_TYPE_EXT_FORCE_UINT32 = 0x7FFFFFFF
 
 ze_result_t = c_int32
 ZE_RESULT_SUCCESS = 0
@@ -354,6 +471,7 @@ ZE_MAX_DEVICE_UUID_SIZE = 16
 ZES_STRING_PROPERTY_SIZE = 64  # from zes_api.h
 ZE_MAX_DEVICE_NAME = 256  # from ze_api.h
 ZES_MAX_UUID_SIZE = 16  # from zes_api.h (uuid size for zes_uuid_t)
+ZES_MAX_EXTENSION_NAME = 256
 
 # Structure type enum values
 ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x1
@@ -365,6 +483,8 @@ ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES = 0x26
 ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27
 ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28
 ZES_STRUCTURE_TYPE_PROCESS_STATE = 0x16
+ZES_STRUCTURE_TYPE_DEVICE_STATE = 0x15
+ZES_STRUCTURE_TYPE_RESET_PROPERTIES = 0x2C
 ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES = 0x2D  # from zes_structure_type_t
 ZES_STRUCTURE_TYPE_SUBDEVICE_EXP_PROPERTIES = (
     0x00020004  # Experimental subdevice properties
@@ -376,6 +496,18 @@ ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1B
 ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14
 ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23
 ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5
+ZES_STRUCTURE_TYPE_RAS_PROPERTIES = 0xF
+ZES_STRUCTURE_TYPE_RAS_STATE_EXP2 = 0x00020015
+ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP = 0x00020016
+ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES = 0x13
+ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2 = 0x00020009
+ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2 = 0x00020010
+ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES = 0x00020011
+ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES = 0x00020020
+ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC = 0x00020021
+ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT = 0x00020022
+ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT = 0x00020023
+ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES = 0x2F
 
 
 ## Core ze_device UUID struct ##
@@ -423,6 +555,24 @@ class zes_device_properties_t(_PrintableStructure):
         ("modelName", c_char * ZES_STRING_PROPERTY_SIZE),
         ("vendorName", c_char * ZES_STRING_PROPERTY_SIZE),
         ("driverVersion", c_char * ZES_STRING_PROPERTY_SIZE),
+    ]
+
+
+class zes_device_state_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("reset", zes_reset_reason_flags_t),
+        ("repaired", zes_repair_status_t),
+    ]
+
+
+class zes_reset_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("force", ze_bool_t),
+        ("resetType", zes_reset_type_t),
     ]
 
 
@@ -555,6 +705,22 @@ class zes_uuid_t(_PrintableStructure):
     _fields_ = [("id", c_ubyte * ZES_MAX_UUID_SIZE)]
 
 
+class zes_driver_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("uuid", zes_uuid_t),
+        ("driverVersion", c_uint32),
+    ]
+
+
+class zes_driver_extension_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("name", c_char * ZES_MAX_EXTENSION_NAME),
+        ("version", c_uint32),
+    ]
+
+
 ## Sysman zes_device_ext_properties_t (extension) ##
 class zes_device_ext_properties_t(_PrintableStructure):
     _fields_ = [
@@ -669,6 +835,15 @@ class zes_power_energy_counter_t(_PrintableStructure):
     _fmt_ = {"energy": "%d", "timestamp": "%d microseconds"}
 
 
+class zes_energy_threshold_t(_PrintableStructure):
+    _fields_ = [
+        ("enable", ze_bool_t),
+        ("threshold", c_double),
+        ("processId", c_uint32),
+    ]
+    _fmt_ = {"threshold": "%.3f J"}
+
+
 ## Frequency structures ##
 class zes_freq_properties_t(_PrintableStructure):
     _fields_ = [
@@ -777,6 +952,121 @@ class zes_engine_stats_t(_PrintableStructure):
         ("timestamp", c_uint64),  # timestamp
     ]
     _fmt_ = {"activeTime": "%d", "timestamp": "%d"}
+
+
+class zes_ras_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("type", zes_ras_error_type_t),
+        ("onSubdevice", ze_bool_t),
+        ("subdeviceId", c_uint32),
+    ]
+
+
+class zes_ras_state_exp2_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("errorCounter", c_uint64),
+    ]
+    _fmt_ = {"errorCounter": "%d"}
+
+
+class zes_ras_config_exp_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("category", zes_ras_error_category_exp_t),
+        ("threshold", c_uint64),
+    ]
+    _fmt_ = {"threshold": "%d"}
+
+
+class zes_standby_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("type", zes_standby_type_t),
+        ("onSubdevice", ze_bool_t),
+        ("subdeviceId", c_uint32),
+    ]
+
+
+class zes_vf_exp2_capabilities_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("address", zes_pci_address_t),
+        ("vfDeviceMemSize", c_uint64),
+        ("vfID", c_uint32),
+    ]
+    _fmt_ = {"vfDeviceMemSize": "%d bytes"}
+
+
+class zes_vf_util_mem_exp2_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("vfMemLocation", zes_mem_loc_t),
+        ("vfMemUtilized", c_uint64),
+    ]
+    _fmt_ = {"vfMemUtilized": "%d bytes"}
+
+
+class zes_vf_util_engine_exp2_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("vfEngineType", zes_engine_group_t),
+        ("activeCounterValue", c_uint64),
+        ("samplingCounterValue", c_uint64),
+    ]
+    _fmt_ = {"activeCounterValue": "%d", "samplingCounterValue": "%d"}
+
+
+class zes_info_log_ext_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("infoLogType", zes_info_log_type_ext_t),
+        ("infoLogFormat", zes_info_log_format_ext_t),
+        ("isNamedInstanceSupported", ze_bool_t),
+        ("isPeekDataSupported", ze_bool_t),
+    ]
+
+
+class zes_info_log_instance_ext_desc_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("pBufferSizeInKb", POINTER(c_uint32)),
+    ]
+
+
+class zes_info_log_metadata_ext_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("address", zes_pci_address_t),
+        ("uuid", zes_uuid_t),
+        ("timestamp", c_uint64),
+        ("lengthOfData", c_uint32),
+        ("offset", c_uint32),
+        ("recordType", zes_info_log_record_type_ext_t),
+    ]
+    _fmt_ = {"timestamp": "%d ns", "lengthOfData": "%d bytes"}
+
+
+class zes_info_log_read_status_ext_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("droppedRecordCount", c_int64),
+        ("consumedDataSize", c_uint64),
+        ("hasDataToRead", ze_bool_t),
+    ]
+    _fmt_ = {"consumedDataSize": "%d bytes"}
 
 
 ## Function access ##
@@ -1065,6 +1355,133 @@ def zesDeviceProcessesGetState(hDevice, pCount, pProcesses):
     return retVal
 
 
+def zesDeviceGetState(hDevice, pState):
+    """Wraps API:
+    ze_result_t zesDeviceGetState(
+        zes_device_handle_t hDevice,
+        zes_device_state_t* pState)
+
+    Parameters:
+      hDevice: device handle
+      pState: POINTER(zes_device_state_t) - state structure to fill
+    Returns:
+      ze_result_t - return code only, state is filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesDeviceGetState")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_device_state_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, pState)
+    return retVal
+
+
+def zesDeviceResetExt(hDevice, pProperties):
+    """Wraps API:
+    ze_result_t zesDeviceResetExt(
+        zes_device_handle_t hDevice,
+        zes_reset_properties_t* pProperties)
+
+    Performs a PCI bus reset of the device and all current device state is lost.
+
+    Parameters:
+      hDevice: device handle
+      pProperties: POINTER(zes_reset_properties_t) - reset properties to apply
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDeviceResetExt")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_reset_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, pProperties)
+    return retVal
+
+
+def zesDeviceEventRegister(hDevice, events):
+    """Wraps API:
+    ze_result_t zesDeviceEventRegister(
+        zes_device_handle_t hDevice,
+        zes_event_type_flags_t events)
+
+    Parameters:
+      hDevice: device handle
+      events: zes_event_type_flags_t - events to listen to, 0 to clear
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEventRegister")
+    funcPtr.argtypes = [zes_device_handle_t, zes_event_type_flags_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, events)
+    return retVal
+
+
+def zesDeviceGetHealthStatusExt(hDevice, pHealth):
+    """Wraps API:
+    ze_result_t zesDeviceGetHealthStatusExt(
+        zes_device_handle_t hDevice,
+        zes_device_health_status_ext_t* pHealth)
+
+    Parameters:
+      hDevice: device handle
+      pHealth: POINTER(zes_device_health_status_ext_t) - current health status to fill
+    Returns:
+      ze_result_t - return code only, health status is filled into pHealth
+    """
+    funcPtr = getFunctionPointerList("zesDeviceGetHealthStatusExt")
+    funcPtr.argtypes = [zes_device_handle_t, POINTER(zes_device_health_status_ext_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, pHealth)
+    return retVal
+
+
+def zesDeviceSetHealthStatusExt(hDevice, health):
+    """Wraps API:
+    ze_result_t zesDeviceSetHealthStatusExt(
+        zes_device_handle_t hDevice,
+        zes_device_health_status_ext_t health)
+
+    The health status is persisted to non-volatile memory.
+
+    Parameters:
+      hDevice: device handle
+      health: zes_device_health_status_ext_t - new health status
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDeviceSetHealthStatusExt")
+    funcPtr.argtypes = [zes_device_handle_t, zes_device_health_status_ext_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDevice, health)
+    return retVal
+
+
+def zesDeviceEnumFirmwares(hDevice, pCount, phFirmware):
+    """Wraps API:
+    ze_result_t zesDeviceEnumFirmwares(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_firmware_handle_t* phFirmware)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phFirmware: POINTER(zes_firmware_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumFirmwares")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_firmware_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phFirmware)
+    return retVal
+
+
 ## Memory management functions ##
 def zesDeviceEnumMemoryModules(hDevice, pCount, phMemory):
     """Wraps API:
@@ -1259,6 +1676,108 @@ def zesPowerSetLimitsExt(hPower, pCount, pSustained):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hPower, pCount, pSustained)
+    return retVal
+
+
+def zesPowerGetUsage(hPower, pInstantPower, pAveragePower):
+    """Wraps API:
+    ze_result_t zesPowerGetUsage(
+            zes_pwr_handle_t hPower,
+            uint32_t* pInstantPower,
+            uint32_t* pAveragePower)
+
+    Parameters:
+        hPower: power handle
+        pInstantPower: POINTER(c_uint32) or None - instant power usage in milliwatts
+        pAveragePower: POINTER(c_uint32) or None - average power usage in milliwatts
+    Returns:
+        ze_result_t - return code only, power usage is filled into pInstantPower and pAveragePower
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetUsage")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pInstantPower, pAveragePower)
+    return retVal
+
+
+def zesPowerGetLimitsExt2(hPower, pLimit):
+    """Wraps API:
+    ze_result_t zesPowerGetLimitsExt2(
+            zes_pwr_handle_t hPower,
+            uint32_t* pLimit)
+
+    Parameters:
+        hPower: power handle
+        pLimit: POINTER(c_uint32) - power limit in milliwatts to fill
+    Returns:
+        ze_result_t - return code only, power limit is filled into pLimit
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetLimitsExt2")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(c_uint32)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pLimit)
+    return retVal
+
+
+def zesPowerSetLimitsExt2(hPower, limit):
+    """Wraps API:
+    ze_result_t zesPowerSetLimitsExt2(
+            zes_pwr_handle_t hPower,
+            const uint32_t limit)
+
+    Parameters:
+        hPower: power handle
+        limit: power limit in milliwatts to set
+    Returns:
+        ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesPowerSetLimitsExt2")
+    funcPtr.argtypes = [zes_pwr_handle_t, c_uint32]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, limit)
+    return retVal
+
+
+def zesPowerGetEnergyThreshold(hPower, pThreshold):
+    """Wraps API:
+    ze_result_t zesPowerGetEnergyThreshold(
+            zes_pwr_handle_t hPower,
+            zes_energy_threshold_t* pThreshold)
+
+    Parameters:
+        hPower: power handle
+        pThreshold: POINTER(zes_energy_threshold_t) - energy threshold structure to fill
+    Returns:
+        ze_result_t - return code only, energy threshold is filled into pThreshold
+    """
+    funcPtr = getFunctionPointerList("zesPowerGetEnergyThreshold")
+    funcPtr.argtypes = [zes_pwr_handle_t, POINTER(zes_energy_threshold_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, pThreshold)
+    return retVal
+
+
+def zesPowerSetEnergyThreshold(hPower, threshold):
+    """Wraps API:
+    ze_result_t zesPowerSetEnergyThreshold(
+            zes_pwr_handle_t hPower,
+            double threshold)
+
+    Parameters:
+        hPower: power handle
+        threshold: energy threshold in Joules to set
+    Returns:
+        ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesPowerSetEnergyThreshold")
+    funcPtr.argtypes = [zes_pwr_handle_t, c_double]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hPower, threshold)
     return retVal
 
 
@@ -1492,6 +2011,26 @@ def zesTemperatureGetState(hTemperature, pTemperature):
     return retVal
 
 
+def zesTemperatureSetConfig(hTemperature, pConfig):
+    """Wraps API:
+    ze_result_t zesTemperatureSetConfig(
+        zes_temp_handle_t hTemperature,
+        const zes_temp_config_t* pConfig)
+
+    Parameters:
+      hTemperature: temperature handle
+      pConfig: POINTER(zes_temp_config_t) - new configuration
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesTemperatureSetConfig")
+    funcPtr.argtypes = [zes_temp_handle_t, POINTER(zes_temp_config_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hTemperature, pConfig)
+    return retVal
+
+
 ## Engine functions ##
 
 
@@ -1555,4 +2094,727 @@ def zesEngineGetActivity(hEngine, pStats):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hEngine, pStats)
+    return retVal
+
+
+def zesDeviceEnumRasErrorSets(hDevice, pCount, phRas):
+    """Wraps API:
+    ze_result_t zesDeviceEnumRasErrorSets(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_ras_handle_t* phRas)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phRas: POINTER(zes_ras_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumRasErrorSets")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_ras_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phRas)
+    return retVal
+
+
+def zesRasGetProperties(hRas, pProperties):
+    """Wraps API:
+    ze_result_t zesRasGetProperties(
+        zes_ras_handle_t hRas,
+        zes_ras_properties_t* pProperties)
+
+    Parameters:
+      hRas: RAS handle
+      pProperties: POINTER(zes_ras_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesRasGetProperties")
+    funcPtr.argtypes = [zes_ras_handle_t, POINTER(zes_ras_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, pProperties)
+    return retVal
+
+
+def zesRasGetSupportedCategoriesExp(hRas, pCount, pCategories):
+    """Wraps API:
+    ze_result_t zesRasGetSupportedCategoriesExp(
+        zes_ras_handle_t hRas,
+        uint32_t* pCount,
+        zes_ras_error_category_exp_t* pCategories)
+
+    Parameters:
+      hRas: RAS handle
+      pCount: POINTER(c_uint32)
+      pCategories: POINTER(zes_ras_error_category_exp_t) or None
+    Returns:
+      ze_result_t - return code only, supported categories are filled into pCategories
+    """
+    funcPtr = getFunctionPointerList("zesRasGetSupportedCategoriesExp")
+    funcPtr.argtypes = [
+        zes_ras_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_ras_error_category_exp_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, pCount, pCategories)
+    return retVal
+
+
+def zesRasGetStateExp2(hRas, count, pCategories, pState):
+    """Wraps API:
+    ze_result_t zesRasGetStateExp2(
+        zes_ras_handle_t hRas,
+        const uint32_t count,
+        const zes_ras_error_category_exp_t* pCategories,
+        zes_ras_state_exp2_t* pState)
+
+    Parameters:
+      hRas: RAS handle
+      count: number of elements in pCategories and pState
+      pCategories: POINTER(zes_ras_error_category_exp_t) - categories to query
+      pState: POINTER(zes_ras_state_exp2_t) - states to fill, pState[i] maps to pCategories[i]
+    Returns:
+      ze_result_t - return code only, error counters are filled into pState
+    """
+    funcPtr = getFunctionPointerList("zesRasGetStateExp2")
+    funcPtr.argtypes = [
+        zes_ras_handle_t,
+        c_uint32,
+        POINTER(zes_ras_error_category_exp_t),
+        POINTER(zes_ras_state_exp2_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, count, pCategories, pState)
+    return retVal
+
+
+def zesRasGetConfigExp(hRas, count, pConfig):
+    """Wraps API:
+    ze_result_t zesRasGetConfigExp(
+        zes_ras_handle_t hRas,
+        const uint32_t count,
+        zes_ras_config_exp_t* pConfig)
+
+    Parameters:
+      hRas: RAS handle
+      count: number of elements in pConfig
+      pConfig: POINTER(zes_ras_config_exp_t) - category set by caller, threshold filled by driver
+    Returns:
+      ze_result_t - return code only, thresholds are filled into pConfig
+    """
+    funcPtr = getFunctionPointerList("zesRasGetConfigExp")
+    funcPtr.argtypes = [zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, count, pConfig)
+    return retVal
+
+
+def zesRasSetConfigExp(hRas, count, pConfig):
+    """Wraps API:
+    ze_result_t zesRasSetConfigExp(
+        zes_ras_handle_t hRas,
+        const uint32_t count,
+        const zes_ras_config_exp_t* pConfig)
+
+    Parameters:
+      hRas: RAS handle
+      count: number of elements in pConfig
+      pConfig: POINTER(zes_ras_config_exp_t) - thresholds to set per category
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesRasSetConfigExp")
+    funcPtr.argtypes = [zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, count, pConfig)
+    return retVal
+
+
+def zesRasClearStateExp(hRas, category):
+    """Wraps API:
+    ze_result_t zesRasClearStateExp(
+        zes_ras_handle_t hRas,
+        zes_ras_error_category_exp_t category)
+
+    Parameters:
+      hRas: RAS handle
+      category: zes_ras_error_category_exp_t - category whose error counter is cleared
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesRasClearStateExp")
+    funcPtr.argtypes = [zes_ras_handle_t, zes_ras_error_category_exp_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hRas, category)
+    return retVal
+
+
+def zesEngineGetActivityExt(hEngine, pCount, pStats):
+    """Wraps API:
+    ze_result_t zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,
+        uint32_t* pCount,
+        zes_engine_stats_t* pStats)
+
+    Parameters:
+      hEngine: engine handle
+      pCount: POINTER(c_uint32)
+      pStats: POINTER(zes_engine_stats_t) or None - PF stats at index 0 followed by VF stats
+    Returns:
+      ze_result_t - return code only, stats are filled into pStats
+    """
+    funcPtr = getFunctionPointerList("zesEngineGetActivityExt")
+    funcPtr.argtypes = [
+        zes_engine_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_engine_stats_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hEngine, pCount, pStats)
+    return retVal
+
+
+def zesDeviceEnumStandbyDomains(hDevice, pCount, phStandby):
+    """Wraps API:
+    ze_result_t zesDeviceEnumStandbyDomains(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_standby_handle_t* phStandby)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phStandby: POINTER(zes_standby_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumStandbyDomains")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_standby_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phStandby)
+    return retVal
+
+
+def zesStandbyGetProperties(hStandby, pProperties):
+    """Wraps API:
+    ze_result_t zesStandbyGetProperties(
+        zes_standby_handle_t hStandby,
+        zes_standby_properties_t* pProperties)
+
+    Parameters:
+      hStandby: standby handle
+      pProperties: POINTER(zes_standby_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesStandbyGetProperties")
+    funcPtr.argtypes = [zes_standby_handle_t, POINTER(zes_standby_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hStandby, pProperties)
+    return retVal
+
+
+def zesStandbyGetMode(hStandby, pMode):
+    """Wraps API:
+    ze_result_t zesStandbyGetMode(
+        zes_standby_handle_t hStandby,
+        zes_standby_promo_mode_t* pMode)
+
+    Parameters:
+      hStandby: standby handle
+      pMode: POINTER(zes_standby_promo_mode_t) - current standby mode to fill
+    Returns:
+      ze_result_t - return code only, mode is filled into pMode
+    """
+    funcPtr = getFunctionPointerList("zesStandbyGetMode")
+    funcPtr.argtypes = [zes_standby_handle_t, POINTER(zes_standby_promo_mode_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hStandby, pMode)
+    return retVal
+
+
+def zesStandbySetMode(hStandby, mode):
+    """Wraps API:
+    ze_result_t zesStandbySetMode(
+        zes_standby_handle_t hStandby,
+        zes_standby_promo_mode_t mode)
+
+    Parameters:
+      hStandby: standby handle
+      mode: zes_standby_promo_mode_t - new standby mode
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesStandbySetMode")
+    funcPtr.argtypes = [zes_standby_handle_t, zes_standby_promo_mode_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hStandby, mode)
+    return retVal
+
+
+def zesDeviceEnumEnabledVFExp(hDevice, pCount, phVFhandle):
+    """Wraps API:
+    ze_result_t zesDeviceEnumEnabledVFExp(
+        zes_device_handle_t hDevice,
+        uint32_t* pCount,
+        zes_vf_handle_t* phVFhandle)
+
+    Parameters:
+      hDevice: device handle
+      pCount: POINTER(c_uint32)
+      phVFhandle: POINTER(zes_vf_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDeviceEnumEnabledVFExp")
+    funcPtr.argtypes = [
+        zes_device_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_vf_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDevice, pCount, phVFhandle)
+    return retVal
+
+
+def zesVFManagementGetVFCapabilitiesExp2(hVFhandle, pCapability):
+    """Wraps API:
+    ze_result_t zesVFManagementGetVFCapabilitiesExp2(
+        zes_vf_handle_t hVFhandle,
+        zes_vf_exp2_capabilities_t* pCapability)
+
+    Parameters:
+      hVFhandle: VF handle
+      pCapability: POINTER(zes_vf_exp2_capabilities_t) - capability structure to fill
+    Returns:
+      ze_result_t - return code only, capability is filled into pCapability
+    """
+    funcPtr = getFunctionPointerList("zesVFManagementGetVFCapabilitiesExp2")
+    funcPtr.argtypes = [zes_vf_handle_t, POINTER(zes_vf_exp2_capabilities_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hVFhandle, pCapability)
+    return retVal
+
+
+def zesVFManagementGetVFEngineUtilizationExp2(hVFhandle, pCount, pEngineUtil):
+    """Wraps API:
+    ze_result_t zesVFManagementGetVFEngineUtilizationExp2(
+        zes_vf_handle_t hVFhandle,
+        uint32_t* pCount,
+        zes_vf_util_engine_exp2_t* pEngineUtil)
+
+    Parameters:
+      hVFhandle: VF handle
+      pCount: POINTER(c_uint32)
+      pEngineUtil: POINTER(zes_vf_util_engine_exp2_t) or None
+    Returns:
+      ze_result_t - return code only, engine utilization is filled into pEngineUtil
+    """
+    funcPtr = getFunctionPointerList("zesVFManagementGetVFEngineUtilizationExp2")
+    funcPtr.argtypes = [
+        zes_vf_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_vf_util_engine_exp2_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hVFhandle, pCount, pEngineUtil)
+    return retVal
+
+
+def zesVFManagementGetVFMemoryUtilizationExp2(hVFhandle, pCount, pMemUtil):
+    """Wraps API:
+    ze_result_t zesVFManagementGetVFMemoryUtilizationExp2(
+        zes_vf_handle_t hVFhandle,
+        uint32_t* pCount,
+        zes_vf_util_mem_exp2_t* pMemUtil)
+
+    Parameters:
+      hVFhandle: VF handle
+      pCount: POINTER(c_uint32)
+      pMemUtil: POINTER(zes_vf_util_mem_exp2_t) or None
+    Returns:
+      ze_result_t - return code only, memory utilization is filled into pMemUtil
+    """
+    funcPtr = getFunctionPointerList("zesVFManagementGetVFMemoryUtilizationExp2")
+    funcPtr.argtypes = [
+        zes_vf_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_vf_util_mem_exp2_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hVFhandle, pCount, pMemUtil)
+    return retVal
+
+
+def zesDriverEnumInfoLogsExt(hDriver, pCount, phInfoLogs):
+    """Wraps API:
+    ze_result_t zesDriverEnumInfoLogsExt(
+        zes_driver_handle_t hDriver,
+        uint32_t* pCount,
+        zes_info_log_handle_t* phInfoLogs)
+
+    Parameters:
+      hDriver: driver handle
+      pCount: POINTER(c_uint32)
+      phInfoLogs: POINTER(zes_info_log_handle_t) or None
+    """
+    funcPtr = getFunctionPointerList("zesDriverEnumInfoLogsExt")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_info_log_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+    retVal = funcPtr(hDriver, pCount, phInfoLogs)
+    return retVal
+
+
+def zesInfoLogGetPropertiesExt(hInfoLog, pProperties):
+    """Wraps API:
+    ze_result_t zesInfoLogGetPropertiesExt(
+        zes_info_log_handle_t hInfoLog,
+        zes_info_log_ext_properties_t* pProperties)
+
+    Parameters:
+      hInfoLog: info log handle
+      pProperties: POINTER(zes_info_log_ext_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogGetPropertiesExt")
+    funcPtr.argtypes = [zes_info_log_handle_t, POINTER(zes_info_log_ext_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hInfoLog, pProperties)
+    return retVal
+
+
+def zesInfoLogCreateInstanceExt(hInfoLog, pInstanceName, pDesc, phInfoLogInstance):
+    """Wraps API:
+    ze_result_t zesInfoLogCreateInstanceExt(
+        zes_info_log_handle_t hInfoLog,
+        const char* pInstanceName,
+        zes_info_log_instance_ext_desc_t* pDesc,
+        zes_info_log_instance_handle_t* phInfoLogInstance)
+
+    Parameters:
+      hInfoLog: info log handle
+      pInstanceName: bytes or None - name of the instance; None uses the default buffer
+      pDesc: POINTER(zes_info_log_instance_ext_desc_t) - instance descriptor
+      phInfoLogInstance: POINTER(zes_info_log_instance_handle_t) - created instance handle
+    Returns:
+      ze_result_t - return code only, instance handle is filled into phInfoLogInstance
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogCreateInstanceExt")
+    funcPtr.argtypes = [
+        zes_info_log_handle_t,
+        c_char_p,
+        POINTER(zes_info_log_instance_ext_desc_t),
+        POINTER(zes_info_log_instance_handle_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hInfoLog, pInstanceName, pDesc, phInfoLogInstance)
+    return retVal
+
+
+def zesInfoLogInstanceReadWithMetadataExt(
+    hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus
+):
+    """Wraps API:
+    ze_result_t zesInfoLogInstanceReadWithMetadataExt(
+        zes_info_log_instance_handle_t hInfoLogInstance,
+        uint64_t timeout,
+        uint32_t* pSize,
+        uint8_t* pBuffer,
+        uint32_t* pRecordCount,
+        zes_info_log_metadata_ext_t* pDescriptors,
+        zes_info_log_read_status_ext_t* pReadStatus)
+
+    Records returned are consumed and are not returned again.
+
+    Parameters:
+      hInfoLogInstance: info log collection instance handle
+      timeout: c_uint64 - maximum search time in milliseconds
+      pSize: POINTER(c_uint32) - size of pBuffer in bytes; 0 makes this a query call
+      pBuffer: POINTER(c_uint8) or None - buffer for record data
+      pRecordCount: POINTER(c_uint32) - number of elements in pDescriptors; 0 makes this a query call
+      pDescriptors: POINTER(zes_info_log_metadata_ext_t) or None - metadata for each record
+      pReadStatus: POINTER(zes_info_log_read_status_ext_t) or None - status of this call
+    Returns:
+      ze_result_t - return code only, records are filled into pBuffer and pDescriptors
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogInstanceReadWithMetadataExt")
+    funcPtr.argtypes = [
+        zes_info_log_instance_handle_t,
+        c_uint64,
+        POINTER(c_uint32),
+        POINTER(c_uint8),
+        POINTER(c_uint32),
+        POINTER(zes_info_log_metadata_ext_t),
+        POINTER(zes_info_log_read_status_ext_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(
+        hInfoLogInstance,
+        timeout,
+        pSize,
+        pBuffer,
+        pRecordCount,
+        pDescriptors,
+        pReadStatus,
+    )
+    return retVal
+
+
+def zesInfoLogInstancePeekWithMetadataExt(
+    hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus
+):
+    """Wraps API:
+    ze_result_t zesInfoLogInstancePeekWithMetadataExt(
+        zes_info_log_instance_handle_t hInfoLogInstance,
+        uint64_t timeout,
+        uint32_t* pSize,
+        uint8_t* pBuffer,
+        uint32_t* pRecordCount,
+        zes_info_log_metadata_ext_t* pDescriptors,
+        zes_info_log_read_status_ext_t* pReadStatus)
+
+    Records returned are not consumed.
+
+    Parameters:
+      hInfoLogInstance: info log collection instance handle
+      timeout: c_uint64 - maximum search time in milliseconds
+      pSize: POINTER(c_uint32) - size of pBuffer in bytes; 0 makes this a query call
+      pBuffer: POINTER(c_uint8) or None - buffer for record data
+      pRecordCount: POINTER(c_uint32) - number of elements in pDescriptors; 0 makes this a query call
+      pDescriptors: POINTER(zes_info_log_metadata_ext_t) or None - metadata for each record
+      pReadStatus: POINTER(zes_info_log_read_status_ext_t) or None - status of this call
+    Returns:
+      ze_result_t - return code only, records are filled into pBuffer and pDescriptors
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogInstancePeekWithMetadataExt")
+    funcPtr.argtypes = [
+        zes_info_log_instance_handle_t,
+        c_uint64,
+        POINTER(c_uint32),
+        POINTER(c_uint8),
+        POINTER(c_uint32),
+        POINTER(zes_info_log_metadata_ext_t),
+        POINTER(zes_info_log_read_status_ext_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(
+        hInfoLogInstance,
+        timeout,
+        pSize,
+        pBuffer,
+        pRecordCount,
+        pDescriptors,
+        pReadStatus,
+    )
+    return retVal
+
+
+def zesInfoLogInstanceDeleteExt(hInfoLogInstance):
+    """Wraps API:
+    ze_result_t zesInfoLogInstanceDeleteExt(
+        zes_info_log_instance_handle_t hInfoLogInstance)
+
+    Parameters:
+      hInfoLogInstance: info log collection instance handle to delete
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesInfoLogInstanceDeleteExt")
+    funcPtr.argtypes = [zes_info_log_instance_handle_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hInfoLogInstance)
+    return retVal
+
+
+def zesDriverGetProperties(hDriver, pDriverProperties):
+    """Wraps API:
+    ze_result_t zesDriverGetProperties(
+        zes_driver_handle_t hDriver,
+        zes_driver_properties_t* pDriverProperties)
+
+    Parameters:
+      hDriver: driver handle
+      pDriverProperties: POINTER(zes_driver_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pDriverProperties
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetProperties")
+    funcPtr.argtypes = [zes_driver_handle_t, POINTER(zes_driver_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, pDriverProperties)
+    return retVal
+
+
+def zesDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties):
+    """Wraps API:
+    ze_result_t zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,
+        uint32_t* pCount,
+        zes_driver_extension_properties_t* pExtensionProperties)
+
+    Parameters:
+      hDriver: driver handle
+      pCount: POINTER(c_uint32)
+      pExtensionProperties: POINTER(zes_driver_extension_properties_t) or None
+    Returns:
+      ze_result_t - return code only, extension properties are filled into pExtensionProperties
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetExtensionProperties")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_driver_extension_properties_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, pCount, pExtensionProperties)
+    return retVal
+
+
+def zesDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress):
+    """Wraps API:
+    ze_result_t zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,
+        const char* name,
+        void** ppFunctionAddress)
+
+    Parameters:
+      hDriver: driver handle
+      name: bytes - extension function name
+      ppFunctionAddress: POINTER(c_void_p) - function address to fill
+    Returns:
+      ze_result_t - return code only, function address is filled into ppFunctionAddress
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetExtensionFunctionAddress")
+    funcPtr.argtypes = [zes_driver_handle_t, c_char_p, POINTER(c_void_p)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, name, ppFunctionAddress)
+    return retVal
+
+
+def zesDriverEventListenEx(
+    hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents
+):
+    """Wraps API:
+    ze_result_t zesDriverEventListenEx(
+        ze_driver_handle_t hDriver,
+        uint64_t timeout,
+        uint32_t count,
+        zes_device_handle_t* phDevices,
+        uint32_t* pNumDeviceEvents,
+        zes_event_type_flags_t* pEvents)
+
+    Parameters:
+      hDriver: driver handle
+      timeout: c_uint64 - maximum wait in milliseconds; 0 returns immediately
+      count: c_uint32 - number of device handles in phDevices
+      phDevices: POINTER(zes_device_handle_t) - devices to listen to
+      pNumDeviceEvents: POINTER(c_uint32) - number of devices that generated events
+      pEvents: POINTER(zes_event_type_flags_t) - events for each device, at least count elements
+    Returns:
+      ze_result_t - return code only, events are filled into pEvents
+    """
+    funcPtr = getFunctionPointerList("zesDriverEventListenEx")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        c_uint64,
+        c_uint32,
+        POINTER(zes_device_handle_t),
+        POINTER(c_uint32),
+        POINTER(zes_event_type_flags_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents)
+    return retVal
+
+
+def zesDriverEventRegisterExt(hDriver, events):
+    """Wraps API:
+    ze_result_t zesDriverEventRegisterExt(
+        zes_driver_handle_t hDriver,
+        zes_event_type_flags_t events)
+
+    Parameters:
+      hDriver: driver handle
+      events: zes_event_type_flags_t - driver scoped events to listen to, 0 to clear
+    Returns:
+      ze_result_t - return code only
+    """
+    funcPtr = getFunctionPointerList("zesDriverEventRegisterExt")
+    funcPtr.argtypes = [zes_driver_handle_t, zes_event_type_flags_t]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, events)
+    return retVal
+
+
+def zesDriverEventListenExt(
+    hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents, pDriverEvents
+):
+    """Wraps API:
+    ze_result_t zesDriverEventListenExt(
+        zes_driver_handle_t hDriver,
+        uint64_t timeout,
+        uint32_t count,
+        zes_device_handle_t* phDevices,
+        uint32_t* pNumDeviceEvents,
+        zes_event_type_flags_t* pEvents,
+        zes_event_type_flags_t* pDriverEvents)
+
+    Parameters:
+      hDriver: driver handle
+      timeout: c_uint64 - maximum wait in milliseconds; 0 returns immediately
+      count: c_uint32 - number of device handles in phDevices
+      phDevices: POINTER(zes_device_handle_t) - devices to listen to
+      pNumDeviceEvents: POINTER(c_uint32) - number of devices that generated device scoped events
+      pEvents: POINTER(zes_event_type_flags_t) - device scoped events for each device
+      pDriverEvents: POINTER(zes_event_type_flags_t) or None - driver scoped events that occurred
+    Returns:
+      ze_result_t - return code only, events are filled into pEvents and pDriverEvents
+    """
+    funcPtr = getFunctionPointerList("zesDriverEventListenExt")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        c_uint64,
+        c_uint32,
+        POINTER(zes_device_handle_t),
+        POINTER(c_uint32),
+        POINTER(zes_event_type_flags_t),
+        POINTER(zes_event_type_flags_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(
+        hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents, pDriverEvents
+    )
     return retVal

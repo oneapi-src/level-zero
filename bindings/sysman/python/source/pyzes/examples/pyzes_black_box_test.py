@@ -229,6 +229,11 @@ def get_temperature_sensor_string(temp_sensor):
         pz.ZES_TEMP_SENSORS_VOLTAGE_REGULATOR: "ZES_TEMP_SENSORS_VOLTAGE_REGULATOR",
         pz.ZES_TEMP_SENSORS_GPU_MIN: "ZES_TEMP_SENSORS_GPU_MIN",
         pz.ZES_TEMP_SENSORS_MEMORY_MIN: "ZES_TEMP_SENSORS_MEMORY_MIN",
+        pz.ZES_TEMP_SENSORS_GPU_BOARD: "ZES_TEMP_SENSORS_GPU_BOARD",
+        pz.ZES_TEMP_SENSORS_GPU_BOARD_MIN: "ZES_TEMP_SENSORS_GPU_BOARD_MIN",
+        pz.ZES_TEMP_SENSORS_COMPOSITE: "ZES_TEMP_SENSORS_COMPOSITE",
+        pz.ZES_TEMP_SENSORS_GPU_BOARD_SINGLE: "ZES_TEMP_SENSORS_GPU_BOARD_SINGLE",
+        pz.ZES_TEMP_SENSORS_VOLTAGE_REGULATOR_SINGLE: "ZES_TEMP_SENSORS_VOLTAGE_REGULATOR_SINGLE",
     }
     return sensor_map.get(temp_sensor, f"UNKNOWN_TEMP_SENSOR_{temp_sensor}")
 
@@ -319,6 +324,152 @@ def get_device_action_string(action):
         pz.ZES_DEVICE_ACTION_COLD_SYSTEM_REBOOT: "ZES_DEVICE_ACTION_COLD_SYSTEM_REBOOT",
     }
     return action_map.get(action, f"UNKNOWN_DEVICE_ACTION_{action}")
+
+
+def get_ras_error_type_string(error_type):
+    """Convert RAS error type enum to string"""
+    type_map = {
+        pz.ZES_RAS_ERROR_TYPE_CORRECTABLE: "ZES_RAS_ERROR_TYPE_CORRECTABLE",
+        pz.ZES_RAS_ERROR_TYPE_UNCORRECTABLE: "ZES_RAS_ERROR_TYPE_UNCORRECTABLE",
+    }
+    return type_map.get(error_type, f"UNKNOWN_RAS_ERROR_TYPE_{error_type}")
+
+
+def get_ras_error_category_string(category):
+    """Convert RAS error category enum to string"""
+    category_map = {
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_RESET: "ZES_RAS_ERROR_CATEGORY_EXP_RESET",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_PROGRAMMING_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_DRIVER_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_COMPUTE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_NON_COMPUTE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_CACHE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_DISPLAY_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_MEMORY_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_SCALE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_PCIE_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_PCIE_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_FABRIC_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_FABRIC_ERRORS",
+        pz.ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS: "ZES_RAS_ERROR_CATEGORY_EXP_SOC_INTERNAL_ERRORS",
+    }
+    return category_map.get(category, f"UNKNOWN_RAS_ERROR_CATEGORY_{category}")
+
+
+def get_standby_type_string(standby_type):
+    """Convert standby type enum to string"""
+    type_map = {
+        pz.ZES_STANDBY_TYPE_GLOBAL: "ZES_STANDBY_TYPE_GLOBAL",
+    }
+    return type_map.get(standby_type, f"UNKNOWN_STANDBY_TYPE_{standby_type}")
+
+
+def get_standby_promo_mode_string(mode):
+    """Convert standby promo mode enum to string"""
+    mode_map = {
+        pz.ZES_STANDBY_PROMO_MODE_DEFAULT: "ZES_STANDBY_PROMO_MODE_DEFAULT",
+        pz.ZES_STANDBY_PROMO_MODE_NEVER: "ZES_STANDBY_PROMO_MODE_NEVER",
+    }
+    return mode_map.get(mode, f"UNKNOWN_STANDBY_PROMO_MODE_{mode}")
+
+
+def get_info_log_type_string(info_log_type):
+    """Convert info log type enum to string"""
+    type_map = {
+        pz.ZES_INFO_LOG_TYPE_EXT_DEVICE: "ZES_INFO_LOG_TYPE_EXT_DEVICE",
+    }
+    return type_map.get(info_log_type, f"UNKNOWN_INFO_LOG_TYPE_{info_log_type}")
+
+
+def get_info_log_format_string(info_log_format):
+    """Convert info log format enum to string"""
+    format_map = {
+        pz.ZES_INFO_LOG_FORMAT_EXT_CPER: "ZES_INFO_LOG_FORMAT_EXT_CPER",
+    }
+    return format_map.get(info_log_format, f"UNKNOWN_INFO_LOG_FORMAT_{info_log_format}")
+
+
+def get_info_log_record_type_string(record_type):
+    """Convert info log record type enum to string"""
+    record_type_map = {
+        pz.ZES_INFO_LOG_RECORD_TYPE_EXT_UNKNOWN: "ZES_INFO_LOG_RECORD_TYPE_EXT_UNKNOWN",
+        pz.ZES_INFO_LOG_RECORD_TYPE_EXT_INFORMATIONAL: "ZES_INFO_LOG_RECORD_TYPE_EXT_INFORMATIONAL",
+        pz.ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_CORRECTED: "ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_CORRECTED",
+        pz.ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_RECOVERABLE: "ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_RECOVERABLE",
+        pz.ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_FATAL: "ZES_INFO_LOG_RECORD_TYPE_EXT_ERROR_FATAL",
+    }
+    return record_type_map.get(
+        record_type, f"UNKNOWN_INFO_LOG_RECORD_TYPE_{record_type}"
+    )
+
+
+def get_event_type_flags_string(events):
+    """Convert event type flags to a string of flag names"""
+    flag_map = {
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_DETACH: "DEVICE_DETACH",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_ATTACH: "DEVICE_ATTACH",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_ENTER: "DEVICE_SLEEP_STATE_ENTER",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_SLEEP_STATE_EXIT: "DEVICE_SLEEP_STATE_EXIT",
+        pz.ZES_EVENT_TYPE_FLAG_FREQ_THROTTLED: "FREQ_THROTTLED",
+        pz.ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED: "ENERGY_THRESHOLD_CROSSED",
+        pz.ZES_EVENT_TYPE_FLAG_TEMP_CRITICAL: "TEMP_CRITICAL",
+        pz.ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD1: "TEMP_THRESHOLD1",
+        pz.ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD2: "TEMP_THRESHOLD2",
+        pz.ZES_EVENT_TYPE_FLAG_MEM_HEALTH: "MEM_HEALTH",
+        pz.ZES_EVENT_TYPE_FLAG_FABRIC_PORT_HEALTH: "FABRIC_PORT_HEALTH",
+        pz.ZES_EVENT_TYPE_FLAG_PCI_LINK_HEALTH: "PCI_LINK_HEALTH",
+        pz.ZES_EVENT_TYPE_FLAG_RAS_CORRECTABLE_ERRORS: "RAS_CORRECTABLE_ERRORS",
+        pz.ZES_EVENT_TYPE_FLAG_RAS_UNCORRECTABLE_ERRORS: "RAS_UNCORRECTABLE_ERRORS",
+        pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED: "DEVICE_RESET_REQUIRED",
+        pz.ZES_EVENT_TYPE_FLAG_SURVIVABILITY_MODE_DETECTED: "SURVIVABILITY_MODE_DETECTED",
+        pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT: "INFO_LOG_CPER_DATA_AVAILABLE_EXT",
+    }
+    if events == 0:
+        return "None"
+    names = [name for flag, name in flag_map.items() if events & flag]
+    return " | ".join(names) if names else f"UNKNOWN_EVENTS_{events:#x}"
+
+
+def get_reset_reason_flags_string(reasons):
+    """Convert reset reason flags to a string of flag names"""
+    flag_map = {
+        pz.ZES_RESET_REASON_FLAG_WEDGED: "WEDGED",
+        pz.ZES_RESET_REASON_FLAG_REPAIR: "REPAIR",
+    }
+    if reasons == 0:
+        return "None"
+    names = [name for flag, name in flag_map.items() if reasons & flag]
+    return " | ".join(names) if names else f"UNKNOWN_RESET_REASONS_{reasons:#x}"
+
+
+def get_repair_status_string(status):
+    """Convert repair status enum to string"""
+    status_map = {
+        pz.ZES_REPAIR_STATUS_UNSUPPORTED: "ZES_REPAIR_STATUS_UNSUPPORTED",
+        pz.ZES_REPAIR_STATUS_NOT_PERFORMED: "ZES_REPAIR_STATUS_NOT_PERFORMED",
+        pz.ZES_REPAIR_STATUS_PERFORMED: "ZES_REPAIR_STATUS_PERFORMED",
+    }
+    return status_map.get(status, f"UNKNOWN_REPAIR_STATUS_{status}")
+
+
+def get_health_status_string(health):
+    """Convert device health status enum to string"""
+    health_map = {
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_OK: "ZES_DEVICE_HEALTH_STATUS_EXT_OK",
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_WARNING: "ZES_DEVICE_HEALTH_STATUS_EXT_WARNING",
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL: "ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL",
+        pz.ZES_DEVICE_HEALTH_STATUS_EXT_FAILED: "ZES_DEVICE_HEALTH_STATUS_EXT_FAILED",
+    }
+    return health_map.get(health, f"UNKNOWN_HEALTH_STATUS_{health}")
+
+
+def get_reset_type_string(reset_type):
+    """Convert reset type enum to string"""
+    type_map = {
+        pz.ZES_RESET_TYPE_WARM: "ZES_RESET_TYPE_WARM",
+        pz.ZES_RESET_TYPE_COLD: "ZES_RESET_TYPE_COLD",
+        pz.ZES_RESET_TYPE_FLR: "ZES_RESET_TYPE_FLR",
+    }
+    return type_map.get(reset_type, f"UNKNOWN_RESET_TYPE_{reset_type}")
 
 
 def is_root_user():
@@ -837,6 +988,1192 @@ def test_engine_modules(device_handle, device_index):
             print_verbose(f"        Active Time: {engineStats.activeTime}")
             print_verbose(f"        Timestamp: {engineStats.timestamp}")
 
+    for i in range(engine_count.value):
+        ext_count = c_uint32(0)
+        rc = pz.zesEngineGetActivityExt(engine_handles[i], byref(ext_count), None)
+        if rc != pz.ZE_RESULT_SUCCESS:
+            print_verbose(
+                f"\n  Engine Module {i} Activity Ext: Not available ({get_result_string(rc)})"
+            )
+            continue
+
+        if ext_count.value == 0:
+            continue
+
+        EngineStatsArray = pz.zes_engine_stats_t * ext_count.value
+        ext_stats = EngineStatsArray()
+        rc = pz.zesEngineGetActivityExt(engine_handles[i], byref(ext_count), ext_stats)
+        if not check_rc(f"zesEngineGetActivityExt(engine {i}, sample 1)", rc):
+            continue
+
+        time.sleep(0.15)
+        ext_stats2 = EngineStatsArray()
+        rc = pz.zesEngineGetActivityExt(engine_handles[i], byref(ext_count), ext_stats2)
+        if not check_rc(f"zesEngineGetActivityExt(engine {i}, sample 2)", rc):
+            continue
+
+        print_verbose(f"\n  Engine Module {i} Activity Ext:")
+        for j in range(ext_count.value):
+            label = "PF" if j == 0 else f"VF {j}"
+            print_verbose(
+                f"    {label}: Active Time: {ext_stats2[j].activeTime}, Timestamp: {ext_stats2[j].timestamp}"
+            )
+            delta_active = ext_stats2[j].activeTime - ext_stats[j].activeTime
+            delta_time = ext_stats2[j].timestamp - ext_stats[j].timestamp
+            if delta_time > 0:
+                print_verbose(
+                    f"      Utilization: {100.0 * delta_active / delta_time:.2f}%"
+                )
+            else:
+                print_verbose("      Utilization: unavailable due to zero delta time")
+
+    return True
+
+
+def test_standby_module(device_handle, device_index):
+    """Test standby domain enumeration, properties, and mode operations"""
+    print(f"\n---- Device {device_index} Standby Domains Test ----")
+
+    standby_count = c_uint32(0)
+    rc = pz.zesDeviceEnumStandbyDomains(device_handle, byref(standby_count), None)
+    if not check_rc(f"zesDeviceEnumStandbyDomains(device {device_index}, count)", rc):
+        return False
+
+    if standby_count.value == 0:
+        print_verbose("No standby domains found on this device")
+        return True
+
+    print_verbose(f"Found {standby_count.value} standby domain(s)")
+
+    StandbyArray = pz.zes_standby_handle_t * standby_count.value
+    standby_handles = StandbyArray()
+
+    rc = pz.zesDeviceEnumStandbyDomains(
+        device_handle, byref(standby_count), standby_handles
+    )
+    if not check_rc(f"zesDeviceEnumStandbyDomains(device {device_index}, handles)", rc):
+        return False
+
+    for i in range(standby_count.value):
+        print_verbose(f"\n  Standby Domain {i}:")
+
+        props = pz.zes_standby_properties_t()
+        props.stype = pz.ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES
+        props.pNext = None
+
+        rc = pz.zesStandbyGetProperties(standby_handles[i], byref(props))
+        if not check_rc(f"zesStandbyGetProperties(standby {i})", rc):
+            continue
+
+        print_verbose(f"    Type: {get_standby_type_string(props.type)}")
+        print_verbose(f"    On Subdevice: {bool(props.onSubdevice)}")
+        if props.onSubdevice:
+            print_verbose(f"    Subdevice ID: {props.subdeviceId}")
+
+        mode = pz.zes_standby_promo_mode_t(0)
+        rc = pz.zesStandbyGetMode(standby_handles[i], byref(mode))
+        if not check_rc(f"zesStandbyGetMode(standby {i})", rc):
+            continue
+
+        print_verbose(f"    Mode: {get_standby_promo_mode_string(mode.value)}")
+
+        if not is_root_user():
+            print_verbose(
+                "    Skipping zesStandbySetMode due to insufficient permissions"
+            )
+            continue
+
+        for new_mode in (
+            pz.ZES_STANDBY_PROMO_MODE_DEFAULT,
+            pz.ZES_STANDBY_PROMO_MODE_NEVER,
+        ):
+            mode_name = get_standby_promo_mode_string(new_mode)
+            rc = pz.zesStandbySetMode(standby_handles[i], new_mode)
+            if not check_rc(f"zesStandbySetMode(standby {i}, {mode_name})", rc):
+                continue
+
+            read_back = pz.zes_standby_promo_mode_t(0)
+            rc = pz.zesStandbyGetMode(standby_handles[i], byref(read_back))
+            if check_rc(f"zesStandbyGetMode(standby {i}, verify)", rc):
+                status = "OK" if read_back.value == new_mode else "MISMATCH"
+                print_verbose(
+                    f"    Set mode {mode_name}, read back "
+                    f"{get_standby_promo_mode_string(read_back.value)} ({status})"
+                )
+
+        rc = pz.zesStandbySetMode(standby_handles[i], mode.value)
+        if check_rc(f"zesStandbySetMode(standby {i}, restore)", rc):
+            print_verbose(
+                f"    Restored standby mode to {get_standby_promo_mode_string(mode.value)}"
+            )
+
+    return True
+
+
+def test_vf_management_module(device_handle, device_index):
+    """Test enabled VF enumeration, capabilities, and utilization operations"""
+    print(f"\n---- Device {device_index} VF Management Test ----")
+
+    vf_count = c_uint32(0)
+    rc = pz.zesDeviceEnumEnabledVFExp(device_handle, byref(vf_count), None)
+    if not check_rc(f"zesDeviceEnumEnabledVFExp(device {device_index}, count)", rc):
+        return False
+
+    if vf_count.value == 0:
+        print_verbose("No enabled VFs found on this device")
+        return True
+
+    print_verbose(f"Found {vf_count.value} enabled VF(s)")
+
+    VFArray = pz.zes_vf_handle_t * vf_count.value
+    vf_handles = VFArray()
+
+    rc = pz.zesDeviceEnumEnabledVFExp(device_handle, byref(vf_count), vf_handles)
+    if not check_rc(f"zesDeviceEnumEnabledVFExp(device {device_index}, handles)", rc):
+        return False
+
+    for i in range(vf_count.value):
+        print_verbose(f"\n  VF {i}:")
+
+        capability = pz.zes_vf_exp2_capabilities_t()
+        capability.stype = pz.ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES
+        capability.pNext = None
+
+        rc = pz.zesVFManagementGetVFCapabilitiesExp2(vf_handles[i], byref(capability))
+        if not check_rc(f"zesVFManagementGetVFCapabilitiesExp2(vf {i})", rc):
+            continue
+
+        print_verbose("    Capabilities:")
+        print_verbose(f"      VF ID: {capability.vfID}")
+        print_verbose(
+            f"      BDF: {capability.address.domain:04X}:{capability.address.bus:02X}:"
+            f"{capability.address.device:02X}.{capability.address.function:X}"
+        )
+        print_verbose(f"      Device Memory Size: {capability.vfDeviceMemSize} bytes")
+
+        mem_count = c_uint32(0)
+        rc = pz.zesVFManagementGetVFMemoryUtilizationExp2(
+            vf_handles[i], byref(mem_count), None
+        )
+        if check_rc(f"zesVFManagementGetVFMemoryUtilizationExp2(vf {i}, count)", rc):
+            if mem_count.value > 0:
+                MemUtilArray = pz.zes_vf_util_mem_exp2_t * mem_count.value
+                mem_util = MemUtilArray()
+                for j in range(mem_count.value):
+                    mem_util[j].stype = pz.ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2
+                    mem_util[j].pNext = None
+
+                rc = pz.zesVFManagementGetVFMemoryUtilizationExp2(
+                    vf_handles[i], byref(mem_count), mem_util
+                )
+                if check_rc(
+                    f"zesVFManagementGetVFMemoryUtilizationExp2(vf {i}, data)", rc
+                ):
+                    print_verbose("    Memory Utilization:")
+                    for j in range(mem_count.value):
+                        print_verbose(
+                            f"      {get_memory_location_string(mem_util[j].vfMemLocation)}: "
+                            f"{mem_util[j].vfMemUtilized} bytes"
+                        )
+
+        engine_count = c_uint32(0)
+        rc = pz.zesVFManagementGetVFEngineUtilizationExp2(
+            vf_handles[i], byref(engine_count), None
+        )
+        if check_rc(f"zesVFManagementGetVFEngineUtilizationExp2(vf {i}, count)", rc):
+            if engine_count.value > 0:
+                EngineUtilArray = pz.zes_vf_util_engine_exp2_t * engine_count.value
+                engine_util = EngineUtilArray()
+                for j in range(engine_count.value):
+                    engine_util[j].stype = pz.ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2
+                    engine_util[j].pNext = None
+
+                rc = pz.zesVFManagementGetVFEngineUtilizationExp2(
+                    vf_handles[i], byref(engine_count), engine_util
+                )
+                if check_rc(
+                    f"zesVFManagementGetVFEngineUtilizationExp2(vf {i}, data)", rc
+                ):
+                    print_verbose("    Engine Utilization:")
+                    for j in range(engine_count.value):
+                        print_verbose(
+                            f"      {get_engine_type_string(engine_util[j].vfEngineType)}: "
+                            f"Active Counter: {engine_util[j].activeCounterValue}, "
+                            f"Sampling Counter: {engine_util[j].samplingCounterValue}"
+                        )
+
+    return True
+
+
+def get_ras_states(ras_handle, ras_index, categories, category_count, label):
+    """Read RAS error counters for the given categories, returns None on failure"""
+    StateArray = pz.zes_ras_state_exp2_t * category_count
+    states = StateArray()
+    for j in range(category_count):
+        states[j].stype = pz.ZES_STRUCTURE_TYPE_RAS_STATE_EXP2
+        states[j].pNext = None
+
+    rc = pz.zesRasGetStateExp2(ras_handle, category_count, categories, states)
+    if not check_rc(f"zesRasGetStateExp2(ras {ras_index}, {label})", rc):
+        return None
+    return states
+
+
+def get_ras_configs(ras_handle, ras_index, categories, category_count, label):
+    """Read RAS thresholds for the given categories, returns None on failure"""
+    ConfigArray = pz.zes_ras_config_exp_t * category_count
+    configs = ConfigArray()
+    for j in range(category_count):
+        configs[j].stype = pz.ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP
+        configs[j].pNext = None
+        configs[j].category = categories[j]
+
+    rc = pz.zesRasGetConfigExp(ras_handle, category_count, configs)
+    if not check_rc(f"zesRasGetConfigExp(ras {ras_index}, {label})", rc):
+        return None
+    return configs
+
+
+def test_ras_module(device_handle, device_index, set_threshold=None, clear_state=False):
+    """Test RAS error set enumeration, properties, state, and config operations"""
+    print(f"\n---- Device {device_index} RAS Test ----")
+
+    ras_count = c_uint32(0)
+    rc = pz.zesDeviceEnumRasErrorSets(device_handle, byref(ras_count), None)
+    if not check_rc(f"zesDeviceEnumRasErrorSets(device {device_index}, count)", rc):
+        return False
+
+    if ras_count.value == 0:
+        print_verbose("No RAS error sets found on this device")
+        return True
+
+    print_verbose(f"Found {ras_count.value} RAS error set(s)")
+
+    RasArray = pz.zes_ras_handle_t * ras_count.value
+    ras_handles = RasArray()
+
+    rc = pz.zesDeviceEnumRasErrorSets(device_handle, byref(ras_count), ras_handles)
+    if not check_rc(f"zesDeviceEnumRasErrorSets(device {device_index}, handles)", rc):
+        return False
+
+    for i in range(ras_count.value):
+        print_verbose(f"\n  RAS Error Set {i}:")
+
+        props = pz.zes_ras_properties_t()
+        props.stype = pz.ZES_STRUCTURE_TYPE_RAS_PROPERTIES
+        props.pNext = None
+
+        rc = pz.zesRasGetProperties(ras_handles[i], byref(props))
+        if not check_rc(f"zesRasGetProperties(ras {i})", rc):
+            continue
+
+        print_verbose(f"    Type: {get_ras_error_type_string(props.type)}")
+        print_verbose(f"    On Subdevice: {bool(props.onSubdevice)}")
+        if props.onSubdevice:
+            print_verbose(f"    Subdevice ID: {props.subdeviceId}")
+
+        category_count = c_uint32(0)
+        rc = pz.zesRasGetSupportedCategoriesExp(
+            ras_handles[i], byref(category_count), None
+        )
+        if not check_rc(f"zesRasGetSupportedCategoriesExp(ras {i}, count)", rc):
+            continue
+
+        if category_count.value == 0:
+            print_verbose("    No supported RAS error categories")
+            continue
+
+        count = category_count.value
+        CategoryArray = pz.zes_ras_error_category_exp_t * count
+        categories = CategoryArray()
+        rc = pz.zesRasGetSupportedCategoriesExp(
+            ras_handles[i], byref(category_count), categories
+        )
+        if not check_rc(f"zesRasGetSupportedCategoriesExp(ras {i}, categories)", rc):
+            continue
+
+        states = get_ras_states(ras_handles[i], i, categories, count, "current")
+        if states is None:
+            continue
+
+        configs = get_ras_configs(ras_handles[i], i, categories, count, "current")
+
+        print_verbose("    Error Counters:")
+        for j in range(count):
+            line = f"      {get_ras_error_category_string(categories[j])}: {states[j].errorCounter}"
+            if configs is not None:
+                line += f" (threshold: {configs[j].threshold})"
+            print_verbose(line)
+
+        if set_threshold is None and not clear_state:
+            continue
+
+        if not is_root_user():
+            print_verbose(
+                "    Skipping zesRasSetConfigExp and zesRasClearStateExp tests due to insufficient permissions"
+            )
+            continue
+
+        if configs is not None and set_threshold is not None:
+            ConfigArray = pz.zes_ras_config_exp_t * count
+            new_configs = ConfigArray()
+            for j in range(count):
+                new_configs[j].stype = pz.ZES_STRUCTURE_TYPE_RAS_CONFIG_EXP
+                new_configs[j].pNext = None
+                new_configs[j].category = categories[j]
+                new_configs[j].threshold = set_threshold
+
+            print_verbose(f"    Setting threshold {set_threshold} for all categories")
+            rc = pz.zesRasSetConfigExp(ras_handles[i], count, new_configs)
+            if check_rc(f"zesRasSetConfigExp(ras {i}, threshold={set_threshold})", rc):
+                verify = get_ras_configs(ras_handles[i], i, categories, count, "verify")
+                if verify is not None:
+                    print_verbose("    Thresholds after set:")
+                    for j in range(count):
+                        status = (
+                            "OK" if verify[j].threshold == set_threshold else "MISMATCH"
+                        )
+                        print_verbose(
+                            f"      {get_ras_error_category_string(categories[j])}: {verify[j].threshold} ({status})"
+                        )
+
+            print_verbose("    Restoring original thresholds")
+            rc = pz.zesRasSetConfigExp(ras_handles[i], count, configs)
+            check_rc(f"zesRasSetConfigExp(ras {i}, restore)", rc)
+
+        if clear_state:
+            print_verbose("    Clearing all RAS error categories")
+            for j in range(count):
+                rc = pz.zesRasClearStateExp(ras_handles[i], categories[j])
+                check_rc(
+                    f"zesRasClearStateExp(ras {i}, {get_ras_error_category_string(categories[j])})",
+                    rc,
+                )
+
+            after = get_ras_states(ras_handles[i], i, categories, count, "after clear")
+            if after is not None:
+                print_verbose("    Error Counters (before -> after clear):")
+                for j in range(count):
+                    print_verbose(
+                        f"      {get_ras_error_category_string(categories[j])}: "
+                        f"{states[j].errorCounter} -> {after[j].errorCounter}"
+                    )
+
+    return True
+
+
+INFO_LOG_READ_TIMEOUT_MS = 1000
+INFO_LOG_RECORD_WAIT_MS = 5000
+INFO_LOG_POLL_INTERVAL_MS = 200
+INFO_LOG_MAX_DRAIN_CALLS = 16
+INFO_LOG_INSTANCE_NAME = "pyzes_black_box_infolog"
+
+
+class InfoLogChecks:
+    """Count and print the pass and fail results of the info log checks"""
+
+    def __init__(self):
+        self.passed = 0
+        self.failed = 0
+
+    def __call__(self, condition, description):
+        if condition:
+            print_verbose(f"  [PASS] {description}")
+            self.passed += 1
+        else:
+            print_verbose(f"  [FAIL] {description}")
+            self.failed += 1
+
+    def print_summary(self):
+        print_verbose(f"{self.passed} check(s) passed, {self.failed} check(s) failed")
+
+
+class InfoLogRecords:
+    """Records returned by one read or peek call"""
+
+    def __init__(self):
+        self.size = 0
+        self.record_count = 0
+        self.buffer = None
+        self.descriptors = None
+        self.status = None
+
+
+def query_info_log_records(collect_fn, instance_handle, timeout):
+    """Query the records held by the instance without consuming them.
+
+    A call with *pSize and *pRecordCount zero on input is a query call for both read and peek.
+    ZE_RESULT_WARNING_DROPPED_DATA still returns a valid query result, so it is reported as success.
+    Returns (rc, size, record_count).
+    """
+    size = c_uint32(0)
+    record_count = c_uint32(0)
+    status = pz.zes_info_log_read_status_ext_t()
+    status.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT
+    status.pNext = None
+    rc = collect_fn(
+        instance_handle,
+        timeout,
+        byref(size),
+        None,
+        byref(record_count),
+        None,
+        byref(status),
+    )
+    if rc == pz.ZE_RESULT_WARNING_DROPPED_DATA:
+        dropped = status.droppedRecordCount
+        if dropped == -1:
+            dropped = "unknown"
+        print_verbose(
+            f"  query: records were dropped, readStatus.droppedRecordCount = {dropped}"
+        )
+        rc = pz.ZE_RESULT_SUCCESS
+    return rc, size.value, record_count.value
+
+
+def collect_info_log_records(collect_fn, api_name, instance_handle, timeout):
+    """Query the records held by the instance, then collect them in a second call.
+
+    Returns an InfoLogRecords object, or None on failure.
+    """
+    records = InfoLogRecords()
+    rc, records.size, records.record_count = query_info_log_records(
+        collect_fn, instance_handle, timeout
+    )
+    if not check_rc(f"{api_name}(query)", rc):
+        return None
+
+    print_verbose(
+        f"{api_name}() query: {records.record_count} record(s), {records.size} byte(s) pending"
+    )
+    if records.size == 0 or records.record_count == 0:
+        records.size = 0
+        records.record_count = 0
+        return records
+
+    size = c_uint32(records.size)
+    record_count = c_uint32(records.record_count)
+    records.buffer = (c_uint8 * size.value)()
+    records.descriptors = (pz.zes_info_log_metadata_ext_t * record_count.value)()
+    for j in range(record_count.value):
+        records.descriptors[j].stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT
+        records.descriptors[j].pNext = None
+
+    records.status = pz.zes_info_log_read_status_ext_t()
+    records.status.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT
+    records.status.pNext = None
+
+    rc = collect_fn(
+        instance_handle,
+        timeout,
+        byref(size),
+        records.buffer,
+        byref(record_count),
+        records.descriptors,
+        byref(records.status),
+    )
+    if rc != pz.ZE_RESULT_WARNING_DROPPED_DATA and not check_rc(f"{api_name}()", rc):
+        return None
+
+    records.size = size.value
+    records.record_count = record_count.value
+    print_verbose(
+        f"{api_name}(): {records.record_count} record(s), {records.size} byte(s) returned"
+    )
+    dropped = (
+        records.status.droppedRecordCount
+        if rc == pz.ZE_RESULT_WARNING_DROPPED_DATA
+        else 0
+    )
+    if dropped == -1:
+        dropped = "unknown"
+    print_verbose(
+        f"  readStatus.hasDataToRead = {bool(records.status.hasDataToRead)}, "
+        f"readStatus.droppedRecordCount = {dropped}, "
+        f"readStatus.consumedDataSize = {records.status.consumedDataSize} bytes"
+    )
+    if records.status.hasDataToRead:
+        print_verbose(
+            f"  Records remain on the instance, {api_name}() has to be called again"
+        )
+    return records
+
+
+def print_info_log_records(records, first_record_number):
+    """Print the metadata and the start of the data of collected info log records"""
+    print_verbose("-" * 80)
+    for j in range(records.record_count):
+        record = records.descriptors[j]
+        print_verbose(f"\nEvent #{first_record_number + j}:")
+        print_verbose(f"  Timestamp:    {record.timestamp} nano seconds")
+        print_verbose(
+            f"  BDF:          {record.address.domain:04x}:{record.address.bus:02x}:"
+            f"{record.address.device:02x}.{record.address.function:x}"
+        )
+        print_verbose(
+            f"  Platform ID:  {'-'.join(f'{record.uuid.id[k]:02x}' for k in range(16))}"
+        )
+        print_verbose(
+            f"  Record Type:  {get_info_log_record_type_string(record.recordType)}"
+        )
+        print_verbose(f"  Data Size:    {record.lengthOfData} bytes")
+        print_verbose(f"  Data Offset:  {record.offset}")
+        start = record.offset
+        end = min(start + record.lengthOfData, records.size)
+        stop = min(end, start + 64)
+        data = bytes(records.buffer[start:stop])
+        suffix = " ..." if end - start > 64 else ""
+        print_verbose(f"  CPER Data:    {data.hex(' ')}{suffix}")
+    print_verbose("-" * 80)
+
+
+def drain_info_log_records(
+    collect_fn, api_name, instance_handle, timeout, first_record_number
+):
+    """Keep collecting while the driver reports more data. Returns (records collected, success)."""
+    collected = 0
+    for _ in range(INFO_LOG_MAX_DRAIN_CALLS):
+        records = collect_info_log_records(
+            collect_fn, api_name, instance_handle, timeout
+        )
+        if records is None:
+            return collected, False
+        if records.record_count == 0:
+            break
+        print_info_log_records(records, first_record_number + collected)
+        collected += records.record_count
+        if not records.status.hasDataToRead:
+            break
+    return collected, True
+
+
+def records_match(first, second):
+    """Check that the first record of two collections has the same data"""
+    if first.record_count == 0 or second.record_count == 0:
+        return False
+    a = first.descriptors[0]
+    b = second.descriptors[0]
+    if a.lengthOfData != b.lengthOfData:
+        return False
+    a_start, a_end = a.offset, a.offset + a.lengthOfData
+    b_start, b_end = b.offset, b.offset + b.lengthOfData
+    return bytes(first.buffer[a_start:a_end]) == bytes(second.buffer[b_start:b_end])
+
+
+def get_info_log_properties(info_log_handle):
+    """Return the properties of an info log, or None on failure"""
+    props = pz.zes_info_log_ext_properties_t()
+    props.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_EXT_PROPERTIES
+    props.pNext = None
+    rc = pz.zesInfoLogGetPropertiesExt(info_log_handle, byref(props))
+    if not check_rc("zesInfoLogGetPropertiesExt", rc):
+        return None
+    return props
+
+
+def create_info_log_instance(info_log_handle, instance_name, buffer_size_kb):
+    """Create a collection instance, unset options use the default buffer and buffer size"""
+    desc = pz.zes_info_log_instance_ext_desc_t()
+    desc.stype = pz.ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC
+    desc.pNext = None
+    buffer_size = None
+    if buffer_size_kb is not None:
+        buffer_size = c_uint32(buffer_size_kb)
+        desc.pBufferSizeInKb = pointer(buffer_size)
+        print_verbose(f"  requested buffer size: {buffer_size_kb} KB")
+    else:
+        desc.pBufferSizeInKb = None
+
+    name = instance_name.encode() if instance_name is not None else None
+    instance_handle = pz.zes_info_log_instance_handle_t()
+    rc = pz.zesInfoLogCreateInstanceExt(
+        info_log_handle, name, byref(desc), byref(instance_handle)
+    )
+    if not check_rc("zesInfoLogCreateInstanceExt", rc):
+        return None
+
+    if buffer_size is not None:
+        print_verbose(f"  applied buffer size: {buffer_size.value} KB")
+    return instance_handle
+
+
+def test_info_log_instance_read_peek(info_log_handle, props, timeout):
+    """Peek twice, read and drain the records of a named instance and check the results"""
+    print("\n---- Info Log instance read and peek tests ----")
+
+    if not props.isNamedInstanceSupported:
+        print_verbose(
+            "Named collection instances are not supported. Skipping the test."
+        )
+        return
+    if not props.isPeekDataSupported:
+        print_verbose("Peek is not supported. Skipping the test.")
+        return
+
+    instance_handle = create_info_log_instance(
+        info_log_handle, INFO_LOG_INSTANCE_NAME, None
+    )
+    if instance_handle is None:
+        return
+    print_verbose(f"Created collection instance '{INFO_LOG_INSTANCE_NAME}'")
+
+    print_verbose(
+        f"\nWaiting up to {INFO_LOG_RECORD_WAIT_MS} ms for CPER records. Records are generated "
+        "when the uncorrectable RAS counters are read, for example with "
+        "'zello_sysman -L --instanceapi' "
+        "from another shell."
+    )
+    peek_name = "zesInfoLogInstancePeekWithMetadataExt"
+    read_name = "zesInfoLogInstanceReadWithMetadataExt"
+    pending_size = 0
+    pending_count = 0
+    for _ in range(0, INFO_LOG_RECORD_WAIT_MS, INFO_LOG_POLL_INTERVAL_MS):
+        rc, pending_size, pending_count = query_info_log_records(
+            pz.zesInfoLogInstancePeekWithMetadataExt, instance_handle, timeout
+        )
+        if not check_rc(f"{peek_name}(query)", rc) or pending_count != 0:
+            break
+        time.sleep(INFO_LOG_POLL_INTERVAL_MS / 1000)
+
+    if pending_count == 0:
+        print_verbose(
+            f"No CPER record was collected within {INFO_LOG_RECORD_WAIT_MS} ms. "
+            "Skipping the read and peek verification."
+        )
+        check_rc(
+            "zesInfoLogInstanceDeleteExt",
+            pz.zesInfoLogInstanceDeleteExt(instance_handle),
+        )
+        return
+    print_verbose(
+        f"{pending_count} record(s), {pending_size} byte(s) are pending on the instance"
+    )
+
+    check = InfoLogChecks()
+
+    print_verbose("\nFirst peek:")
+    first_peek = collect_info_log_records(
+        pz.zesInfoLogInstancePeekWithMetadataExt, peek_name, instance_handle, timeout
+    )
+    check(
+        first_peek is not None and first_peek.record_count != 0,
+        "peek returned the pending records",
+    )
+    if first_peek is None:
+        first_peek = InfoLogRecords()
+    if first_peek.record_count != 0:
+        print_info_log_records(first_peek, 1)
+
+    print_verbose("\nSecond peek, on the same records:")
+    second_peek = collect_info_log_records(
+        pz.zesInfoLogInstancePeekWithMetadataExt, peek_name, instance_handle, timeout
+    )
+    check(
+        second_peek is not None
+        and second_peek.record_count == first_peek.record_count
+        and second_peek.size == first_peek.size,
+        "a second peek reports the same records, peek does not consume",
+    )
+
+    print_verbose("\nRead, on the records the peek left in place:")
+    read = collect_info_log_records(
+        pz.zesInfoLogInstanceReadWithMetadataExt, read_name, instance_handle, timeout
+    )
+    check(
+        read is not None and read.record_count >= first_peek.record_count,
+        "read returned at least the records the peek reported",
+    )
+    if read is None:
+        read = InfoLogRecords()
+    if read.record_count != 0:
+        print_info_log_records(read, 1)
+
+    check(
+        records_match(first_peek, read),
+        "the first record the read returned is byte identical to the peeked one",
+    )
+
+    if read.status is not None and read.status.hasDataToRead:
+        drained, success = drain_info_log_records(
+            pz.zesInfoLogInstanceReadWithMetadataExt,
+            read_name,
+            instance_handle,
+            timeout,
+            read.record_count + 1,
+        )
+        print_verbose(f"{drained} further record(s) were read to drain the instance")
+        check(success, "the reads which drained the remaining records succeeded")
+
+    rc, pending_size, pending_count = query_info_log_records(
+        pz.zesInfoLogInstanceReadWithMetadataExt, instance_handle, timeout
+    )
+    check(
+        rc == pz.ZE_RESULT_SUCCESS and pending_count == 0,
+        "the instance is drained after the read, nothing is pending",
+    )
+
+    print_verbose("")
+    check.print_summary()
+
+    rc = pz.zesInfoLogInstanceDeleteExt(instance_handle)
+    if check_rc("zesInfoLogInstanceDeleteExt", rc):
+        print_verbose(f"Deleted collection instance '{INFO_LOG_INSTANCE_NAME}'")
+
+
+def test_info_log_instance_collect(
+    info_log_handle, props, instance_name, buffer_size_kb, timeout, use_peek
+):
+    """Peek or read the records collected into an instance and check the results"""
+    operation = "peek" if use_peek else "read"
+    print(f"\n---- Info Log instance {operation} tests ----")
+
+    if use_peek and not props.isPeekDataSupported:
+        print_verbose("Peek is not supported. Skipping the test.")
+        return
+    if instance_name is not None and not props.isNamedInstanceSupported:
+        print_verbose(
+            "Named collection instances are not supported. Skipping the test."
+        )
+        return
+
+    print_verbose(
+        f"Collection instance: {instance_name if instance_name is not None else 'the default buffer'}"
+    )
+    instance_handle = create_info_log_instance(
+        info_log_handle, instance_name, buffer_size_kb
+    )
+    if instance_handle is None:
+        return
+
+    if use_peek:
+        collect_fn = pz.zesInfoLogInstancePeekWithMetadataExt
+        api_name = "zesInfoLogInstancePeekWithMetadataExt"
+    else:
+        collect_fn = pz.zesInfoLogInstanceReadWithMetadataExt
+        api_name = "zesInfoLogInstanceReadWithMetadataExt"
+
+    check = InfoLogChecks()
+    records = collect_info_log_records(collect_fn, api_name, instance_handle, timeout)
+    if records is not None and records.record_count == 0:
+        print_verbose(
+            "No record is pending on the instance. Records are generated when the "
+            "uncorrectable RAS counters are read, for example with 'zello_sysman -L --instanceapi'."
+        )
+    elif records is not None:
+        print_info_log_records(records, 1)
+        if use_peek:
+            rc, pending_size, pending_count = query_info_log_records(
+                collect_fn, instance_handle, timeout
+            )
+            check(
+                rc == pz.ZE_RESULT_SUCCESS
+                and pending_count == records.record_count
+                and pending_size == records.size,
+                "the peeked records are still pending on the instance",
+            )
+        else:
+            if records.status.hasDataToRead:
+                drained, success = drain_info_log_records(
+                    collect_fn,
+                    api_name,
+                    instance_handle,
+                    timeout,
+                    records.record_count + 1,
+                )
+                print_verbose(
+                    f"{drained} further record(s) were read to drain the instance"
+                )
+                check(
+                    success, "the reads which drained the remaining records succeeded"
+                )
+            rc, pending_size, pending_count = query_info_log_records(
+                collect_fn, instance_handle, timeout
+            )
+            check(
+                rc == pz.ZE_RESULT_SUCCESS and pending_count == 0,
+                "the read consumed the records, nothing is pending",
+            )
+        print_verbose("")
+        check.print_summary()
+
+    rc = pz.zesInfoLogInstanceDeleteExt(instance_handle)
+    if check_rc("zesInfoLogInstanceDeleteExt", rc):
+        print_verbose("Deleted collection instance")
+
+
+def test_info_log_module(
+    driver_handle,
+    driver_index,
+    mode=None,
+    instance_name=None,
+    buffer_size_kb=None,
+    timeout=INFO_LOG_READ_TIMEOUT_MS,
+):
+    """Test info log properties, and with a mode the collection instance operations.
+
+    mode is None for properties only, "api" to verify peek and read on a named instance,
+    "peek" to peek or "read" to read the records of an instance.
+    """
+    print(f"\n---- Driver {driver_index} Info Log properties tests ----")
+
+    info_log_count = c_uint32(0)
+    rc = pz.zesDriverEnumInfoLogsExt(driver_handle, byref(info_log_count), None)
+    if not check_rc(f"zesDriverEnumInfoLogsExt(driver {driver_index}, count)", rc):
+        return False
+
+    if info_log_count.value == 0:
+        print_verbose("Could not retrieve Info Log handles")
+        return True
+
+    print_verbose(f"Found {info_log_count.value} info log handles..")
+
+    InfoLogArray = pz.zes_info_log_handle_t * info_log_count.value
+    info_log_handles = InfoLogArray()
+
+    rc = pz.zesDriverEnumInfoLogsExt(
+        driver_handle, byref(info_log_count), info_log_handles
+    )
+    if not check_rc(f"zesDriverEnumInfoLogsExt(driver {driver_index}, handles)", rc):
+        return False
+
+    cper_handle = None
+    cper_props = None
+    for i in range(info_log_count.value):
+        props = get_info_log_properties(info_log_handles[i])
+        if props is None:
+            continue
+        print_verbose(
+            f"properties.infoLogType = {get_info_log_type_string(props.infoLogType)}"
+        )
+        print_verbose(
+            f"properties.infoLogFormat = {get_info_log_format_string(props.infoLogFormat)}"
+        )
+        print_verbose(
+            f"properties.isNamedInstanceSupported = {bool(props.isNamedInstanceSupported)}"
+        )
+        print_verbose(
+            f"properties.isPeekDataSupported = {bool(props.isPeekDataSupported)}"
+        )
+        if (
+            cper_handle is None
+            and props.infoLogFormat == pz.ZES_INFO_LOG_FORMAT_EXT_CPER
+        ):
+            cper_handle = info_log_handles[i]
+            cper_props = props
+
+    if mode is None:
+        print_verbose(
+            "\nRecords are collected with --instanceapi, --instancepeek or --instanceread"
+        )
+        return True
+
+    if not is_root_user():
+        print_verbose(
+            "Not running as Root. Skipping the info log collection instance test."
+        )
+        return True
+
+    if cper_handle is None:
+        print_verbose("No info log handle reports the CPER format")
+        return True
+
+    if mode == "api":
+        test_info_log_instance_read_peek(cper_handle, cper_props, timeout)
+    else:
+        test_info_log_instance_collect(
+            cper_handle,
+            cper_props,
+            instance_name,
+            buffer_size_kb,
+            timeout,
+            use_peek=(mode == "peek"),
+        )
+    return True
+
+
+def print_received_events(device_count, num_device_events, events, driver_events=None):
+    """Print the events reported by an event listen call"""
+    print_verbose(f"  Devices With Events: {num_device_events}")
+    for i in range(device_count):
+        if events[i] == 0:
+            continue
+        for bit in range(32):
+            flag = events[i] & (1 << bit)
+            if flag:
+                print_verbose(
+                    f"    Device {i} got {get_event_type_flags_string(flag)} event"
+                )
+
+    if driver_events is None:
+        return
+    if driver_events == 0:
+        print_verbose("  Driver Events: none")
+    if driver_events & pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT:
+        print_verbose("    Driver got INFO_LOG_CPER_DATA_AVAILABLE_EXT event")
+        print_verbose("    CPER records are available to read from the device info log")
+    other_events = (
+        driver_events & ~pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT
+    )
+    if other_events:
+        print_verbose(
+            f"    Driver got unexpected events: {get_event_type_flags_string(other_events)}"
+        )
+
+
+def test_driver_properties_module(driver_handle, driver_index):
+    """Test driver properties, extensions, and the extension function lookup"""
+    print(f"\n---- Driver {driver_index} Driver Properties Test ----")
+
+    props = pz.zes_driver_properties_t()
+    props.stype = pz.ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES
+    props.pNext = None
+
+    rc = pz.zesDriverGetProperties(driver_handle, byref(props))
+    if check_rc(f"zesDriverGetProperties(driver {driver_index})", rc):
+        print_verbose("  Properties:")
+        print_verbose(
+            f"    UUID: {'-'.join(f'{props.uuid.id[i]:02x}' for i in range(16))}"
+        )
+        print_verbose(f"    Driver Version: {props.driverVersion}")
+
+    ext_count = c_uint32(0)
+    rc = pz.zesDriverGetExtensionProperties(driver_handle, byref(ext_count), None)
+    if check_rc(f"zesDriverGetExtensionProperties(driver {driver_index}, count)", rc):
+        print_verbose(f"  Found {ext_count.value} extension(s)")
+        if ext_count.value > 0:
+            ExtensionArray = pz.zes_driver_extension_properties_t * ext_count.value
+            extensions = ExtensionArray()
+            rc = pz.zesDriverGetExtensionProperties(
+                driver_handle, byref(ext_count), extensions
+            )
+            if check_rc(
+                f"zesDriverGetExtensionProperties(driver {driver_index}, data)", rc
+            ):
+                for i in range(ext_count.value):
+                    version = extensions[i].version
+                    print_verbose(
+                        f"    {extensions[i].name.decode('utf-8', errors='replace')}: "
+                        f"v{version >> 16}.{version & 0xFFFF}"
+                    )
+
+    function_name = b"zesIntelDriverRescanDevicesExp"
+    function_address = c_void_p()
+    rc = pz.zesDriverGetExtensionFunctionAddress(
+        driver_handle, function_name, byref(function_address)
+    )
+    if rc == pz.ZE_RESULT_SUCCESS:
+        print_verbose(
+            f"  Extension Function Address ({function_name.decode()}): "
+            f"{function_address.value:#x}"
+        )
+    else:
+        print_verbose(
+            f"  Extension Function Address ({function_name.decode()}): "
+            f"Not available ({get_result_string(rc)})"
+        )
+
+    return True
+
+
+def test_event_module(driver_handle, driver_index, listen_timeout=0):
+    """Test driver event registration and listening"""
+    print(f"\n---- Driver {driver_index} Event Test ----")
+
+    device_info = get_devices(driver_handle)
+    if device_info is None:
+        print_verbose("  Skipping event listen tests as no devices were found")
+        return True
+
+    devices, device_count = device_info
+    EventsArray = pz.zes_event_type_flags_t * device_count
+
+    print_verbose(
+        f"  Listening for device events on {device_count} device(s) with a {listen_timeout} ms timeout"
+    )
+    num_device_events = c_uint32(0)
+    events = EventsArray()
+    rc = pz.zesDriverEventListenEx(
+        driver_handle,
+        listen_timeout,
+        device_count,
+        devices,
+        byref(num_device_events),
+        events,
+    )
+    if check_rc(f"zesDriverEventListenEx(driver {driver_index})", rc):
+        print_received_events(device_count, num_device_events.value, events)
+
+    driver_events_to_register = pz.ZES_EVENT_TYPE_FLAG_INFO_LOG_CPER_DATA_AVAILABLE_EXT
+    rc = pz.zesDriverEventRegisterExt(driver_handle, driver_events_to_register)
+    if rc != pz.ZE_RESULT_SUCCESS:
+        print_verbose(
+            f"  Driver Event Registration: Not available ({get_result_string(rc)})"
+        )
+        return True
+
+    print_verbose(
+        f"  Registered driver events: {get_event_type_flags_string(driver_events_to_register)}"
+    )
+
+    print_verbose(
+        f"  Listening for device and driver events with a {listen_timeout} ms timeout"
+    )
+    num_device_events = c_uint32(0)
+    events = EventsArray()
+    driver_events = pz.zes_event_type_flags_t(0)
+    rc = pz.zesDriverEventListenExt(
+        driver_handle,
+        listen_timeout,
+        device_count,
+        devices,
+        byref(num_device_events),
+        events,
+        byref(driver_events),
+    )
+    if check_rc(f"zesDriverEventListenExt(driver {driver_index})", rc):
+        print_received_events(
+            device_count, num_device_events.value, events, driver_events.value
+        )
+
+    rc = pz.zesDriverEventRegisterExt(driver_handle, 0)
+    check_rc(f"zesDriverEventRegisterExt(driver {driver_index}, clear)", rc)
+
+    return True
+
+
+HEALTH_STATUS_ARGS = {
+    "ok": pz.ZES_DEVICE_HEALTH_STATUS_EXT_OK,
+    "warning": pz.ZES_DEVICE_HEALTH_STATUS_EXT_WARNING,
+    "critical": pz.ZES_DEVICE_HEALTH_STATUS_EXT_CRITICAL,
+    "failed": pz.ZES_DEVICE_HEALTH_STATUS_EXT_FAILED,
+}
+
+RESET_TYPE_ARGS = {
+    "warm": pz.ZES_RESET_TYPE_WARM,
+    "cold": pz.ZES_RESET_TYPE_COLD,
+    "flr": pz.ZES_RESET_TYPE_FLR,
+}
+
+
+def print_device_state(device_handle, device_index):
+    """Read and print the reset reasons and repair status of a device"""
+    state = pz.zes_device_state_t()
+    state.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_STATE
+    state.pNext = None
+
+    rc = pz.zesDeviceGetState(device_handle, byref(state))
+    if check_rc(f"zesDeviceGetState(device {device_index})", rc):
+        print_verbose("  State:")
+        print_verbose(
+            f"    Reset Reasons: {get_reset_reason_flags_string(state.reset)}"
+        )
+        print_verbose(f"    Repair Status: {get_repair_status_string(state.repaired)}")
+
+
+def test_device_reset(device_handle, device_index, force, reset_type):
+    """Reset a device with zesDeviceResetExt and print its state before and after"""
+    print(f"\n---- Device {device_index} Reset Test ----")
+
+    if not is_root_user():
+        print_verbose("Skipping zesDeviceResetExt due to insufficient permissions")
+        return True
+
+    print_device_state(device_handle, device_index)
+
+    reset_props = pz.zes_reset_properties_t()
+    reset_props.stype = pz.ZES_STRUCTURE_TYPE_RESET_PROPERTIES
+    reset_props.pNext = None
+    reset_props.force = force
+    reset_props.resetType = reset_type
+
+    print_verbose(
+        f"  Resetting device with type {get_reset_type_string(reset_type)} and force {bool(force)}"
+    )
+    rc = pz.zesDeviceResetExt(device_handle, byref(reset_props))
+    if not check_rc(f"zesDeviceResetExt(device {device_index})", rc):
+        return False
+
+    print_verbose("  Device reset successfully")
+    print_device_state(device_handle, device_index)
+    return True
+
+
+def test_device_state_module(device_handle, device_index):
+    """Test device state, event registration, and firmware enumeration"""
+    print(f"\n---- Device {device_index} Device State Test ----")
+
+    print_device_state(device_handle, device_index)
+
+    events_to_register = pz.ZES_EVENT_TYPE_FLAG_DEVICE_RESET_REQUIRED
+    rc = pz.zesDeviceEventRegister(device_handle, events_to_register)
+    if rc != pz.ZE_RESULT_SUCCESS:
+        print_verbose(
+            f"  Device Event Registration: Not available ({get_result_string(rc)})"
+        )
+    else:
+        print_verbose(
+            f"  Registered device events: {get_event_type_flags_string(events_to_register)}"
+        )
+        rc = pz.zesDeviceEventRegister(device_handle, 0)
+        check_rc(f"zesDeviceEventRegister(device {device_index}, clear)", rc)
+
+    firmware_count = c_uint32(0)
+    rc = pz.zesDeviceEnumFirmwares(device_handle, byref(firmware_count), None)
+    if check_rc(f"zesDeviceEnumFirmwares(device {device_index}, count)", rc):
+        print_verbose(f"  Found {firmware_count.value} firmware component(s)")
+        if firmware_count.value > 0:
+            FirmwareArray = pz.zes_firmware_handle_t * firmware_count.value
+            firmware_handles = FirmwareArray()
+            rc = pz.zesDeviceEnumFirmwares(
+                device_handle, byref(firmware_count), firmware_handles
+            )
+            check_rc(f"zesDeviceEnumFirmwares(device {device_index}, handles)", rc)
+
+    return True
+
+
+def test_device_health_module(device_handle, device_index, set_health=None):
+    """Test the device health status read and, with --set-health, set and restore"""
+    print(f"\n---- Device {device_index} Device Health Test ----")
+
+    health = pz.zes_device_health_status_ext_t(0)
+    rc = pz.zesDeviceGetHealthStatusExt(device_handle, byref(health))
+    if rc != pz.ZE_RESULT_SUCCESS:
+        print_verbose(f"  Health Status: Not available ({get_result_string(rc)})")
+    else:
+        print_verbose(f"  Health Status: {get_health_status_string(health.value)}")
+
+        if set_health is None:
+            pass
+        elif not is_root_user():
+            print_verbose(
+                "  Skipping zesDeviceSetHealthStatusExt due to insufficient permissions"
+            )
+        else:
+            rc = pz.zesDeviceSetHealthStatusExt(device_handle, set_health)
+            if check_rc(
+                f"zesDeviceSetHealthStatusExt(device {device_index}, {get_health_status_string(set_health)})",
+                rc,
+            ):
+                read_back = pz.zes_device_health_status_ext_t(0)
+                rc = pz.zesDeviceGetHealthStatusExt(device_handle, byref(read_back))
+                if check_rc(
+                    f"zesDeviceGetHealthStatusExt(device {device_index}, verify)", rc
+                ):
+                    status = "OK" if read_back.value == set_health else "MISMATCH"
+                    print_verbose(
+                        f"  Set health status {get_health_status_string(set_health)}, read back "
+                        f"{get_health_status_string(read_back.value)} ({status})"
+                    )
+
+            rc = pz.zesDeviceSetHealthStatusExt(device_handle, health.value)
+            if check_rc(
+                f"zesDeviceSetHealthStatusExt(device {device_index}, restore)", rc
+            ):
+                print_verbose(
+                    f"  Restored health status to {get_health_status_string(health.value)}"
+                )
+
     return True
 
 
@@ -929,7 +2266,9 @@ def test_memory_modules(device_handle, device_index):
     return True
 
 
-def test_power_module(device_handle, device_index):
+def test_power_module(
+    device_handle, device_index, set_global_limit=None, set_energy_threshold=None
+):
     """Test power domain enumeration, properties, energy-derived power, and power limit extension operations"""
     print(f"\n---- Device {device_index} Power Domains Test ----")
 
@@ -1055,6 +2394,150 @@ def test_power_module(device_handle, device_index):
             print_verbose(f"    Current Power: {power_watt:.6f} W for {device_scope}")
         else:
             print_verbose("    Current Power: unavailable due to zero delta time")
+
+        instant_power = c_uint32(0)
+        average_power = c_uint32(0)
+        rc = pz.zesPowerGetUsage(
+            power_handles[i], byref(instant_power), byref(average_power)
+        )
+        if rc == pz.ZE_RESULT_SUCCESS:
+            print_verbose("    Power Usage:")
+            print_verbose(f"      Instant Power: {instant_power.value} mW")
+            print_verbose(f"      Average Power: {average_power.value} mW")
+        else:
+            print_verbose(f"    Power Usage: Not available ({get_result_string(rc)})")
+
+        limit_ext2 = c_uint32(0)
+        rc = pz.zesPowerGetLimitsExt2(power_handles[i], byref(limit_ext2))
+        limit_ext2_available = rc == pz.ZE_RESULT_SUCCESS
+        if limit_ext2_available:
+            print_verbose(f"    Power Limit (Ext2): {limit_ext2.value} mW")
+        else:
+            print_verbose(
+                f"    Power Limit (Ext2): Not available ({get_result_string(rc)})"
+            )
+
+        energy_threshold = None
+        if properties.isEnergyThresholdSupported:
+            energy_threshold = pz.zes_energy_threshold_t()
+            rc = pz.zesPowerGetEnergyThreshold(
+                power_handles[i], byref(energy_threshold)
+            )
+            if rc == pz.ZE_RESULT_SUCCESS:
+                print_verbose("    Energy Threshold:")
+                print_verbose(f"      Enabled: {bool(energy_threshold.enable)}")
+                print_verbose(f"      Threshold: {energy_threshold.threshold} J")
+                print_verbose(f"      Process ID: 0x{energy_threshold.processId:X}")
+            else:
+                print_verbose(
+                    f"    Energy Threshold: Not available ({get_result_string(rc)})"
+                )
+                energy_threshold = None
+
+        requested_limit = None
+        if set_global_limit is not None and set_global_limit[0] == device_index:
+            requested_limit = set_global_limit[1]
+        requested_threshold = None
+        if (
+            set_energy_threshold is not None
+            and int(set_energy_threshold[0]) == device_index
+        ):
+            requested_threshold = set_energy_threshold[1]
+        if properties.onSubdevice:
+            requested_limit = None
+            requested_threshold = None
+
+        if not is_root_user():
+            if requested_limit is not None or requested_threshold is not None:
+                print_verbose(
+                    "    Skipping power set operations due to insufficient permissions"
+                )
+        else:
+            if requested_limit is not None:
+                if not properties.canControl:
+                    print_verbose(
+                        "    Skipping zesPowerSetLimitsExt2 since the domain cannot be controlled"
+                    )
+                elif not limit_ext2_available:
+                    print_verbose(
+                        "    Skipping zesPowerSetLimitsExt2 since zesPowerGetLimitsExt2 is not available"
+                    )
+                else:
+                    rc = pz.zesPowerSetLimitsExt2(power_handles[i], requested_limit)
+                    if check_rc(
+                        f"zesPowerSetLimitsExt2(power {i}, {requested_limit})", rc
+                    ):
+                        print_verbose(
+                            f"    Power limit (Ext2) set to {requested_limit} mW"
+                        )
+                        read_back = c_uint32(0)
+                        rc = pz.zesPowerGetLimitsExt2(
+                            power_handles[i], byref(read_back)
+                        )
+                        if check_rc(f"zesPowerGetLimitsExt2(power {i}, verify)", rc):
+                            if read_back.value == requested_limit:
+                                print_verbose(
+                                    f"    Read back power limit (Ext2): {read_back.value} mW (OK)"
+                                )
+                            else:
+                                print_verbose(
+                                    f"    Warning: requested power limit {requested_limit} mW "
+                                    f"does not match applied limit {read_back.value} mW"
+                                )
+
+                    rc = pz.zesPowerSetLimitsExt2(power_handles[i], limit_ext2.value)
+                    if check_rc(f"zesPowerSetLimitsExt2(power {i}, restore)", rc):
+                        print_verbose(
+                            f"    Restored power limit (Ext2) to {limit_ext2.value} mW"
+                        )
+
+            if requested_threshold is not None:
+                if not properties.isEnergyThresholdSupported:
+                    print_verbose(
+                        "    Skipping zesPowerSetEnergyThreshold since the domain does not support energy thresholds"
+                    )
+                elif energy_threshold is None:
+                    print_verbose(
+                        "    Skipping zesPowerSetEnergyThreshold since zesPowerGetEnergyThreshold failed"
+                    )
+                else:
+                    rc = pz.zesPowerSetEnergyThreshold(
+                        power_handles[i], requested_threshold
+                    )
+                    if check_rc(
+                        f"zesPowerSetEnergyThreshold(power {i}, {requested_threshold})",
+                        rc,
+                    ):
+                        print_verbose(
+                            f"    Energy threshold set to {requested_threshold} J"
+                        )
+                        read_back_threshold = pz.zes_energy_threshold_t()
+                        rc = pz.zesPowerGetEnergyThreshold(
+                            power_handles[i], byref(read_back_threshold)
+                        )
+                        if check_rc(
+                            f"zesPowerGetEnergyThreshold(power {i}, verify)", rc
+                        ):
+                            print_verbose(
+                                f"    Read back energy threshold: {read_back_threshold.threshold} J "
+                                f"(enabled: {bool(read_back_threshold.enable)}, "
+                                f"process ID: 0x{read_back_threshold.processId:X})"
+                            )
+
+                    if energy_threshold.enable:
+                        rc = pz.zesPowerSetEnergyThreshold(
+                            power_handles[i], energy_threshold.threshold
+                        )
+                        if check_rc(
+                            f"zesPowerSetEnergyThreshold(power {i}, restore)", rc
+                        ):
+                            print_verbose(
+                                f"    Restored energy threshold to {energy_threshold.threshold} J"
+                            )
+                    else:
+                        print_verbose(
+                            "    Energy threshold was not enabled before the test and cannot be disabled"
+                        )
 
         if properties.onSubdevice or limit_descs is None:
             continue
@@ -1354,6 +2837,7 @@ def run_all_tests():
         return False
 
     drivers, driver_count = driver_info
+    success = True
 
     # Test each driver
     for driver_idx in range(driver_count):
@@ -1363,7 +2847,7 @@ def run_all_tests():
         device_info = get_devices(drivers[driver_idx])
         if device_info is None:
             print(f"No devices found for driver {driver_idx}")
-            continue
+            device_info = (None, 0)
 
         devices, device_count = device_info
 
@@ -1373,6 +2857,10 @@ def run_all_tests():
 
             # Test global device operations (properties and processes)
             test_global_operation(drivers[driver_idx], devices[device_idx], device_idx)
+
+            test_device_state_module(devices[device_idx], device_idx)
+
+            test_device_health_module(devices[device_idx], device_idx)
 
             # Test PCI module
             test_pci_module(devices[device_idx], device_idx)
@@ -1395,8 +2883,20 @@ def run_all_tests():
             # Test engine modules
             test_engine_modules(devices[device_idx], device_idx)
 
+            test_ras_module(devices[device_idx], device_idx)
+
+            test_standby_module(devices[device_idx], device_idx)
+
+            test_vf_management_module(devices[device_idx], device_idx)
+
+        if not test_info_log_module(drivers[driver_idx], driver_idx):
+            success = False
+
+        test_driver_properties_module(drivers[driver_idx], driver_idx)
+        test_event_module(drivers[driver_idx], driver_idx)
+
     print("\n=== Test Completed ===")
-    return True
+    return success
 
 
 def main():
@@ -1406,13 +2906,29 @@ def main():
         epilog="""Examples:
   %(prog)s -a                 # Run all tests
   %(prog)s -m                 # Memory tests only
-  %(prog)s -g                 # Global operations (device properties and processes) only
+  %(prog)s -g                 # Global operations (device properties, processes, and state) only
+  %(prog)s -H                 # Device health tests only
+  %(prog)s -H --set-health warning   # Device health tests, set then restore health status (root)
+  %(prog)s -r noforce --reset-device 0   # Warm reset of device 0 with zesDeviceResetExt (root)
   %(prog)s -p                 # PCI tests only
   %(prog)s -C                 # ECC tests only
   %(prog)s -o                 # Power tests only
+  %(prog)s -o --setlimit --global-limit 0 150000   # Power tests, set then restore device 0 limit (root)
+  %(prog)s -o --set-energy-threshold 0 5000.0   # Power tests, set device 0 energy threshold (root)
   %(prog)s -f                 # Frequency tests only
   %(prog)s -t                 # Temperature tests only
   %(prog)s -e                 # Engine tests only
+  %(prog)s -re                # RAS tests only
+  %(prog)s -re --set-threshold 5  # RAS tests, set then restore threshold 5 (root)
+  %(prog)s -re --clear-ras-state  # RAS tests, clear all error counters (root)
+  %(prog)s -s                 # Standby tests only
+  %(prog)s -v                 # VF management tests only
+  %(prog)s -L                 # Info log properties tests only
+  %(prog)s -L --instanceapi   # Info log tests, verify peek and read on a named collection instance
+  %(prog)s -L --instanceread --instance mylog --buffersize 1024   # Info log tests, read the records of a named 1 MB collection instance
+  %(prog)s -D                 # Driver properties tests only
+  %(prog)s -E                 # Event tests only
+  %(prog)s -E --listen-timeout 0       # Event tests, return from event listen immediately
   %(prog)s -h                 # Show help message""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1425,10 +2941,55 @@ def main():
         "-g",
         "--global",
         action="store_true",
-        help="Run only global operations (device properties and processes)",
+        help="Run only global operations (device properties, processes, and state)",
+    )
+    parser.add_argument(
+        "-H", "--health", action="store_true", help="Run only device health tests"
+    )
+    parser.add_argument(
+        "--set-health",
+        choices=sorted(HEALTH_STATUS_ARGS),
+        help="With -H, set the device health status, verify it and restore the original (requires root)",
+    )
+    parser.add_argument(
+        "-r",
+        "--reset",
+        choices=["force", "noforce"],
+        help="Run only the device reset test with zesDeviceResetExt on all devices (requires root)",
+    )
+    parser.add_argument(
+        "--reset-type",
+        choices=list(RESET_TYPE_ARGS),
+        default="warm",
+        help="With --reset, type of reset to perform, default is warm",
+    )
+    parser.add_argument(
+        "--reset-device",
+        type=int,
+        metavar="DEVICE",
+        help="With --reset, only reset the given device",
     )
     parser.add_argument(
         "-o", "--power", action="store_true", help="Run only power-related tests"
+    )
+    parser.add_argument(
+        "--setlimit",
+        action="store_true",
+        help="With -o, set a power limit, verify it and restore the original; the level is given by --global-limit (requires root)",
+    )
+    parser.add_argument(
+        "--global-limit",
+        nargs=2,
+        type=int,
+        metavar=("DEVICE", "LIMIT_MW"),
+        help="With -o --setlimit, the device index and the global power limit (Ext2) in mW to set",
+    )
+    parser.add_argument(
+        "--set-energy-threshold",
+        nargs=2,
+        type=float,
+        metavar=("DEVICE", "JOULES"),
+        help="With -o, set the energy threshold of a device in Joules and read it back (requires root)",
     )
     parser.add_argument("-p", "--pci", action="store_true", help="Run only PCI tests")
     parser.add_argument("-C", "--ecc", action="store_true", help="Run only ECC tests")
@@ -1450,19 +3011,137 @@ def main():
         version="Python Level Zero Sysman Black Box Test v1.0",
     )
     parser.add_argument("-e", "--engine", action="store_true", help="Run engine tests ")
+    parser.add_argument(
+        "-re", "--rasexp", action="store_true", help="Run only RAS tests"
+    )
+    parser.add_argument(
+        "--set-threshold",
+        type=int,
+        metavar="VALUE",
+        help="With -re, set the RAS threshold of all categories, verify it and restore the original (requires root)",
+    )
+    parser.add_argument(
+        "--clear-ras-state",
+        action="store_true",
+        help="With -re, clear all RAS error counters and print them before and after (requires root)",
+    )
+    parser.add_argument(
+        "-s", "--standby", action="store_true", help="Run only standby tests"
+    )
+    parser.add_argument(
+        "-v", "--vftelemetry", action="store_true", help="Run only VF management tests"
+    )
+    parser.add_argument(
+        "-L",
+        "--infolog",
+        action="store_true",
+        help="Run only info log tests, reporting what each info log supports",
+    )
+    instance_mode = parser.add_mutually_exclusive_group()
+    instance_mode.add_argument(
+        "--instanceapi",
+        action="store_const",
+        const="api",
+        dest="instance_mode",
+        help="With -L, create a named collection instance, wait for CPER records, then verify peek and read (requires root)",
+    )
+    instance_mode.add_argument(
+        "--instancepeek",
+        action="store_const",
+        const="peek",
+        dest="instance_mode",
+        help="With -L, create a collection instance and peek the records (requires root)",
+    )
+    instance_mode.add_argument(
+        "--instanceread",
+        action="store_const",
+        const="read",
+        dest="instance_mode",
+        help="With -L, create a collection instance and read the records (requires root)",
+    )
+    parser.add_argument(
+        "--instance",
+        metavar="NAME",
+        help="With --instancepeek/--instanceread, collect into a named instance instead of the default buffer",
+    )
+    parser.add_argument(
+        "--buffersize",
+        type=int,
+        metavar="KB",
+        help="With --instancepeek/--instanceread, request a total collection buffer size in kilobytes",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=INFO_LOG_READ_TIMEOUT_MS,
+        metavar="MS",
+        help=f"With -L, maximum time in milliseconds to search for records, default is {INFO_LOG_READ_TIMEOUT_MS}",
+    )
+    parser.add_argument(
+        "-D",
+        "--driverproperties",
+        action="store_true",
+        help="Run only driver properties tests",
+    )
+    parser.add_argument(
+        "-E", "--event", action="store_true", help="Run only event tests"
+    )
+    parser.add_argument(
+        "--listen-timeout",
+        type=int,
+        default=10000,
+        metavar="MS",
+        help="With -E, time in milliseconds to wait for events, default 10000, 0 returns immediately",
+    )
 
     args = parser.parse_args()
+    if args.set_threshold is not None and not 0 <= args.set_threshold <= 2**64 - 1:
+        parser.error("--set-threshold must be an integer between 0 and 2^64 - 1")
+    if args.setlimit != (args.global_limit is not None):
+        parser.error("--setlimit and --global-limit DEVICE LIMIT_MW are used together")
+    if args.global_limit is not None and min(args.global_limit) < 0:
+        parser.error("--global-limit values must be non-negative integers")
+    if args.set_energy_threshold is not None and (
+        args.set_energy_threshold[0] < 0
+        or not args.set_energy_threshold[0].is_integer()
+        or args.set_energy_threshold[1] < 0
+    ):
+        parser.error(
+            "--set-energy-threshold needs a device index and a non-negative threshold"
+        )
+    if args.buffersize is not None and args.buffersize <= 0:
+        parser.error("--buffersize must be a positive integer")
+    if (
+        args.instance is not None or args.buffersize is not None
+    ) and args.instance_mode not in ("peek", "read"):
+        parser.error(
+            "--instance and --buffersize are used with --instancepeek or --instanceread"
+        )
+    if args.timeout < 0:
+        parser.error("--timeout must be a non-negative integer")
+    if args.listen_timeout < 0:
+        parser.error("--listen-timeout must be a non-negative integer")
+    if args.reset_device is not None and args.reset_device < 0:
+        parser.error("--reset-device must be a non-negative integer")
 
     # Check if any specific test is requested
     specific_test = (
         args.memory
         or getattr(args, "global", False)
+        or args.health
+        or args.reset is not None
         or args.pci
         or args.ecc
         or args.power
         or args.frequency
         or args.temperature
         or args.engine
+        or args.rasexp
+        or args.standby
+        or args.vftelemetry
+        or args.infolog
+        or args.driverproperties
+        or args.event
         or args.all
     )
 
@@ -1485,6 +3164,31 @@ def main():
                 print("No drivers available for testing")
                 return 1
 
+            success = True
+
+            if args.infolog:
+                for driver_idx in range(driver_count):
+                    if not test_info_log_module(
+                        drivers[driver_idx],
+                        driver_idx,
+                        mode=args.instance_mode,
+                        instance_name=args.instance,
+                        buffer_size_kb=args.buffersize,
+                        timeout=args.timeout,
+                    ):
+                        success = False
+
+            for driver_idx in range(driver_count):
+                if args.driverproperties:
+                    test_driver_properties_module(drivers[driver_idx], driver_idx)
+
+                if args.event:
+                    test_event_module(
+                        drivers[driver_idx],
+                        driver_idx,
+                        listen_timeout=args.listen_timeout,
+                    )
+
             if not devices or device_count == 0:
                 print("No devices available for testing")
                 return 1
@@ -1493,6 +3197,18 @@ def main():
             for device_idx in range(device_count):
                 if getattr(args, "global", False):
                     test_global_operation(drivers[0], devices[device_idx], device_idx)
+                    test_device_state_module(devices[device_idx], device_idx)
+
+                if args.health:
+                    test_device_health_module(
+                        devices[device_idx],
+                        device_idx,
+                        set_health=(
+                            HEALTH_STATUS_ARGS[args.set_health]
+                            if args.set_health is not None
+                            else None
+                        ),
+                    )
 
                 if args.pci:
                     test_pci_module(devices[device_idx], device_idx)
@@ -1507,7 +3223,12 @@ def main():
                     test_engine_modules(devices[device_idx], device_idx)
 
                 if args.power:
-                    test_power_module(devices[device_idx], device_idx)
+                    test_power_module(
+                        devices[device_idx],
+                        device_idx,
+                        set_global_limit=args.global_limit,
+                        set_energy_threshold=args.set_energy_threshold,
+                    )
 
                 if args.frequency:
                     test_frequency_domains(devices[device_idx], device_idx)
@@ -1515,7 +3236,27 @@ def main():
                 if args.temperature:
                     test_temperature_sensors(devices[device_idx], device_idx)
 
-            success = True
+                if args.rasexp:
+                    test_ras_module(
+                        devices[device_idx],
+                        device_idx,
+                        set_threshold=args.set_threshold,
+                        clear_state=args.clear_ras_state,
+                    )
+
+                if args.standby:
+                    test_standby_module(devices[device_idx], device_idx)
+
+                if args.vftelemetry:
+                    test_vf_management_module(devices[device_idx], device_idx)
+
+                if args.reset is not None and args.reset_device in (None, device_idx):
+                    test_device_reset(
+                        devices[device_idx],
+                        device_idx,
+                        args.reset == "force",
+                        RESET_TYPE_ARGS[args.reset_type],
+                    )
 
         return 0 if success else 1
 
