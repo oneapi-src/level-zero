@@ -4,12 +4,14 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.19-r1.19.12
+ @version v1.20-r1.20.41
 
  """
 import platform
 from ctypes import *
 from enum import *
+# Uses types and macros from the core API.
+from ze import *
 
 ###############################################################################
 __version__ = "1.0"
@@ -90,12 +92,13 @@ class zet_structure_type_v(IntEnum):
     DEVICE_DEBUG_PROPERTIES = 0x6                                           ## ::zet_device_debug_properties_t
     DEBUG_MEMORY_SPACE_DESC = 0x7                                           ## ::zet_debug_memory_space_desc_t
     DEBUG_REGSET_PROPERTIES = 0x8                                           ## ::zet_debug_regset_properties_t
-    GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9                          ## ::zet_metric_global_timestamps_resolution_exp_t. Deprecated, use
-                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP.
+    GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9                          ## [DEPRECATED since 1.7]
+                                                                            ## ::zet_metric_global_timestamps_resolution_exp_t. Use
+                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP instead.
     METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP = 0x9                           ## ::zet_metric_global_timestamps_resolution_exp_t
     TRACER_EXP_DESC = 0x00010001                                            ## ::zet_tracer_exp_desc_t
-    METRICS_CALCULATE_EXP_DESC = 0x00010002                                 ## ::zet_metric_calculate_exp_desc_t. Deprecated, use
-                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC.
+    METRICS_CALCULATE_EXP_DESC = 0x00010002                                 ## [DEPRECATED since 1.7] ::zet_metric_calculate_exp_desc_t. Use
+                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC instead.
     METRIC_CALCULATE_EXP_DESC = 0x00010002                                  ## ::zet_metric_calculate_exp_desc_t
     METRIC_PROGRAMMABLE_EXP_PROPERTIES = 0x00010003                         ## ::zet_metric_programmable_exp_properties_t
     METRIC_PROGRAMMABLE_PARAM_INFO_EXP = 0x00010004                         ## ::zet_metric_programmable_param_info_exp_t
@@ -147,10 +150,10 @@ class zet_value_type_t(c_int):
 
 ###############################################################################
 ## @brief Union of values
-class zet_value_t(Structure):
+class zet_value_t(Union):
     _fields_ = [
-        ("ui32", c_ulong),                                              ## [out] 32-bit unsigned-integer
-        ("ui64", c_ulonglong),                                          ## [out] 64-bit unsigned-integer
+        ("ui32", c_uint32),                                             ## [out] 32-bit unsigned-integer
+        ("ui64", c_uint64),                                             ## [out] 64-bit unsigned-integer
         ("fp32", c_float),                                              ## [out] 32-bit floating-point
         ("fp64", c_double),                                             ## [out] 64-bit floating-point
         ("b8", ze_bool_t)                                               ## [out] 8-bit boolean
@@ -209,7 +212,7 @@ class zet_device_debug_properties_t(Structure):
 ## @brief Debug configuration provided to ::zetDebugAttach
 class zet_debug_config_t(Structure):
     _fields_ = [
-        ("pid", c_ulong)                                                ## [in] the host process identifier
+        ("pid", c_uint32)                                               ## [in] the host process identifier
     ]
 
 ###############################################################################
@@ -265,9 +268,9 @@ class zet_debug_event_info_detached_t(Structure):
 class zet_debug_event_info_module_t(Structure):
     _fields_ = [
         ("format", zet_module_debug_info_format_t),                     ## [out] the module format
-        ("moduleBegin", c_ulonglong),                                   ## [out] the begin address of the in-memory module (inclusive)
-        ("moduleEnd", c_ulonglong),                                     ## [out] the end address of the in-memory module (exclusive)
-        ("load", c_ulonglong)                                           ## [out] the load address of the module on the device
+        ("moduleBegin", c_uint64),                                      ## [out] the begin address of the in-memory module (inclusive)
+        ("moduleEnd", c_uint64),                                        ## [out] the end address of the in-memory module (exclusive)
+        ("load", c_uint64)                                              ## [out] the load address of the module on the device
     ]
 
 ###############################################################################
@@ -294,14 +297,14 @@ class zet_debug_page_fault_reason_t(c_int):
 ## @brief Event information for ::ZET_DEBUG_EVENT_TYPE_PAGE_FAULT
 class zet_debug_event_info_page_fault_t(Structure):
     _fields_ = [
-        ("address", c_ulonglong),                                       ## [out] the faulting address
-        ("mask", c_ulonglong),                                          ## [out] the alignment mask
+        ("address", c_uint64),                                          ## [out] the faulting address
+        ("mask", c_uint64),                                             ## [out] the alignment mask
         ("reason", zet_debug_page_fault_reason_t)                       ## [out] the page fault reason
     ]
 
 ###############################################################################
 ## @brief Event type-specific information
-class zet_debug_event_info_t(Structure):
+class zet_debug_event_info_t(Union):
     _fields_ = [
         ("detached", zet_debug_event_info_detached_t),                  ## [out] type == ::ZET_DEBUG_EVENT_TYPE_DETACHED
         ("module", zet_debug_event_info_module_t),                      ## [out] type == ::ZET_DEBUG_EVENT_TYPE_MODULE_LOAD or
@@ -341,7 +344,7 @@ class zet_debug_memory_space_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", zet_debug_memory_space_type_t),                        ## [in] type of memory space
-        ("address", c_ulonglong)                                        ## [in] the virtual address within the memory space
+        ("address", c_uint64)                                           ## [in] the virtual address within the memory space
     ]
 
 ###############################################################################
@@ -363,13 +366,13 @@ class zet_debug_regset_properties_t(Structure):
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("type", c_ulong),                                              ## [out] device-specific register set type
-        ("version", c_ulong),                                           ## [out] device-specific version of this register set
+        ("type", c_uint32),                                             ## [out] device-specific register set type
+        ("version", c_uint32),                                          ## [out] device-specific version of this register set
         ("generalFlags", zet_debug_regset_flags_t),                     ## [out] general register set flags
-        ("deviceFlags", c_ulong),                                       ## [out] device-specific register set flags
-        ("count", c_ulong),                                             ## [out] number of registers in the set
-        ("bitSize", c_ulong),                                           ## [out] the size of a register in bits
-        ("byteSize", c_ulong)                                           ## [out] the size required for reading or writing a register in bytes
+        ("deviceFlags", c_uint32),                                      ## [out] device-specific register set flags
+        ("count", c_uint32),                                            ## [out] number of registers in the set
+        ("bitSize", c_uint32),                                          ## [out] the size of a register in bits
+        ("byteSize", c_uint32)                                          ## [out] the size required for reading or writing a register in bytes
     ]
 
 ###############################################################################
@@ -403,9 +406,9 @@ class zet_metric_group_properties_t(Structure):
         ("description", c_char * ZET_MAX_METRIC_GROUP_DESCRIPTION),     ## [out] metric group description
         ("samplingType", zet_metric_group_sampling_type_flags_t),       ## [out] metric group sampling type.
                                                                         ## returns a combination of ::zet_metric_group_sampling_type_flag_t.
-        ("domain", c_ulong),                                            ## [out] metric group domain number. Cannot use multiple, simultaneous
+        ("domain", c_uint32),                                           ## [out] metric group domain number. Cannot use multiple, simultaneous
                                                                         ## metric groups from the same domain.
-        ("metricCount", c_ulong)                                        ## [out] metric count belonging to this group
+        ("metricCount", c_uint32)                                       ## [out] metric count belonging to this group
     ]
 
 ###############################################################################
@@ -426,8 +429,8 @@ class zet_metric_type_v(IntEnum):
                                                                             ## that can wrap around
     EXP_EXPORT_DMA_BUF = 0x7ffffffd                                         ## Metric which exports linux dma_buf, which could be imported/mapped to
                                                                             ## the host process
-    IP_EXP = 0x7ffffffe                                                     ## Metric type: instruction pointer. Deprecated, use
-                                                                            ## ::ZET_METRIC_TYPE_IP.
+    IP_EXP = 0x7ffffffe                                                     ## [DEPRECATED since 1.7] Metric type: instruction pointer. Use
+                                                                            ## ::ZET_METRIC_TYPE_IP instead.
     IP = 0x7ffffffe                                                         ## Metric type: instruction pointer
 
 class zet_metric_type_t(c_int):
@@ -472,7 +475,7 @@ class zet_metric_properties_t(Structure):
         ("name", c_char * ZET_MAX_METRIC_NAME),                         ## [out] metric name
         ("description", c_char * ZET_MAX_METRIC_DESCRIPTION),           ## [out] metric description
         ("component", c_char * ZET_MAX_METRIC_COMPONENT),               ## [out] metric component
-        ("tierNumber", c_ulong),                                        ## [out] number of tier
+        ("tierNumber", c_uint32),                                       ## [out] number of tier
         ("metricType", zet_metric_type_t),                              ## [out] metric type
         ("resultType", zet_value_type_t),                               ## [out] metric result type
         ("resultUnits", c_char * ZET_MAX_METRIC_RESULT_UNITS)           ## [out] metric result units
@@ -485,11 +488,11 @@ class zet_metric_streamer_desc_t(Structure):
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("notifyEveryNReports", c_ulong),                               ## [in,out] number of collected reports after which notification event
+        ("notifyEveryNReports", c_uint32),                              ## [in,out] number of collected reports after which notification event
                                                                         ## will be signaled. If the requested value is not supported exactly,
                                                                         ## then the driver may use a value that is the closest supported
                                                                         ## approximation and shall update this member during ::zetMetricStreamerOpen.
-        ("samplingPeriod", c_ulong)                                     ## [in,out] streamer sampling period in nanoseconds. If the requested
+        ("samplingPeriod", c_uint32)                                    ## [in,out] streamer sampling period in nanoseconds. If the requested
                                                                         ## value is not supported exactly, then the driver may use a value that
                                                                         ## is the closest supported approximation and shall update this member
                                                                         ## during ::zetMetricStreamerOpen.
@@ -514,7 +517,7 @@ class zet_metric_query_pool_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", zet_metric_query_pool_type_t),                         ## [in] Query pool type.
-        ("count", c_ulong)                                              ## [in] Internal slots count within query pool object.
+        ("count", c_uint32)                                             ## [in] Internal slots count within query pool object.
     ]
 
 ###############################################################################
@@ -538,7 +541,7 @@ class zet_profile_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", zet_profile_flags_t),                                 ## [out] indicates which flags were enabled during compilation.
                                                                         ## returns 0 (none) or a combination of ::zet_profile_flag_t
-        ("numTokens", c_ulong)                                          ## [out] number of tokens immediately following this structure
+        ("numTokens", c_uint32)                                         ## [out] number of tokens immediately following this structure
     ]
 
 ###############################################################################
@@ -557,8 +560,8 @@ class zet_profile_token_type_t(c_int):
 class zet_profile_free_register_token_t(Structure):
     _fields_ = [
         ("type", zet_profile_token_type_t),                             ## [out] type of token
-        ("size", c_ulong),                                              ## [out] total size of the token, in bytes
-        ("count", c_ulong)                                              ## [out] number of register sequences immediately following this
+        ("size", c_uint32),                                             ## [out] total size of the token, in bytes
+        ("count", c_uint32)                                             ## [out] number of register sequences immediately following this
                                                                         ## structure
     ]
 
@@ -567,17 +570,27 @@ class zet_profile_free_register_token_t(Structure):
 ##        are unused
 class zet_profile_register_sequence_t(Structure):
     _fields_ = [
-        ("start", c_ulong),                                             ## [out] starting byte in the register table, representing the start of
+        ("start", c_uint32),                                            ## [out] starting byte in the register table, representing the start of
                                                                         ## unused bytes in the current function
-        ("count", c_ulong)                                              ## [out] number of consecutive bytes in the sequence, starting from start
+        ("count", c_uint32)                                             ## [out] number of consecutive bytes in the sequence, starting from start
     ]
 
 ###############################################################################
-## @brief API Tracing Experimental Extension Name
+## @brief [DEPRECATED since 1.14] API Tracing Experimental Extension Name
+## 
+## @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+##             Use L0 Loader API Tracing
+##             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+##             instead.
 ZET_API_TRACING_EXP_NAME = "ZET_experimental_api_tracing"
 
 ###############################################################################
-## @brief API Tracing Experimental Extension Version(s)
+## @brief [DEPRECATED since 1.14] API Tracing Experimental Extension Version(s)
+## 
+## @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+##             Use L0 Loader API Tracing
+##             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+##             instead.
 class zet_api_tracing_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -588,12 +601,23 @@ class zet_api_tracing_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Alias the existing callbacks definition for 'core' callbacks
+## @brief [DEPRECATED since 1.14] Alias the existing callbacks definition for
+##        'core' callbacks
+## 
+## @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+##             Use L0 Loader API Tracing
+##             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+##             instead.
 class zet_core_callbacks_t(ze_callbacks_t):
     pass
 
 ###############################################################################
-## @brief Tracer descriptor
+## @brief [DEPRECATED since 1.14] Tracer descriptor
+## 
+## @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+##             Use L0 Loader API Tracing
+##             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+##             instead.
 class zet_tracer_exp_desc_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
@@ -610,7 +634,8 @@ ZET_MULTI_METRICS_EXP_NAME = "ZET_experimental_calculate_multiple_metrics"
 ## @brief Calculating Multiple Metrics Experimental Extension Version(s)
 class ze_calculate_multiple_metrics_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
+    CURRENT = ZE_MAKE_VERSION( 1, 1 )                                       ## latest known version
 
 class ze_calculate_multiple_metrics_exp_version_t(c_int):
     def __str__(self):
@@ -644,9 +669,9 @@ class zet_metric_global_timestamps_resolution_exp_t(Structure):
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of metrics timer (used for timestamps) in
+        ("timerResolution", c_uint64),                                  ## [out] Returns the resolution of metrics timer (used for timestamps) in
                                                                         ## cycles/sec.
-        ("timestampValidBits", c_ulonglong)                             ## [out] Returns the number of valid bits in the timestamp value. (i.e
+        ("timestampValidBits", c_uint64)                                ## [out] Returns the number of valid bits in the timestamp value. (i.e
                                                                         ## can be used to calculate the max value of the hardware timestamp
                                                                         ## register or can be use to generate the mask of valid bits in the
                                                                         ## timestamp value)
@@ -682,7 +707,7 @@ class zet_metric_calculate_exp_desc_t(Structure):
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("rawReportSkipCount", c_ulong)                                 ## [in] number of reports to skip during calculation
+        ("rawReportSkipCount", c_uint32)                                ## [in] number of reports to skip during calculation
     ]
 
 ###############################################################################
@@ -752,12 +777,12 @@ class zet_metric_programmable_exp_properties_t(Structure):
         ("name", c_char * ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP),        ## [out] metric programmable name
         ("description", c_char * ZET_MAX_METRIC_PROGRAMMABLE_DESCRIPTION_EXP),  ## [out] metric programmable description
         ("component", c_char * ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP),  ## [out] metric programmable component
-        ("tierNumber", c_ulong),                                        ## [out] tier number
-        ("domain", c_ulong),                                            ## [out] metric domain number.
-        ("parameterCount", c_ulong),                                    ## [out] number of parameters in the programmable
+        ("tierNumber", c_uint32),                                       ## [out] tier number
+        ("domain", c_uint32),                                           ## [out] metric domain number.
+        ("parameterCount", c_uint32),                                   ## [out] number of parameters in the programmable
         ("samplingType", zet_metric_group_sampling_type_flags_t),       ## [out] metric sampling type.
                                                                         ## returns a combination of ::zet_metric_group_sampling_type_flag_t.
-        ("sourceId", c_ulong)                                           ## [out] unique metric source identifier(within platform)to identify the
+        ("sourceId", c_uint32)                                          ## [out] unique metric source identifier(within platform)to identify the
                                                                         ## HW block where the metric is collected.
     ]
 
@@ -800,8 +825,8 @@ class zet_value_info_type_exp_t(c_int):
 ## @brief Value info of type uint64_t range
 class zet_value_uint64_range_exp_t(Structure):
     _fields_ = [
-        ("ui64Min", c_ulonglong),                                       ## [out] minimum value of the range
-        ("ui64Max", c_ulonglong)                                        ## [out] maximum value of the range
+        ("ui64Min", c_uint64),                                          ## [out] minimum value of the range
+        ("ui64Max", c_uint64)                                           ## [out] maximum value of the range
     ]
 
 ###############################################################################
@@ -814,15 +839,15 @@ class zet_value_fp64_range_exp_t(Structure):
 
 ###############################################################################
 ## @brief Union of value information
-class zet_value_info_exp_t(Structure):
+class zet_value_info_exp_t(Union):
     _fields_ = [
-        ("ui32", c_ulong),                                              ## [out] 32-bit unsigned-integer
-        ("ui64", c_ulonglong),                                          ## [out] 64-bit unsigned-integer
+        ("ui32", c_uint32),                                             ## [out] 32-bit unsigned-integer
+        ("ui64", c_uint64),                                             ## [out] 64-bit unsigned-integer
         ("fp32", c_float),                                              ## [out] 32-bit floating-point
         ("fp64", c_double),                                             ## [out] 64-bit floating-point
         ("b8", ze_bool_t),                                              ## [out] 8-bit boolean
-        ("ui8", c_ubyte),                                               ## [out] 8-bit unsigned integer
-        ("ui16", c_ushort),                                             ## [out] 16-bit unsigned integer
+        ("ui8", c_uint8),                                               ## [out] 8-bit unsigned integer
+        ("ui16", c_uint16),                                             ## [out] 16-bit unsigned integer
         ("ui64Range", zet_value_uint64_range_exp_t),                    ## [out] minimum and maximum value of the range
         ("fp64Range", zet_value_fp64_range_exp_t)                       ## [out] minimum and maximum value of the range
     ]
@@ -838,7 +863,7 @@ class zet_metric_programmable_param_info_exp_t(Structure):
         ("name", c_char * ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP),  ## [out] metric programmable parameter name
         ("valueInfoType", zet_value_info_type_exp_t),                   ## [out] value info type
         ("defaultValue", zet_value_t),                                  ## [out] default value for the parameter
-        ("valueInfoCount", c_ulong)                                     ## [out] count of ::zet_metric_programmable_param_value_info_exp_t
+        ("valueInfoCount", c_uint32)                                    ## [out] count of ::zet_metric_programmable_param_value_info_exp_t
     ]
 
 ###############################################################################
@@ -906,7 +931,7 @@ class zet_metric_tracer_exp_desc_t(Structure):
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("notifyEveryNBytes", c_ulong)                                  ## [in,out] number of collected bytes after which notification event will
+        ("notifyEveryNBytes", c_uint32)                                 ## [in,out] number of collected bytes after which notification event will
                                                                         ## be signaled. If the requested value is not supported exactly, then the
                                                                         ## driver may use a value that is the closest supported approximation and
                                                                         ## shall update this member during ::zetMetricTracerCreateExp.
@@ -918,13 +943,13 @@ class zet_metric_entry_exp_t(Structure):
     _fields_ = [
         ("value", zet_value_t),                                         ## [out] value of the decodable metric entry or event. Number is
                                                                         ## meaningful based on the metric type.
-        ("timeStamp", c_ulonglong),                                     ## [out] timestamp at which the event happened.
-        ("metricIndex", c_ulong),                                       ## [out] index to the decodable metric handle in the input array
+        ("timeStamp", c_uint64),                                        ## [out] timestamp at which the event happened.
+        ("metricIndex", c_uint32),                                      ## [out] index to the decodable metric handle in the input array
                                                                         ## (phMetric) in ::zetMetricTracerDecodeExp().
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the event occurred on a sub-device; false means the
                                                                         ## device on which the metric tracer was opened does not have
                                                                         ## sub-devices.
-        ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device.
+        ("subdeviceId", c_uint32)                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device.
     ]
 
 ###############################################################################
@@ -1054,7 +1079,7 @@ class zet_metric_source_id_exp_t(Structure):
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
+        ("sourceId", c_uint32)                                          ## [out] unique number representing the Metric Source.
     ]
 
 ###############################################################################
@@ -1063,9 +1088,9 @@ __use_win_types = "Windows" == platform.uname()[0]
 ###############################################################################
 ## @brief Function-pointer for zetMetricProgrammableGetExp
 if __use_win_types:
-    _zetMetricProgrammableGetExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_exp_handle_t) )
+    _zetMetricProgrammableGetExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_uint32), POINTER(zet_metric_programmable_exp_handle_t) )
 else:
-    _zetMetricProgrammableGetExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_exp_handle_t) )
+    _zetMetricProgrammableGetExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_uint32), POINTER(zet_metric_programmable_exp_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricProgrammableGetPropertiesExp
@@ -1077,16 +1102,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricProgrammableGetParamInfoExp
 if __use_win_types:
-    _zetMetricProgrammableGetParamInfoExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_param_info_exp_t) )
+    _zetMetricProgrammableGetParamInfoExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(c_uint32), POINTER(zet_metric_programmable_param_info_exp_t) )
 else:
-    _zetMetricProgrammableGetParamInfoExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_param_info_exp_t) )
+    _zetMetricProgrammableGetParamInfoExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(c_uint32), POINTER(zet_metric_programmable_param_info_exp_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricProgrammableGetParamValueInfoExp
 if __use_win_types:
-    _zetMetricProgrammableGetParamValueInfoExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(c_ulong), POINTER(zet_metric_programmable_param_value_info_exp_t) )
+    _zetMetricProgrammableGetParamValueInfoExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_uint32, POINTER(c_uint32), POINTER(zet_metric_programmable_param_value_info_exp_t) )
 else:
-    _zetMetricProgrammableGetParamValueInfoExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(c_ulong), POINTER(zet_metric_programmable_param_value_info_exp_t) )
+    _zetMetricProgrammableGetParamValueInfoExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_uint32, POINTER(c_uint32), POINTER(zet_metric_programmable_param_value_info_exp_t) )
 
 
 ###############################################################################
@@ -1102,9 +1127,9 @@ class _zet_metric_programmable_exp_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetMetricTracerCreateExp
 if __use_win_types:
-    _zetMetricTracerCreateExp_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_ulong, POINTER(zet_metric_group_handle_t), POINTER(zet_metric_tracer_exp_desc_t), ze_event_handle_t, POINTER(zet_metric_tracer_exp_handle_t) )
+    _zetMetricTracerCreateExp_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_group_handle_t), POINTER(zet_metric_tracer_exp_desc_t), ze_event_handle_t, POINTER(zet_metric_tracer_exp_handle_t) )
 else:
-    _zetMetricTracerCreateExp_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_ulong, POINTER(zet_metric_group_handle_t), POINTER(zet_metric_tracer_exp_desc_t), ze_event_handle_t, POINTER(zet_metric_tracer_exp_handle_t) )
+    _zetMetricTracerCreateExp_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_group_handle_t), POINTER(zet_metric_tracer_exp_desc_t), ze_event_handle_t, POINTER(zet_metric_tracer_exp_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricTracerDestroyExp
@@ -1130,16 +1155,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricTracerReadDataExp
 if __use_win_types:
-    _zetMetricTracerReadDataExp_t = WINFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricTracerReadDataExp_t = WINFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 else:
-    _zetMetricTracerReadDataExp_t = CFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricTracerReadDataExp_t = CFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricTracerDecodeExp
 if __use_win_types:
-    _zetMetricTracerDecodeExp_t = WINFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte), c_ulong, POINTER(zet_metric_handle_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_metric_entry_exp_t) )
+    _zetMetricTracerDecodeExp_t = WINFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_size_t), POINTER(c_uint8), c_uint32, POINTER(zet_metric_handle_t), POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32), POINTER(zet_metric_entry_exp_t) )
 else:
-    _zetMetricTracerDecodeExp_t = CFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte), c_ulong, POINTER(zet_metric_handle_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_metric_entry_exp_t) )
+    _zetMetricTracerDecodeExp_t = CFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_size_t), POINTER(c_uint8), c_uint32, POINTER(zet_metric_handle_t), POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32), POINTER(zet_metric_entry_exp_t) )
 
 
 ###############################################################################
@@ -1171,9 +1196,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricDecoderGetDecodableMetricsExp
 if __use_win_types:
-    _zetMetricDecoderGetDecodableMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricDecoderGetDecodableMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 else:
-    _zetMetricDecoderGetDecodableMetricsExp_t = CFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricDecoderGetDecodableMetricsExp_t = CFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 
 
 ###############################################################################
@@ -1203,16 +1228,16 @@ class _zet_device_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetDeviceGetConcurrentMetricGroupsExp
 if __use_win_types:
-    _zetDeviceGetConcurrentMetricGroupsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, * )
+    _zetDeviceGetConcurrentMetricGroupsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_group_handle_t), POINTER(c_uint32), POINTER(c_uint32) )
 else:
-    _zetDeviceGetConcurrentMetricGroupsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, * )
+    _zetDeviceGetConcurrentMetricGroupsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_group_handle_t), POINTER(c_uint32), POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zetDeviceCreateMetricGroupsFromMetricsExp
 if __use_win_types:
-    _zetDeviceCreateMetricGroupsFromMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, *, *, POINTER(zet_metric_group_handle_t) )
+    _zetDeviceCreateMetricGroupsFromMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_handle_t), c_char_p, c_char_p, POINTER(c_uint32), POINTER(zet_metric_group_handle_t) )
 else:
-    _zetDeviceCreateMetricGroupsFromMetricsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, *, *, POINTER(zet_metric_group_handle_t) )
+    _zetDeviceCreateMetricGroupsFromMetricsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_handle_t), c_char_p, c_char_p, POINTER(c_uint32), POINTER(zet_metric_group_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetDeviceEnableMetricsExp
@@ -1242,9 +1267,9 @@ class _zet_device_exp_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetContextActivateMetricGroups
 if __use_win_types:
-    _zetContextActivateMetricGroups_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_ulong, POINTER(zet_metric_group_handle_t) )
+    _zetContextActivateMetricGroups_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_group_handle_t) )
 else:
-    _zetContextActivateMetricGroups_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_ulong, POINTER(zet_metric_group_handle_t) )
+    _zetContextActivateMetricGroups_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_uint32, POINTER(zet_metric_group_handle_t) )
 
 
 ###############################################################################
@@ -1257,9 +1282,9 @@ class _zet_context_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetCommandListAppendMetricStreamerMarker
 if __use_win_types:
-    _zetCommandListAppendMetricStreamerMarker_t = WINFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_streamer_handle_t, c_ulong )
+    _zetCommandListAppendMetricStreamerMarker_t = WINFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_streamer_handle_t, c_uint32 )
 else:
-    _zetCommandListAppendMetricStreamerMarker_t = CFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_streamer_handle_t, c_ulong )
+    _zetCommandListAppendMetricStreamerMarker_t = CFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_streamer_handle_t, c_uint32 )
 
 ###############################################################################
 ## @brief Function-pointer for zetCommandListAppendMetricQueryBegin
@@ -1271,9 +1296,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetCommandListAppendMetricQueryEnd
 if __use_win_types:
-    _zetCommandListAppendMetricQueryEnd_t = WINFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_query_handle_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zetCommandListAppendMetricQueryEnd_t = WINFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_query_handle_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zetCommandListAppendMetricQueryEnd_t = CFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_query_handle_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zetCommandListAppendMetricQueryEnd_t = CFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_query_handle_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetCommandListAppendMetricMemoryBarrier
@@ -1296,9 +1321,9 @@ class _zet_command_list_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetCommandListAppendMarkerExp
 if __use_win_types:
-    _zetCommandListAppendMarkerExp_t = WINFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_group_handle_t, c_ulong )
+    _zetCommandListAppendMarkerExp_t = WINFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_group_handle_t, c_uint32 )
 else:
-    _zetCommandListAppendMarkerExp_t = CFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_group_handle_t, c_ulong )
+    _zetCommandListAppendMarkerExp_t = CFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_group_handle_t, c_uint32 )
 
 
 ###############################################################################
@@ -1311,9 +1336,9 @@ class _zet_command_list_exp_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetModuleGetDebugInfo
 if __use_win_types:
-    _zetModuleGetDebugInfo_t = WINFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetModuleGetDebugInfo_t = WINFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_uint8) )
 else:
-    _zetModuleGetDebugInfo_t = CFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetModuleGetDebugInfo_t = CFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_uint8) )
 
 
 ###############################################################################
@@ -1341,9 +1366,9 @@ class _zet_kernel_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetMetricGet
 if __use_win_types:
-    _zetMetricGet_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricGet_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 else:
-    _zetMetricGet_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricGet_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGetProperties
@@ -1364,9 +1389,9 @@ class _zet_metric_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetMetricCreateFromProgrammableExp
 if __use_win_types:
-    _zetMetricCreateFromProgrammableExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_ulong, c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricCreateFromProgrammableExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_uint32, c_char_p, c_char_p, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 else:
-    _zetMetricCreateFromProgrammableExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_ulong, c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricCreateFromProgrammableExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_uint32, c_char_p, c_char_p, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricDestroyExp
@@ -1378,9 +1403,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricCreateFromProgrammableExp2
 if __use_win_types:
-    _zetMetricCreateFromProgrammableExp2_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricCreateFromProgrammableExp2_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_uint32, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 else:
-    _zetMetricCreateFromProgrammableExp2_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricCreateFromProgrammableExp2_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_uint32, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_uint32), POINTER(zet_metric_handle_t) )
 
 
 ###############################################################################
@@ -1395,9 +1420,9 @@ class _zet_metric_exp_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupGet
 if __use_win_types:
-    _zetMetricGroupGet_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
+    _zetMetricGroupGet_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_uint32), POINTER(zet_metric_group_handle_t) )
 else:
-    _zetMetricGroupGet_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
+    _zetMetricGroupGet_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_uint32), POINTER(zet_metric_group_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupGetProperties
@@ -1409,9 +1434,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupCalculateMetricValues
 if __use_win_types:
-    _zetMetricGroupCalculateMetricValues_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+    _zetMetricGroupCalculateMetricValues_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_uint8), POINTER(c_uint32), POINTER(zet_typed_value_t) )
 else:
-    _zetMetricGroupCalculateMetricValues_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+    _zetMetricGroupCalculateMetricValues_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_uint8), POINTER(c_uint32), POINTER(zet_typed_value_t) )
 
 
 ###############################################################################
@@ -1426,30 +1451,30 @@ class _zet_metric_group_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupCalculateMultipleMetricValuesExp
 if __use_win_types:
-    _zetMetricGroupCalculateMultipleMetricValuesExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+    _zetMetricGroupCalculateMultipleMetricValuesExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_uint8), POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32), POINTER(zet_typed_value_t) )
 else:
-    _zetMetricGroupCalculateMultipleMetricValuesExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+    _zetMetricGroupCalculateMultipleMetricValuesExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_uint8), POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32), POINTER(zet_typed_value_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupGetGlobalTimestampsExp
 if __use_win_types:
-    _zetMetricGroupGetGlobalTimestampsExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, ze_bool_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+    _zetMetricGroupGetGlobalTimestampsExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, ze_bool_t, POINTER(c_uint64), POINTER(c_uint64) )
 else:
-    _zetMetricGroupGetGlobalTimestampsExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, ze_bool_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+    _zetMetricGroupGetGlobalTimestampsExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, ze_bool_t, POINTER(c_uint64), POINTER(c_uint64) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupGetExportDataExp
 if __use_win_types:
-    _zetMetricGroupGetExportDataExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ubyte), c_size_t, POINTER(c_size_t), * )
+    _zetMetricGroupGetExportDataExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_uint8), c_size_t, POINTER(c_size_t), POINTER(c_uint8) )
 else:
-    _zetMetricGroupGetExportDataExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ubyte), c_size_t, POINTER(c_size_t), * )
+    _zetMetricGroupGetExportDataExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_uint8), c_size_t, POINTER(c_size_t), POINTER(c_uint8) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupCalculateMetricExportDataExp
 if __use_win_types:
-    _zetMetricGroupCalculateMetricExportDataExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(zet_metric_calculate_exp_desc_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+    _zetMetricGroupCalculateMetricExportDataExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_uint8), POINTER(zet_metric_calculate_exp_desc_t), POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32), POINTER(zet_typed_value_t) )
 else:
-    _zetMetricGroupCalculateMetricExportDataExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(zet_metric_calculate_exp_desc_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+    _zetMetricGroupCalculateMetricExportDataExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_uint8), POINTER(zet_metric_calculate_exp_desc_t), POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32), POINTER(zet_typed_value_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupCreateExp
@@ -1461,9 +1486,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupAddMetricExp
 if __use_win_types:
-    _zetMetricGroupAddMetricExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t, *, c_char_p )
+    _zetMetricGroupAddMetricExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t, POINTER(c_size_t), c_char_p )
 else:
-    _zetMetricGroupAddMetricExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t, *, c_char_p )
+    _zetMetricGroupAddMetricExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t, POINTER(c_size_t), c_char_p )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupRemoveMetricExp
@@ -1519,9 +1544,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricStreamerReadData
 if __use_win_types:
-    _zetMetricStreamerReadData_t = WINFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricStreamerReadData_t = WINFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_uint32, POINTER(c_size_t), POINTER(c_uint8) )
 else:
-    _zetMetricStreamerReadData_t = CFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricStreamerReadData_t = CFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_uint32, POINTER(c_size_t), POINTER(c_uint8) )
 
 
 ###############################################################################
@@ -1559,9 +1584,9 @@ class _zet_metric_query_pool_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zetMetricQueryCreate
 if __use_win_types:
-    _zetMetricQueryCreate_t = WINFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_ulong, POINTER(zet_metric_query_handle_t) )
+    _zetMetricQueryCreate_t = WINFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_uint32, POINTER(zet_metric_query_handle_t) )
 else:
-    _zetMetricQueryCreate_t = CFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_ulong, POINTER(zet_metric_query_handle_t) )
+    _zetMetricQueryCreate_t = CFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_uint32, POINTER(zet_metric_query_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricQueryDestroy
@@ -1580,9 +1605,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetMetricQueryGetData
 if __use_win_types:
-    _zetMetricQueryGetData_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricQueryGetData_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 else:
-    _zetMetricQueryGetData_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricQueryGetData_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 
 
 ###############################################################################
@@ -1659,9 +1684,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetDebugReadEvent
 if __use_win_types:
-    _zetDebugReadEvent_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, c_ulonglong, POINTER(zet_debug_event_t) )
+    _zetDebugReadEvent_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, c_uint64, POINTER(zet_debug_event_t) )
 else:
-    _zetDebugReadEvent_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, c_ulonglong, POINTER(zet_debug_event_t) )
+    _zetDebugReadEvent_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, c_uint64, POINTER(zet_debug_event_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetDebugAcknowledgeEvent
@@ -1701,30 +1726,30 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetDebugGetRegisterSetProperties
 if __use_win_types:
-    _zetDebugGetRegisterSetProperties_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_debug_regset_properties_t) )
+    _zetDebugGetRegisterSetProperties_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_uint32), POINTER(zet_debug_regset_properties_t) )
 else:
-    _zetDebugGetRegisterSetProperties_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_debug_regset_properties_t) )
+    _zetDebugGetRegisterSetProperties_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_uint32), POINTER(zet_debug_regset_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetDebugReadRegisters
 if __use_win_types:
-    _zetDebugReadRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
+    _zetDebugReadRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_uint32, c_uint32, c_uint32, c_void_p )
 else:
-    _zetDebugReadRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
+    _zetDebugReadRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_uint32, c_uint32, c_uint32, c_void_p )
 
 ###############################################################################
 ## @brief Function-pointer for zetDebugWriteRegisters
 if __use_win_types:
-    _zetDebugWriteRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
+    _zetDebugWriteRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_uint32, c_uint32, c_uint32, c_void_p )
 else:
-    _zetDebugWriteRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
+    _zetDebugWriteRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_uint32, c_uint32, c_uint32, c_void_p )
 
 ###############################################################################
 ## @brief Function-pointer for zetDebugGetThreadRegisterSetProperties
 if __use_win_types:
-    _zetDebugGetThreadRegisterSetProperties_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, POINTER(c_ulong), POINTER(zet_debug_regset_properties_t) )
+    _zetDebugGetThreadRegisterSetProperties_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, POINTER(c_uint32), POINTER(zet_debug_regset_properties_t) )
 else:
-    _zetDebugGetThreadRegisterSetProperties_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, POINTER(c_ulong), POINTER(zet_debug_regset_properties_t) )
+    _zetDebugGetThreadRegisterSetProperties_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, POINTER(c_uint32), POINTER(zet_debug_regset_properties_t) )
 
 
 ###############################################################################

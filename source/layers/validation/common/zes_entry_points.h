@@ -353,6 +353,8 @@ public:
     virtual ze_result_t zesInfoLogInstancePeekWithMetadataExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesInfoLogInstanceDeleteExtEpilogue( zes_info_log_instance_handle_t hInfoLogInstance , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverGetPciDevicePropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_pci_device_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverGetPciDevicePropertiesEpilogue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_pci_device_properties_t* pProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }

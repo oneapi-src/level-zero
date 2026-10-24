@@ -6919,8 +6919,8 @@ namespace loader_driver_ddi
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
         )
@@ -6961,8 +6961,8 @@ namespace loader_driver_ddi
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
         )
@@ -7393,6 +7393,86 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSignalExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSignalExternalSemaphoreExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be signaled by the command queue.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before signaling; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before signaling
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandQueue == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnSignalExternalSemaphoreExt = dditable->CommandQueue->pfnSignalExternalSemaphoreExt;
+        if( nullptr == pfnSignalExternalSemaphoreExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnSignalExternalSemaphoreExt( hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueWaitExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueWaitExternalSemaphoreExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be waited on by the command queue.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before waiting; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before waiting
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandQueue == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnWaitExternalSemaphoreExt = dditable->CommandQueue->pfnWaitExternalSemaphoreExt;
+        if( nullptr == pfnWaitExternalSemaphoreExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnWaitExternalSemaphoreExt( hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
         return result;
     }
 
@@ -8523,6 +8603,46 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetCompilerInfoSupported
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetCompilerInfoSupported(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info category the queried element belongs to
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        const void* pElement,                           ///< [in] element whose support is being checked; its type is determined by
+                                                        ///< paramName
+        const char* pValue,                             ///< [in][optional] for the option categories, a null-terminated value to
+                                                        ///< check together with the option named by pElement.
+                                                        ///< When nullptr, only the element itself is checked. Ignored for
+                                                        ///< non-option categories.
+        ze_bool_t* pSupported                           ///< [out] on success, set to true if the element (and value, when
+                                                        ///< provided) is supported by the device compiler, false otherwise
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Device == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnGetCompilerInfoSupported = dditable->Device->pfnGetCompilerInfoSupported;
+        if( nullptr == pfnGetCompilerInfoSupported ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnGetCompilerInfoSupported( hDevice, paramName, pNext, pElement, pValue, pSupported );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandQueueSetQosExt
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandQueueSetQosExt(
@@ -8581,6 +8701,300 @@ namespace loader_driver_ddi
         }
         // forward to device-driver
         result = pfnGetQosExt( hCommandQueue, pProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListVisitExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListVisitExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnVisitExt = dditable->CommandList->pfnVisitExt;
+        if( nullptr == pfnVisitExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnVisitExt( hCommandList, pDesc );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphVisitExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphVisitExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of graph to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hGraph )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Graph == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnVisitExt = dditable->Graph->pfnVisitExt;
+        if( nullptr == pfnVisitExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnVisitExt( hGraph, pDesc );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnGetNextCommandIdExt = dditable->CommandList->pfnGetNextCommandIdExt;
+        if( nullptr == pfnGetNextCommandIdExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnGetNextCommandIdExt( hCommandList, desc, pCommandId );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdWithKernelsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdWithKernelsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExt
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnGetNextCommandIdWithKernelsExt = dditable->CommandList->pfnGetNextCommandIdWithKernelsExt;
+        if( nullptr == pfnGetNextCommandIdWithKernelsExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnGetNextCommandIdWithKernelsExt( hCommandList, desc, numKernels, phKernels, pCommandId );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_ext_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnUpdateMutableCommandsExt = dditable->CommandList->pfnUpdateMutableCommandsExt;
+        if( nullptr == pfnUpdateMutableCommandsExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnUpdateMutableCommandsExt( hCommandList, desc );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListIsMutableExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListIsMutableExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                        ///< mutable extension
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnIsMutableExt = dditable->CommandList->pfnIsMutableExt;
+        if( nullptr == pfnIsMutableExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnIsMutableExt( hCommandList, pIsMutable );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandSignalEventExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnUpdateMutableCommandSignalEventExt = dditable->CommandList->pfnUpdateMutableCommandSignalEventExt;
+        if( nullptr == pfnUpdateMutableCommandSignalEventExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnUpdateMutableCommandSignalEventExt( hCommandList, commandId, hSignalEvent );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandWaitEventsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnUpdateMutableCommandWaitEventsExt = dditable->CommandList->pfnUpdateMutableCommandWaitEventsExt;
+        if( nullptr == pfnUpdateMutableCommandWaitEventsExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnUpdateMutableCommandWaitEventsExt( hCommandList, commandId, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandKernelsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandKernelsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        auto pfnUpdateMutableCommandKernelsExt = dditable->CommandList->pfnUpdateMutableCommandKernelsExt;
+        if( nullptr == pfnUpdateMutableCommandKernelsExt ) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        // forward to device-driver
+        result = pfnUpdateMutableCommandKernelsExt( hCommandList, numKernels, pCommandId, phKernels );
         return result;
     }
 

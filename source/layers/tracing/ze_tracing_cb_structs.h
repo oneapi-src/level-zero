@@ -102,6 +102,7 @@ typedef struct _zel_ze_device_callbacks_t
     ze_pfnDeviceGetCompilerInfoCb_t                                 pfnGetCompilerInfoCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
+    ze_pfnDeviceGetCompilerInfoSupportedCb_t                        pfnGetCompilerInfoSupportedCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
     ze_pfnDeviceGetFabricVertexExpCb_t                              pfnGetFabricVertexExpCb;
     ze_pfnDeviceGetRootDeviceCb_t                                   pfnGetRootDeviceCb;
@@ -136,6 +137,8 @@ typedef struct _zel_ze_command_queue_callbacks_t
     ze_pfnCommandQueueSetPriorityExtCb_t                            pfnSetPriorityExtCb;
     ze_pfnCommandQueueSetQosExtCb_t                                 pfnSetQosExtCb;
     ze_pfnCommandQueueGetQosExtCb_t                                 pfnGetQosExtCb;
+    ze_pfnCommandQueueSignalExternalSemaphoreExtCb_t                pfnSignalExternalSemaphoreExtCb;
+    ze_pfnCommandQueueWaitExternalSemaphoreExtCb_t                  pfnWaitExternalSemaphoreExtCb;
     ze_pfnCommandQueueGetOrdinalCb_t                                pfnGetOrdinalCb;
     ze_pfnCommandQueueGetIndexCb_t                                  pfnGetIndexCb;
 } zel_ze_command_queue_callbacks_t;
@@ -193,6 +196,14 @@ typedef struct _zel_ze_command_list_callbacks_t
     ze_pfnCommandListAppendHostFunctionCb_t                         pfnAppendHostFunctionCb;
     ze_pfnCommandListAppendSignalEventWithParametersCb_t            pfnAppendSignalEventWithParametersCb;
     ze_pfnCommandListAppendWaitOnEventsWithParametersCb_t           pfnAppendWaitOnEventsWithParametersCb;
+    ze_pfnCommandListVisitExtCb_t                                   pfnVisitExtCb;
+    ze_pfnCommandListGetNextCommandIdExtCb_t                        pfnGetNextCommandIdExtCb;
+    ze_pfnCommandListGetNextCommandIdWithKernelsExtCb_t             pfnGetNextCommandIdWithKernelsExtCb;
+    ze_pfnCommandListUpdateMutableCommandsExtCb_t                   pfnUpdateMutableCommandsExtCb;
+    ze_pfnCommandListIsMutableExtCb_t                               pfnIsMutableExtCb;
+    ze_pfnCommandListUpdateMutableCommandSignalEventExtCb_t         pfnUpdateMutableCommandSignalEventExtCb;
+    ze_pfnCommandListUpdateMutableCommandWaitEventsExtCb_t          pfnUpdateMutableCommandWaitEventsExtCb;
+    ze_pfnCommandListUpdateMutableCommandKernelsExtCb_t             pfnUpdateMutableCommandKernelsExtCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
     ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;
@@ -413,6 +424,7 @@ typedef struct _zel_ze_graph_callbacks_t
     ze_pfnGraphPauseCaptureExtCb_t                                  pfnPauseCaptureExtCb;
     ze_pfnGraphResumeCaptureExtCb_t                                 pfnResumeCaptureExtCb;
     ze_pfnGraphGetIdExtCb_t                                         pfnGetIdExtCb;
+    ze_pfnGraphVisitExtCb_t                                         pfnVisitExtCb;
 } zel_ze_graph_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

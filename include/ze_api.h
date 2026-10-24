@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.19-r1.19.12
+ * @version v1.20-r1.20.41
  *
  */
 #ifndef _ZE_API_H
@@ -294,7 +294,7 @@ typedef enum _ze_structure_type_t
 {
     ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES = 0x1,                              ///< ::ze_driver_properties_t
     ZE_STRUCTURE_TYPE_DRIVER_IPC_PROPERTIES = 0x2,                          ///< ::ze_driver_ipc_properties_t
-    ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x3,                              ///< ::ze_device_properties_t. @deprecated since 1.17: Use
+    ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES = 0x3,                              ///< [DEPRECATED since 1.17] ::ze_device_properties_t. Use
                                                                             ///< ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 instead.
     ZE_STRUCTURE_TYPE_DEVICE_COMPUTE_PROPERTIES = 0x4,                      ///< ::ze_device_compute_properties_t
     ZE_STRUCTURE_TYPE_DEVICE_MODULE_PROPERTIES = 0x5,                       ///< ::ze_device_module_properties_t
@@ -359,7 +359,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 = 0x00020006,                   ///< ::ze_device_properties_t
     ZE_STRUCTURE_TYPE_IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007,             ///< ::ze_image_memory_properties_exp_t
     ZE_STRUCTURE_TYPE_POWER_SAVING_HINT_EXP_DESC = 0x00020008,              ///< ::ze_context_power_saving_hint_exp_desc_t
-    ZE_STRUCTURE_TYPE_COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009,           ///< ::ze_copy_bandwidth_exp_properties_t
+    ZE_STRUCTURE_TYPE_COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009,           ///< [DEPRECATED since 1.14] ::ze_copy_bandwidth_exp_properties_t. No
+                                                                            ///< replacement.
     ZE_STRUCTURE_TYPE_DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x0002000A,     ///< ::ze_device_p2p_bandwidth_exp_properties_t
     ZE_STRUCTURE_TYPE_FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B,            ///< ::ze_fabric_vertex_exp_properties_t
     ZE_STRUCTURE_TYPE_FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C,              ///< ::ze_fabric_edge_exp_properties_t
@@ -422,6 +423,19 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_IPC_PHYS_MEM_HANDLE_RANGE_EXT_DESC = 0x0002004B,      ///< ::ze_ipc_phys_mem_handle_range_ext_desc_t
     ZE_STRUCTURE_TYPE_COMMAND_QUEUE_QOS_EXT_DESC = 0x0002004C,              ///< ::ze_command_queue_qos_ext_desc_t
     ZE_STRUCTURE_TYPE_COMMAND_QUEUE_QOS_EXT_PROPERTIES = 0x0002004D,        ///< ::ze_command_queue_qos_ext_properties_t
+    ZE_STRUCTURE_TYPE_MUTABLE_COMMAND_LIST_EXT_PROPERTIES = 0x0002004E,     ///< ::ze_mutable_command_list_ext_properties_t
+    ZE_STRUCTURE_TYPE_MUTABLE_COMMAND_LIST_EXT_DESC = 0x0002004F,           ///< ::ze_mutable_command_list_ext_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_COMMAND_ID_EXT_DESC = 0x00020050,             ///< ::ze_mutable_command_id_ext_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_COMMANDS_EXT_DESC = 0x00020051,               ///< ::ze_mutable_commands_ext_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_KERNEL_ARGUMENT_EXT_DESC = 0x00020052,        ///< ::ze_mutable_kernel_argument_ext_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_GROUP_COUNT_EXT_DESC = 0x00020053,            ///< ::ze_mutable_group_count_ext_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_GROUP_SIZE_EXT_DESC = 0x00020054,             ///< ::ze_mutable_group_size_ext_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_GLOBAL_OFFSET_EXT_DESC = 0x00020055,          ///< ::ze_mutable_global_offset_ext_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_GRAPH_ARGUMENT_EXT_DESC = 0x00020056,         ///< ::ze_mutable_graph_argument_ext_desc_t
+    ZE_STRUCTURE_TYPE_EVENT_EXT_FLAGS_DESC = 0x00020057,                    ///< ::ze_event_ext_flags_desc_t
+    ZE_STRUCTURE_TYPE_INIT_DRIVER_PROPERTIES_EXT_DESC = 0x00020058,         ///< ::ze_init_driver_properties_ext_desc_t
+    ZE_STRUCTURE_TYPE_COMMAND_VISIT_EXT_DESC = 0x00020059,                  ///< ::ze_command_visit_ext_desc_t
+    ZE_STRUCTURE_TYPE_CONCRETE_VISITOR_EXT_DESC = 0x0002005A,               ///< ::ze_concrete_visitor_ext_desc_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_STRUCTURE_TYPE_* ENUMs
 
 } ze_structure_type_t;
@@ -700,6 +714,10 @@ typedef struct _ze_event_counter_based_external_sync_allocation_desc_t ze_event_
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_event_counter_based_external_aggregate_storage_desc_t
 typedef struct _ze_event_counter_based_external_aggregate_storage_desc_t ze_event_counter_based_external_aggregate_storage_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_event_ext_flags_desc_t
+typedef struct _ze_event_ext_flags_desc_t ze_event_ext_flags_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_kernel_timestamp_data_t
@@ -1261,6 +1279,54 @@ typedef struct _ze_command_queue_qos_ext_desc_t ze_command_queue_qos_ext_desc_t;
 /// @brief Forward-declare ze_command_queue_qos_ext_properties_t
 typedef struct _ze_command_queue_qos_ext_properties_t ze_command_queue_qos_ext_properties_t;
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_concrete_visitor_ext_desc_t
+typedef struct _ze_concrete_visitor_ext_desc_t ze_concrete_visitor_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_command_visit_ext_desc_t
+typedef struct _ze_command_visit_ext_desc_t ze_command_visit_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_init_driver_properties_ext_desc_t
+typedef struct _ze_init_driver_properties_ext_desc_t ze_init_driver_properties_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_command_id_ext_desc_t
+typedef struct _ze_mutable_command_id_ext_desc_t ze_mutable_command_id_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_command_list_ext_properties_t
+typedef struct _ze_mutable_command_list_ext_properties_t ze_mutable_command_list_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_command_list_ext_desc_t
+typedef struct _ze_mutable_command_list_ext_desc_t ze_mutable_command_list_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_commands_ext_desc_t
+typedef struct _ze_mutable_commands_ext_desc_t ze_mutable_commands_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_kernel_argument_ext_desc_t
+typedef struct _ze_mutable_kernel_argument_ext_desc_t ze_mutable_kernel_argument_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_group_count_ext_desc_t
+typedef struct _ze_mutable_group_count_ext_desc_t ze_mutable_group_count_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_group_size_ext_desc_t
+typedef struct _ze_mutable_group_size_ext_desc_t ze_mutable_group_size_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_global_offset_ext_desc_t
+typedef struct _ze_mutable_global_offset_ext_desc_t ze_mutable_global_offset_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_graph_argument_ext_desc_t
+typedef struct _ze_mutable_graph_argument_ext_desc_t ze_mutable_graph_argument_ext_desc_t;
+
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -1281,10 +1347,9 @@ typedef enum _ze_init_flag_t
 } ze_init_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Initialize the 'oneAPI' driver(s)
+/// @brief [DEPRECATED since 1.10] Initialize the 'oneAPI' driver(s)
 /// 
 /// @details
-///     - @deprecated since 1.10. Please use zeInitDrivers()
 ///     - The application must call this function or zeInitDrivers before
 ///       calling any other function.
 ///     - If this function is not called then all other functions will return
@@ -1297,6 +1362,8 @@ typedef enum _ze_init_flag_t
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe for scenarios
 ///       where multiple libraries may initialize the driver(s) simultaneously.
+/// 
+/// @deprecated Since 1.10. Use ::zeInitDrivers instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -1322,10 +1389,9 @@ zeInit(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Retrieves driver instances
+/// @brief [DEPRECATED since 1.10] Retrieves driver instances
 /// 
 /// @details
-///     - @deprecated since 1.10. Please use zeInitDrivers()
 ///     - Usage of zeInitDrivers and zeDriverGet is mutually exclusive and
 ///       should not be used together. Usage of them together will result in
 ///       undefined behavior.
@@ -1336,6 +1402,8 @@ zeInit(
 ///       number of drivers.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.10. Use ::zeInitDrivers instead.
 /// 
 /// @remarks
 ///   _Analogues_
@@ -1413,20 +1481,19 @@ typedef struct _ze_init_driver_type_desc_t
 /// 
 /// @details
 ///     - The application must call this function or zeInit before calling any
-///       other function. (zeInit is [Deprecated] and is replaced by
-///       zeInitDrivers)
-///     - Calls to zeInit[Deprecated] or InitDrivers will not alter the drivers
-///       retrieved through either api.
-///     - Drivers init through zeInit[Deprecated] or InitDrivers will not be
-///       reInitialized once init in an application. The Loader will determine
-///       if the already init driver needs to be delivered to the user through
-///       the init type flags.
+///       other function.
+///     - Calls to zeInit or InitDrivers will not alter the drivers retrieved
+///       through either api.
+///     - Drivers init through zeInit or InitDrivers will not be reInitialized
+///       once init in an application. The Loader will determine if the already
+///       init driver needs to be delivered to the user through the init type
+///       flags.
 ///     - Already init Drivers will not be uninitialized if the call to
 ///       InitDrivers does not include that driver's type. Those init drivers
 ///       which don't match the init flags will not have their driver handles
 ///       returned to the user in that InitDrivers call.
-///     - If this function or zeInit[Deprecated] is not called, then all other
-///       functions will return ::ZE_RESULT_ERROR_UNINITIALIZED.
+///     - If this function or zeInit is not called, then all other functions
+///       will return ::ZE_RESULT_ERROR_UNINITIALIZED.
 ///     - Only one instance of each driver will be initialized per process.
 ///     - A driver represents a collection of physical devices.
 ///     - Multiple calls to this function will return identical driver handles,
@@ -1449,7 +1516,6 @@ typedef struct _ze_init_driver_type_desc_t
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
@@ -1463,6 +1529,8 @@ typedef struct _ze_init_driver_type_desc_t
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
 ///         + `0x0 == desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + the `pNext` chain of `desc` contains a ::ze_init_driver_properties_ext_desc_t with both ::ZE_INIT_DRIVER_PROPERTIES_EXT_FLAG_OPTIMIZE_MEMORY and ::ZE_INIT_DRIVER_PROPERTIES_EXT_FLAG_OPTIMIZE_PERFORMANCE set
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeInitDrivers(
     uint32_t* pCount,                                                       ///< [in,out] pointer to the number of driver instances.
@@ -1505,7 +1573,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_17 = ZE_MAKE_VERSION( 1, 17 ),                         ///< version 1.17
     ZE_API_VERSION_1_18 = ZE_MAKE_VERSION( 1, 18 ),                         ///< version 1.18
     ZE_API_VERSION_1_19 = ZE_MAKE_VERSION( 1, 19 ),                         ///< version 1.19
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 19 ),                      ///< latest known version
+    ZE_API_VERSION_1_20 = ZE_MAKE_VERSION( 1, 20 ),                         ///< version 1.20
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 20 ),                      ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_API_VERSION_* ENUMs
 
 } ze_api_version_t;
@@ -1513,7 +1582,7 @@ typedef enum _ze_api_version_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 19 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 20 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1809,6 +1878,12 @@ zeDriverGetLastErrorDescription(
 ///     - The implementation of this function should be lock-free.
 ///     - This returned context contains all the devices available in the
 ///       driver.
+///     - The default context is created by the driver, so no
+///       ::ze_context_flags_t can be supplied for it. It follows the
+///       memory/performance default established for the driver by
+///       ::ze_init_driver_properties_ext_desc_t at ::zeInitDrivers time, if one
+///       was established; otherwise its memory/performance trade-off is driver
+///       implementation specific.
 ///     - This function does not return error code, to get info about failure
 ///       user may use ::zeDriverGetLastErrorDescription function.
 ///     - In case of failure, this function returns null.
@@ -2030,9 +2105,10 @@ typedef struct _ze_device_properties_t
     uint32_t numEUsPerSubslice;                                             ///< [out] Maximum number of EUs per sub-slice.
     uint32_t numSubslicesPerSlice;                                          ///< [out] Maximum number of sub-slices per slice.
     uint32_t numSlices;                                                     ///< [out] Maximum number of slices.
-    uint64_t timerResolution;                                               ///< [out] @deprecated when using ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES
-                                                                            ///< since 1.17: Use ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 to obtain
-                                                                            ///< timerResolution in cycles/sec for profiling and timestamps.
+    uint64_t timerResolution;                                               ///< [out] Returns the resolution of device timer in cycles per second used
+                                                                            ///< for profiling, timestamps, etc. Requires
+                                                                            ///< stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2; with the deprecated
+                                                                            ///< ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES the units are nanoseconds.
     uint32_t timestampValidBits;                                            ///< [out] Returns the number of valid bits in the timestamp value. (i.e
                                                                             ///< can be used to calculate the max value of the device timestamp in
                                                                             ///< hardware or get the mask of valid bits in the timestamp value).
@@ -2165,13 +2241,13 @@ typedef enum _ze_device_input_data_type_flag_t
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_E2M1_PACK8_PER_SIMD_LANE = ZE_BIT(9),  ///< Supports e2m1 data type with 8 packed data elements per SIMD lane.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_E3M0_PACK8_PER_SIMD_LANE = ZE_BIT(10), ///< Supports e3m0 data type with 8 packed data elements per SIMD lane.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(11), ///< Supports 8bit integer data type with 4 packed data elements per SIMD
-                                                                            ///< lane.This is exclusively for DP4V dot product support
+                                                                                            ///< lane.This is exclusively for DP4V dot product support
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(12),///< Supports uint8 data type support for scaling, exclusive to BDPAS dot
-                                                                            ///< product support.
+                                                                                ///< product support.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE5M3 = ZE_BIT(13),///< Supports ue5m3 data type support for scaling, exclusive to BDPAS dot
-                                                                            ///< product support.
+                                                                                ///< product support.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE4M3 = ZE_BIT(14),///< Supports ue4m3 data type support for scaling, exclusive to BDPAS dot
-                                                                            ///< product support.
+                                                                                ///< product support.
     ZE_DEVICE_INPUT_DATA_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_INPUT_DATA_TYPE_FLAG_* ENUMs
 
 } ze_device_input_data_type_flag_t;
@@ -3006,6 +3082,8 @@ typedef enum _ze_device_event_properties_flag_t
     ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC = ZE_BIT(1),          ///< Counter-based Event IPC sharing supported
     ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_EXTERNAL_SYNC_ALLOCATION = ZE_BIT(2), ///< Counter-based Event with external sync allocation supported
     ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_EXTERNAL_INTERRUPT_WAIT = ZE_BIT(3),  ///< Counter-based Event waiting for external interrupt id supported
+    ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC_BIDIRECTIONAL = ZE_BIT(4),///< Counter-based Event IPC sharing is bi-directional. See
+                                                                                ///< ::zeEventCounterBasedOpenIpcHandle
     ZE_DEVICE_EVENT_PROPERTIES_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_DEVICE_EVENT_PROPERTIES_FLAG_* ENUMs
 
 } ze_device_event_properties_flag_t;
@@ -3293,7 +3371,15 @@ zeDeviceValidateRuntimeRequirements(
 typedef uint32_t ze_context_flags_t;
 typedef enum _ze_context_flag_t
 {
-    ZE_CONTEXT_FLAG_TBD = ZE_BIT(0),                                        ///< reserved for future use
+    ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY = ZE_BIT(0),                            ///< Reduce memory footprint; may trade performance for lower memory usage;
+                                                                            ///< mutually exclusive with ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE. If
+                                                                            ///< neither this nor OPTIMIZE_PERFORMANCE is set, the memory/performance
+                                                                            ///< trade-off is driver implementation specific
+    ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE = ZE_BIT(1),                       ///< Explicitly optimize for performance; may trade memory footprint for
+                                                                            ///< higher performance; mutually exclusive with
+                                                                            ///< ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY. If neither this nor OPTIMIZE_MEMORY
+                                                                            ///< is set, the memory/performance trade-off is driver implementation
+                                                                            ///< specific
     ZE_CONTEXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_CONTEXT_FLAG_* ENUMs
 
 } ze_context_flag_t;
@@ -3326,7 +3412,6 @@ typedef struct _ze_context_desc_t
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
@@ -3340,8 +3425,10 @@ typedef struct _ze_context_desc_t
 ///         + `nullptr == desc`
 ///         + `nullptr == phContext`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < desc->flags`
+///         + `0x3 < desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + `(desc->flags & ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY) && (desc->flags & ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE)`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeContextCreate(
     ze_driver_handle_t hDriver,                                             ///< [in] handle of the driver object
@@ -3364,7 +3451,6 @@ zeContextCreate(
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
@@ -3378,10 +3464,12 @@ zeContextCreate(
 ///         + `nullptr == desc`
 ///         + `nullptr == phContext`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < desc->flags`
+///         + `0x3 < desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phDevices) && (0 < numDevices)`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + `(desc->flags & ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY) && (desc->flags & ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE)`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeContextCreateEx(
     ze_driver_handle_t hDriver,                                             ///< [in] handle of the driver object
@@ -3476,13 +3564,14 @@ zeContextGetStatus(
 typedef uint32_t ze_command_queue_flags_t;
 typedef enum _ze_command_queue_flag_t
 {
-    ZE_COMMAND_QUEUE_FLAG_EXPLICIT_ONLY = ZE_BIT(0),                        ///< command queue should be optimized for submission to a single device engine.
+    ZE_COMMAND_QUEUE_FLAG_EXPLICIT_ONLY = ZE_BIT(0),                        ///< [DEPRECATED since 1.13] command queue should be optimized for
+                                                                            ///< submission to a single device engine.
                                                                             ///< driver **must** disable any implicit optimizations for distributing
                                                                             ///< work across multiple engines.
                                                                             ///< this flag should be used when applications want full control over
-                                                                            ///< multi-engine submission and scheduling.
-                                                                            ///< This flag is **DEPRECATED** as flag
-                                                                            ///< ::ZE_COMMAND_LIST_FLAG_EXPLICIT_ONLY is **DEPRECATED**.
+                                                                            ///< multi-engine submission and scheduling. To place work on specific
+                                                                            ///< sub-devices, submit to sub-device handles or set
+                                                                            ///< ZE_FLAT_DEVICE_HIERARCHY=FLAT. Related: ::zeDeviceGetSubDevices.
     ZE_COMMAND_QUEUE_FLAG_IN_ORDER = ZE_BIT(1),                             ///< To be used only when creating immediate command lists. Commands
                                                                             ///< appended to the immediate command
                                                                             ///< list are executed in-order, with driver implementation enforcing
@@ -3901,14 +3990,14 @@ typedef enum _ze_command_list_flag_t
                                                                             ///< throughput. 
                                                                             ///< using this flag may increase Host overhead of ::zeCommandListClose and ::zeCommandQueueExecuteCommandLists.
                                                                             ///< therefore, this flag should **not** be set for low-latency usage-models.
-    ZE_COMMAND_LIST_FLAG_EXPLICIT_ONLY = ZE_BIT(2),                         ///< command list should be optimized for submission to a single command
-                                                                            ///< queue and device engine.
+    ZE_COMMAND_LIST_FLAG_EXPLICIT_ONLY = ZE_BIT(2),                         ///< [DEPRECATED since 1.13] command list should be optimized for
+                                                                            ///< submission to a single command queue and device engine.
                                                                             ///< driver **must** disable any implicit optimizations for distributing
                                                                             ///< work across multiple engines.
                                                                             ///< this flag should be used when applications want full control over
-                                                                            ///< multi-engine submission and scheduling.
-                                                                            ///< This flag is **DEPRECATED** and implementations are not expected to
-                                                                            ///< support this feature.
+                                                                            ///< multi-engine submission and scheduling. To place work on specific
+                                                                            ///< sub-devices, submit to sub-device handles or set
+                                                                            ///< ZE_FLAT_DEVICE_HIERARCHY=FLAT. Related: ::zeDeviceGetSubDevices.
     ZE_COMMAND_LIST_FLAG_IN_ORDER = ZE_BIT(3),                              ///< commands appended to this command list are executed in-order, with
                                                                             ///< driver implementation
                                                                             ///< enforcing dependencies between them. Application is not required to
@@ -3918,12 +4007,17 @@ typedef enum _ze_command_list_flag_t
                                                                             ///< application is allowed to pass signal and wait events to each appended
                                                                             ///< command to implement
                                                                             ///< more complex dependency graphs. Cannot be combined with ::ZE_COMMAND_LIST_FLAG_RELAXED_ORDERING.
-    ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE = ZE_BIT(4),                         ///< this command list may be cloned using ::zeCommandListCreateCloneExp
-                                                                            ///< after ::zeCommandListClose.
+    ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE = ZE_BIT(4),                         ///< [DEPRECATED since 1.17] this command list may be cloned using
+                                                                            ///< ::zeCommandListCreateCloneExp after ::zeCommandListClose. Mutable
+                                                                            ///< command lists replace command list cloning. Use
+                                                                            ///< ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
     ZE_COMMAND_LIST_FLAG_COPY_OFFLOAD_HINT = ZE_BIT(5),                     ///< Try to offload copy operations to different engines. Applicable only
                                                                             ///< for compute queues.
                                                                             ///< This is only a hint. Driver may ignore it per append call, based on
                                                                             ///< platform capabilities or internal heuristics.
+    ZE_COMMAND_LIST_FLAG_ENABLE_COMMAND_VISIT = ZE_BIT(6),                  ///< command list is configured to support command visit via ::zeCommandListVisitExt.
+                                                                            ///< this flag should be set when command visit is required.
+                                                                            ///< this flag is intended only for non-immediate (i.e. recorded) command lists.
     ZE_COMMAND_LIST_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_LIST_FLAG_* ENUMs
 
 } ze_command_list_flag_t;
@@ -3977,7 +4071,7 @@ typedef struct _ze_command_list_desc_t
 ///         + `nullptr == desc`
 ///         + `nullptr == phCommandList`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3f < desc->flags`
+///         + `0x7f < desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeCommandListCreate(
@@ -4849,6 +4943,7 @@ zeCommandListAppendMemoryCopyWithParameters(
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(0 == pattern_size) || (0 != (pattern_size & (pattern_size - 1)))`
 ///         + `size % pattern_size != 0`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeCommandListAppendMemoryFill(
@@ -4915,6 +5010,7 @@ zeCommandListAppendMemoryFill(
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(0 == pattern_size) || (0 != (pattern_size & (pattern_size - 1)))`
 ///         + `size % pattern_size != 0`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///         + an extension passed via pNext is not supported
@@ -5575,7 +5671,8 @@ typedef enum _ze_event_counter_based_flag_t
     ZE_EVENT_COUNTER_BASED_FLAG_IMMEDIATE = ZE_BIT(0),                      ///< Counter-based event is used for immediate command lists (default)
     ZE_EVENT_COUNTER_BASED_FLAG_NON_IMMEDIATE = ZE_BIT(1),                  ///< Counter-based event is used for non-immediate command lists
     ZE_EVENT_COUNTER_BASED_FLAG_HOST_VISIBLE = ZE_BIT(2),                   ///< Signals and waits are also visible to host
-    ZE_EVENT_COUNTER_BASED_FLAG_IPC = ZE_BIT(3),                            ///< Event can be shared across processes for waiting
+    ZE_EVENT_COUNTER_BASED_FLAG_IPC = ZE_BIT(3),                            ///< Event can be shared across processes. The sharing mode is reported by
+                                                                            ///< ::ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC_BIDIRECTIONAL
     ZE_EVENT_COUNTER_BASED_FLAG_DEVICE_TIMESTAMP = ZE_BIT(4),               ///< Event contains timestamps populated in the device time domain.
                                                                             ///< Implementation of this can be vendor specific, but typically pulled
                                                                             ///< from timers on the offload device and not the host.
@@ -5589,10 +5686,12 @@ typedef enum _ze_event_counter_based_flag_t
     ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL = ZE_BIT(6),                 ///< Counter-based event is used for synchronization between recorded graph
                                                                             ///< commands and commands submitted outside the graph (see
                                                                             ///< ::zeGraphInstantiateExt in ::ZE_RECORD_REPLAY_GRAPH_EXT_NAME for details).
-    ZE_EVENT_COUNTER_BASED_FLAG_IPC_BIDIRECTIONAL = ZE_BIT(7),              ///< Extends ::ZE_EVENT_COUNTER_BASED_FLAG_IPC with bi-directional sharing.
-                                                                            ///< Event opened in another process observes the latest state and can also
-                                                                            ///< be used for signaling.
-                                                                            ///< Must be combined with ::ZE_EVENT_COUNTER_BASED_FLAG_IPC
+    ZE_EVENT_COUNTER_BASED_FLAG_IPC_BIDIRECTIONAL = ZE_BIT(7),              ///< [DEPRECATED since 1.20] Extends ::ZE_EVENT_COUNTER_BASED_FLAG_IPC with
+                                                                            ///< bi-directional sharing. Event opened in another process observes the
+                                                                            ///< latest state and can also be used for signaling.
+                                                                            ///< Must be combined with ::ZE_EVENT_COUNTER_BASED_FLAG_IPC. Ignored. The
+                                                                            ///< IPC sharing mode depends on the device. Related:
+                                                                            ///< ::ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC_BIDIRECTIONAL.
     ZE_EVENT_COUNTER_BASED_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_COUNTER_BASED_FLAG_* ENUMs
 
 } ze_event_counter_based_flag_t;
@@ -5610,6 +5709,22 @@ typedef enum _ze_event_sync_mode_flag_t
     ZE_EVENT_SYNC_MODE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_SYNC_MODE_FLAG_* ENUMs
 
 } ze_event_sync_mode_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Event extension flags
+typedef uint32_t ze_event_ext_flags_t;
+typedef enum _ze_event_ext_flag_t
+{
+    ZE_EVENT_EXT_FLAG_APPEND_GRAPH_EXTERNAL = ZE_BIT(0),                    ///< Causes the specified event to be treated as if it had been created
+                                                                            ///< with ::ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL for this append
+                                                                            ///< operation only.
+                                                                            ///< If the event was created with
+                                                                            ///< ::ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL, this flag has no effect.
+                                                                            ///< If this flag is used on a non-recording command list, then
+                                                                            ///< ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE is returned.
+    ZE_EVENT_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EVENT_EXT_FLAG_* ENUMs
+
+} ze_event_ext_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Event sync mode descriptor
@@ -5715,6 +5830,18 @@ typedef struct _ze_event_counter_based_external_aggregate_storage_desc_t
 } ze_event_counter_based_external_aggregate_storage_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Event extension flags descriptor
+typedef struct _ze_event_ext_flags_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_event_ext_flags_t flags;                                             ///< [in] event extension flags.
+                                                                            ///< must be 0 (default) or a valid combination of ::ze_event_ext_flags_t
+
+} ze_event_ext_flags_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Creates an event from the pool.
 /// 
 /// @details
@@ -5770,6 +5897,7 @@ zeEventCreate(
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
 ///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
@@ -5789,9 +5917,6 @@ zeEventCreate(
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///         + `completionValue` provided in `pNext` ::ze_event_counter_based_external_sync_allocation_desc_t or ::ze_event_counter_based_external_aggregate_storage_desc_t exceeds the value returned by ::zeDeviceGetCounterBasedEventMaxValue
-///         + ::ZE_EVENT_COUNTER_BASED_FLAG_IPC_BIDIRECTIONAL is set without ::ZE_EVENT_COUNTER_BASED_FLAG_IPC
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + ::ZE_EVENT_COUNTER_BASED_FLAG_IPC_BIDIRECTIONAL is set and the implementation does not provide bi-directional IPC sharing
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeEventCounterBasedCreate(
     ze_context_handle_t hContext,                                           ///< [in] handle of the context object
@@ -5995,15 +6120,17 @@ zeEventPoolCloseIpcHandle(
 ///        process.
 /// 
 /// @details
-///     - When the event was created with
-///       ::ZE_EVENT_COUNTER_BASED_FLAG_IPC_BIDIRECTIONAL, it may be shared
-///       before it is enqueued for signaling for the first time, and the
-///       returned handle remains valid after the event state is replaced by a
-///       signal operation. It does not have to be obtained again.
-///     - Without that flag, a handle represents the state captured at the time
-///       of this call. A new handle must be obtained every time the state is
-///       replaced, and this function returns ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///       for an event that has not been enqueued for signaling yet.
+///     - When the device used to create the event reports
+///       ::ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC_BIDIRECTIONAL, IPC
+///       sharing is bi-directional. The event may be shared before it is
+///       enqueued for signaling for the first time, and the returned handle
+///       remains valid after the event state is replaced by a signal operation.
+///       It does not have to be obtained again.
+///     - Otherwise IPC sharing is one-directional. A handle represents the
+///       state captured at the time of this call. A new handle must be obtained
+///       every time the state is replaced, and this function returns
+///       ::ZE_RESULT_ERROR_INVALID_ARGUMENT for an event that has not been
+///       enqueued for signaling yet.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -6034,14 +6161,15 @@ zeEventCounterBasedGetIpcHandle(
 /// @brief Opens an IPC event handle to retrieve from another process.
 /// 
 /// @details
-///     - IPC sharing is bi-directional when the exported event was created with
-///       ::ZE_EVENT_COUNTER_BASED_FLAG_IPC_BIDIRECTIONAL. The opened event then
-///       refers to the same synchronization point as the event in the exporting
-///       process and may be used for waiting, querying and signaling. Without
-///       that flag the opened event holds the state captured when its handle
-///       was obtained, may be used only for waiting and querying, and must be
-///       opened again every time the state is replaced in the exporting
-///       process.
+///     - IPC sharing is bi-directional when the device used to create the
+///       exported event reports
+///       ::ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC_BIDIRECTIONAL. The
+///       opened event then refers to the same synchronization point as the
+///       event in the exporting process and may be used for waiting, querying
+///       and signaling. Otherwise the opened event holds the state captured
+///       when its handle was obtained, may be used only for waiting and
+///       querying, and must be opened again every time the state is replaced in
+///       the exporting process.
 ///     - With bi-directional sharing, the opened event remains valid after its
 ///       state is replaced by a signal operation performed in either process.
 ///       It does not have to be opened again, and both processes observe the
@@ -6085,7 +6213,7 @@ zeEventCounterBasedGetIpcHandle(
 ///         + `nullptr == phEvent`
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + the handle was exported by an event created with ::ZE_EVENT_COUNTER_BASED_FLAG_IPC_BIDIRECTIONAL and the implementation does not provide bi-directional IPC sharing
+///         + the handle was exported with bi-directional sharing and the implementation in the importing process does not provide bi-directional IPC sharing
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeEventCounterBasedOpenIpcHandle(
     ze_context_handle_t hContext,                                           ///< [in] handle of the context object to associate with the IPC event
@@ -8300,6 +8428,9 @@ typedef enum _ze_module_format_t
 {
     ZE_MODULE_FORMAT_IL_SPIRV = 0,                                          ///< Format is SPIRV IL format
     ZE_MODULE_FORMAT_NATIVE = 1,                                            ///< Format is device native format
+    ZE_MODULE_FORMAT_PISA = 2,                                              ///< Format is PISA assembly text, as defined by the Portable ISA (PISA)
+                                                                            ///< Specification
+    ZE_MODULE_FORMAT_OCLC = 3,                                              ///< Format is OpenCL C source
     ZE_MODULE_FORMAT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MODULE_FORMAT_* ENUMs
 
 } ze_module_format_t;
@@ -8324,10 +8455,12 @@ typedef struct _ze_module_desc_t
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     ze_module_format_t format;                                              ///< [in] Module format passed in with pInputModule
-    size_t inputSize;                                                       ///< [in] size of input IL or ISA from pInputModule.
-    const uint8_t* pInputModule;                                            ///< [in] pointer to IL or ISA
-    const char* pBuildFlags;                                                ///< [in][optional] string containing one or more (comma-separated)
-                                                                            ///< compiler flags. If unsupported, flag is ignored with a warning.
+    size_t inputSize;                                                       ///< [in] size in bytes of input pointed to by pInputModule
+    const uint8_t* pInputModule;                                            ///< [in] pointer to input in format as defined by format
+    const char* pBuildFlags;                                                ///< [in][optional] string containing one or more space-separated compiler
+                                                                            ///< flags. If unsupported, flag is ignored with a warning. For
+                                                                            ///< ::ZE_MODULE_FORMAT_OCLC, OpenCL C build options (e.g. "-D", "-cl-std")
+                                                                            ///< are also accepted.
                                                                             ///<  - "-ze-opt-disable"
                                                                             ///<       - Disable optimizations
                                                                             ///<  - "-ze-opt-level"
@@ -8401,7 +8534,7 @@ typedef struct _ze_command_list_append_launch_kernel_param_cooperative_desc_t
 ///         + `nullptr == desc->pInputModule`
 ///         + `nullptr == phModule`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZE_MODULE_FORMAT_NATIVE < desc->format`
+///         + `::ZE_MODULE_FORMAT_OCLC < desc->format`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ///     - ::ZE_RESULT_ERROR_INVALID_NATIVE_BINARY
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
@@ -10749,7 +10882,7 @@ zeKernelSetGlobalOffsetExp(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
-// [DEPRECATED] Intel 'oneAPI' Level-Zero Extension for supporting relaxed allocation limits. Use the standard `ZE_extension_relaxed_allocation_limits` extension instead.
+// Intel 'oneAPI' Level-Zero Extension for supporting relaxed allocation limits.
 #if !defined(__GNUC__)
 #pragma region relaxedAllocLimits
 #endif
@@ -10801,54 +10934,55 @@ typedef struct _ze_relaxed_allocation_limits_ext_desc_t
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME
-/// @brief [DEPRECATED] Relaxed Allocation Limits Extension Name. Use
-///        ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
+/// @brief [DEPRECATED since 1.17] Relaxed Allocation Limits Extension Name
+/// 
+/// @deprecated Since 1.17. Use ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
 #define ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME  "ZE_experimental_relaxed_allocation_limits"
 #endif // ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief [DEPRECATED] Relaxed Allocation Limits Extension Version(s). Use
-///        ::ze_relaxed_allocation_limits_ext_version_t instead.
+/// @brief [DEPRECATED since 1.17] Relaxed Allocation Limits Extension Version(s)
+/// 
+/// @deprecated Since 1.17. Use ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
 typedef enum _ze_relaxed_allocation_limits_exp_version_t
 {
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< [DEPRECATED] version 1.0
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
     ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
     ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_VERSION_* ENUMs
 
 } ze_relaxed_allocation_limits_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief [DEPRECATED] Supported relaxed memory allocation flags. Use
-///        ::ze_relaxed_allocation_limits_ext_flags_t instead.
+/// @brief [DEPRECATED since 1.17] Supported relaxed memory allocation flags
+/// 
+/// @deprecated Since 1.17. Use ::ze_relaxed_allocation_limits_ext_flags_t instead.
 typedef uint32_t ze_relaxed_allocation_limits_exp_flags_t;
 typedef enum _ze_relaxed_allocation_limits_exp_flag_t
 {
-    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_MAX_SIZE = ZE_BIT(0),             ///< [DEPRECATED] Allocation size may exceed the `maxMemAllocSize` member
-                                                                            ///< of ::ze_device_properties_t. Use
-                                                                            ///< ::ze_relaxed_allocation_limits_ext_flags_t MAX_SIZE instead.
+    ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_MAX_SIZE = ZE_BIT(0),             ///< Allocation size may exceed the `maxMemAllocSize` member of
+                                                                            ///< ::ze_device_properties_t.
     ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RELAXED_ALLOCATION_LIMITS_EXP_FLAG_* ENUMs
 
 } ze_relaxed_allocation_limits_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief [DEPRECATED] Relaxed limits memory allocation descriptor. Use
-///        ::ze_relaxed_allocation_limits_ext_desc_t instead.
+/// @brief [DEPRECATED since 1.17] Relaxed limits memory allocation descriptor
 /// 
 /// @details
-///     - [DEPRECATED] This structure may be passed to ::zeMemAllocShared or
+///     - This structure may be passed to ::zeMemAllocShared or
 ///       ::zeMemAllocDevice, via the `pNext` member of
-///       ::ze_device_mem_alloc_desc_t. Use
-///       ::ze_relaxed_allocation_limits_ext_desc_t instead.
-///     - [DEPRECATED] This structure may also be passed to ::zeMemAllocHost,
-///       via the `pNext` member of ::ze_host_mem_alloc_desc_t. Use
-///       ::ze_relaxed_allocation_limits_ext_desc_t instead.
+///       ::ze_device_mem_alloc_desc_t.
+///     - This structure may also be passed to ::zeMemAllocHost, via the `pNext`
+///       member of ::ze_host_mem_alloc_desc_t.
+/// 
+/// @deprecated Since 1.17. Use ::ze_relaxed_allocation_limits_ext_desc_t instead.
 typedef struct _ze_relaxed_allocation_limits_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
-    ze_relaxed_allocation_limits_exp_flags_t flags;                         ///< [in] [DEPRECATED] no longer supported, use
-                                                                            ///< ::ze_relaxed_allocation_limits_ext_desc_t instead
+    ze_relaxed_allocation_limits_exp_flags_t flags;                         ///< [in] flags specifying allocation limits to relax.
+                                                                            ///< must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
 
 } ze_relaxed_allocation_limits_exp_desc_t;
 
@@ -10879,12 +11013,12 @@ typedef enum _ze_cache_reservation_ext_version_t
 /// @brief Cache Reservation Region
 typedef enum _ze_cache_ext_region_t
 {
-    ZE_CACHE_EXT_REGION_ZE_CACHE_REGION_DEFAULT = 0,                        ///< [DEPRECATED] utilize driver default scheme. Use
-                                                                            ///< ::ZE_CACHE_EXT_REGION_DEFAULT.
-    ZE_CACHE_EXT_REGION_ZE_CACHE_RESERVE_REGION = 1,                        ///< [DEPRECATED] utilize reserved region. Use
-                                                                            ///< ::ZE_CACHE_EXT_REGION_RESERVED.
-    ZE_CACHE_EXT_REGION_ZE_CACHE_NON_RESERVED_REGION = 2,                   ///< [DEPRECATED] utilize non-reserverd region. Use
-                                                                            ///< ::ZE_CACHE_EXT_REGION_NON_RESERVED.
+    ZE_CACHE_EXT_REGION_ZE_CACHE_REGION_DEFAULT = 0,                        ///< [DEPRECATED since 1.7] utilize driver default scheme. Use
+                                                                            ///< ::ZE_CACHE_EXT_REGION_DEFAULT instead.
+    ZE_CACHE_EXT_REGION_ZE_CACHE_RESERVE_REGION = 1,                        ///< [DEPRECATED since 1.7] utilize reserved region. Use
+                                                                            ///< ::ZE_CACHE_EXT_REGION_RESERVED instead.
+    ZE_CACHE_EXT_REGION_ZE_CACHE_NON_RESERVED_REGION = 2,                   ///< [DEPRECATED since 1.7] utilize non-reserverd region. Use
+                                                                            ///< ::ZE_CACHE_EXT_REGION_NON_RESERVED instead.
     ZE_CACHE_EXT_REGION_DEFAULT = 0,                                        ///< utilize driver default scheme
     ZE_CACHE_EXT_REGION_RESERVED = 1,                                       ///< utilize reserved region
     ZE_CACHE_EXT_REGION_NON_RESERVED = 2,                                   ///< utilize non-reserverd region
@@ -11210,12 +11344,16 @@ zeImageViewCreateExt(
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_IMAGE_VIEW_EXP_NAME
-/// @brief Image View Extension Name
+/// @brief [DEPRECATED since 1.5] Image View Extension Name
+/// 
+/// @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_EXT_NAME instead.
 #define ZE_IMAGE_VIEW_EXP_NAME  "ZE_experimental_image_view"
 #endif // ZE_IMAGE_VIEW_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Image View Extension Version(s)
+/// @brief [DEPRECATED since 1.5] Image View Extension Version(s)
+/// 
+/// @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_EXT_NAME instead.
 typedef enum _ze_image_view_exp_version_t
 {
     ZE_IMAGE_VIEW_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                ///< version 1.0
@@ -11225,7 +11363,7 @@ typedef enum _ze_image_view_exp_version_t
 } ze_image_view_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Create image view on the context.
+/// @brief [DEPRECATED since 1.5] Create image view on the context.
 /// 
 /// @details
 ///     - The application must only use the image view for the device, or its
@@ -11239,8 +11377,8 @@ typedef enum _ze_image_view_exp_version_t
 ///     - Image views become disabled when their corresponding image resource is
 ///       destroyed.
 ///     - Use ::zeImageDestroy to destroy image view objects.
-///     - Note: This function is deprecated and replaced by
-///       ::zeImageViewCreateExt.
+/// 
+/// @deprecated Since 1.5. Use ::zeImageViewCreateExt instead.
 /// 
 /// @remarks
 ///   _Analogues_
@@ -11317,12 +11455,16 @@ typedef struct _ze_image_view_planar_ext_desc_t
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_IMAGE_VIEW_PLANAR_EXP_NAME
-/// @brief Image View Planar Extension Name
+/// @brief [DEPRECATED since 1.5] Image View Planar Extension Name
+/// 
+/// @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_PLANAR_EXT_NAME instead.
 #define ZE_IMAGE_VIEW_PLANAR_EXP_NAME  "ZE_experimental_image_view_planar"
 #endif // ZE_IMAGE_VIEW_PLANAR_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Image View Planar Extension Version(s)
+/// @brief [DEPRECATED since 1.5] Image View Planar Extension Version(s)
+/// 
+/// @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_PLANAR_EXT_NAME instead.
 typedef enum _ze_image_view_planar_exp_version_t
 {
     ZE_IMAGE_VIEW_PLANAR_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
@@ -11332,14 +11474,15 @@ typedef enum _ze_image_view_planar_exp_version_t
 } ze_image_view_planar_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Image view planar descriptor
+/// @brief [DEPRECATED since 1.5] Image view planar descriptor
+/// 
+/// @deprecated Since 1.5. Use ::ze_image_view_planar_ext_desc_t instead.
 typedef struct _ze_image_view_planar_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
-    uint32_t planeIndex;                                                    ///< [DEPRECATED] no longer supported, use
-                                                                            ///< ::ze_image_view_planar_ext_desc_t instead
+    uint32_t planeIndex;                                                    ///< [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
 
 } ze_image_view_planar_exp_desc_t;
 
@@ -12218,13 +12361,14 @@ typedef struct _ze_device_p2p_bandwidth_exp_properties_t
 } ze_device_p2p_bandwidth_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Copy Bandwidth Properties
+/// @brief [DEPRECATED since 1.14] Copy Bandwidth Properties
 /// 
 /// @details
 ///     - This structure may be passed to
 ///       ::zeDeviceGetCommandQueueGroupProperties by having the pNext member of
 ///       ::ze_command_queue_group_properties_t point at this struct.
-///     - [DEPRECATED]
+/// 
+/// @deprecated Since 1.14. No replacement.
 typedef struct _ze_copy_bandwidth_exp_properties_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -13093,17 +13237,24 @@ zeEventQueryKernelTimestampsExt(
 #pragma endregion
 #endif
 // Intel 'oneAPI' Level-Zero Extension for supporting ray tracing acceleration structure builder.
+// [DEPRECATED since 1.13] Use ::ZE_RTAS_EXT_NAME instead.
 #if !defined(__GNUC__)
 #pragma region RTASBuilder
 #endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_RTAS_BUILDER_EXP_NAME
-/// @brief Ray Tracing Acceleration Structure Builder Extension Name
+/// @brief [DEPRECATED since 1.13] Ray Tracing Acceleration Structure Builder
+///        Extension Name
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 #define ZE_RTAS_BUILDER_EXP_NAME  "ZE_experimental_rtas_builder"
 #endif // ZE_RTAS_BUILDER_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray Tracing Acceleration Structure Builder Extension Version(s)
+/// @brief [DEPRECATED since 1.13] Ray Tracing Acceleration Structure Builder
+///        Extension Version(s)
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef enum _ze_rtas_builder_exp_version_t
 {
     ZE_RTAS_BUILDER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),              ///< version 1.0
@@ -13113,7 +13264,10 @@ typedef enum _ze_rtas_builder_exp_version_t
 } ze_rtas_builder_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure device flags
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure device
+///        flags
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_device_ext_flags_t instead.
 typedef uint32_t ze_rtas_device_exp_flags_t;
 typedef enum _ze_rtas_device_exp_flag_t
 {
@@ -13123,11 +13277,13 @@ typedef enum _ze_rtas_device_exp_flag_t
 } ze_rtas_device_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure format
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure format
 /// 
 /// @details
 ///     - This is an opaque ray tracing acceleration structure format
 ///       identifier.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_format_ext_t instead.
 typedef enum _ze_rtas_format_exp_t
 {
     ZE_RTAS_FORMAT_EXP_INVALID = 0,                                         ///< Invalid acceleration structure format
@@ -13137,7 +13293,10 @@ typedef enum _ze_rtas_format_exp_t
 } ze_rtas_format_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder flags
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        flags
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_ext_flags_t instead.
 typedef uint32_t ze_rtas_builder_exp_flags_t;
 typedef enum _ze_rtas_builder_exp_flag_t
 {
@@ -13147,7 +13306,10 @@ typedef enum _ze_rtas_builder_exp_flag_t
 } ze_rtas_builder_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder parallel operation flags
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        parallel operation flags
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_parallel_operation_ext_flags_t instead.
 typedef uint32_t ze_rtas_parallel_operation_exp_flags_t;
 typedef enum _ze_rtas_parallel_operation_exp_flag_t
 {
@@ -13157,7 +13319,10 @@ typedef enum _ze_rtas_parallel_operation_exp_flag_t
 } ze_rtas_parallel_operation_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder geometry flags
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        geometry flags
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_geometry_ext_flags_t instead.
 typedef uint32_t ze_rtas_builder_geometry_exp_flags_t;
 typedef enum _ze_rtas_builder_geometry_exp_flag_t
 {
@@ -13167,12 +13332,17 @@ typedef enum _ze_rtas_builder_geometry_exp_flag_t
 } ze_rtas_builder_geometry_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Packed ray tracing acceleration structure builder geometry flags (see
-///        ::ze_rtas_builder_geometry_exp_flags_t)
+/// @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure
+///        builder geometry flags (see ::ze_rtas_builder_geometry_exp_flags_t)
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef uint8_t ze_rtas_builder_packed_geometry_exp_flags_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder instance flags
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        instance flags
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_instance_ext_flags_t instead.
 typedef uint32_t ze_rtas_builder_instance_exp_flags_t;
 typedef enum _ze_rtas_builder_instance_exp_flag_t
 {
@@ -13187,12 +13357,15 @@ typedef enum _ze_rtas_builder_instance_exp_flag_t
 } ze_rtas_builder_instance_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Packed ray tracing acceleration structure builder instance flags (see
-///        ::ze_rtas_builder_instance_exp_flags_t)
+/// @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure
+///        builder instance flags (see ::ze_rtas_builder_instance_exp_flags_t)
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef uint8_t ze_rtas_builder_packed_instance_exp_flags_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder build operation flags
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        build operation flags
 /// 
 /// @details
 ///     - These flags allow the application to tune the acceleration structure
@@ -13203,6 +13376,8 @@ typedef uint8_t ze_rtas_builder_packed_instance_exp_flags_t;
 ///       times for non-opaque primitives, unless
 ///       ::ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION is specified.
 ///     - Usage of any of these flags may reduce ray tracing performance.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_build_op_ext_flags_t instead.
 typedef uint32_t ze_rtas_builder_build_op_exp_flags_t;
 typedef enum _ze_rtas_builder_build_op_exp_flag_t
 {
@@ -13213,7 +13388,8 @@ typedef enum _ze_rtas_builder_build_op_exp_flag_t
 } ze_rtas_builder_build_op_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder build quality hint
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        build quality hint
 /// 
 /// @details
 ///     - Depending on use case different quality modes for acceleration
@@ -13226,6 +13402,8 @@ typedef enum _ze_rtas_builder_build_op_exp_flag_t
 ///     - Higher ray tracing performance can be achieved by using a high-quality
 ///       build, but acceleration structure build performance might be
 ///       significantly reduced.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_build_quality_hint_ext_t instead.
 typedef enum _ze_rtas_builder_build_quality_hint_exp_t
 {
     ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_LOW = 0,                         ///< build low-quality acceleration structure (fast)
@@ -13236,7 +13414,10 @@ typedef enum _ze_rtas_builder_build_quality_hint_exp_t
 } ze_rtas_builder_build_quality_hint_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder geometry type
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        geometry type
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_geometry_type_ext_t instead.
 typedef enum _ze_rtas_builder_geometry_type_exp_t
 {
     ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_TRIANGLES = 0,                        ///< triangle mesh geometry type
@@ -13248,17 +13429,22 @@ typedef enum _ze_rtas_builder_geometry_type_exp_t
 } ze_rtas_builder_geometry_type_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Packed ray tracing acceleration structure builder geometry type (see
-///        ::ze_rtas_builder_geometry_type_exp_t)
+/// @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure
+///        builder geometry type (see ::ze_rtas_builder_geometry_type_exp_t)
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef uint8_t ze_rtas_builder_packed_geometry_type_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure data buffer element format
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure data buffer
+///        element format
 /// 
 /// @details
 ///     - Specifies the format of data buffer elements.
 ///     - Data buffers may contain instancing transform matrices, triangle/quad
 ///       vertex indices, etc...
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_input_data_format_ext_t instead.
 typedef enum _ze_rtas_builder_input_data_format_exp_t
 {
     ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3 = 0,                       ///< 3-component float vector (see ::ze_rtas_float3_exp_t)
@@ -13277,21 +13463,31 @@ typedef enum _ze_rtas_builder_input_data_format_exp_t
 } ze_rtas_builder_input_data_format_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Packed ray tracing acceleration structure data buffer element format
-///        (see ::ze_rtas_builder_input_data_format_exp_t)
+/// @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure data
+///        buffer element format (see ::ze_rtas_builder_input_data_format_exp_t)
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef uint8_t ze_rtas_builder_packed_input_data_format_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Handle of ray tracing acceleration structure builder object
+/// @brief [DEPRECATED since 1.13] Handle of ray tracing acceleration structure
+///        builder object
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef struct _ze_rtas_builder_exp_handle_t *ze_rtas_builder_exp_handle_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Handle of ray tracing acceleration structure builder parallel
-///        operation object
+/// @brief [DEPRECATED since 1.13] Handle of ray tracing acceleration structure
+///        builder parallel operation object
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef struct _ze_rtas_parallel_operation_exp_handle_t *ze_rtas_parallel_operation_exp_handle_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder descriptor
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        descriptor
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_ext_desc_t instead.
 typedef struct _ze_rtas_builder_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -13302,7 +13498,10 @@ typedef struct _ze_rtas_builder_exp_desc_t
 } ze_rtas_builder_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder properties
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        properties
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_ext_properties_t instead.
 typedef struct _ze_rtas_builder_exp_properties_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -13322,8 +13521,10 @@ typedef struct _ze_rtas_builder_exp_properties_t
 } ze_rtas_builder_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder parallel operation
-///        properties
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        parallel operation properties
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_parallel_operation_ext_properties_t instead.
 typedef struct _ze_rtas_parallel_operation_exp_properties_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -13336,13 +13537,16 @@ typedef struct _ze_rtas_parallel_operation_exp_properties_t
 } ze_rtas_parallel_operation_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure device properties
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure device
+///        properties
 /// 
 /// @details
 ///     - This structure may be passed to ::zeDeviceGetProperties, via `pNext`
 ///       member of ::ze_device_properties_t.
 ///     - The implementation shall populate `format` with a value other than
 ///       ::ZE_RTAS_FORMAT_EXP_INVALID when the device supports ray tracing.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_device_ext_properties_t instead.
 typedef struct _ze_rtas_device_exp_properties_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -13355,7 +13559,9 @@ typedef struct _ze_rtas_device_exp_properties_t
 } ze_rtas_device_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief A 3-component vector type
+/// @brief [DEPRECATED since 1.13] A 3-component vector type
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_float3_ext_t instead.
 typedef struct _ze_rtas_float3_exp_t
 {
     float x;                                                                ///< [in] x-coordinate of float3 vector
@@ -13365,7 +13571,8 @@ typedef struct _ze_rtas_float3_exp_t
 } ze_rtas_float3_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief 3x4 affine transformation in column-major layout
+/// @brief [DEPRECATED since 1.13] 3x4 affine transformation in column-major
+///        layout
 /// 
 /// @details
 ///     - A 3x4 affine transformation in column major layout, consisting of vectors
@@ -13375,6 +13582,9 @@ typedef struct _ze_rtas_float3_exp_t
 ///          - p=(p_x, p_y, p_z)
 ///     - The transformation transforms a point (x, y, z) to: `x*vx + y*vy +
 ///       z*vz + p`.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_transform_float3x4_column_major_ext_t
+///             instead.
 typedef struct _ze_rtas_transform_float3x4_column_major_exp_t
 {
     float vx_x;                                                             ///< [in] element 0 of column 0 of 3x4 matrix
@@ -13393,8 +13603,8 @@ typedef struct _ze_rtas_transform_float3x4_column_major_exp_t
 } ze_rtas_transform_float3x4_column_major_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief 3x4 affine transformation in column-major layout with aligned column
-///        vectors
+/// @brief [DEPRECATED since 1.13] 3x4 affine transformation in column-major
+///        layout with aligned column vectors
 /// 
 /// @details
 ///     - A 3x4 affine transformation in column major layout, consisting of vectors
@@ -13406,6 +13616,9 @@ typedef struct _ze_rtas_transform_float3x4_column_major_exp_t
 ///       z*vz + p`.
 ///     - The column vectors are aligned to 16-bytes and pad members are
 ///       ignored.
+/// 
+/// @deprecated Since 1.13. Use
+///             ::ze_rtas_transform_float3x4_aligned_column_major_ext_t instead.
 typedef struct _ze_rtas_transform_float3x4_aligned_column_major_exp_t
 {
     float vx_x;                                                             ///< [in] element 0 of column 0 of 3x4 matrix
@@ -13428,7 +13641,7 @@ typedef struct _ze_rtas_transform_float3x4_aligned_column_major_exp_t
 } ze_rtas_transform_float3x4_aligned_column_major_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief 3x4 affine transformation in row-major layout
+/// @brief [DEPRECATED since 1.13] 3x4 affine transformation in row-major layout
 /// 
 /// @details
 ///     - A 3x4 affine transformation in row-major layout, consisting of vectors
@@ -13438,6 +13651,8 @@ typedef struct _ze_rtas_transform_float3x4_aligned_column_major_exp_t
 ///          - p=(p_x, p_y, p_z)
 ///     - The transformation transforms a point (x, y, z) to: `x*vx + y*vy +
 ///       z*vz + p`.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_transform_float3x4_row_major_ext_t instead.
 typedef struct _ze_rtas_transform_float3x4_row_major_exp_t
 {
     float vx_x;                                                             ///< [in] element 0 of row 0 of 3x4 matrix
@@ -13456,8 +13671,10 @@ typedef struct _ze_rtas_transform_float3x4_row_major_exp_t
 } ze_rtas_transform_float3x4_row_major_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief A 3-dimensional axis-aligned bounding-box with lower and upper bounds
-///        in each dimension
+/// @brief [DEPRECATED since 1.13] A 3-dimensional axis-aligned bounding-box with
+///        lower and upper bounds in each dimension
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_aabb_ext_t instead.
 typedef struct _ze_rtas_aabb_exp_t
 {
     ze_rtas_float3_exp_t lower;                                             ///< [in] lower bounds of AABB
@@ -13466,7 +13683,7 @@ typedef struct _ze_rtas_aabb_exp_t
 } ze_rtas_aabb_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Triangle represented using 3 vertex indices
+/// @brief [DEPRECATED since 1.13] Triangle represented using 3 vertex indices
 /// 
 /// @details
 ///     - Represents a triangle using 3 vertex indices that index into a vertex
@@ -13475,6 +13692,8 @@ typedef struct _ze_rtas_aabb_exp_t
 ///          - (u=0, v=0) at v0,
 ///          - (u=1, v=0) at v1, and
 ///          - (u=0, v=1) at v2
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_triangle_indices_uint32_ext_t instead.
 typedef struct _ze_rtas_triangle_indices_uint32_exp_t
 {
     uint32_t v0;                                                            ///< [in] first index pointing to the first triangle vertex in vertex array
@@ -13485,7 +13704,7 @@ typedef struct _ze_rtas_triangle_indices_uint32_exp_t
 } ze_rtas_triangle_indices_uint32_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Quad represented using 4 vertex indices
+/// @brief [DEPRECATED since 1.13] Quad represented using 4 vertex indices
 /// 
 /// @details
 ///     - Represents a quad composed of 4 indices that index into a vertex array
@@ -13502,6 +13721,8 @@ typedef struct _ze_rtas_triangle_indices_uint32_exp_t
 ///       This is achieved by correcting the u'/v' coordinates of the second
 ///       triangle by
 ///       *u = 1-u'* and *v = 1-v'*, yielding a piecewise linear parametrization.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_quad_indices_uint32_ext_t instead.
 typedef struct _ze_rtas_quad_indices_uint32_exp_t
 {
     uint32_t v0;                                                            ///< [in] first index pointing to the first quad vertex in vertex array
@@ -13512,7 +13733,10 @@ typedef struct _ze_rtas_quad_indices_uint32_exp_t
 } ze_rtas_quad_indices_uint32_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder geometry info
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        geometry info
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_geometry_info_ext_t instead.
 typedef struct _ze_rtas_builder_geometry_info_exp_t
 {
     ze_rtas_builder_packed_geometry_type_exp_t geometryType;                ///< [in] geometry type
@@ -13520,13 +13744,17 @@ typedef struct _ze_rtas_builder_geometry_info_exp_t
 } ze_rtas_builder_geometry_info_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder triangle mesh geometry info
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        triangle mesh geometry info
 /// 
 /// @details
 ///     - The linear barycentric u/v parametrization of the triangle is defined as:
 ///          - (u=0, v=0) at v0,
 ///          - (u=1, v=0) at v1, and
 ///          - (u=0, v=1) at v2
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_triangles_geometry_info_ext_t
+///             instead.
 typedef struct _ze_rtas_builder_triangles_geometry_info_exp_t
 {
     ze_rtas_builder_packed_geometry_type_exp_t geometryType;                ///< [in] geometry type, must be
@@ -13549,7 +13777,8 @@ typedef struct _ze_rtas_builder_triangles_geometry_info_exp_t
 } ze_rtas_builder_triangles_geometry_info_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder quad mesh geometry info
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        quad mesh geometry info
 /// 
 /// @details
 ///     - A quad is a triangle pair represented using 4 vertex indices v0, v1,
@@ -13564,6 +13793,8 @@ typedef struct _ze_rtas_builder_triangles_geometry_info_exp_t
 ///       This is achieved by correcting the u'/v' coordinates of the second
 ///       triangle by
 ///       *u = 1-u'* and *v = 1-v'*, yielding a piecewise linear parametrization.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_quads_geometry_info_ext_t instead.
 typedef struct _ze_rtas_builder_quads_geometry_info_exp_t
 {
     ze_rtas_builder_packed_geometry_type_exp_t geometryType;                ///< [in] geometry type, must be ::ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_QUADS
@@ -13585,7 +13816,9 @@ typedef struct _ze_rtas_builder_quads_geometry_info_exp_t
 } ze_rtas_builder_quads_geometry_info_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief AABB callback function parameters
+/// @brief [DEPRECATED since 1.13] AABB callback function parameters
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_geometry_aabbs_ext_cb_params_t instead.
 typedef struct _ze_rtas_geometry_aabbs_exp_cb_params_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -13600,15 +13833,17 @@ typedef struct _ze_rtas_geometry_aabbs_exp_cb_params_t
 } ze_rtas_geometry_aabbs_exp_cb_params_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function pointer type to return AABBs for a range of
-///        procedural primitives
+/// @brief [DEPRECATED since 1.13] Callback function pointer type to return AABBs
+///        for a range of procedural primitives
+/// 
+/// @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 typedef void (*ze_rtas_geometry_aabbs_cb_exp_t)(
         ze_rtas_geometry_aabbs_exp_cb_params_t* params                          ///< [in] callback function parameters structure
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder procedural primitives
-///        geometry info
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        procedural primitives geometry info
 /// 
 /// @details
 ///     - A host-side bounds callback function is invoked by the acceleration
@@ -13620,6 +13855,9 @@ typedef void (*ze_rtas_geometry_aabbs_cb_exp_t)(
 ///       build to change the bounds of the procedural geometry, for example, to
 ///       build a BVH only over a short time range to implement multi-segment
 ///       motion blur.
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_procedural_geometry_info_ext_t
+///             instead.
 typedef struct _ze_rtas_builder_procedural_geometry_info_exp_t
 {
     ze_rtas_builder_packed_geometry_type_exp_t geometryType;                ///< [in] geometry type, must be
@@ -13637,7 +13875,11 @@ typedef struct _ze_rtas_builder_procedural_geometry_info_exp_t
 } ze_rtas_builder_procedural_geometry_info_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Ray tracing acceleration structure builder instance geometry info
+/// @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+///        instance geometry info
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_instance_geometry_info_ext_t
+///             instead.
 typedef struct _ze_rtas_builder_instance_geometry_info_exp_t
 {
     ze_rtas_builder_packed_geometry_type_exp_t geometryType;                ///< [in] geometry type, must be
@@ -13656,7 +13898,9 @@ typedef struct _ze_rtas_builder_instance_geometry_info_exp_t
 } ze_rtas_builder_instance_geometry_info_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief 
+/// @brief [DEPRECATED since 1.13] 
+/// 
+/// @deprecated Since 1.13. Use ::ze_rtas_builder_build_op_ext_desc_t instead.
 typedef struct _ze_rtas_builder_build_op_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -13674,12 +13918,15 @@ typedef struct _ze_rtas_builder_build_op_exp_desc_t
 } ze_rtas_builder_build_op_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Creates a ray tracing acceleration structure builder object
+/// @brief [DEPRECATED since 1.13] Creates a ray tracing acceleration structure
+///        builder object
 /// 
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 ///     - The implementation must support ::ZE_RTAS_BUILDER_EXP_NAME extension.
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASBuilderCreateExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -13711,11 +13958,14 @@ zeRTASBuilderCreateExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Retrieves ray tracing acceleration structure builder properties
+/// @brief [DEPRECATED since 1.13] Retrieves ray tracing acceleration structure
+///        builder properties
 /// 
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASBuilderGetBuildPropertiesExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -13749,11 +13999,14 @@ zeRTASBuilderGetBuildPropertiesExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Checks ray tracing acceleration structure format compatibility
+/// @brief [DEPRECATED since 1.13] Checks ray tracing acceleration structure
+///        format compatibility
 /// 
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
+/// 
+/// @deprecated Since 1.13. Use ::zeDriverRTASFormatCompatibilityCheckExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
@@ -13786,7 +14039,7 @@ zeDriverRTASFormatCompatibilityCheckExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Build ray tracing acceleration structure
+/// @brief [DEPRECATED since 1.13] Build ray tracing acceleration structure
 /// 
 /// @details
 ///     - This function builds an acceleration structure of the scene consisting
@@ -13834,6 +14087,8 @@ zeDriverRTASFormatCompatibilityCheckExp(
 ///       sequentially on the current thread."
 ///        - "A parallel operation object may only be associated with a single
 ///       acceleration structure build at a time."
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASBuilderBuildExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -13884,7 +14139,8 @@ zeRTASBuilderBuildExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Destroys a ray tracing acceleration structure builder object
+/// @brief [DEPRECATED since 1.13] Destroys a ray tracing acceleration structure
+///        builder object
 /// 
 /// @details
 ///     - The implementation of this function may immediately release any
@@ -13892,6 +14148,8 @@ zeRTASBuilderBuildExp(
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same builder handle.
 ///     - The implementation of this function must be thread-safe.
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASBuilderDestroyExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -13916,13 +14174,15 @@ zeRTASBuilderDestroyExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Creates a ray tracing acceleration structure builder parallel
-///        operation object
+/// @brief [DEPRECATED since 1.13] Creates a ray tracing acceleration structure
+///        builder parallel operation object
 /// 
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 ///     - The implementation must support ::ZE_RTAS_BUILDER_EXP_NAME extension.
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASParallelOperationCreateExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -13949,8 +14209,8 @@ zeRTASParallelOperationCreateExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Retrieves ray tracing acceleration structure builder parallel
-///        operation properties
+/// @brief [DEPRECATED since 1.13] Retrieves ray tracing acceleration structure
+///        builder parallel operation properties
 /// 
 /// @details
 ///     - The application must first bind the parallel operation object to a
@@ -13960,6 +14220,8 @@ zeRTASParallelOperationCreateExp(
 ///       this function.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASParallelOperationGetPropertiesExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -13986,11 +14248,13 @@ zeRTASParallelOperationGetPropertiesExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Joins a parallel build operation
+/// @brief [DEPRECATED since 1.13] Joins a parallel build operation
 /// 
 /// @details
 ///     - All worker threads return the same error code for the parallel build
 ///       operation upon build completion
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASParallelOperationJoinExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14014,8 +14278,8 @@ zeRTASParallelOperationJoinExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Destroys a ray tracing acceleration structure builder parallel
-///        operation object
+/// @brief [DEPRECATED since 1.13] Destroys a ray tracing acceleration structure
+///        builder parallel operation object
 /// 
 /// @details
 ///     - The implementation of this function may immediately release any
@@ -14024,6 +14288,8 @@ zeRTASParallelOperationJoinExp(
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same parallel operation handle.
 ///     - The implementation of this function must be thread-safe.
+/// 
+/// @deprecated Since 1.13. Use ::zeRTASParallelOperationDestroyExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14049,18 +14315,23 @@ zeRTASParallelOperationDestroyExp(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
-// Intel 'oneAPI' Level-Zero Extension APIs for Counter-based Event Pools. @deprecated since 1.15
+// Intel 'oneAPI' Level-Zero Extension APIs for Counter-based Event Pools.
+// [DEPRECATED since 1.15] Use ::zeEventCounterBasedCreate instead.
 #if !defined(__GNUC__)
 #pragma region counterbasedeventpool
 #endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME
-/// @brief Counter-based Event Pools Extension Name
+/// @brief [DEPRECATED since 1.15] Counter-based Event Pools Extension Name
+/// 
+/// @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 #define ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME  "ZE_experimental_event_pool_counter_based"
 #endif // ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Counter-based Event Pools Extension Version(s)
+/// @brief [DEPRECATED since 1.15] Counter-based Event Pools Extension Version(s)
+/// 
+/// @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 typedef enum _ze_event_pool_counter_based_exp_version_t
 {
     ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
@@ -14070,7 +14341,10 @@ typedef enum _ze_event_pool_counter_based_exp_version_t
 } ze_event_pool_counter_based_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Supported event flags for defining counter-based event pools.
+/// @brief [DEPRECATED since 1.15] Supported event flags for defining
+///        counter-based event pools.
+/// 
+/// @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 typedef uint32_t ze_event_pool_counter_based_exp_flags_t;
 typedef enum _ze_event_pool_counter_based_exp_flag_t
 {
@@ -14081,9 +14355,11 @@ typedef enum _ze_event_pool_counter_based_exp_flag_t
 } ze_event_pool_counter_based_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Event pool descriptor for counter-based events. This structure may be
-///        passed to ::zeEventPoolCreate as pNext member of
-///        ::ze_event_pool_desc_t. @deprecated since 1.15
+/// @brief [DEPRECATED since 1.15] Event pool descriptor for counter-based
+///        events. This structure may be passed to ::zeEventPoolCreate as pNext
+///        member of ::ze_event_pool_desc_t.
+/// 
+/// @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 typedef struct _ze_event_pool_counter_based_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14295,17 +14571,24 @@ typedef struct _ze_custom_pitch_exp_desc_t
 #pragma endregion
 #endif
 // Intel 'oneAPI' Level-Zero Extension for supporting compute graphs.
+// [DEPRECATED since 1.17] Mutable command lists replace command list cloning. Use ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 #if !defined(__GNUC__)
 #pragma region commandListClone
 #endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_COMMAND_LIST_CLONE_EXP_NAME
-/// @brief Command List Clone Extension Name
+/// @brief [DEPRECATED since 1.17] Command List Clone Extension Name
+/// 
+/// @deprecated Since 1.17. Mutable command lists replace command list cloning. Use
+///             ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 #define ZE_COMMAND_LIST_CLONE_EXP_NAME  "ZE_experimental_command_list_clone"
 #endif // ZE_COMMAND_LIST_CLONE_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Command List Clone Extension Version(s)
+/// @brief [DEPRECATED since 1.17] Command List Clone Extension Version(s)
+/// 
+/// @deprecated Since 1.17. Mutable command lists replace command list cloning. Use
+///             ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 typedef enum _ze_command_list_clone_exp_version_t
 {
     ZE_COMMAND_LIST_CLONE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
@@ -14315,10 +14598,10 @@ typedef enum _ze_command_list_clone_exp_version_t
 } ze_command_list_clone_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Creates a command list as the clone of another command list.
+/// @brief [DEPRECATED since 1.17] Creates a command list as the clone of another
+///        command list.
 /// 
 /// @details
-///     - @deprecated since 1.17
 ///     - The source command list must be created with the
 ///       ::ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE flag.
 ///     - The source command list must be closed prior to cloning.
@@ -14332,6 +14615,9 @@ typedef enum _ze_command_list_clone_exp_version_t
 ///       sub-devices, which was provided during creation.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
+/// 
+/// @deprecated Since 1.17. Mutable command lists replace command list cloning. Use
+///             ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14366,12 +14652,19 @@ zeCommandListCreateCloneExp(
 #endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_NAME
-/// @brief Immediate Command List Append Extension Name
+/// @brief [DEPRECATED since 1.16] Immediate Command List Append Extension Name
+/// 
+/// @deprecated Since 1.16. Use
+///             ::zeCommandListImmediateAppendCommandListsWithParameters instead.
 #define ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_NAME  "ZE_experimental_immediate_command_list_append"
 #endif // ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Immediate Command List Append Extension Version(s)
+/// @brief [DEPRECATED since 1.16] Immediate Command List Append Extension
+///        Version(s)
+/// 
+/// @deprecated Since 1.16. Use
+///             ::zeCommandListImmediateAppendCommandListsWithParameters instead.
 typedef enum _ze_immediate_command_list_append_exp_version_t
 {
     ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
@@ -14381,18 +14674,33 @@ typedef enum _ze_immediate_command_list_append_exp_version_t
 } ze_immediate_command_list_append_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Appends command lists to dispatch from an immediate command list.
+/// @brief [DEPRECATED since 1.16] Appends command lists to dispatch from an
+///        immediate command list.
 /// 
 /// @details
-///     - @deprecated since 1.16. Please use
-///       ::zeCommandListImmediateAppendCommandListsWithParameters.
 ///     - The application must call this function only with command lists
 ///       created with ::zeCommandListCreateImmediate.
 ///     - The command lists passed to this function in the `phCommandLists`
 ///       argument must be regular command lists (i.e. not immediate command
 ///       lists).
-///     - The application may call this function from simultaneous threads.
+///     - The application must not call this function from simultaneous threads
+///       with the same immediate command list handle.
+///     - The command lists are submitted to the device in the order they are
+///       received by the driver, whether from multiple calls (on the same or
+///       different threads) or a single call with multiple command lists.
+///     - The application must ensure the command lists are accessible by the
+///       device on which the immediate command list was created.
+///     - The application must ensure the device is not currently referencing
+///       the appended command list since the implementation is allowed to
+///       modify the contents of the command list for submission.
+///     - The application must only append command lists created with an
+///       identical command queue group ordinal to the immediate command list.
+///     - The application must ensure the immediate command list, command lists
+///       and events were created on the same context.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.16. Use
+///             ::zeCommandListImmediateAppendCommandListsWithParameters instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14422,8 +14730,8 @@ zeCommandListImmediateAppendCommandListsExp(
                                                                             ///< appended command lists
     uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before executing appended
                                                                             ///< command lists; must be 0 if nullptr == phWaitEvents
-    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                                            ///< on before executing appended command lists.
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                                            ///< before executing appended command lists.
                                                                             ///<    - if not null, all wait events must be satisfied prior to the start
                                                                             ///< of any appended command list(s)
     );
@@ -14438,7 +14746,20 @@ zeCommandListImmediateAppendCommandListsExp(
 ///     - The command lists passed to this function in the `phCommandLists`
 ///       argument must be regular command lists (i.e. not immediate command
 ///       lists).
-///     - The application may call this function from simultaneous threads.
+///     - The application must not call this function from simultaneous threads
+///       with the same immediate command list handle.
+///     - The command lists are submitted to the device in the order they are
+///       received by the driver, whether from multiple calls (on the same or
+///       different threads) or a single call with multiple command lists.
+///     - The application must ensure the command lists are accessible by the
+///       device on which the immediate command list was created.
+///     - The application must ensure the device is not currently referencing
+///       the appended command list since the implementation is allowed to
+///       modify the contents of the command list for submission.
+///     - The application must only append command lists created with an
+///       identical command queue group ordinal to the immediate command list.
+///     - The application must ensure the immediate command list, command lists
+///       and events were created on the same context.
 ///     - The implementation of this function should be lock-free.
 /// 
 /// @returns
@@ -14471,8 +14792,8 @@ zeCommandListImmediateAppendCommandListsWithParameters(
                                                                             ///< appended command lists
     uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before executing appended
                                                                             ///< command lists; must be 0 if nullptr == phWaitEvents
-    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                                            ///< on before executing appended command lists.
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                                            ///< before executing appended command lists.
                                                                             ///<    - if not null, all wait events must be satisfied prior to the start
                                                                             ///< of any appended command list(s)
     );
@@ -14481,17 +14802,22 @@ zeCommandListImmediateAppendCommandListsWithParameters(
 #pragma endregion
 #endif
 // Intel 'oneAPI' Level-Zero Extension for supporting compute graphs with dynamic properties.
+// [DEPRECATED since 1.20] Use ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 #if !defined(__GNUC__)
-#pragma region mutableCommandList
+#pragma region mutableCommandListExp
 #endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MUTABLE_COMMAND_LIST_EXP_NAME
-/// @brief Mutable Command List Extension Name
+/// @brief [DEPRECATED since 1.20] Mutable Command List Extension Name
+/// 
+/// @deprecated Since 1.20. Use ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 #define ZE_MUTABLE_COMMAND_LIST_EXP_NAME  "ZE_experimental_mutable_command_list"
 #endif // ZE_MUTABLE_COMMAND_LIST_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable Command List Extension Version(s)
+/// @brief [DEPRECATED since 1.20] Mutable Command List Extension Version(s)
+/// 
+/// @deprecated Since 1.20. Use ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 typedef enum _ze_mutable_command_list_exp_version_t
 {
     ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
@@ -14502,7 +14828,9 @@ typedef enum _ze_mutable_command_list_exp_version_t
 } ze_mutable_command_list_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command flags
+/// @brief [DEPRECATED since 1.20] Mutable command flags
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_command_ext_flags_t instead.
 typedef uint32_t ze_mutable_command_exp_flags_t;
 typedef enum _ze_mutable_command_exp_flag_t
 {
@@ -14519,7 +14847,9 @@ typedef enum _ze_mutable_command_exp_flag_t
 } ze_mutable_command_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command identifier descriptor
+/// @brief [DEPRECATED since 1.20] Mutable command identifier descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_command_id_ext_desc_t instead.
 typedef struct _ze_mutable_command_id_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14534,7 +14864,9 @@ typedef struct _ze_mutable_command_id_exp_desc_t
 } ze_mutable_command_id_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command list flags
+/// @brief [DEPRECATED since 1.20] Mutable command list flags
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_command_list_ext_flags_t instead.
 typedef uint32_t ze_mutable_command_list_exp_flags_t;
 typedef enum _ze_mutable_command_list_exp_flag_t
 {
@@ -14544,7 +14876,9 @@ typedef enum _ze_mutable_command_list_exp_flag_t
 } ze_mutable_command_list_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command list properties
+/// @brief [DEPRECATED since 1.20] Mutable command list properties
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_command_list_ext_properties_t instead.
 typedef struct _ze_mutable_command_list_exp_properties_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14556,7 +14890,9 @@ typedef struct _ze_mutable_command_list_exp_properties_t
 } ze_mutable_command_list_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command list descriptor
+/// @brief [DEPRECATED since 1.20] Mutable command list descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_command_list_ext_desc_t instead.
 typedef struct _ze_mutable_command_list_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14568,7 +14904,9 @@ typedef struct _ze_mutable_command_list_exp_desc_t
 } ze_mutable_command_list_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable commands descriptor
+/// @brief [DEPRECATED since 1.20] Mutable commands descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_commands_ext_desc_t instead.
 typedef struct _ze_mutable_commands_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14579,7 +14917,9 @@ typedef struct _ze_mutable_commands_exp_desc_t
 } ze_mutable_commands_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel argument descriptor
+/// @brief [DEPRECATED since 1.20] Mutable kernel argument descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_kernel_argument_ext_desc_t instead.
 typedef struct _ze_mutable_kernel_argument_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14593,7 +14933,9 @@ typedef struct _ze_mutable_kernel_argument_exp_desc_t
 } ze_mutable_kernel_argument_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel group count descriptor
+/// @brief [DEPRECATED since 1.20] Mutable kernel group count descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_group_count_ext_desc_t instead.
 typedef struct _ze_mutable_group_count_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14605,7 +14947,9 @@ typedef struct _ze_mutable_group_count_exp_desc_t
 } ze_mutable_group_count_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel group size descriptor
+/// @brief [DEPRECATED since 1.20] Mutable kernel group size descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_group_size_ext_desc_t instead.
 typedef struct _ze_mutable_group_size_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14619,7 +14963,9 @@ typedef struct _ze_mutable_group_size_exp_desc_t
 } ze_mutable_group_size_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel global offset descriptor
+/// @brief [DEPRECATED since 1.20] Mutable kernel global offset descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_global_offset_ext_desc_t instead.
 typedef struct _ze_mutable_global_offset_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14633,7 +14979,9 @@ typedef struct _ze_mutable_global_offset_exp_desc_t
 } ze_mutable_global_offset_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable graph argument descriptor
+/// @brief [DEPRECATED since 1.20] Mutable graph argument descriptor
+/// 
+/// @deprecated Since 1.20. Use ::ze_mutable_graph_argument_ext_desc_t instead.
 typedef struct _ze_mutable_graph_argument_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -14646,8 +14994,8 @@ typedef struct _ze_mutable_graph_argument_exp_desc_t
 } ze_mutable_graph_argument_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Returns a unique command identifier for the next command to be
-///        appended to a command list.
+/// @brief [DEPRECATED since 1.20] Returns a unique command identifier for the
+///        next command to be appended to a command list.
 /// 
 /// @details
 ///     - This function may only be called for a mutable command list.
@@ -14655,6 +15003,8 @@ typedef struct _ze_mutable_graph_argument_exp_desc_t
 ///     - This function may be called from simultaneous threads with the same
 ///       command list handle.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.20. Use ::zeCommandListGetNextCommandIdExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14686,10 +15036,10 @@ zeCommandListGetNextCommandIdExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Returns a unique command identifier for the next command to be
-///        appended to a command list. Provides possible kernel handles for
-///        kernel mutation when ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION
-///        flag is present.
+/// @brief [DEPRECATED since 1.20] Returns a unique command identifier for the
+///        next command to be appended to a command list. Provides possible
+///        kernel handles for kernel mutation when
+///        ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION flag is present.
 /// 
 /// @details
 ///     - This function may only be called for a mutable command list.
@@ -14697,6 +15047,8 @@ zeCommandListGetNextCommandIdExp(
 ///     - This function may be called from simultaneous threads with the same
 ///       command list handle.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.20. Use ::zeCommandListGetNextCommandIdWithKernelsExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14732,7 +15084,7 @@ zeCommandListGetNextCommandIdWithKernelsExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates mutable commands.
+/// @brief [DEPRECATED since 1.20] Updates mutable commands.
 /// 
 /// @details
 ///     - This function may only be called for a mutable command list.
@@ -14743,6 +15095,8 @@ zeCommandListGetNextCommandIdWithKernelsExp(
 ///     - This function must not be called from simultaneous threads with the
 ///       same command list handle.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.20. Use ::zeCommandListUpdateMutableCommandsExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14771,12 +15125,14 @@ zeCommandListUpdateMutableCommandsExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Query whether a command list was created with the mutable command list
-///        extension.
+/// @brief [DEPRECATED since 1.20] Query whether a command list was created with
+///        the mutable command list extension.
 /// 
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.20. Use ::zeCommandListIsMutableExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14804,8 +15160,8 @@ zeCommandListIsMutableExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the signal event for a mutable command in a mutable command
-///        list.
+/// @brief [DEPRECATED since 1.20] Updates the signal event for a mutable command
+///        in a mutable command list.
 /// 
 /// @details
 ///     - This function may only be called for a mutable command list.
@@ -14818,6 +15174,9 @@ zeCommandListIsMutableExp(
 ///     - This function must not be called from simultaneous threads with the
 ///       same command list handle.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.20. Use ::zeCommandListUpdateMutableCommandSignalEventExt
+///             instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14843,8 +15202,8 @@ zeCommandListUpdateMutableCommandSignalEventExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the wait events for a mutable command in a mutable command
-///        list.
+/// @brief [DEPRECATED since 1.20] Updates the wait events for a mutable command
+///        in a mutable command list.
 /// 
 /// @details
 ///     - This function may only be called for a mutable command list.
@@ -14862,6 +15221,9 @@ zeCommandListUpdateMutableCommandSignalEventExp(
 ///     - This function must not be called from simultaneous threads with the
 ///       same command list handle.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.20. Use ::zeCommandListUpdateMutableCommandWaitEventsExt
+///             instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -14891,7 +15253,8 @@ zeCommandListUpdateMutableCommandWaitEventsExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the kernel for a mutable command in a mutable command list.
+/// @brief [DEPRECATED since 1.20] Updates the kernel for a mutable command in a
+///        mutable command list.
 /// 
 /// @details
 ///     - This function may only be called for a mutable command list.
@@ -14905,6 +15268,8 @@ zeCommandListUpdateMutableCommandWaitEventsExp(
 ///     - This function must be called before updating kernel arguments and
 ///       dispatch parameters, when kernel is mutated.
 ///     - The implementation of this function should be lock-free.
+/// 
+/// @deprecated Since 1.20. Use ::zeCommandListUpdateMutableCommandKernelsExt instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -15076,7 +15441,8 @@ typedef struct _ze_driver_ddi_handles_ext_properties_t
 typedef enum _ze_external_semaphore_ext_version_t
 {
     ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
-    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
+    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),        ///< version 1.1
+    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 1 ),    ///< latest known version
     ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_* ENUMs
 
 } ze_external_semaphore_ext_version_t;
@@ -15337,6 +15703,118 @@ zeCommandListAppendWaitExternalSemaphoreExt(
                                                                             ///< if `nullptr == phWaitEvents`
     ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
                                                                             ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Signal an external semaphore on a command queue
+/// 
+/// @details
+///     - Signals an external semaphore.
+///     - The signal is ordered against the command lists submitted to the same
+///       command queue, and is honoured when the command queue reaches this
+///       point in its submission order.
+///     - Unlike ::zeCommandListAppendSignalExternalSemaphoreExt, the value is
+///       taken at submission rather than when the operation is appended, so a
+///       command list recorded once may be replayed with
+///       ::zeCommandQueueExecuteCommandLists against a different value each
+///       time.
+///     - This function may be called from simultaneous threads with the same
+///       command queue handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSemaphores`
+///         + `nullptr == signalParams`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(nullptr == phSemaphores) && (0 < numSemaphores)`
+///         + `(nullptr == signalParams) && (0 < numSemaphores)`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandQueueSignalExternalSemaphoreExt(
+    ze_command_queue_handle_t hCommandQueue,                                ///< [in] The command queue handle.
+    uint32_t numSemaphores,                                                 ///< [in] The number of external semaphores.
+    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore handles to be signaled by the command queue.
+    ze_external_semaphore_signal_params_ext_t* signalParams,                ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore signal parameters.
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before signaling; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before signaling
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Wait on external semaphores on a command queue
+/// 
+/// @details
+///     - Waits on external semaphores.
+///     - The wait is ordered against the command lists submitted to the same
+///       command queue, and blocks execution of subsequent submissions until
+///       the semaphores reach the requested values.
+///     - Unlike ::zeCommandListAppendWaitExternalSemaphoreExt, the value is
+///       taken at submission rather than when the operation is appended, so a
+///       command list recorded once may be replayed with
+///       ::zeCommandQueueExecuteCommandLists against a different value each
+///       time.
+///     - This function may be called from simultaneous threads with the same
+///       command queue handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSemaphores`
+///         + `nullptr == waitParams`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(nullptr == phSemaphores) && (0 < numSemaphores)`
+///         + `(nullptr == waitParams) && (0 < numSemaphores)`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandQueueWaitExternalSemaphoreExt(
+    ze_command_queue_handle_t hCommandQueue,                                ///< [in] The command queue handle.
+    uint32_t numSemaphores,                                                 ///< [in] The number of external semaphores.
+    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore handles to be waited on by the command queue.
+    ze_external_semaphore_wait_params_ext_t* waitParams,                    ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                                            ///< semaphore wait parameters.
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before waiting; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before waiting
     );
 
 #if !defined(__GNUC__)
@@ -16865,8 +17343,8 @@ typedef enum _ze_record_replay_graph_ext_flag_t
     ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_SUBGRAPHS = ZE_BIT(2),                  ///< Supports appending a subgraph into a graph
     ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_APPEND_COMMANDLIST = ZE_BIT(3),         ///< Supports appending a command list into a graph
     ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_CB_EXTERNAL_IPC = ZE_BIT(4),            ///< Supports waiting/signaling events that were created with both
-                                                                            ///< ZEX_COUNTER_BASED_EVENT_FLAG_IPC and
-                                                                            ///< ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL
+                                                                            ///< ZE_EVENT_COUNTER_BASED_FLAG_IPC and
+                                                                            ///< ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL
     ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_* ENUMs
 
 } ze_record_replay_graph_ext_flag_t;
@@ -16893,6 +17371,8 @@ typedef enum _ze_record_replay_graph_ext_dump_mode_t
 {
     ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_DETAILED = 0x0,                    ///< detailed mode (default)
     ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_SIMPLE = 0x1,                      ///< simple mode
+    ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_DETAILED_WITH_EVENT_NODES = 0x2,   ///< detailed mode with all event operations dumped as graph nodes
+    ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_SIMPLE_WITH_EVENT_NODES = 0x3,     ///< simple mode with all event operations dumped as graph nodes
     ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_RECORD_REPLAY_GRAPH_EXT_DUMP_MODE_* ENUMs
 
 } ze_record_replay_graph_ext_dump_mode_t;
@@ -16984,7 +17464,7 @@ zeGraphCreateExt(
 ///       ::zeEventHostSynchronize, return
 ///       ::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED.
 ///     - While capture is active, internal counter-based events (i.e. without
-///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) captured in the graph
+///       ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL) captured in the graph
 ///       cannot be used outside the graph; such use returns an error
 ///       (::ZE_RESULT_ERROR_GRAPH_INTERNAL_EVENT).
 ///     - The command list on which capture starts is called the primary command
@@ -17000,11 +17480,22 @@ zeGraphCreateExt(
 ///       list are allowed and do not create additional forks or capture
 ///       sessions; the child command list remains in the same capture session
 ///       as the parent command list.
-///     - Each fork must be joined by signaling on the child command list and by
-///       waiting on the parent command list.
-///     - A child command list may signal multiple times back to the parent
-///       command list, but only the last signal on the child command list may
-///       become part of the join operation.
+///     - Each fork is joined by signaling on the child command list and by
+///       waiting on that signal from another command list participating in the
+///       same graph capture.
+///     - Joins are transitive: the command list that waits on the child's
+///       signal need not be the child's parent command list. It may be any
+///       other command list in the same capture (for example, an ancestor or a
+///       sibling), provided that command list is itself joined, directly or
+///       transitively, back to the primary command list. In other words, a fork
+///       is considered joined when there exists a chain of joins leading from
+///       it to the primary command list. For example, if child command list A
+///       signals to child command list B, and B is subsequently joined
+///       (directly or transitively) back to the primary command list, then A is
+///       also considered joined through B.
+///     - A child command list may signal multiple times back to another command
+///       list, but only the last signal on the child command list may become
+///       part of the join operation.
 ///     - Child command lists continue recording as long as the primary command
 ///       list is in capture mode.
 ///     - Commands that append work (for example, compute kernels or data
@@ -17021,8 +17512,8 @@ zeGraphCreateExt(
 ///       ::ZE_RESULT_ERROR_GRAPH_CAPTURE_MERGE_ATTEMPT).
 ///     - If the device does not support
 ///       ::ZE_RECORD_REPLAY_GRAPH_EXT_FLAG_CB_EXTERNAL_IPC, then using an event
-///       that was created with both ZEX_COUNTER_BASED_EVENT_FLAG_IPC and
-///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL returns an error
+///       that was created with both ZE_EVENT_COUNTER_BASED_FLAG_IPC and
+///       ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL returns an error
 ///       (::ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED) during append
 ///       operations.
 /// 
@@ -17137,7 +17628,7 @@ zeCommandListIsGraphCaptureEnabledExt(
 ///     - After this call succeeds, events signaled by previously captured
 ///       commands do not create new forks.
 ///     - After this call succeeds, internal counter-based events (i.e. without
-///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) can be reused by the
+///       ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL) can be reused by the
 ///       application and don't interfere with recorded state.
 /// 
 /// @returns
@@ -17291,19 +17782,21 @@ zeGraphSetDestructionCallbackExt(
 ///       avoiding data races during concurrent execution of multiple graph
 ///       instances.
 ///     - Recorded internal counter-based events (i.e. without
-///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) may be used only for
+///       ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL) may be used only for
 ///       synchronization within the graph. Their state is tied to the
 ///       underlying execution queue and is not shared between executable graph
 ///       instances.
 ///     - Recorded external counter-based events (i.e. with
-///       ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL) may be used to
-///       synchronize the graph with device commands submitted outside the graph
-///       (for example, before or after ::zeCommandListAppendGraphExt) and with
-///       the host. External counter-based events may incur additional overhead
+///       ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL) may be used to synchronize
+///       the graph with device commands submitted outside the graph (for
+///       example, before or after ::zeCommandListAppendGraphExt) and with the
+///       host. External counter-based events may incur additional overhead
 ///       compared to internal counter-based events.
 ///     - Resources used in captured commands (e.g. buffers passed to kernels as
 ///       arguments) are shared between instances; the application is
 ///       responsible for avoiding data races during concurrent execution.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same graph handle.
 ///     - The function returns `ZE_RESULT_ERROR_INVALID_GRAPH` when the recorded
 ///       graph is invalid, for example when it contains forks that were never
 ///       joined back to the primary command list.
@@ -17888,6 +18381,65 @@ zeDeviceGetCompilerInfo(
                                                                             ///< If pData is nullptr, then only the required size is returned in pSize.
     );
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether a specific compiler-info element is supported by the
+///        device.
+/// 
+/// @details
+///     - This query complements ::zeDeviceGetCompilerInfo: instead of listing
+///       all supported elements of a category, it checks support for a single
+///       element supplied by the application.
+///     - paramName selects the category and therefore the type of pElement: a
+///       null-terminated name for COMPILER_OPTIONS, DRIVER_OPTIONS, and
+///       SPIRV_EXTENSIONS; a null-terminated string representation of a
+///       uint32_t numeric capability identifier for SPIRV_CAPABILITIES.
+///     - For the option categories (COMPILER_OPTIONS, DRIVER_OPTIONS), pValue
+///       optionally narrows the check to a specific option value; when pValue
+///       is nullptr, only the option named by pElement is checked. pValue is
+///       ignored for other categories.
+///     - Support is reported through pSupported. No element names are
+///       enumerated, so support can be queried for elements the driver does not
+///       list publicly.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_DEVICE_COMPILER_INFO_DRIVER_OPTIONS < paramName`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pElement`
+///         + `nullptr == pSupported`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceGetCompilerInfoSupported(
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device
+    ze_device_compiler_info_t paramName,                                    ///< [in] compiler-info category the queried element belongs to
+    const void* pNext,                                                      ///< [in][optional] additional extensions passed to the function
+    const void* pElement,                                                   ///< [in] element whose support is being checked; its type is determined by
+                                                                            ///< paramName
+    const char* pValue,                                                     ///< [in][optional] for the option categories, a null-terminated value to
+                                                                            ///< check together with the option named by pElement.
+                                                                            ///< When nullptr, only the element itself is checked. Ignored for
+                                                                            ///< non-option categories.
+    ze_bool_t* pSupported                                                   ///< [out] on success, set to true if the element (and value, when
+                                                                            ///< provided) is supported by the device compiler, false otherwise
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
@@ -18178,14 +18730,16 @@ typedef struct _ze_context_power_saving_hint_ext_desc_t
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_CONTEXT_POWER_SAVING_HINT_EXP_NAME
-/// @brief Power Saving Hint Extension Name. @deprecated since 1.18: Use
-///        ::ZE_CONTEXT_POWER_SAVING_HINT_EXT_NAME instead.
+/// @brief [DEPRECATED since 1.18] Power Saving Hint Extension Name
+/// 
+/// @deprecated Since 1.18. Use ::ZE_CONTEXT_POWER_SAVING_HINT_EXT_NAME instead.
 #define ZE_CONTEXT_POWER_SAVING_HINT_EXP_NAME  "ZE_experimental_power_saving_hint"
 #endif // ZE_CONTEXT_POWER_SAVING_HINT_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Power Saving Hint Extension Version(s). @deprecated since 1.18: Use
-///        ::ze_context_power_saving_hint_ext_desc_t instead.
+/// @brief [DEPRECATED since 1.18] Power Saving Hint Extension Version(s)
+/// 
+/// @deprecated Since 1.18. Use ::ZE_CONTEXT_POWER_SAVING_HINT_EXT_NAME instead.
 typedef enum _ze_power_saving_hint_exp_version_t
 {
     ZE_POWER_SAVING_HINT_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
@@ -18195,8 +18749,9 @@ typedef enum _ze_power_saving_hint_exp_version_t
 } ze_power_saving_hint_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Supported device types. @deprecated since 1.18: Use
-///        ::ze_power_saving_hint_ext_type_t instead.
+/// @brief [DEPRECATED since 1.18] Supported device types
+/// 
+/// @deprecated Since 1.18. Use ::ze_power_saving_hint_ext_type_t instead.
 typedef enum _ze_power_saving_hint_type_t
 {
     ZE_POWER_SAVING_HINT_TYPE_MIN = 0,                                      ///< Minimum power savings. The device will make no attempt to save power
@@ -18208,8 +18763,10 @@ typedef enum _ze_power_saving_hint_type_t
 } ze_power_saving_hint_type_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Extended context descriptor containing power saving hint. @deprecated
-///        since 1.18: Use ::ze_context_power_saving_hint_ext_desc_t instead.
+/// @brief [DEPRECATED since 1.18] Extended context descriptor containing power
+///        saving hint
+/// 
+/// @deprecated Since 1.18. Use ::ze_context_power_saving_hint_ext_desc_t instead.
 typedef struct _ze_context_power_saving_hint_exp_desc_t
 {
     ze_structure_type_t stype;                                              ///< [in] type of this structure
@@ -18387,6 +18944,739 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zeCommandQueueGetQosExt(
     ze_command_queue_handle_t hCommandQueue,                                ///< [in] handle of the command queue
     ze_command_queue_qos_ext_properties_t* pProperties                      ///< [in,out] query result for QoS properties of the command queue
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for visiting commands recorded in command lists and graphs.
+#if !defined(__GNUC__)
+#pragma region commandVisit
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_COMMAND_VISIT_EXT_NAME
+/// @brief Command Visit Extension Name
+#define ZE_COMMAND_VISIT_EXT_NAME  "ZE_extension_command_visit"
+#endif // ZE_COMMAND_VISIT_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Command Visit Extension version(s)
+typedef enum _ze_command_visit_ext_version_t
+{
+    ZE_COMMAND_VISIT_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),             ///< version 1.0
+    ZE_COMMAND_VISIT_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),         ///< latest known version
+    ZE_COMMAND_VISIT_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_VISIT_EXT_VERSION_* ENUMs
+
+} ze_command_visit_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_VISITOR_CCONV
+#if defined(_WIN32)
+/// @brief Calling convention for visit extension callbacks
+#define ZE_VISITOR_CCONV  __cdecl
+#else
+#define ZE_VISITOR_CCONV  
+#endif // defined(_WIN32)
+#endif // ZE_VISITOR_CCONV
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function pointer type for hooks executed before and after the
+///        default operation during command visit.
+typedef void (ZE_VISITOR_CCONV *ze_command_visit_ext_default_op_callback_t)(
+        const char* fname,                                                      ///< [in] function name of the visited API command
+        void* userData,                                                         ///< [in] user-defined data passed from ::ze_command_visit_ext_desc_t
+        uint32_t* pNumWaitEvents,                                               ///< [in,out] pointer to wait event count for the current command
+        ze_event_handle_t** pphWaitEvents,                                      ///< [in,out] pointer to wait event list for the current command
+        ze_event_handle_t* phSignalEvent                                        ///< [in,out] pointer to command signal event handle
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Defines specialized command visit behavior for a specific Level Zero
+///        API function.
+/// 
+/// @details
+///     - This structure may be passed to ::zeCommandListVisitExt or
+///       ::zeGraphVisitExt via the `pNext` member of
+///       ::ze_command_visit_ext_desc_t.
+///     - Concrete visitors for multiple API functions may be provided by
+///       chaining multiple instances of this structure.
+///     - Each instance in the chain must specify a unique `fname`.
+typedef struct _ze_concrete_visitor_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    const char* fname;                                                      ///< [in] Level Zero API function name for which callback behavior is
+                                                                            ///< defined
+    void* callback;                                                         ///< [in] callback function pointer; must have the same return type and
+                                                                            ///< parameter list as the visited API function named by `fname`, followed
+                                                                            ///< by one additional trailing `void*` parameter that receives `userData`
+                                                                            ///< from ::ze_command_visit_ext_desc_t, and must use the
+                                                                            ///< ::ZE_VISITOR_CCONV calling convention
+
+} ze_concrete_visitor_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Defines default operation for command visit.
+typedef enum _ze_command_visit_ext_default_op_t
+{
+    ZE_COMMAND_VISIT_EXT_DEFAULT_OP_IGNORE = 0,                             ///< ignore command if concrete callback is not provided
+    ZE_COMMAND_VISIT_EXT_DEFAULT_OP_REAPPEND = 1,                           ///< re-append command if concrete callback is not provided
+    ZE_COMMAND_VISIT_EXT_DEFAULT_OP_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_COMMAND_VISIT_EXT_DEFAULT_OP_* ENUMs
+
+} ze_command_visit_ext_default_op_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Defines behavior of command visit.
+typedef struct _ze_command_visit_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    void* userData;                                                         ///< [in][optional] user-defined data passed to callbacks
+    ze_command_list_handle_t hReappendTargetCommandList;                    ///< [in][optional] target command list handle used for default re-append
+                                                                            ///< operation; must not be null if `defaultOp` is
+                                                                            ///< ::ZE_COMMAND_VISIT_EXT_DEFAULT_OP_REAPPEND
+    ze_command_visit_ext_default_op_callback_t beforeDefaultOpClb;          ///< [in][optional] callback invoked before `defaultOp` for each command
+                                                                            ///< that has no concrete visitor
+    ze_command_visit_ext_default_op_t defaultOp;                            ///< [in] default operation to execute for a given command when no concrete
+                                                                            ///< callback is provided for it (via ::ze_concrete_visitor_ext_desc_t)
+    ze_command_visit_ext_default_op_callback_t afterDefaultOpClb;           ///< [in][optional] callback invoked after `defaultOp` for each command
+                                                                            ///< that has no concrete visitor
+
+} ze_command_visit_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Visits all commands in a command list in recorded order.
+/// 
+/// @details
+///     - The implementation must support ::ZE_COMMAND_VISIT_EXT_NAME extension.
+///     - Only command lists created with
+///       ::ZE_COMMAND_LIST_FLAG_ENABLE_COMMAND_VISIT flag can be visited.
+///     - Commands are visited in the same order as they were originally
+///       recorded.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `(::ZE_COMMAND_VISIT_EXT_DEFAULT_OP_REAPPEND == pDesc->defaultOp) && (nullptr == pDesc->hReappendTargetCommandList)`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDesc`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_COMMAND_VISIT_EXT_DEFAULT_OP_REAPPEND < pDesc->defaultOp`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListVisitExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of command list to visit
+    const ze_command_visit_ext_desc_t* pDesc                                ///< [in] pointer to command visit descriptor
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Visits all commands in a graph in recorded order.
+/// 
+/// @details
+///     - The implementation must support ::ZE_COMMAND_VISIT_EXT_NAME extension.
+///     - Graphs can always be visited; no explicit opt-in flag is required at
+///       graph creation.
+///     - Commands are visited in the same order as they were originally
+///       recorded.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hGraph`
+///         + `(::ZE_COMMAND_VISIT_EXT_DEFAULT_OP_REAPPEND == pDesc->defaultOp) && (nullptr == pDesc->hReappendTargetCommandList)`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDesc`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_COMMAND_VISIT_EXT_DEFAULT_OP_REAPPEND < pDesc->defaultOp`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeGraphVisitExt(
+    ze_graph_handle_t hGraph,                                               ///< [in] handle of graph to visit
+    const ze_command_visit_ext_desc_t* pDesc                                ///< [in] pointer to command visit descriptor
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for declaring driver-wide properties at initialization
+#if !defined(__GNUC__)
+#pragma region initDriverProperties
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_INIT_DRIVER_PROPERTIES_EXT_NAME
+/// @brief Init Driver Properties Extension Name
+#define ZE_INIT_DRIVER_PROPERTIES_EXT_NAME  "ZE_extension_init_driver_properties"
+#endif // ZE_INIT_DRIVER_PROPERTIES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Init Driver Properties Extension Version(s)
+typedef enum _ze_init_driver_properties_ext_version_t
+{
+    ZE_INIT_DRIVER_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),    ///< version 1.0
+    ZE_INIT_DRIVER_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
+    ZE_INIT_DRIVER_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_INIT_DRIVER_PROPERTIES_EXT_VERSION_* ENUMs
+
+} ze_init_driver_properties_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported init-time driver property flags
+typedef uint32_t ze_init_driver_properties_ext_flags_t;
+typedef enum _ze_init_driver_properties_ext_flag_t
+{
+    ZE_INIT_DRIVER_PROPERTIES_EXT_FLAG_OPTIMIZE_MEMORY = ZE_BIT(0),         ///< Reduce memory footprint for the driver(s) being initialized; may trade
+                                                                            ///< performance for lower memory usage. mirrors
+                                                                            ///< ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY, applied driver-wide at
+                                                                            ///< initialization instead of per-context. mutually exclusive with
+                                                                            ///< OPTIMIZE_PERFORMANCE. if neither this nor OPTIMIZE_PERFORMANCE is set,
+                                                                            ///< the memory/performance trade-off is driver implementation specific
+    ZE_INIT_DRIVER_PROPERTIES_EXT_FLAG_OPTIMIZE_PERFORMANCE = ZE_BIT(1),    ///< Explicitly optimize for performance for the driver(s) being
+                                                                            ///< initialized; may trade memory footprint for higher performance.
+                                                                            ///< mirrors ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE, applied driver-wide at
+                                                                            ///< initialization instead of per-context. mutually exclusive with
+                                                                            ///< OPTIMIZE_MEMORY. if neither this nor OPTIMIZE_MEMORY is set, the
+                                                                            ///< memory/performance trade-off is driver implementation specific
+    ZE_INIT_DRIVER_PROPERTIES_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_INIT_DRIVER_PROPERTIES_EXT_FLAG_* ENUMs
+
+} ze_init_driver_properties_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Init Driver Properties descriptor
+/// 
+/// @details
+///     - This structure may be passed to ::zeInitDrivers, via the `pNext`
+///       member of ::ze_init_driver_type_desc_t, to declare driver-wide
+///       properties for the driver(s) being initialized. It is a
+///       general-purpose extension point; additional flags may be added to
+///       ::ze_init_driver_properties_ext_flags_t in the future without
+///       requiring a new structure or a new ::ze_structure_type_t value.
+///     - OPTIMIZE_MEMORY requests that the driver(s) being initialized reduce
+///       their memory footprint, mirroring ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY
+///       but applied at driver initialization instead of per-context. When set,
+///       it establishes the default memory-optimization behavior for the
+///       driver(s) initialized by this call; contexts subsequently created via
+///       ::zeContextCreate or ::zeContextCreateEx without an explicit
+///       ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY or
+///       ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE flag inherit this default. A
+///       context that explicitly sets its own ::ze_context_flags_t flags
+///       overrides the driver-level default for that context.
+///     - OPTIMIZE_PERFORMANCE explicitly requests that the driver(s) being
+///       initialized optimize for performance, mirroring
+///       ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE but applied at driver
+///       initialization instead of per-context. When set, it establishes the
+///       default performance-optimization behavior for the driver(s)
+///       initialized by this call in the same way that setting OPTIMIZE_MEMORY
+///       establishes the opposite default. OPTIMIZE_MEMORY and
+///       OPTIMIZE_PERFORMANCE are mutually exclusive; if both are set,
+///       ::zeInitDrivers returns ::ZE_RESULT_ERROR_INVALID_ARGUMENT.
+///     - If neither OPTIMIZE_MEMORY nor OPTIMIZE_PERFORMANCE is set, the
+///       memory/performance trade-off for the driver(s) initialized by this
+///       call is driver implementation specific.
+///     - The default context returned by ::zeDriverGetDefaultContext is created
+///       by the driver itself, not via ::zeContextCreate or
+///       ::zeContextCreateEx, so the application cannot supply
+///       ::ze_context_flags_t for it. The default context follows the
+///       driver-level default established by this structure, if one was
+///       established; otherwise its memory/performance trade-off is driver
+///       implementation specific.
+///     - If this structure is not provided, the driver must assume no
+///       driver-wide properties were requested and fall back to its standard
+///       default behavior for each unset flag.
+///     - This structure has no effect on drivers already initialized by a prior
+///       call to ::zeInitDrivers or ::zeInit; those drivers keep whatever
+///       behavior was in effect when they were first initialized.
+typedef struct _ze_init_driver_properties_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_init_driver_properties_ext_flags_t flags;                            ///< [in] driver property flags.
+                                                                            ///< must be 0 (default) or a valid combination of ::ze_init_driver_properties_ext_flag_t.
+
+} ze_init_driver_properties_ext_desc_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Core Extension for supporting compute graphs with dynamic properties.
+#if !defined(__GNUC__)
+#pragma region mutableCommandListExt
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_MUTABLE_COMMAND_LIST_EXT_NAME
+/// @brief Mutable Command List Core Extension Name
+#define ZE_MUTABLE_COMMAND_LIST_EXT_NAME  "ZE_extension_mutable_command_list"
+#endif // ZE_MUTABLE_COMMAND_LIST_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable Command List Extension Version(s)
+typedef enum _ze_mutable_command_list_ext_version_t
+{
+    ZE_MUTABLE_COMMAND_LIST_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
+    ZE_MUTABLE_COMMAND_LIST_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_MUTABLE_COMMAND_LIST_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MUTABLE_COMMAND_LIST_EXT_VERSION_* ENUMs
+
+} ze_mutable_command_list_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command flags
+typedef uint32_t ze_mutable_command_ext_flags_t;
+typedef enum _ze_mutable_command_ext_flag_t
+{
+    ZE_MUTABLE_COMMAND_EXT_FLAG_KERNEL_ARGUMENTS = ZE_BIT(0),               ///< kernel arguments
+    ZE_MUTABLE_COMMAND_EXT_FLAG_GROUP_COUNT = ZE_BIT(1),                    ///< kernel group count
+    ZE_MUTABLE_COMMAND_EXT_FLAG_GROUP_SIZE = ZE_BIT(2),                     ///< kernel group size
+    ZE_MUTABLE_COMMAND_EXT_FLAG_GLOBAL_OFFSET = ZE_BIT(3),                  ///< kernel global offset
+    ZE_MUTABLE_COMMAND_EXT_FLAG_SIGNAL_EVENT = ZE_BIT(4),                   ///< command signal event
+    ZE_MUTABLE_COMMAND_EXT_FLAG_WAIT_EVENTS = ZE_BIT(5),                    ///< command wait events
+    ZE_MUTABLE_COMMAND_EXT_FLAG_KERNEL_INSTRUCTION = ZE_BIT(6),             ///< command kernel
+    ZE_MUTABLE_COMMAND_EXT_FLAG_GRAPH_ARGUMENTS = ZE_BIT(7),                ///< graph arguments
+    ZE_MUTABLE_COMMAND_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MUTABLE_COMMAND_EXT_FLAG_* ENUMs
+
+} ze_mutable_command_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command identifier descriptor
+typedef struct _ze_mutable_command_id_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_mutable_command_ext_flags_t flags;                                   ///< [in] mutable command flags.
+                                                                            ///<  - must be 0 (default, equivalent to setting all flags bar kernel
+                                                                            ///< instruction), or a valid combination of ::ze_mutable_command_ext_flag_t
+                                                                            ///<  - in order to include kernel instruction mutation,
+                                                                            ///< ::ZE_MUTABLE_COMMAND_EXT_FLAG_KERNEL_INSTRUCTION must be explicitly included
+
+} ze_mutable_command_id_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command list flags
+typedef uint32_t ze_mutable_command_list_ext_flags_t;
+typedef enum _ze_mutable_command_list_ext_flag_t
+{
+    ZE_MUTABLE_COMMAND_LIST_EXT_FLAG_RESERVED = ZE_BIT(0),                  ///< reserved
+    ZE_MUTABLE_COMMAND_LIST_EXT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_MUTABLE_COMMAND_LIST_EXT_FLAG_* ENUMs
+
+} ze_mutable_command_list_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command list properties
+typedef struct _ze_mutable_command_list_ext_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_mutable_command_list_ext_flags_t mutableCommandListFlags;            ///< [out] mutable command list flags
+    ze_mutable_command_ext_flags_t mutableCommandFlags;                     ///< [out] mutable command flags
+
+} ze_mutable_command_list_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command list descriptor
+typedef struct _ze_mutable_command_list_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_mutable_command_list_ext_flags_t flags;                              ///< [in] mutable command list flags.
+                                                                            ///<  - must be 0 (default) or a valid combination of ::ze_mutable_command_list_ext_flag_t
+
+} ze_mutable_command_list_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable commands descriptor
+typedef struct _ze_mutable_commands_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t flags;                                                         ///< [in] must be 0, this field is reserved for future use
+
+} ze_mutable_commands_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel argument descriptor
+typedef struct _ze_mutable_kernel_argument_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t argIndex;                                                      ///< [in] kernel argument index
+    size_t argSize;                                                         ///< [in] kernel argument size
+    const void* pArgValue;                                                  ///< [in] pointer to kernel argument value
+
+} ze_mutable_kernel_argument_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel group count descriptor
+typedef struct _ze_mutable_group_count_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    const ze_group_count_t* pGroupCount;                                    ///< [in] pointer to group count
+
+} ze_mutable_group_count_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel group size descriptor
+typedef struct _ze_mutable_group_size_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t groupSizeX;                                                    ///< [in] group size for X dimension to use for the kernel
+    uint32_t groupSizeY;                                                    ///< [in] group size for Y dimension to use for the kernel
+    uint32_t groupSizeZ;                                                    ///< [in] group size for Z dimension to use for the kernel
+
+} ze_mutable_group_size_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel global offset descriptor
+typedef struct _ze_mutable_global_offset_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t offsetX;                                                       ///< [in] global offset for X dimension to use for this kernel
+    uint32_t offsetY;                                                       ///< [in] global offset for Y dimension to use for this kernel
+    uint32_t offsetZ;                                                       ///< [in] global offset for Z dimension to use for this kernel
+
+} ze_mutable_global_offset_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable graph argument descriptor
+typedef struct _ze_mutable_graph_argument_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t argIndex;                                                      ///< [in] graph argument index
+    const void* pArgValue;                                                  ///< [in] pointer to graph argument value
+
+} ze_mutable_graph_argument_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns a unique command identifier for the next command to be
+///        appended to a command list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - This function may not be called on a closed command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == pCommandId`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xff < desc->flags`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListGetNextCommandIdExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    const ze_mutable_command_id_ext_desc_t* desc,                           ///< [in] pointer to mutable command identifier descriptor
+    uint64_t* pCommandId                                                    ///< [out] pointer to mutable command identifier to be written
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns a unique command identifier for the next command to be
+///        appended to a command list. Provides possible kernel handles for
+///        kernel mutation when ::ZE_MUTABLE_COMMAND_EXT_FLAG_KERNEL_INSTRUCTION
+///        flag is present.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - This function may not be called on a closed command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == pCommandId`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xff < desc->flags`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListGetNextCommandIdWithKernelsExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    const ze_mutable_command_id_ext_desc_t* desc,                           ///< [in][out] pointer to mutable command identifier descriptor
+    uint32_t numKernels,                                                    ///< [in][optional] number of entries on phKernels list
+    ze_kernel_handle_t* phKernels,                                          ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                                            ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExt
+                                                                            ///< call
+    uint64_t* pCommandId                                                    ///< [out] pointer to mutable command identifier to be written
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates mutable commands.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Invalid kernel argument or not matching update descriptor provided
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandsExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    const ze_mutable_commands_ext_desc_t* desc                              ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                                            ///< be chained via `pNext` member
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query whether a command list was created with the mutable command list
+///        extension.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIsMutable`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListIsMutableExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    ze_bool_t* pIsMutable                                                   ///< [out] pointer bool determining whether command list was created with
+                                                                            ///< mutable extension
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the signal event for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The type, scope and flags of the signal event must match those of the
+///       source command.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandSignalEventExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    uint64_t commandId,                                                     ///< [in] command identifier
+    ze_event_handle_t hSignalEvent                                          ///< [in][optional] handle of the event to signal on completion
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the wait events for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The number of wait events must match that of the source command.
+///     - The type, scope and flags of the wait events must match those of the
+///       source command.
+///     - Passing `nullptr` as the wait events will update the command to not
+///       wait on any events prior to dispatch.
+///     - Passing `nullptr` as an event on event wait list will remove event
+///       dependency from this wait list slot.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + The `numWaitEvents` parameter does not match that of the original command.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandWaitEventsExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    uint64_t commandId,                                                     ///< [in] command identifier
+    uint32_t numWaitEvents,                                                 ///< [in][optional] the number of wait events
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the kernel for a mutable command in a mutable command list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The kernel handle must be from the provided list for given command id.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - This function must be called before updating kernel arguments and
+///       dispatch parameters, when kernel is mutated.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCommandId`
+///         + `nullptr == phKernels`
+///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE
+///         + Invalid kernel handle provided for the mutation kernel instruction operation.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandKernelsExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    uint32_t numKernels,                                                    ///< [in] the number of kernels to update
+    uint64_t* pCommandId,                                                   ///< [in][range(0, numKernels)] command identifier
+    ze_kernel_handle_t* phKernels                                           ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                                            ///< identifier to switch to
     );
 
 #if !defined(__GNUC__)

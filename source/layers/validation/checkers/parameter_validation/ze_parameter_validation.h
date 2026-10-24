@@ -243,6 +243,8 @@ namespace validation_layer
         ze_result_t zeDeviceReleaseExternalSemaphoreExtPrologue( ze_external_semaphore_ext_handle_t hSemaphore ) override;
         ze_result_t zeCommandListAppendSignalExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendWaitExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandQueueSignalExternalSemaphoreExtPrologue( ze_command_queue_handle_t hCommandQueue, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandQueueWaitExternalSemaphoreExtPrologue( ze_command_queue_handle_t hCommandQueue, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeRTASBuilderCreateExtPrologue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder ) override;
         ze_result_t zeRTASBuilderGetBuildPropertiesExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties ) override;
         ze_result_t zeDriverRTASFormatCompatibilityCheckExtPrologue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB ) override;
@@ -277,7 +279,17 @@ namespace validation_layer
         ze_result_t zeCommandListAppendHostFunctionPrologue( ze_command_list_handle_t hCommandList, ze_host_function_callback_t pfnHostFunction, void* pUserData, const void* pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandQueueSetPriorityExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_priority_t priority ) override;
         ze_result_t zeDeviceGetCompilerInfoPrologue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, size_t* pSize, void* pData ) override;
+        ze_result_t zeDeviceGetCompilerInfoSupportedPrologue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, const void* pElement, const char* pValue, ze_bool_t* pSupported ) override;
         ze_result_t zeCommandQueueSetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc ) override;
         ze_result_t zeCommandQueueGetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties ) override;
+        ze_result_t zeCommandListVisitExtPrologue( ze_command_list_handle_t hCommandList, const ze_command_visit_ext_desc_t* pDesc ) override;
+        ze_result_t zeGraphVisitExtPrologue( ze_graph_handle_t hGraph, const ze_command_visit_ext_desc_t* pDesc ) override;
+        ze_result_t zeCommandListGetNextCommandIdExtPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_ext_desc_t* desc, uint64_t* pCommandId ) override;
+        ze_result_t zeCommandListGetNextCommandIdWithKernelsExtPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_ext_desc_t* desc, uint32_t numKernels, ze_kernel_handle_t* phKernels, uint64_t* pCommandId ) override;
+        ze_result_t zeCommandListUpdateMutableCommandsExtPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_ext_desc_t* desc ) override;
+        ze_result_t zeCommandListIsMutableExtPrologue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsMutable ) override;
+        ze_result_t zeCommandListUpdateMutableCommandSignalEventExtPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override;
+        ze_result_t zeCommandListUpdateMutableCommandWaitEventsExtPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListUpdateMutableCommandKernelsExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels ) override;
     };
 }

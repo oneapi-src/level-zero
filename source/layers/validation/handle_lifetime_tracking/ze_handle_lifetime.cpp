@@ -3558,8 +3558,8 @@ namespace validation_layer
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
         )
@@ -3594,8 +3594,8 @@ namespace validation_layer
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
         )
@@ -3831,6 +3831,74 @@ namespace validation_layer
         }
         if (!context.handleLifetime->isOpen( hCommandList )){
             return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        for (size_t i = 0; ( nullptr != phSemaphores) && (i < numSemaphores); ++i){
+            if (!context.handleLifetime->isHandleValid( phSemaphores[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueSignalExternalSemaphoreExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be signaled by the command queue.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before signaling; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before signaling
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phSemaphores) && (i < numSemaphores); ++i){
+            if (!context.handleLifetime->isHandleValid( phSemaphores[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandQueueWaitExternalSemaphoreExtPrologue(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be waited on by the command queue.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before waiting; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before waiting
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandQueue )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         for (size_t i = 0; ( nullptr != phSemaphores) && (i < numSemaphores); ++i){
             if (!context.handleLifetime->isHandleValid( phSemaphores[i] )){
@@ -4370,6 +4438,27 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetCompilerInfoSupportedPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info category the queried element belongs to
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        const void* pElement,                           ///< [in] element whose support is being checked; its type is determined by
+                                                        ///< paramName
+        const char* pValue,                             ///< [in][optional] for the option categories, a null-terminated value to
+                                                        ///< check together with the option named by pElement.
+                                                        ///< When nullptr, only the element itself is checked. Ignored for
+                                                        ///< non-option categories.
+        ze_bool_t* pSupported                           ///< [out] on success, set to true if the element (and value, when
+                                                        ///< provided) is supported by the device compiler, false otherwise
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandQueueSetQosExtPrologue(
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
         const ze_command_queue_qos_ext_desc_t* desc     ///< [in] pointer to QoS descriptor
@@ -4390,6 +4479,147 @@ namespace validation_layer
         
         if ( !context.handleLifetime->isHandleValid( hCommandQueue )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListVisitExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeGraphVisitExtPrologue(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of graph to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hGraph )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListGetNextCommandIdExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListGetNextCommandIdWithKernelsExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExt
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phKernels) && (i < numKernels); ++i){
+            if (!context.handleLifetime->isHandleValid( phKernels[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandsExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_ext_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListIsMutableExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                        ///< mutable extension
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandSignalEventExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandWaitEventsExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandKernelsExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phKernels) && (i < numKernels); ++i){
+            if (!context.handleLifetime->isHandleValid( phKernels[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
         }
         return ZE_RESULT_SUCCESS;
     }

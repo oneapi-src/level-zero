@@ -2598,4 +2598,24 @@ namespace validation_layer
         }
         return ZE_RESULT_SUCCESS;
     }
+    ze_result_t
+    ZESHandleLifetimeValidation::zesDriverGetPciDevicePropertiesPrologue(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI devices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of PCI devices supported by the driver.
+                                                        ///< if count is greater than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall update the value with the correct number
+                                                        ///< of PCI devices supported by the driver.
+        zes_driver_pci_device_properties_t* pProperties ///< [in,out][optional][range(0, *pCount)] array of PCI device properties.
+                                                        ///< if count is less than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall only retrieve that number of PCI device properties.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
 }

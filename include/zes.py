@@ -4,12 +4,14 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.19-r1.19.12
+ @version v1.20-r1.20.41
 
  """
 import platform
 from ctypes import *
 from enum import *
+# Uses types and macros from the core API.
+from ze import *
 
 ###############################################################################
 __version__ = "1.0"
@@ -182,6 +184,10 @@ class zes_structure_type_v(IntEnum):
     INFO_LOG_INSTANCE_EXT_DESC = 0x00020021                                 ## ::zes_info_log_instance_ext_desc_t
     INFO_LOG_METADATA_EXT = 0x00020022                                      ## ::zes_info_log_metadata_ext_t
     INFO_LOG_READ_STATUS_EXT = 0x00020023                                   ## ::zes_info_log_read_status_ext_t
+    PCI_CONFIG_PROPERTIES = 0x00020024                                      ## ::zes_pci_config_properties_t
+    DRIVER_PCI_DEVICE_PROPERTIES = 0x00020025                               ## ::zes_driver_pci_device_properties_t
+    DEVICE_INDEX_EXT_PROPERTIES = 0x00020026                                ## ::zes_device_index_ext_properties_t
+    DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES = 0x00020027                         ## ::zes_device_gpu_topology_ext_properties_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -241,7 +247,7 @@ ZES_MAX_UUID_SIZE = 16
 ## @brief Device universal unique id (UUID)
 class zes_uuid_t(Structure):
     _fields_ = [
-        ("id", c_ubyte * ZES_MAX_UUID_SIZE)                             ## [out] Data representing a device UUID
+        ("id", c_uint8 * ZES_MAX_UUID_SIZE)                             ## [out] Data representing a device UUID
     ]
 
 ###############################################################################
@@ -270,7 +276,7 @@ class zes_driver_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("uuid", zes_uuid_t),                                           ## [out] universal unique identifier of the sysman driver instance.
-        ("driverVersion", c_ulong)                                      ## [out] sysman driver version
+        ("driverVersion", c_uint32)                                     ## [out] sysman driver version
                                                                         ## The sysman driver version is a non-zero, monotonically increasing
                                                                         ## value where higher values always indicate a more recent version.
     ]
@@ -284,7 +290,7 @@ ZES_MAX_EXTENSION_NAME = 256
 class zes_driver_extension_properties_t(Structure):
     _fields_ = [
         ("name", c_char * ZES_MAX_EXTENSION_NAME),                      ## [out] extension name
-        ("version", c_ulong)                                            ## [out] extension version using ::ZE_MAKE_VERSION
+        ("version", c_uint32)                                           ## [out] extension version using ::ZE_MAKE_VERSION
     ]
 
 ###############################################################################
@@ -398,15 +404,21 @@ class zes_device_property_flags_t(c_int):
 ## @brief Device properties. To get OEM Serial ID, pNext member of this
 ##        structure should point to an instance of
 ##        ${s}_oem_serial_id_ext_properties_t with its stype set to
-##        ::ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES.
+##        ::ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES. To get Device
+##        Index, pNext member of this structure should point to an instance of
+##        ${s}_device_index_ext_properties_t with its stype set to
+##        ::ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES. To get the GPU
+##        topology of the device, pNext member of this structure should point to
+##        an instance of ${s}_device_gpu_topology_ext_properties_t with its
+##        stype set to ::ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES.
 class zes_device_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("core", ze_device_properties_t),                               ## [out] (Deprecated, use ::zes_uuid_t in the extended structure) Core
-                                                                        ## device properties
-        ("numSubdevices", c_ulong),                                     ## [out] Number of sub-devices. A value of 0 indicates that this device
+        ("core", ze_device_properties_t),                               ## [out] [DEPRECATED since 1.7] Core device properties. Use
+                                                                        ## ::zes_device_ext_properties_t instead.
+        ("numSubdevices", c_uint32),                                    ## [out] Number of sub-devices. A value of 0 indicates that this device
                                                                         ## doesn't have sub-devices.
         ("serialNumber", c_char * ZES_STRING_PROPERTY_SIZE),            ## [out] Manufacturing serial number (NULL terminated string value). This
                                                                         ## value is intended to reflect the Part ID/SoC ID assigned by
@@ -444,6 +456,40 @@ class zes_device_ext_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Device Index Extension Name
+ZES_DEVICE_INDEX_EXT_NAME = "ZES_extension_device_index"
+
+###############################################################################
+## @brief Device Index Extension Version(s)
+class zes_device_index_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_index_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_index_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Device Index Properties extension structure
+## 
+## @details
+##     - This structure can be passed as an extension to
+##       ::zesDeviceGetProperties via pNext member
+##     - Returns an integer identifier for the Sysman device handle
+##     - The device index is set at ::zesInit(), subsequent calls may add new
+##       devices but will not change existing indexes
+##     - To identify a device across processes or reboots, it is recommended
+##       that devices be looked up by their PCI IDs or UUID
+class zes_device_index_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("deviceIndex", c_uint32)                                       ## [out] Integer identifier for the Sysman device handle.
+    ]
+
+###############################################################################
 ## @brief Contains information about a process that has an open connection with
 ##        this device
 ## 
@@ -455,10 +501,10 @@ class zes_process_state_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("processId", c_ulong),                                         ## [out] Host OS process ID.
-        ("memSize", c_ulonglong),                                       ## [out] Device memory size in bytes allocated by this process (may not
+        ("processId", c_uint32),                                        ## [out] Host OS process ID.
+        ("memSize", c_uint64),                                          ## [out] Device memory size in bytes allocated by this process (may not
                                                                         ## necessarily be resident on the device at the time of reading).
-        ("sharedSize", c_ulonglong),                                    ## [out] The size of shared device memory mapped into this process (may
+        ("sharedSize", c_uint64),                                       ## [out] The size of shared device memory mapped into this process (may
                                                                         ## not necessarily be resident on the device at the time of reading).
         ("engines", zes_engine_type_flags_t)                            ## [out] Bitfield of accelerator engine types being used by this process.
     ]
@@ -467,21 +513,21 @@ class zes_process_state_t(Structure):
 ## @brief PCI address
 class zes_pci_address_t(Structure):
     _fields_ = [
-        ("domain", c_ulong),                                            ## [out] BDF domain
-        ("bus", c_ulong),                                               ## [out] BDF bus
-        ("device", c_ulong),                                            ## [out] BDF device
-        ("function", c_ulong)                                           ## [out] BDF function
+        ("domain", c_uint32),                                           ## [out] BDF domain
+        ("bus", c_uint32),                                              ## [out] BDF bus
+        ("device", c_uint32),                                           ## [out] BDF device
+        ("function", c_uint32)                                          ## [out] BDF function
     ]
 
 ###############################################################################
 ## @brief PCI speed
 class zes_pci_speed_t(Structure):
     _fields_ = [
-        ("gen", c_int32_t),                                             ## [out] The link generation. A value of -1 means that this property is
+        ("gen", c_int32),                                               ## [out] The link generation. A value of -1 means that this property is
                                                                         ## unknown.
-        ("width", c_int32_t),                                           ## [out] The number of lanes. A value of -1 means that this property is
+        ("width", c_int32),                                             ## [out] The number of lanes. A value of -1 means that this property is
                                                                         ## unknown.
-        ("maxBandwidth", c_int64_t)                                     ## [out] The maximum bandwidth in bytes/sec (sum of all lanes). A value
+        ("maxBandwidth", c_int64)                                       ## [out] The maximum bandwidth in bytes/sec (sum of all lanes). A value
                                                                         ## of -1 means that this property is unknown.
     ]
 
@@ -511,6 +557,8 @@ class zes_pci_link_status_v(IntEnum):
     QUALITY_ISSUES = 2                                                      ## The link is up but has quality and/or bandwidth degradation
     STABILITY_ISSUES = 3                                                    ## The link has stability issues and preventing workloads making forward
                                                                             ## progress
+    LINK_ERROR = 4                                                          ## The device does not respond on the bus and its configuration space
+                                                                            ## reads back as all ones
 
 class zes_pci_link_status_t(c_int):
     def __str__(self):
@@ -579,9 +627,9 @@ class zes_pci_bar_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", zes_pci_bar_type_t),                                   ## [out] The type of bar
-        ("index", c_ulong),                                             ## [out] The index of the bar
-        ("base", c_ulonglong),                                          ## [out] Base address of the bar.
-        ("size", c_ulonglong)                                           ## [out] Size of the bar.
+        ("index", c_uint32),                                            ## [out] The index of the bar
+        ("base", c_uint64),                                             ## [out] Base address of the bar.
+        ("size", c_uint64)                                              ## [out] Size of the bar.
     ]
 
 ###############################################################################
@@ -592,9 +640,9 @@ class zes_pci_bar_properties_1_2_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", zes_pci_bar_type_t),                                   ## [out] The type of bar
-        ("index", c_ulong),                                             ## [out] The index of the bar
-        ("base", c_ulonglong),                                          ## [out] Base address of the bar.
-        ("size", c_ulonglong),                                          ## [out] Size of the bar.
+        ("index", c_uint32),                                            ## [out] The index of the bar
+        ("base", c_uint64),                                             ## [out] Base address of the bar.
+        ("size", c_uint64),                                             ## [out] Size of the bar.
         ("resizableBarSupported", ze_bool_t),                           ## [out] Support for Resizable Bar on this device.
         ("resizableBarEnabled", ze_bool_t)                              ## [out] Resizable Bar enabled on this device
     ]
@@ -612,7 +660,7 @@ class zes_pci_bar_properties_1_2_t(Structure):
 ##       s1.timestamp))
 class zes_pci_stats_t(Structure):
     _fields_ = [
-        ("timestamp", c_ulonglong),                                     ## [out] Monotonic timestamp counter in microseconds when the measurement
+        ("timestamp", c_uint64),                                        ## [out] Monotonic timestamp counter in microseconds when the measurement
                                                                         ## was made.
                                                                         ## This timestamp should only be used to calculate delta time between
                                                                         ## snapshots of this structure.
@@ -620,16 +668,16 @@ class zes_pci_stats_t(Structure):
                                                                         ## different structure since they are not guaranteed to have the same base.
                                                                         ## The absolute value of the timestamp is only valid during within the
                                                                         ## application and may be different on the next execution.
-        ("replayCounter", c_ulonglong),                                 ## [out] Monotonic counter for the number of replay packets (sum of all
+        ("replayCounter", c_uint64),                                    ## [out] Monotonic counter for the number of replay packets (sum of all
                                                                         ## lanes). Will always be 0 when the `haveReplayCounters` member of
                                                                         ## ::zes_pci_properties_t is FALSE.
-        ("packetCounter", c_ulonglong),                                 ## [out] Monotonic counter for the number of packets (sum of all lanes).
+        ("packetCounter", c_uint64),                                    ## [out] Monotonic counter for the number of packets (sum of all lanes).
                                                                         ## Will always be 0 when the `havePacketCounters` member of
                                                                         ## ::zes_pci_properties_t is FALSE.
-        ("rxCounter", c_ulonglong),                                     ## [out] Monotonic counter for the number of bytes received (sum of all
+        ("rxCounter", c_uint64),                                        ## [out] Monotonic counter for the number of bytes received (sum of all
                                                                         ## lanes). Will always be 0 when the `haveBandwidthCounters` member of
                                                                         ## ::zes_pci_properties_t is FALSE.
-        ("txCounter", c_ulonglong),                                     ## [out] Monotonic counter for the number of bytes transmitted (including
+        ("txCounter", c_uint64),                                        ## [out] Monotonic counter for the number of bytes transmitted (including
                                                                         ## replays) (sum of all lanes). Will always be 0 when the
                                                                         ## `haveBandwidthCounters` member of ::zes_pci_properties_t is FALSE.
         ("speed", zes_pci_speed_t)                                      ## [out] The current speed of the link (sum of all lanes)
@@ -772,11 +820,11 @@ class zes_overclock_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("domainType", zes_overclock_domain_t),                         ## [out] The hardware block that this overclock domain controls (GPU,
                                                                         ## VRAM, ...)
-        ("AvailableControls", c_ulong),                                 ## [out] Returns the overclock controls that are supported (a bit for
+        ("AvailableControls", c_uint32),                                ## [out] Returns the overclock controls that are supported (a bit for
                                                                         ## each of enum ::zes_overclock_control_t). If no bits are set, the
                                                                         ## domain doesn't support overclocking.
         ("VFProgramType", zes_vf_program_type_t),                       ## [out] Type of V-F curve programming that is permitted:.
-        ("NumberOfVFPoints", c_ulong)                                   ## [out] Number of VF points that can be programmed - max_num_points
+        ("NumberOfVFPoints", c_uint32)                                  ## [out] Number of VF points that can be programmed - max_num_points
     ]
 
 ###############################################################################
@@ -847,7 +895,7 @@ ZES_DIAG_LAST_TEST_INDEX = 0xFFFFFFFF
 ## @brief Diagnostic test
 class zes_diag_test_t(Structure):
     _fields_ = [
-        ("index", c_ulong),                                             ## [out] Index of the test
+        ("index", c_uint32),                                            ## [out] Index of the test
         ("name", c_char * ZES_STRING_PROPERTY_SIZE)                     ## [out] Name of the test
     ]
 
@@ -860,7 +908,7 @@ class zes_diag_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("name", c_char * ZES_STRING_PROPERTY_SIZE),                    ## [out] Name of the diagnostics test suite
         ("haveTests", ze_bool_t)                                        ## [out] Indicates if this test suite has individual tests which can be
                                                                         ## run separately (use the function ::zesDiagnosticsGetTests() to get the
@@ -926,16 +974,26 @@ class zes_engine_group_v(IntEnum):
                                                                             ## that can process compute kernels. Note that single engines may share
                                                                             ## the same underlying accelerator resources as other engines so activity
                                                                             ## of such an engine may not be indicative of the underlying resource
-                                                                            ## utilization - use ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
+                                                                            ## utilization - use ::ZES_ENGINE_GROUP_COMPUTE_ALL for that.
     RENDER_SINGLE = 5                                                       ## Access information about a single render engine - this is an engine
                                                                             ## that can process both 3D content and compute kernels. Note that single
                                                                             ## engines may share the same underlying accelerator resources as other
                                                                             ## engines so activity of such an engine may not be indicative of the
-                                                                            ## underlying resource utilization - use
-                                                                            ## ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
-    MEDIA_DECODE_SINGLE = 6                                                 ## [DEPRECATED] No longer supported.
-    MEDIA_ENCODE_SINGLE = 7                                                 ## [DEPRECATED] No longer supported.
-    COPY_SINGLE = 8                                                         ## Access information about a single media encode engine. Note that
+                                                                            ## underlying resource utilization - use ::ZES_ENGINE_GROUP_RENDER_ALL
+                                                                            ## for that.
+    MEDIA_DECODE_SINGLE = 6                                                 ## [DEPRECATED since 1.8] Access information about a single media decode
+                                                                            ## engine. Note that single engines may share the same underlying
+                                                                            ## accelerator resources as other engines so activity of such an engine
+                                                                            ## may not be indicative of the underlying resource utilization - use
+                                                                            ## ::ZES_ENGINE_GROUP_MEDIA_ALL for that. Use
+                                                                            ## ::ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE instead.
+    MEDIA_ENCODE_SINGLE = 7                                                 ## [DEPRECATED since 1.8] Access information about a single media encode
+                                                                            ## engine. Note that single engines may share the same underlying
+                                                                            ## accelerator resources as other engines so activity of such an engine
+                                                                            ## may not be indicative of the underlying resource utilization - use
+                                                                            ## ::ZES_ENGINE_GROUP_MEDIA_ALL for that. Use
+                                                                            ## ::ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE instead.
+    COPY_SINGLE = 8                                                         ## Access information about a single copy (blitter) engine. Note that
                                                                             ## single engines may share the same underlying accelerator resources as
                                                                             ## other engines so activity of such an engine may not be indicative of
                                                                             ## the underlying resource utilization - use ::ZES_ENGINE_GROUP_COPY_ALL
@@ -945,11 +1003,24 @@ class zes_engine_group_v(IntEnum):
                                                                             ## other engines so activity of such an engine may not be indicative of
                                                                             ## the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
                                                                             ## for that.
-    _3D_SINGLE = 10                                                         ## [DEPRECATED] No longer supported.
-    _3D_RENDER_COMPUTE_ALL = 11                                             ## [DEPRECATED] No longer supported.
+    _3D_SINGLE = 10                                                         ## [DEPRECATED since 1.8] Access information about a single 3D engine -
+                                                                            ## this is an engine that can process 3D content only. Note that single
+                                                                            ## engines may share the same underlying accelerator resources as other
+                                                                            ## engines so activity of such an engine may not be indicative of the
+                                                                            ## underlying resource utilization - use
+                                                                            ## ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that. Render engines
+                                                                            ## process 3D content and compute kernels. Related:
+                                                                            ## ::ZES_ENGINE_GROUP_RENDER_SINGLE.
+    _3D_RENDER_COMPUTE_ALL = 11                                             ## [DEPRECATED since 1.8] Access information about all 3D/render/compute
+                                                                            ## engines combined. Combine ::ZES_ENGINE_GROUP_RENDER_ALL with
+                                                                            ## ::ZES_ENGINE_GROUP_COMPUTE_ALL for the same view. Related:
+                                                                            ## ::ZES_ENGINE_GROUP_RENDER_ALL.
     RENDER_ALL = 12                                                         ## Access information about all render engines combined. Render engines
                                                                             ## are those than process both 3D content and compute kernels.
-    _3D_ALL = 13                                                            ## [DEPRECATED] No longer supported.
+    _3D_ALL = 13                                                            ## [DEPRECATED since 1.8] Access information about all 3D engines
+                                                                            ## combined. 3D engines can process 3D content only (no compute kernels).
+                                                                            ## Render engines process 3D content and compute kernels. Related:
+                                                                            ## ::ZES_ENGINE_GROUP_RENDER_ALL.
     MEDIA_CODEC_SINGLE = 14                                                 ## Access information about a single media engine. Note that single
                                                                             ## engines may share the same underlying accelerator resources as other
                                                                             ## engines so activity of such an engine may not be indicative of the
@@ -971,7 +1042,7 @@ class zes_engine_properties_t(Structure):
         ("type", zes_engine_group_t),                                   ## [out] The engine group
         ("onSubdevice", ze_bool_t),                                     ## [out] True if this resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32)                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
     ]
 
 ###############################################################################
@@ -996,9 +1067,9 @@ class zes_engine_properties_t(Structure):
 ##       application and may be different on the next execution.
 class zes_engine_stats_t(Structure):
     _fields_ = [
-        ("activeTime", c_ulonglong),                                    ## [out] Monotonic counter where the resource is actively running
+        ("activeTime", c_uint64),                                       ## [out] Monotonic counter where the resource is actively running
                                                                         ## workloads.
-        ("timestamp", c_ulonglong)                                      ## [out] Monotonic counter when activeTime counter was sampled.
+        ("timestamp", c_uint64)                                         ## [out] Monotonic counter when activeTime counter was sampled.
     ]
 
 ###############################################################################
@@ -1108,9 +1179,9 @@ class zes_fabric_port_failure_flags_t(c_int):
 ##       ::zes_fabric_port_properties_t.
 class zes_fabric_port_id_t(Structure):
     _fields_ = [
-        ("fabricId", c_ulong),                                          ## [out] Unique identifier for the fabric end-point
-        ("attachId", c_ulong),                                          ## [out] Unique identifier for the device attachment point
-        ("portNumber", c_ubyte)                                         ## [out] The logical port number (this is typically marked somewhere on
+        ("fabricId", c_uint32),                                         ## [out] Unique identifier for the fabric end-point
+        ("attachId", c_uint32),                                         ## [out] Unique identifier for the device attachment point
+        ("portNumber", c_uint8)                                         ## [out] The logical port number (this is typically marked somewhere on
                                                                         ## the physical device)
     ]
 
@@ -1118,9 +1189,9 @@ class zes_fabric_port_id_t(Structure):
 ## @brief Fabric port speed in one direction
 class zes_fabric_port_speed_t(Structure):
     _fields_ = [
-        ("bitRate", c_int64_t),                                         ## [out] Bits/sec that the link is operating at. A value of -1 means that
+        ("bitRate", c_int64),                                           ## [out] Bits/sec that the link is operating at. A value of -1 means that
                                                                         ## this property is unknown.
-        ("width", c_int32_t)                                            ## [out] The number of lanes. A value of -1 means that this property is
+        ("width", c_int32)                                              ## [out] The number of lanes. A value of -1 means that this property is
                                                                         ## unknown.
     ]
 
@@ -1135,7 +1206,7 @@ class zes_fabric_port_properties_t(Structure):
                                                                         ## "unknown" if this cannot be determined for this port.
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the port is located on a sub-device; false means that
                                                                         ## the port is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("portId", zes_fabric_port_id_t),                               ## [out] The unique port identifier
         ("maxRxSpeed", zes_fabric_port_speed_t),                        ## [out] Maximum speed supported by the receive side of the port (sum of
                                                                         ## all lanes)
@@ -1191,7 +1262,7 @@ class zes_fabric_port_state_t(Structure):
 ## @brief Fabric port throughput.
 class zes_fabric_port_throughput_t(Structure):
     _fields_ = [
-        ("timestamp", c_ulonglong),                                     ## [out] Monotonic timestamp counter in microseconds when the measurement
+        ("timestamp", c_uint64),                                        ## [out] Monotonic timestamp counter in microseconds when the measurement
                                                                         ## was made.
                                                                         ## This timestamp should only be used to calculate delta time between
                                                                         ## snapshots of this structure.
@@ -1199,9 +1270,9 @@ class zes_fabric_port_throughput_t(Structure):
                                                                         ## different structure since they are not guaranteed to have the same base.
                                                                         ## The absolute value of the timestamp is only valid during within the
                                                                         ## application and may be different on the next execution.
-        ("rxCounter", c_ulonglong),                                     ## [out] Monotonic counter for the number of bytes received (sum of all
+        ("rxCounter", c_uint64),                                        ## [out] Monotonic counter for the number of bytes received (sum of all
                                                                         ## lanes). This includes all protocol overhead, not only the GPU traffic.
-        ("txCounter", c_ulonglong)                                      ## [out] Monotonic counter for the number of bytes transmitted (sum of
+        ("txCounter", c_uint64)                                         ## [out] Monotonic counter for the number of bytes transmitted (sum of
                                                                         ## all lanes). This includes all protocol overhead, not only the GPU
                                                                         ## traffic.
     ]
@@ -1213,10 +1284,10 @@ class zes_fabric_port_error_counters_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("linkFailureCount", c_ulonglong),                              ## [out] Link Failure Error Count reported per port
-        ("fwCommErrorCount", c_ulonglong),                              ## [out] Firmware Communication Error Count reported per device
-        ("fwErrorCount", c_ulonglong),                                  ## [out] Firmware reported Error Count reported per device
-        ("linkDegradeCount", c_ulonglong)                               ## [out] Link Degrade Error Count reported per port
+        ("linkFailureCount", c_uint64),                                 ## [out] Link Failure Error Count reported per port
+        ("fwCommErrorCount", c_uint64),                                 ## [out] Firmware Communication Error Count reported per device
+        ("fwErrorCount", c_uint64),                                     ## [out] Firmware reported Error Count reported per device
+        ("linkDegradeCount", c_uint64)                                  ## [out] Link Degrade Error Count reported per port
     ]
 
 ###############################################################################
@@ -1247,7 +1318,7 @@ class zes_fan_speed_units_t(c_int):
 ## @brief Fan speed
 class zes_fan_speed_t(Structure):
     _fields_ = [
-        ("speed", c_int32_t),                                           ## [in,out] The speed of the fan. On output, a value of -1 indicates that
+        ("speed", c_int32),                                             ## [in,out] The speed of the fan. On output, a value of -1 indicates that
                                                                         ## there is no fixed fan speed setting.
         ("units", zes_fan_speed_units_t)                                ## [in,out] The units that the fan speed is expressed in. On output, if
                                                                         ## fan speed is -1 then units should be ignored.
@@ -1257,7 +1328,7 @@ class zes_fan_speed_t(Structure):
 ## @brief Fan temperature/speed pair
 class zes_fan_temp_speed_t(Structure):
     _fields_ = [
-        ("temperature", c_ulong),                                       ## [in,out] Temperature in degrees Celsius.
+        ("temperature", c_uint32),                                      ## [in,out] Temperature in degrees Celsius.
         ("speed", zes_fan_speed_t)                                      ## [in,out] The speed of the fan
     ]
 
@@ -1269,7 +1340,7 @@ ZES_FAN_TEMP_SPEED_PAIR_COUNT = 32
 ## @brief Fan speed table
 class zes_fan_speed_table_t(Structure):
     _fields_ = [
-        ("numPoints", c_int32_t),                                       ## [in,out] The number of valid points in the fan speed table. 0 means
+        ("numPoints", c_int32),                                         ## [in,out] The number of valid points in the fan speed table. 0 means
                                                                         ## that there is no fan speed table configured. -1 means that a fan speed
                                                                         ## table is not supported by the hardware.
         ("table", zes_fan_temp_speed_t * ZES_FAN_TEMP_SPEED_PAIR_COUNT) ## [in,out] Array of temperature/fan speed pairs. The table is ordered
@@ -1285,16 +1356,16 @@ class zes_fan_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("canControl", ze_bool_t),                                      ## [out] Indicates if software can control the fan speed assuming the
                                                                         ## user has permissions
-        ("supportedModes", c_ulong),                                    ## [out] Bitfield of supported fan configuration modes
+        ("supportedModes", c_uint32),                                   ## [out] Bitfield of supported fan configuration modes
                                                                         ## (1<<::zes_fan_speed_mode_t)
-        ("supportedUnits", c_ulong),                                    ## [out] Bitfield of supported fan speed units
+        ("supportedUnits", c_uint32),                                   ## [out] Bitfield of supported fan speed units
                                                                         ## (1<<::zes_fan_speed_units_t)
-        ("maxRPM", c_int32_t),                                          ## [out] The maximum RPM of the fan. A value of -1 means that this
+        ("maxRPM", c_int32),                                            ## [out] The maximum RPM of the fan. A value of -1 means that this
                                                                         ## property is unknown. 
-        ("maxPoints", c_int32_t)                                        ## [out] The maximum number of points in the fan temp/speed table. A
+        ("maxPoints", c_int32)                                          ## [out] The maximum number of points in the fan temp/speed table. A
                                                                         ## value of -1 means that this fan doesn't support providing a temp/speed
                                                                         ## table.
     ]
@@ -1320,7 +1391,7 @@ class zes_firmware_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("canControl", ze_bool_t),                                      ## [out] Indicates if software can flash the firmware assuming the user
                                                                         ## has permissions
         ("name", c_char * ZES_STRING_PROPERTY_SIZE),                    ## [out] NULL terminated string value. The string "unknown" will be
@@ -1360,7 +1431,7 @@ class zes_freq_properties_t(Structure):
                                                                         ## memory, ...)
         ("onSubdevice", ze_bool_t),                                     ## [out] True if this resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("canControl", ze_bool_t),                                      ## [out] Indicates if software can control the frequency of this domain
                                                                         ## assuming the user has permissions
         ("isThrottleEventSupported", ze_bool_t),                        ## [out] Indicates if software can register to receive event
@@ -1448,9 +1519,9 @@ class zes_freq_state_t(Structure):
 ##       s1.throttleTime) / (s2.timestamp - s1.timestamp)
 class zes_freq_throttle_time_t(Structure):
     _fields_ = [
-        ("throttleTime", c_ulonglong),                                  ## [out] The monotonic counter of time in microseconds that the frequency
+        ("throttleTime", c_uint64),                                     ## [out] The monotonic counter of time in microseconds that the frequency
                                                                         ## has been limited by the hardware.
-        ("timestamp", c_ulonglong)                                      ## [out] Microsecond timestamp when throttleTime was captured.
+        ("timestamp", c_uint64)                                         ## [out] Microsecond timestamp when throttleTime was captured.
                                                                         ## This timestamp should only be used to calculate delta time between
                                                                         ## snapshots of this structure.
                                                                         ## Never take the delta of this timestamp with the timestamp from a
@@ -1460,10 +1531,10 @@ class zes_freq_throttle_time_t(Structure):
     ]
 
 ###############################################################################
-## @brief Overclocking modes
+## @brief [DEPRECATED since 1.8] Overclocking modes
 ## 
-## @details
-##     - [DEPRECATED] No longer supported.
+## @deprecated Since 1.8. Overclocking moved to the Overclock API. Use
+##             ::zes_overclock_mode_t instead.
 class zes_oc_mode_v(IntEnum):
     OFF = 0                                                                 ## Overclocking if off - hardware is running using factory default
                                                                             ## voltages/frequencies.
@@ -1488,12 +1559,14 @@ class zes_oc_mode_t(c_int):
 
 
 ###############################################################################
-## @brief Overclocking properties
+## @brief [DEPRECATED since 1.8] Overclocking properties
 ## 
 ## @details
 ##     - Provides all the overclocking capabilities and properties supported by
 ##       the device for the frequency domain.
-##     - [DEPRECATED] No longer supported.
+## 
+## @deprecated Since 1.8. Overclocking moved to the Overclock API. Use
+##             ::zes_overclock_properties_t instead.
 class zes_oc_capabilities_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -1534,7 +1607,7 @@ class zes_led_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("canControl", ze_bool_t),                                      ## [out] Indicates if software can control the LED assuming the user has
                                                                         ## permissions
         ("haveRGB", ze_bool_t)                                          ## [out] Indicates if the LED is RGB capable
@@ -1640,14 +1713,14 @@ class zes_mem_properties_t(Structure):
         ("type", zes_mem_type_t),                                       ## [out] The memory type
         ("onSubdevice", ze_bool_t),                                     ## [out] True if this resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("location", zes_mem_loc_t),                                    ## [out] Location of this memory (system, device)
-        ("physicalSize", c_ulonglong),                                  ## [out] Physical memory capacity in bytes. A value of 0 indicates that
+        ("physicalSize", c_uint64),                                     ## [out] Physical memory capacity in bytes. A value of 0 indicates that
                                                                         ## this property is not known. However, a call to zesMemoryGetState()
                                                                         ## will return the available free physical memory.
-        ("busWidth", c_int32_t),                                        ## [out] Width of the memory bus. A value of -1 means that this property
+        ("busWidth", c_int32),                                          ## [out] Width of the memory bus. A value of -1 means that this property
                                                                         ## is unknown.
-        ("numChannels", c_int32_t)                                      ## [out] The number of memory channels. A value of -1 means that this
+        ("numChannels", c_int32)                                        ## [out] The number of memory channels. A value of -1 means that this
                                                                         ## property is unknown.
     ]
 
@@ -1662,13 +1735,12 @@ class zes_mem_state_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("health", zes_mem_health_t),                                   ## [out] Indicates the health of the memory
-        ("free", c_ulonglong),                                          ## [out] The free physical memory in bytes
-        ("size", c_ulonglong)                                           ## [out] The total allocatable memory in bytes (can be less than the
-                                                                        ## `physicalSize` member of ::zes_mem_properties_t). *DEPRECATED* 
-                                                                        ## This member can no longer track the allocatable memory reliably.
-                                                                        ## Clients depending on this information can use the 
-                                                                        ## zeDeviceGetProperties with ze_device_usablemem_size_ext_properties_t
-                                                                        ## extension to get information of the available usable memory.
+        ("free", c_uint64),                                             ## [out] The free physical memory in bytes
+        ("size", c_uint64)                                              ## [out] [DEPRECATED since 1.15] The total allocatable memory in bytes
+                                                                        ## (can be less than the `physicalSize` member of
+                                                                        ## ::zes_mem_properties_t). This member can no longer track the
+                                                                        ## allocatable memory reliably. Use
+                                                                        ## ::ze_device_usablemem_size_ext_properties_t instead.
     ]
 
 ###############################################################################
@@ -1687,10 +1759,11 @@ class zes_mem_state_t(Structure):
 ##       multiplied by 32 to get delta between samples in actual byte count
 class zes_mem_bandwidth_t(Structure):
     _fields_ = [
-        ("readCounter", c_ulonglong),                                   ## [out] Total bytes read from memory
-        ("writeCounter", c_ulonglong),                                  ## [out] Total bytes written to memory
-        ("maxBandwidth", c_ulonglong),                                  ## [out] Current maximum bandwidth in units of bytes/sec
-        ("timestamp", c_ulonglong)                                      ## [out] The timestamp in microseconds when these measurements were sampled.
+        ("readCounter", c_uint64),                                      ## [out] Total bytes read from memory
+        ("writeCounter", c_uint64),                                     ## [out] Total bytes written to memory
+        ("maxBandwidth", c_uint64),                                     ## [out] Current maximum bandwidth in units of bytes/sec. Use 1000 (not
+                                                                        ## 1024) to convert to higher-order units.
+        ("timestamp", c_uint64)                                         ## [out] The timestamp in microseconds when these measurements were sampled.
                                                                         ## This timestamp should only be used to calculate delta time between
                                                                         ## snapshots of this structure.
                                                                         ## Never take the delta of this timestamp with the timestamp from a
@@ -1700,14 +1773,16 @@ class zes_mem_bandwidth_t(Structure):
     ]
 
 ###############################################################################
-## @brief Extension properties for Memory bandwidth
+## @brief [DEPRECATED since 1.8] Extension properties for Memory bandwidth
 ## 
 ## @details
 ##     - Number of counter bits
-##     - [DEPRECATED] No longer supported.
+## 
+## @deprecated Since 1.8. The original struct lacked an stype field. Use
+##             ::zes_mem_bandwidth_counter_bits_exp_properties_t instead.
 class zes_mem_ext_bandwidth_t(Structure):
     _fields_ = [
-        ("memoryTimestampValidBits", c_ulong)                           ## [out] Returns the number of valid bits in the timestamp values
+        ("memoryTimestampValidBits", c_uint32)                          ## [out] Returns the number of valid bits in the timestamp values
     ]
 
 ###############################################################################
@@ -1719,7 +1794,7 @@ class zes_perf_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if this Performance Factor affects accelerators located on
                                                                         ## a sub-device
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("engines", zes_engine_type_flags_t)                            ## [out] Bitfield of accelerator engine types that are affected by this
                                                                         ## Performance Factor.
     ]
@@ -1794,17 +1869,20 @@ class zes_power_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if this resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("canControl", ze_bool_t),                                      ## [out] Software can change the power limits of this domain assuming the
                                                                         ## user has permissions.
         ("isEnergyThresholdSupported", ze_bool_t),                      ## [out] Indicates if this power domain supports the energy threshold
                                                                         ## event (::ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED).
-        ("defaultLimit", c_int32_t),                                    ## [out] (Deprecated) The factory default TDP power limit of the part in
-                                                                        ## milliwatts. A value of -1 means that this is not known.
-        ("minLimit", c_int32_t),                                        ## [out] (Deprecated) The minimum power limit in milliwatts that can be
-                                                                        ## requested. A value of -1 means that this is not known.
-        ("maxLimit", c_int32_t)                                         ## [out] (Deprecated) The maximum power limit in milliwatts that can be
-                                                                        ## requested. A value of -1 means that this is not known.
+        ("defaultLimit", c_int32),                                      ## [out] [DEPRECATED since 1.5] The factory default TDP power limit of
+                                                                        ## the part in milliwatts. A value of -1 means that this is not known.
+                                                                        ## Use ::zes_power_limit_ext_desc_t instead.
+        ("minLimit", c_int32),                                          ## [out] [DEPRECATED since 1.5] The minimum power limit in milliwatts
+                                                                        ## that can be requested. A value of -1 means that this is not known. Use
+                                                                        ## ::zes_power_limit_ext_desc_t instead.
+        ("maxLimit", c_int32)                                           ## [out] [DEPRECATED since 1.5] The maximum power limit in milliwatts
+                                                                        ## that can be requested. A value of -1 means that this is not known. Use
+                                                                        ## ::zes_power_limit_ext_desc_t instead.
     ]
 
 ###############################################################################
@@ -1816,8 +1894,8 @@ class zes_power_properties_t(Structure):
 ##       s1.timestamp)
 class zes_power_energy_counter_t(Structure):
     _fields_ = [
-        ("energy", c_ulonglong),                                        ## [out] The monotonic energy counter in microjoules.
-        ("timestamp", c_ulonglong)                                      ## [out] Microsecond timestamp when energy was captured.
+        ("energy", c_uint64),                                           ## [out] The monotonic energy counter in microjoules.
+        ("timestamp", c_uint64)                                         ## [out] Microsecond timestamp when energy was captured.
                                                                         ## This timestamp should only be used to calculate delta time between
                                                                         ## snapshots of this structure.
                                                                         ## Never take the delta of this timestamp with the timestamp from a
@@ -1827,22 +1905,24 @@ class zes_power_energy_counter_t(Structure):
     ]
 
 ###############################################################################
-## @brief Sustained power limits
+## @brief [DEPRECATED since 1.8] Sustained power limits
 ## 
 ## @details
 ##     - The power controller (Punit) will throttle the operating frequency if
 ##       the power averaged over a window (typically seconds) exceeds this
 ##       limit.
-##     - [DEPRECATED] No longer supported.
+## 
+## @deprecated Since 1.8. One descriptor per limit level replaces this struct. Use
+##             ::zes_power_limit_ext_desc_t instead.
 class zes_power_sustained_limit_t(Structure):
     _fields_ = [
         ("enabled", ze_bool_t),                                         ## [in,out] indicates if the limit is enabled (true) or ignored (false)
-        ("power", c_int32_t),                                           ## [in,out] power limit in milliwatts
-        ("interval", c_int32_t)                                         ## [in,out] power averaging window (Tau) in milliseconds
+        ("power", c_int32),                                             ## [in,out] power limit in milliwatts
+        ("interval", c_int32)                                           ## [in,out] power averaging window (Tau) in milliseconds
     ]
 
 ###############################################################################
-## @brief Burst power limit
+## @brief [DEPRECATED since 1.8] Burst power limit
 ## 
 ## @details
 ##     - The power controller (Punit) will throttle the operating frequency of
@@ -1850,15 +1930,17 @@ class zes_power_sustained_limit_t(Structure):
 ##       limit known as PL2. Typically PL2 > PL1 so that it permits the
 ##       frequency to burst higher for short periods than would be otherwise
 ##       permitted by PL1.
-##     - [DEPRECATED] No longer supported.
+## 
+## @deprecated Since 1.8. One descriptor per limit level replaces this struct. Use
+##             ::zes_power_limit_ext_desc_t instead.
 class zes_power_burst_limit_t(Structure):
     _fields_ = [
         ("enabled", ze_bool_t),                                         ## [in,out] indicates if the limit is enabled (true) or ignored (false)
-        ("power", c_int32_t)                                            ## [in,out] power limit in milliwatts
+        ("power", c_int32)                                              ## [in,out] power limit in milliwatts
     ]
 
 ###############################################################################
-## @brief Peak power limit
+## @brief [DEPRECATED since 1.8] Peak power limit
 ## 
 ## @details
 ##     - The power controller (Punit) will reactively/proactively throttle the
@@ -1870,11 +1952,13 @@ class zes_power_burst_limit_t(Structure):
 ##       power controller will throttle the device frequencies down to min. It
 ##       is thus better to tune the PL4 value in order to avoid such
 ##       excursions.
-##     - [DEPRECATED] No longer supported.
+## 
+## @deprecated Since 1.8. One descriptor per limit level replaces this struct. Use
+##             ::zes_power_limit_ext_desc_t instead.
 class zes_power_peak_limit_t(Structure):
     _fields_ = [
-        ("powerAC", c_int32_t),                                         ## [in,out] power limit in milliwatts for the AC power source.
-        ("powerDC", c_int32_t)                                          ## [in,out] power limit in milliwatts for the DC power source. On input,
+        ("powerAC", c_int32),                                           ## [in,out] power limit in milliwatts for the AC power source.
+        ("powerDC", c_int32)                                            ## [in,out] power limit in milliwatts for the DC power source. On input,
                                                                         ## this is ignored if the product does not have a battery. On output,
                                                                         ## this will be -1 if the product does not have a battery.
     ]
@@ -1889,7 +1973,7 @@ class zes_energy_threshold_t(Structure):
         ("enable", ze_bool_t),                                          ## [in,out] Indicates if the energy threshold is enabled.
         ("threshold", c_double),                                        ## [in,out] The energy threshold in Joules. Will be 0.0 if no threshold
                                                                         ## has been set.
-        ("processId", c_ulong)                                          ## [in,out] The host process ID that set the energy threshold. Will be
+        ("processId", c_uint32)                                         ## [in,out] The host process ID that set the energy threshold. Will be
                                                                         ## 0xFFFFFFFF if no threshold has been set.
     ]
 
@@ -1916,9 +2000,9 @@ class zes_psu_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("haveFan", ze_bool_t),                                         ## [out] True if the power supply has a fan
-        ("ampLimit", c_int32_t)                                         ## [out] The maximum electrical current in milliamperes that can be
+        ("ampLimit", c_int32)                                           ## [out] The maximum electrical current in milliamperes that can be
                                                                         ## drawn. A value of -1 indicates that this property cannot be
                                                                         ## determined.
     ]
@@ -1932,9 +2016,9 @@ class zes_psu_state_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("voltStatus", zes_psu_voltage_status_t),                       ## [out] The current PSU voltage status
         ("fanFailed", ze_bool_t),                                       ## [out] Indicates if the fan has failed
-        ("temperature", c_int32_t),                                     ## [out] Read the current heatsink temperature in degrees Celsius. A
+        ("temperature", c_int32),                                       ## [out] Read the current heatsink temperature in degrees Celsius. A
                                                                         ## value of -1 indicates that this property cannot be determined.
-        ("current", c_int32_t)                                          ## [out] The amps being drawn in milliamperes. A value of -1 indicates
+        ("current", c_int32)                                            ## [out] The amps being drawn in milliamperes. A value of -1 indicates
                                                                         ## that this property cannot be determined.
     ]
 
@@ -1983,7 +2067,7 @@ class zes_ras_properties_t(Structure):
         ("type", zes_ras_error_type_t),                                 ## [out] The type of RAS error
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32)                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
     ]
 
 ###############################################################################
@@ -1993,7 +2077,7 @@ class zes_ras_state_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("category", c_ulonglong * ZES_MAX_RAS_ERROR_CATEGORY_COUNT)    ## [in][out] Breakdown of error by category
+        ("category", c_uint64 * ZES_MAX_RAS_ERROR_CATEGORY_COUNT)       ## [in][out] Breakdown of error by category
     ]
 
 ###############################################################################
@@ -2016,7 +2100,7 @@ class zes_ras_config_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("totalThreshold", c_ulonglong),                                ## [in,out] If the total RAS errors exceeds this threshold, the event
+        ("totalThreshold", c_uint64),                                   ## [in,out] If the total RAS errors exceeds this threshold, the event
                                                                         ## will be triggered. A value of 0ULL disables triggering the event based
                                                                         ## on the total counter.
         ("detailedThresholds", zes_ras_state_t)                         ## [in,out] If the RAS errors for each category exceed the threshold for
@@ -2038,7 +2122,12 @@ class zes_sched_mode_v(IntEnum):
                                                                             ## without being preempted or terminated. All pending work for other
                                                                             ## contexts must wait until the running context completes with no further
                                                                             ## submitted work.
-    COMPUTE_UNIT_DEBUG = 3                                                  ## [DEPRECATED] No longer supported.
+    COMPUTE_UNIT_DEBUG = 3                                                  ## [DEPRECATED since 1.8] This is a special mode that must ben enabled
+                                                                            ## when debugging an application that uses this device e.g. using the
+                                                                            ## Level0 Debug API. It has the effect of disabling any timeouts on
+                                                                            ## workload execution time and will change workload scheduling to ensure
+                                                                            ## debug accuracy. Enable debugging with ZET_ENABLE_PROGRAM_DEBUGGING,
+                                                                            ## and select devices with ZE_AFFINITY_MASK. Related: ::zetDebugAttach.
 
 class zes_sched_mode_t(c_int):
     def __str__(self):
@@ -2054,19 +2143,19 @@ class zes_sched_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("onSubdevice", ze_bool_t),                                     ## [out] True if this resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("canControl", ze_bool_t),                                      ## [out] Software can change the scheduler component configuration
                                                                         ## assuming the user has permissions.
         ("engines", zes_engine_type_flags_t),                           ## [out] Bitfield of accelerator engine types that are managed by this
                                                                         ## scheduler component. Note that there can be more than one scheduler
                                                                         ## component for the same type of accelerator engine.
-        ("supportedModes", c_ulong)                                     ## [out] Bitfield of scheduler modes that can be configured for this
+        ("supportedModes", c_uint32)                                    ## [out] Bitfield of scheduler modes that can be configured for this
                                                                         ## scheduler component (bitfield of 1<<::zes_sched_mode_t).
     ]
 
 ###############################################################################
 ## @brief Disable forward progress guard timeout.
-ZES_SCHED_WATCHDOG_DISABLE = (~(0ULL))
+ZES_SCHED_WATCHDOG_DISABLE = ((~(0)) & 0xFFFFFFFFFFFFFFFF)
 
 ###############################################################################
 ## @brief Configuration for timeout scheduler mode (::ZES_SCHED_MODE_TIMEOUT)
@@ -2075,7 +2164,7 @@ class zes_sched_timeout_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("watchdogTimeout", c_ulonglong)                                ## [in,out] The maximum time in microseconds that the scheduler will wait
+        ("watchdogTimeout", c_uint64)                                   ## [in,out] The maximum time in microseconds that the scheduler will wait
                                                                         ## for a batch of work submitted to a hardware engine to complete or to
                                                                         ## be preempted so as to run another context.
                                                                         ## If this time is exceeded, the hardware engine is reset and the context terminated.
@@ -2092,10 +2181,10 @@ class zes_sched_timeslice_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("interval", c_ulonglong),                                      ## [in,out] The average interval in microseconds that a submission for a
+        ("interval", c_uint64),                                         ## [in,out] The average interval in microseconds that a submission for a
                                                                         ## context will run on a hardware engine before being preempted out to
                                                                         ## run a pending submission for another context.
-        ("yieldTimeout", c_ulonglong)                                   ## [in,out] The maximum time in microseconds that the scheduler will wait
+        ("yieldTimeout", c_uint64)                                      ## [in,out] The maximum time in microseconds that the scheduler will wait
                                                                         ## to preempt a workload running on an engine before deciding to reset
                                                                         ## the hardware engine and terminating the associated context.
     ]
@@ -2120,7 +2209,7 @@ class zes_standby_properties_t(Structure):
         ("type", zes_standby_type_t),                                   ## [out] Which standby hardware component this controls
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32)                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
     ]
 
 ###############################################################################
@@ -2167,7 +2256,7 @@ class zes_temp_properties_t(Structure):
         ("type", zes_temp_sensors_t),                                   ## [out] Which part of the device the temperature sensor measures
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
-        ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
+        ("subdeviceId", c_uint32),                                      ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("maxTemperature", c_double),                                   ## [out] Will contain the maximum temperature for the specific device in
                                                                         ## degrees Celsius.
         ("isCriticalTempSupported", ze_bool_t),                         ## [out] Indicates if the critical temperature event
@@ -2240,11 +2329,11 @@ class zes_power_limit_ext_desc_t(Structure):
                                                                         ## If enabledStateIsLocked is True, this value is ignored.
         ("intervalValueLocked", ze_bool_t),                             ## [out] indicates if the interval can be modified (false) or is fixed
                                                                         ## (true).
-        ("interval", c_int32_t),                                        ## [in,out] power averaging window in milliseconds. If
+        ("interval", c_int32),                                          ## [in,out] power averaging window in milliseconds. If
                                                                         ## intervalValueLocked is true, this value is ignored.
         ("limitValueLocked", ze_bool_t),                                ## [out] indicates if the limit can be set (false) or if the limit is
                                                                         ## fixed (true).
-        ("limit", c_int32_t)                                            ## [in,out] limit value. If limitValueLocked is true, this value is
+        ("limit", c_int32)                                              ## [in,out] limit value. If limitValueLocked is true, this value is
                                                                         ## ignored. The value should be provided in the unit specified by
                                                                         ## limitUnit.
     ]
@@ -2296,7 +2385,7 @@ class zes_engine_ext_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("countOfVirtualFunctionInstance", c_ulong)                     ## [out] Number of Virtual Function(VF) instances associated with engine
+        ("countOfVirtualFunctionInstance", c_uint32)                    ## [out] Number of Virtual Function(VF) instances associated with engine
                                                                         ## to monitor the utilization of hardware across all Virtual Function
                                                                         ## from a Physical Function (PF) instance.
                                                                         ## These VF-by-VF views should provide engine group and individual engine
@@ -2354,7 +2443,7 @@ class zes_ras_error_category_exp_t(c_int):
 class zes_ras_state_exp_t(Structure):
     _fields_ = [
         ("category", zes_ras_error_category_exp_t),                     ## [out] category for which error counter is provided.
-        ("errorCounter", c_ulonglong)                                   ## [out] Current value of RAS counter for specific error category.
+        ("errorCounter", c_uint64)                                      ## [out] Current value of RAS counter for specific error category.
     ]
 
 ###############################################################################
@@ -2364,7 +2453,7 @@ class zes_ras_state_exp2_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("errorCounter", c_ulonglong)                                   ## [out] Current value of RAS counter for the corresponding error
+        ("errorCounter", c_uint64)                                      ## [out] Current value of RAS counter for the corresponding error
                                                                         ## category.
     ]
 
@@ -2376,7 +2465,7 @@ class zes_ras_config_exp_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("category", zes_ras_error_category_exp_t),                     ## [in] RAS error category for which threshold is being configured.
-        ("threshold", c_ulonglong)                                      ## [in,out] Error count threshold to trigger RAS events. A value of 0
+        ("threshold", c_uint64)                                         ## [in,out] Error count threshold to trigger RAS events. A value of 0
                                                                         ## disables event triggering for this category.
     ]
 
@@ -2407,8 +2496,8 @@ class zes_mem_page_offline_state_exp_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("memoryPageOffline", c_ulong),                                 ## [out] Returns the number of Memory Pages Offline
-        ("maxMemoryPageOffline", c_ulong)                               ## [out] Returns the Allowed Memory Pages Offline
+        ("memoryPageOffline", c_uint32),                                ## [out] Returns the number of Memory Pages Offline
+        ("maxMemoryPageOffline", c_uint32)                              ## [out] Returns the Allowed Memory Pages Offline
     ]
 
 ###############################################################################
@@ -2441,7 +2530,7 @@ class zes_mem_bandwidth_counter_bits_exp_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("validBitsCount", c_ulong)                                     ## [out] Returns the number of valid bits in the counter values
+        ("validBitsCount", c_uint32)                                    ## [out] Returns the number of valid bits in the counter values
     ]
 
 ###############################################################################
@@ -2512,7 +2601,7 @@ class zes_subdevice_exp_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("subdeviceId", c_ulong),                                       ## [out] this gives the ID of the sub device
+        ("subdeviceId", c_uint32),                                      ## [out] this gives the ID of the sub device
         ("uuid", zes_uuid_t)                                            ## [out] universal unique identifier of the sub device.
     ]
 
@@ -2523,8 +2612,10 @@ ZES_VIRTUAL_FUNCTION_MANAGEMENT_EXP_NAME = "ZES_experimental_virtual_function_ma
 ###############################################################################
 ## @brief Virtual Function Management Extension Version(s)
 class zes_vf_management_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0 (deprecated)
-    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1 (deprecated)
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## [DEPRECATED since 1.10] version 1.0. Superseded by a newer version.
+                                                                            ## Use ::ZES_VF_MANAGEMENT_EXP_VERSION_1_2 instead.
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## [DEPRECATED since 1.11] version 1.1. Superseded by a newer version.
+                                                                            ## Use ::ZES_VF_MANAGEMENT_EXP_VERSION_1_2 instead.
     _1_2 = ZE_MAKE_VERSION( 1, 2 )                                          ## version 1.2
     CURRENT = ZE_MAKE_VERSION( 1, 2 )                                       ## latest known version
 
@@ -2534,7 +2625,9 @@ class zes_vf_management_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Virtual function memory types (deprecated)
+## @brief [DEPRECATED since 1.10] Virtual function memory types
+## 
+## @deprecated Since 1.10. Use ::zes_mem_loc_t instead.
 class zes_vf_info_mem_type_exp_flags_v(IntEnum):
     MEM_TYPE_SYSTEM = ZE_BIT(0)                                             ## System memory
     MEM_TYPE_DEVICE = ZE_BIT(1)                                             ## Device local memory
@@ -2545,7 +2638,11 @@ class zes_vf_info_mem_type_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Virtual function utilization flag bit fields (deprecated)
+## @brief [DEPRECATED since 1.10] Virtual function utilization flag bit fields
+## 
+## @deprecated Since 1.10. The Exp2 utilization queries report what is available:
+##             memory by ::zes_mem_loc_t, engines by ::zes_engine_group_t. Related:
+##             ::zesVFManagementGetVFEngineUtilizationExp2.
 class zes_vf_info_util_exp_flags_v(IntEnum):
     INFO_NONE = ZE_BIT(0)                                                   ## No info associated with virtual function
     INFO_MEM_CPU = ZE_BIT(1)                                                ## System memory utilization associated with virtual function
@@ -2558,7 +2655,9 @@ class zes_vf_info_util_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Virtual function management properties (deprecated)
+## @brief [DEPRECATED since 1.10] Virtual function management properties
+## 
+## @deprecated Since 1.10. Use ::zes_vf_exp2_capabilities_t instead.
 class zes_vf_exp_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -2571,41 +2670,49 @@ class zes_vf_exp_properties_t(Structure):
     ]
 
 ###############################################################################
-## @brief Provides memory utilization values for a virtual function (deprecated)
+## @brief [DEPRECATED since 1.10] Provides memory utilization values for a
+##        virtual function
+## 
+## @deprecated Since 1.10. Use ::zes_vf_util_mem_exp2_t instead.
 class zes_vf_util_mem_exp_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("memTypeFlags", zes_vf_info_mem_type_exp_flags_t),             ## [out] Memory type flags.
-        ("free", c_ulonglong),                                          ## [out] Free memory size in bytes.
-        ("size", c_ulonglong),                                          ## [out] Total allocatable memory in bytes.
-        ("timestamp", c_ulonglong)                                      ## [out] Wall clock time from VF when value was sampled.
+        ("free", c_uint64),                                             ## [out] Free memory size in bytes.
+        ("size", c_uint64),                                             ## [out] Total allocatable memory in bytes.
+        ("timestamp", c_uint64)                                         ## [out] Wall clock time from VF when value was sampled.
     ]
 
 ###############################################################################
-## @brief Provides engine utilization values for a virtual function (deprecated)
+## @brief [DEPRECATED since 1.10] Provides engine utilization values for a
+##        virtual function
+## 
+## @deprecated Since 1.10. Use ::zes_vf_util_engine_exp2_t instead.
 class zes_vf_util_engine_exp_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", zes_engine_group_t),                                   ## [out] The engine group.
-        ("activeCounterValue", c_ulonglong),                            ## [out] Represents active counter.
-        ("samplingCounterValue", c_ulonglong),                          ## [out] Represents counter value when activeCounterValue was sampled.
-        ("timestamp", c_ulonglong)                                      ## [out] Wall clock time when the activeCounterValue was sampled.
+        ("activeCounterValue", c_uint64),                               ## [out] Represents active counter.
+        ("samplingCounterValue", c_uint64),                             ## [out] Represents counter value when activeCounterValue was sampled.
+        ("timestamp", c_uint64)                                         ## [out] Wall clock time when the activeCounterValue was sampled.
     ]
 
 ###############################################################################
-## @brief Virtual function management capabilities (deprecated)
+## @brief [DEPRECATED since 1.12] Virtual function management capabilities
+## 
+## @deprecated Since 1.12. Use ::zes_vf_exp2_capabilities_t instead.
 class zes_vf_exp_capabilities_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("address", zes_pci_address_t),                                 ## [out] Virtual function BDF address
-        ("vfDeviceMemSize", c_ulong),                                   ## [out] Virtual function memory size in kilo bytes
-        ("vfID", c_ulong)                                               ## [out] Virtual Function ID
+        ("vfDeviceMemSize", c_uint32),                                  ## [out] Virtual function memory size in kilo bytes
+        ("vfID", c_uint32)                                              ## [out] Virtual Function ID
     ]
 
 ###############################################################################
@@ -2616,8 +2723,8 @@ class zes_vf_exp2_capabilities_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("address", zes_pci_address_t),                                 ## [out] Virtual function BDF address
-        ("vfDeviceMemSize", c_ulonglong),                               ## [out] Virtual function memory size in bytes
-        ("vfID", c_ulong)                                               ## [out] Virtual Function ID
+        ("vfDeviceMemSize", c_uint64),                                  ## [out] Virtual function memory size in bytes
+        ("vfID", c_uint32)                                              ## [out] Virtual Function ID
     ]
 
 ###############################################################################
@@ -2628,7 +2735,7 @@ class zes_vf_util_mem_exp2_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("vfMemLocation", zes_mem_loc_t),                               ## [out] Location of this memory (system, device)
-        ("vfMemUtilized", c_ulonglong)                                  ## [out] Utilized memory size in bytes.
+        ("vfMemUtilized", c_uint64)                                     ## [out] Utilized memory size in bytes.
     ]
 
 ###############################################################################
@@ -2645,8 +2752,8 @@ class zes_vf_util_engine_exp2_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("vfEngineType", zes_engine_group_t),                           ## [out] The engine group.
-        ("activeCounterValue", c_ulonglong),                            ## [out] Represents active counter.
-        ("samplingCounterValue", c_ulonglong)                           ## [out] Represents counter value when activeCounterValue was sampled.
+        ("activeCounterValue", c_uint64),                               ## [out] Represents active counter.
+        ("samplingCounterValue", c_uint64)                              ## [out] Represents counter value when activeCounterValue was sampled.
                                                                         ## Refer to the formulae above for calculating the utilization percent
     ]
 
@@ -2715,7 +2822,7 @@ class zes_pci_link_speed_downgrade_ext_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("pciLinkSpeedUpdateCapable", ze_bool_t),                       ## [out] Returns if PCIe downgrade capability is available.
-        ("maxPciGenSupported", c_int32_t)                               ## [out] Returns the max supported PCIe generation of the device. -1
+        ("maxPciGenSupported", c_int32)                                 ## [out] Returns the max supported PCIe generation of the device. -1
                                                                         ## indicates the information is not available
     ]
 
@@ -2798,7 +2905,7 @@ class zes_oem_serial_id_ext_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("length", c_ushort),                                           ## [out] OEM serial ID length
+        ("length", c_uint16),                                           ## [out] OEM serial ID length
         ("oemSerialId", c_char * ZES_OEM_SERIAL_ID_SIZE)                ## [out] OEM serial ID for the device.
     ]
 
@@ -2867,9 +2974,9 @@ class zes_memory_vendor_info_ext_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("vendorId", c_ulong),                                          ## [out] Memory vendor ID for the device. A value of 0 indicates that the
+        ("vendorId", c_uint32),                                         ## [out] Memory vendor ID for the device. A value of 0 indicates that the
                                                                         ## memory vendor ID could not be determined.
-        ("length", c_ushort),                                           ## [out] Length of the memory vendor name, excluding the null terminator.
+        ("length", c_uint16),                                           ## [out] Length of the memory vendor name, excluding the null terminator.
                                                                         ## A value of 0 indicates that the memory vendor name could not be
                                                                         ## determined.
         ("vendorName", c_char * ZES_MEMORY_VENDOR_NAME_EXT_SIZE)        ## [out] Memory vendor name for the device (NULL terminated string
@@ -2976,7 +3083,7 @@ class zes_info_log_instance_ext_desc_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("pBufferSizeInKb", POINTER(c_ulong))                           ## [in,out][optional] pointer to the size, in kilobytes, of the buffer
+        ("pBufferSizeInKb", POINTER(c_uint32))                          ## [in,out][optional] pointer to the size, in kilobytes, of the buffer
                                                                         ## used to collect records.
                                                                         ## if nullptr, then the driver shall use its default buffer size.
                                                                         ## if *pBufferSizeInKb == 0, then implementation shall update
@@ -3013,13 +3120,13 @@ class zes_info_log_metadata_ext_t(Structure):
                                                                         ## that the PCI address could not be determined.
         ("uuid", zes_uuid_t),                                           ## [out] universal unique identifier of the device that generated the record.
                                                                         ## A value of 0 indicates that the UUID could not be determined.
-        ("timestamp", c_ulonglong),                                     ## [out] Time when the record was generated, in nanoseconds.
+        ("timestamp", c_uint64),                                        ## [out] Time when the record was generated, in nanoseconds.
                                                                         ## The reference point of this timestamp is implementation specific and
                                                                         ## is only guaranteed to be consistent across records returned by the
                                                                         ## same info log.
                                                                         ## A value of 0 indicates that the timestamp could not be determined.
-        ("lengthOfData", c_ulong),                                      ## [out] Length of the record, in bytes.
-        ("offset", c_ulong),                                            ## [out] Byte offset of the record from the start of the returned data
+        ("lengthOfData", c_uint32),                                     ## [out] Length of the record, in bytes.
+        ("offset", c_uint32),                                           ## [out] Byte offset of the record from the start of the returned data
                                                                         ## buffer.
         ("recordType", zes_info_log_record_type_ext_t)                  ## [out] Type of the information reported by the record.
                                                                         ## ::ZES_INFO_LOG_RECORD_TYPE_EXT_UNKNOWN indicates that the type could
@@ -3041,7 +3148,7 @@ class zes_info_log_read_status_ext_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("droppedRecordCount", c_int64_t),                              ## [out] Number of records that were dropped because the collection
+        ("droppedRecordCount", c_int64),                                ## [out] Number of records that were dropped because the collection
                                                                         ## buffer overflowed.
                                                                         ## A value of `-1` indicates that one or more records were dropped and
                                                                         ## that their number could not be determined.
@@ -3051,7 +3158,7 @@ class zes_info_log_read_status_ext_t(Structure):
                                                                         ## ::ZE_RESULT_WARNING_DROPPED_DATA before inspecting
                                                                         ## `droppedRecordCount`, since a value of `0` is otherwise ambiguous
                                                                         ## between no records dropped and the status not having been reported.
-        ("consumedDataSize", c_ulonglong),                              ## [out] Number of bytes that this call read out of the data held by the
+        ("consumedDataSize", c_uint64),                                 ## [out] Number of bytes that this call read out of the data held by the
                                                                         ## collection instance.
                                                                         ## This value counts all of the data that was searched, including data
                                                                         ## that does not belong to a record, and is therefore not related to the
@@ -3068,6 +3175,105 @@ class zes_info_log_read_status_ext_t(Structure):
                                                                         ## found, or because the next record available was larger than `*pSize`.
                                                                         ## This value is a hint. Records may be collected, and for
                                                                         ## ::zesInfoLogInstanceReadWithMetadataExt consumed, after this function returns.
+    ]
+
+###############################################################################
+## @brief Device GPU Topology Extension Name
+ZES_DEVICE_GPU_TOPOLOGY_EXT_NAME = "ZES_extension_device_gpu_topology"
+
+###############################################################################
+## @brief Device GPU Topology Extension Version(s)
+class zes_device_gpu_topology_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_gpu_topology_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_gpu_topology_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Device GPU Topology Extension structure
+## 
+## @details
+##     - This structure can be passed as an extension structure to
+##       ::zesDeviceGetProperties via pNext member
+##     - Returns the GPU topology of the device
+class zes_device_gpu_topology_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("numSlices", c_uint32),                                        ## [out] Total number of slices across the entire device.
+        ("numXeCores", c_uint32),                                       ## [out] Total number of Xe Cores across the entire device. An Xe Core is
+                                                                        ## what earlier GPU generations call a sub-slice.
+        ("numVectorEngines", c_uint32),                                 ## [out] Total number of vector engines across the entire device. A
+                                                                        ## vector engine is what earlier GPU generations call an EU.
+        ("numMatrixEngines", c_uint32),                                 ## [out] Total number of matrix engines across the entire device.
+        ("numThreads", c_uint32),                                       ## [out] Total number of hardware threads across the entire device.
+        ("generationName", c_char * ZES_STRING_PROPERTY_SIZE)           ## [out] Name of the GPU generation of the device.
+                                                                        ## This value is human-readable text intended for display and logging
+                                                                        ## purposes only.
+                                                                        ## Applications that make decisions based on the device architecture
+                                                                        ## should instead use an immutable identifier, such as the `ipVersion`
+                                                                        ## member of ::ze_device_ip_version_ext_t, the `deviceId` member of
+                                                                        ## ::ze_device_properties_t, or the `uuid` member of ::zes_device_ext_properties_t.
+    ]
+
+###############################################################################
+## @brief Supported PCI link speeds reported by ::zes_pci_config_properties_t
+class zes_pci_link_speed_flags_v(IntEnum):
+    GEN1 = ZE_BIT(0)                                                        ## gen 1, 2.5 GT/s, is supported
+    GEN2 = ZE_BIT(1)                                                        ## gen 2, 5 GT/s, is supported
+    GEN3 = ZE_BIT(2)                                                        ## gen 3, 8 GT/s, is supported
+    GEN4 = ZE_BIT(3)                                                        ## gen 4, 16 GT/s, is supported
+    GEN5 = ZE_BIT(4)                                                        ## gen 5, 32 GT/s, is supported
+    GEN6 = ZE_BIT(5)                                                        ## gen 6, 64 GT/s, is supported
+    GEN7 = ZE_BIT(6)                                                        ## gen 7, 128 GT/s, is supported
+
+class zes_pci_link_speed_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Identification and link capability registers from the PCI
+##        configuration space.
+## 
+## @details
+##     - This structure may be passed to ::zesDevicePciGetProperties via the
+##       `pNext` member of ::zes_pci_properties_t.
+##     - This structure is also passed to ::zesDriverGetPciDeviceProperties, so
+##       that PCI properties of supported devices can be queried before device
+##       enumeration.
+class zes_pci_config_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("vendorId", c_uint16),                                         ## [out] The PCI vendor id of the device.
+        ("deviceId", c_uint16),                                         ## [out] The PCI device id of the device.
+        ("subsystemVendorId", c_uint16),                                ## [out] The PCI subsystem vendor id of the device.
+        ("subsystemDeviceId", c_uint16),                                ## [out] The PCI subsystem device id of the device.
+        ("pcieCapabilityVersion", c_uint32),                            ## [out] The PCI Express capability version. Zero if the capability could
+                                                                        ## not be read.
+        ("supportedLinkSpeeds", zes_pci_link_speed_flags_t),            ## [out] The supported link speeds, a combination of
+                                                                        ## ::zes_pci_link_speed_flag_t. Zero if the capability could not be read.
+        ("revision", c_uint8)                                           ## [out] The PCI revision id of the device.
+    ]
+
+###############################################################################
+## @brief PCI device properties queried using ::zesDriverGetPciDeviceProperties
+class zes_driver_pci_device_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("address", zes_pci_address_t),                                 ## [out] The BDF address of the device.
+        ("maxSpeed", zes_pci_speed_t),                                  ## [out] Fastest port configuration supported by the device (sum of all
+                                                                        ## lanes). Each member is -1 when it could not be determined.
+        ("configProperties", zes_pci_config_properties_t),              ## [out] The PCI configuration space properties of the device.
+        ("status", zes_pci_link_status_t)                               ## [out] The link status of the device.
     ]
 
 ###############################################################################
@@ -3112,9 +3318,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDeviceProcessesGetState
 if __use_win_types:
-    _zesDeviceProcessesGetState_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_process_state_t) )
+    _zesDeviceProcessesGetState_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_process_state_t) )
 else:
-    _zesDeviceProcessesGetState_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_process_state_t) )
+    _zesDeviceProcessesGetState_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_process_state_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDevicePciGetProperties
@@ -3133,9 +3339,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDevicePciGetBars
 if __use_win_types:
-    _zesDevicePciGetBars_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_pci_bar_properties_t) )
+    _zesDevicePciGetBars_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_pci_bar_properties_t) )
 else:
-    _zesDevicePciGetBars_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_pci_bar_properties_t) )
+    _zesDevicePciGetBars_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_pci_bar_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDevicePciGetStats
@@ -3147,16 +3353,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumDiagnosticTestSuites
 if __use_win_types:
-    _zesDeviceEnumDiagnosticTestSuites_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_diag_handle_t) )
+    _zesDeviceEnumDiagnosticTestSuites_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_diag_handle_t) )
 else:
-    _zesDeviceEnumDiagnosticTestSuites_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_diag_handle_t) )
+    _zesDeviceEnumDiagnosticTestSuites_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_diag_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumEngineGroups
 if __use_win_types:
-    _zesDeviceEnumEngineGroups_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_engine_handle_t) )
+    _zesDeviceEnumEngineGroups_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_engine_handle_t) )
 else:
-    _zesDeviceEnumEngineGroups_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_engine_handle_t) )
+    _zesDeviceEnumEngineGroups_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_engine_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEventRegister
@@ -3168,58 +3374,58 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumFabricPorts
 if __use_win_types:
-    _zesDeviceEnumFabricPorts_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_fabric_port_handle_t) )
+    _zesDeviceEnumFabricPorts_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_fabric_port_handle_t) )
 else:
-    _zesDeviceEnumFabricPorts_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_fabric_port_handle_t) )
+    _zesDeviceEnumFabricPorts_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_fabric_port_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumFans
 if __use_win_types:
-    _zesDeviceEnumFans_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_fan_handle_t) )
+    _zesDeviceEnumFans_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_fan_handle_t) )
 else:
-    _zesDeviceEnumFans_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_fan_handle_t) )
+    _zesDeviceEnumFans_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_fan_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumFirmwares
 if __use_win_types:
-    _zesDeviceEnumFirmwares_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_firmware_handle_t) )
+    _zesDeviceEnumFirmwares_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_firmware_handle_t) )
 else:
-    _zesDeviceEnumFirmwares_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_firmware_handle_t) )
+    _zesDeviceEnumFirmwares_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_firmware_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumFrequencyDomains
 if __use_win_types:
-    _zesDeviceEnumFrequencyDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_freq_handle_t) )
+    _zesDeviceEnumFrequencyDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_freq_handle_t) )
 else:
-    _zesDeviceEnumFrequencyDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_freq_handle_t) )
+    _zesDeviceEnumFrequencyDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_freq_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumLeds
 if __use_win_types:
-    _zesDeviceEnumLeds_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_led_handle_t) )
+    _zesDeviceEnumLeds_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_led_handle_t) )
 else:
-    _zesDeviceEnumLeds_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_led_handle_t) )
+    _zesDeviceEnumLeds_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_led_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumMemoryModules
 if __use_win_types:
-    _zesDeviceEnumMemoryModules_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_mem_handle_t) )
+    _zesDeviceEnumMemoryModules_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_mem_handle_t) )
 else:
-    _zesDeviceEnumMemoryModules_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_mem_handle_t) )
+    _zesDeviceEnumMemoryModules_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_mem_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumPerformanceFactorDomains
 if __use_win_types:
-    _zesDeviceEnumPerformanceFactorDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_perf_handle_t) )
+    _zesDeviceEnumPerformanceFactorDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_perf_handle_t) )
 else:
-    _zesDeviceEnumPerformanceFactorDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_perf_handle_t) )
+    _zesDeviceEnumPerformanceFactorDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_perf_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumPowerDomains
 if __use_win_types:
-    _zesDeviceEnumPowerDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_pwr_handle_t) )
+    _zesDeviceEnumPowerDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_pwr_handle_t) )
 else:
-    _zesDeviceEnumPowerDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_pwr_handle_t) )
+    _zesDeviceEnumPowerDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_pwr_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceGetCardPowerDomain
@@ -3231,37 +3437,37 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumPsus
 if __use_win_types:
-    _zesDeviceEnumPsus_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_psu_handle_t) )
+    _zesDeviceEnumPsus_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_psu_handle_t) )
 else:
-    _zesDeviceEnumPsus_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_psu_handle_t) )
+    _zesDeviceEnumPsus_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_psu_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumRasErrorSets
 if __use_win_types:
-    _zesDeviceEnumRasErrorSets_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_ras_handle_t) )
+    _zesDeviceEnumRasErrorSets_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_ras_handle_t) )
 else:
-    _zesDeviceEnumRasErrorSets_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_ras_handle_t) )
+    _zesDeviceEnumRasErrorSets_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_ras_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumSchedulers
 if __use_win_types:
-    _zesDeviceEnumSchedulers_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_sched_handle_t) )
+    _zesDeviceEnumSchedulers_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_sched_handle_t) )
 else:
-    _zesDeviceEnumSchedulers_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_sched_handle_t) )
+    _zesDeviceEnumSchedulers_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_sched_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumStandbyDomains
 if __use_win_types:
-    _zesDeviceEnumStandbyDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_standby_handle_t) )
+    _zesDeviceEnumStandbyDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_standby_handle_t) )
 else:
-    _zesDeviceEnumStandbyDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_standby_handle_t) )
+    _zesDeviceEnumStandbyDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_standby_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumTemperatureSensors
 if __use_win_types:
-    _zesDeviceEnumTemperatureSensors_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_temp_handle_t) )
+    _zesDeviceEnumTemperatureSensors_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_temp_handle_t) )
 else:
-    _zesDeviceEnumTemperatureSensors_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_temp_handle_t) )
+    _zesDeviceEnumTemperatureSensors_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_temp_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEccAvailable
@@ -3294,9 +3500,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDeviceGet
 if __use_win_types:
-    _zesDeviceGet_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_device_handle_t) )
+    _zesDeviceGet_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_device_handle_t) )
 else:
-    _zesDeviceGet_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_device_handle_t) )
+    _zesDeviceGet_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_device_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceSetOverclockWaiver
@@ -3308,16 +3514,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDeviceGetOverclockDomains
 if __use_win_types:
-    _zesDeviceGetOverclockDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong) )
+    _zesDeviceGetOverclockDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32) )
 else:
-    _zesDeviceGetOverclockDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong) )
+    _zesDeviceGetOverclockDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceGetOverclockControls
 if __use_win_types:
-    _zesDeviceGetOverclockControls_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, zes_overclock_domain_t, POINTER(c_ulong) )
+    _zesDeviceGetOverclockControls_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, zes_overclock_domain_t, POINTER(c_uint32) )
 else:
-    _zesDeviceGetOverclockControls_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, zes_overclock_domain_t, POINTER(c_ulong) )
+    _zesDeviceGetOverclockControls_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, zes_overclock_domain_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceResetOverclockSettings
@@ -3336,9 +3542,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumOverclockDomains
 if __use_win_types:
-    _zesDeviceEnumOverclockDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_overclock_handle_t) )
+    _zesDeviceEnumOverclockDomains_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_overclock_handle_t) )
 else:
-    _zesDeviceEnumOverclockDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_overclock_handle_t) )
+    _zesDeviceEnumOverclockDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_overclock_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceResetExt
@@ -3418,23 +3624,23 @@ class _zes_device_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zesDeviceGetSubDevicePropertiesExp
 if __use_win_types:
-    _zesDeviceGetSubDevicePropertiesExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_subdevice_exp_properties_t) )
+    _zesDeviceGetSubDevicePropertiesExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_subdevice_exp_properties_t) )
 else:
-    _zesDeviceGetSubDevicePropertiesExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_subdevice_exp_properties_t) )
+    _zesDeviceGetSubDevicePropertiesExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_subdevice_exp_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumActiveVFExp
 if __use_win_types:
-    _zesDeviceEnumActiveVFExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+    _zesDeviceEnumActiveVFExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_vf_handle_t) )
 else:
-    _zesDeviceEnumActiveVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+    _zesDeviceEnumActiveVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_vf_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDeviceEnumEnabledVFExp
 if __use_win_types:
-    _zesDeviceEnumEnabledVFExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+    _zesDeviceEnumEnabledVFExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_vf_handle_t) )
 else:
-    _zesDeviceEnumEnabledVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+    _zesDeviceEnumEnabledVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_uint32), POINTER(zes_vf_handle_t) )
 
 
 ###############################################################################
@@ -3449,30 +3655,30 @@ class _zes_device_exp_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zesDriverEventListen
 if __use_win_types:
-    _zesDriverEventListen_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+    _zesDriverEventListen_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, c_uint32, c_uint32, POINTER(zes_device_handle_t), POINTER(c_uint32), POINTER(zes_event_type_flags_t) )
 else:
-    _zesDriverEventListen_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+    _zesDriverEventListen_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_uint32, c_uint32, POINTER(zes_device_handle_t), POINTER(c_uint32), POINTER(zes_event_type_flags_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDriverEventListenEx
 if __use_win_types:
-    _zesDriverEventListenEx_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+    _zesDriverEventListenEx_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, c_uint64, c_uint32, POINTER(zes_device_handle_t), POINTER(c_uint32), POINTER(zes_event_type_flags_t) )
 else:
-    _zesDriverEventListenEx_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+    _zesDriverEventListenEx_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_uint64, c_uint32, POINTER(zes_device_handle_t), POINTER(c_uint32), POINTER(zes_event_type_flags_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDriverGet
 if __use_win_types:
-    _zesDriverGet_t = WINFUNCTYPE( ze_result_t, POINTER(c_ulong), POINTER(zes_driver_handle_t) )
+    _zesDriverGet_t = WINFUNCTYPE( ze_result_t, POINTER(c_uint32), POINTER(zes_driver_handle_t) )
 else:
-    _zesDriverGet_t = CFUNCTYPE( ze_result_t, POINTER(c_ulong), POINTER(zes_driver_handle_t) )
+    _zesDriverGet_t = CFUNCTYPE( ze_result_t, POINTER(c_uint32), POINTER(zes_driver_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDriverGetExtensionProperties
 if __use_win_types:
-    _zesDriverGetExtensionProperties_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_driver_extension_properties_t) )
+    _zesDriverGetExtensionProperties_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_driver_extension_properties_t) )
 else:
-    _zesDriverGetExtensionProperties_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_driver_extension_properties_t) )
+    _zesDriverGetExtensionProperties_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_driver_extension_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDriverGetExtensionFunctionAddress
@@ -3498,16 +3704,23 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDriverEventListenExt
 if __use_win_types:
-    _zesDriverEventListenExt_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t), POINTER(zes_event_type_flags_t) )
+    _zesDriverEventListenExt_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, c_uint64, c_uint32, POINTER(zes_device_handle_t), POINTER(c_uint32), POINTER(zes_event_type_flags_t), POINTER(zes_event_type_flags_t) )
 else:
-    _zesDriverEventListenExt_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t), POINTER(zes_event_type_flags_t) )
+    _zesDriverEventListenExt_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, c_uint64, c_uint32, POINTER(zes_device_handle_t), POINTER(c_uint32), POINTER(zes_event_type_flags_t), POINTER(zes_event_type_flags_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDriverEnumInfoLogsExt
 if __use_win_types:
-    _zesDriverEnumInfoLogsExt_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_info_log_handle_t) )
+    _zesDriverEnumInfoLogsExt_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_info_log_handle_t) )
 else:
-    _zesDriverEnumInfoLogsExt_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_info_log_handle_t) )
+    _zesDriverEnumInfoLogsExt_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_info_log_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDriverGetPciDeviceProperties
+if __use_win_types:
+    _zesDriverGetPciDeviceProperties_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_driver_pci_device_properties_t) )
+else:
+    _zesDriverGetPciDeviceProperties_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_driver_pci_device_properties_t) )
 
 
 ###############################################################################
@@ -3522,15 +3735,16 @@ class _zes_driver_dditable_t(Structure):
         ("pfnGetProperties", c_void_p),                                 ## _zesDriverGetProperties_t
         ("pfnEventRegisterExt", c_void_p),                              ## _zesDriverEventRegisterExt_t
         ("pfnEventListenExt", c_void_p),                                ## _zesDriverEventListenExt_t
-        ("pfnEnumInfoLogsExt", c_void_p)                                ## _zesDriverEnumInfoLogsExt_t
+        ("pfnEnumInfoLogsExt", c_void_p),                               ## _zesDriverEnumInfoLogsExt_t
+        ("pfnGetPciDeviceProperties", c_void_p)                         ## _zesDriverGetPciDeviceProperties_t
     ]
 
 ###############################################################################
 ## @brief Function-pointer for zesDriverGetDeviceByUuidExp
 if __use_win_types:
-    _zesDriverGetDeviceByUuidExp_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, zes_uuid_t, POINTER(zes_device_handle_t), POINTER(ze_bool_t), POINTER(c_ulong) )
+    _zesDriverGetDeviceByUuidExp_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, zes_uuid_t, POINTER(zes_device_handle_t), POINTER(ze_bool_t), POINTER(c_uint32) )
 else:
-    _zesDriverGetDeviceByUuidExp_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, zes_uuid_t, POINTER(zes_device_handle_t), POINTER(ze_bool_t), POINTER(c_ulong) )
+    _zesDriverGetDeviceByUuidExp_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, zes_uuid_t, POINTER(zes_device_handle_t), POINTER(ze_bool_t), POINTER(c_uint32) )
 
 
 ###############################################################################
@@ -3592,16 +3806,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesOverclockGetVFPointValues
 if __use_win_types:
-    _zesOverclockGetVFPointValues_t = WINFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, zes_vf_array_type_t, c_ulong, POINTER(c_ulong) )
+    _zesOverclockGetVFPointValues_t = WINFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, zes_vf_array_type_t, c_uint32, POINTER(c_uint32) )
 else:
-    _zesOverclockGetVFPointValues_t = CFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, zes_vf_array_type_t, c_ulong, POINTER(c_ulong) )
+    _zesOverclockGetVFPointValues_t = CFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, zes_vf_array_type_t, c_uint32, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zesOverclockSetVFPointValues
 if __use_win_types:
-    _zesOverclockSetVFPointValues_t = WINFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, c_ulong, c_ulong )
+    _zesOverclockSetVFPointValues_t = WINFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, c_uint32, c_uint32 )
 else:
-    _zesOverclockSetVFPointValues_t = CFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, c_ulong, c_ulong )
+    _zesOverclockSetVFPointValues_t = CFUNCTYPE( ze_result_t, zes_overclock_handle_t, zes_vf_type_t, c_uint32, c_uint32 )
 
 
 ###############################################################################
@@ -3766,37 +3980,37 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesPowerGetLimitsExt
 if __use_win_types:
-    _zesPowerGetLimitsExt_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+    _zesPowerGetLimitsExt_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32), POINTER(zes_power_limit_ext_desc_t) )
 else:
-    _zesPowerGetLimitsExt_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+    _zesPowerGetLimitsExt_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32), POINTER(zes_power_limit_ext_desc_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesPowerSetLimitsExt
 if __use_win_types:
-    _zesPowerSetLimitsExt_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+    _zesPowerSetLimitsExt_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32), POINTER(zes_power_limit_ext_desc_t) )
 else:
-    _zesPowerSetLimitsExt_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+    _zesPowerSetLimitsExt_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32), POINTER(zes_power_limit_ext_desc_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesPowerGetUsage
 if __use_win_types:
-    _zesPowerGetUsage_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(c_ulong) )
+    _zesPowerGetUsage_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32) )
 else:
-    _zesPowerGetUsage_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(c_ulong) )
+    _zesPowerGetUsage_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32), POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zesPowerGetLimitsExt2
 if __use_win_types:
-    _zesPowerGetLimitsExt2_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong) )
+    _zesPowerGetLimitsExt2_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32) )
 else:
-    _zesPowerGetLimitsExt2_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong) )
+    _zesPowerGetLimitsExt2_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zesPowerSetLimitsExt2
 if __use_win_types:
-    _zesPowerSetLimitsExt2_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_ulong )
+    _zesPowerSetLimitsExt2_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_uint32 )
 else:
-    _zesPowerSetLimitsExt2_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_ulong )
+    _zesPowerSetLimitsExt2_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_uint32 )
 
 
 ###############################################################################
@@ -3826,9 +4040,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesFrequencyGetAvailableClocks
 if __use_win_types:
-    _zesFrequencyGetAvailableClocks_t = WINFUNCTYPE( ze_result_t, zes_freq_handle_t, POINTER(c_ulong), POINTER(c_double) )
+    _zesFrequencyGetAvailableClocks_t = WINFUNCTYPE( ze_result_t, zes_freq_handle_t, POINTER(c_uint32), POINTER(c_double) )
 else:
-    _zesFrequencyGetAvailableClocks_t = CFUNCTYPE( ze_result_t, zes_freq_handle_t, POINTER(c_ulong), POINTER(c_double) )
+    _zesFrequencyGetAvailableClocks_t = CFUNCTYPE( ze_result_t, zes_freq_handle_t, POINTER(c_uint32), POINTER(c_double) )
 
 ###############################################################################
 ## @brief Function-pointer for zesFrequencyGetRange
@@ -3976,9 +4190,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesEngineGetActivityExt
 if __use_win_types:
-    _zesEngineGetActivityExt_t = WINFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(c_ulong), POINTER(zes_engine_stats_t) )
+    _zesEngineGetActivityExt_t = WINFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(c_uint32), POINTER(zes_engine_stats_t) )
 else:
-    _zesEngineGetActivityExt_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(c_ulong), POINTER(zes_engine_stats_t) )
+    _zesEngineGetActivityExt_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(c_uint32), POINTER(zes_engine_stats_t) )
 
 
 ###############################################################################
@@ -4031,16 +4245,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesFirmwareFlash
 if __use_win_types:
-    _zesFirmwareFlash_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_ulong )
+    _zesFirmwareFlash_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_uint32 )
 else:
-    _zesFirmwareFlash_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_ulong )
+    _zesFirmwareFlash_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_uint32 )
 
 ###############################################################################
 ## @brief Function-pointer for zesFirmwareGetFlashProgress
 if __use_win_types:
-    _zesFirmwareGetFlashProgress_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(c_ulong) )
+    _zesFirmwareGetFlashProgress_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(c_uint32) )
 else:
-    _zesFirmwareGetFlashProgress_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(c_ulong) )
+    _zesFirmwareGetFlashProgress_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zesFirmwareGetConsoleLogs
@@ -4166,9 +4380,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesFabricPortGetMultiPortThroughput
 if __use_win_types:
-    _zesFabricPortGetMultiPortThroughput_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, c_ulong, POINTER(zes_fabric_port_handle_t), POINTER(zes_fabric_port_throughput_t*) )
+    _zesFabricPortGetMultiPortThroughput_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, c_uint32, POINTER(zes_fabric_port_handle_t), POINTER(POINTER(zes_fabric_port_throughput_t)) )
 else:
-    _zesFabricPortGetMultiPortThroughput_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, c_ulong, POINTER(zes_fabric_port_handle_t), POINTER(zes_fabric_port_throughput_t*) )
+    _zesFabricPortGetMultiPortThroughput_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, c_uint32, POINTER(zes_fabric_port_handle_t), POINTER(POINTER(zes_fabric_port_throughput_t)) )
 
 
 ###############################################################################
@@ -4285,9 +4499,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesFanGetState
 if __use_win_types:
-    _zesFanGetState_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32_t) )
+    _zesFanGetState_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32) )
 else:
-    _zesFanGetState_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32_t) )
+    _zesFanGetState_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32) )
 
 
 ###############################################################################
@@ -4383,9 +4597,9 @@ class _zes_ras_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zesRasGetStateExp
 if __use_win_types:
-    _zesRasGetStateExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_ulong), POINTER(zes_ras_state_exp_t) )
+    _zesRasGetStateExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_uint32), POINTER(zes_ras_state_exp_t) )
 else:
-    _zesRasGetStateExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_ulong), POINTER(zes_ras_state_exp_t) )
+    _zesRasGetStateExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_uint32), POINTER(zes_ras_state_exp_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesRasClearStateExp
@@ -4397,30 +4611,30 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesRasGetSupportedCategoriesExp
 if __use_win_types:
-    _zesRasGetSupportedCategoriesExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_ulong), POINTER(zes_ras_error_category_exp_t) )
+    _zesRasGetSupportedCategoriesExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_uint32), POINTER(zes_ras_error_category_exp_t) )
 else:
-    _zesRasGetSupportedCategoriesExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_ulong), POINTER(zes_ras_error_category_exp_t) )
+    _zesRasGetSupportedCategoriesExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_uint32), POINTER(zes_ras_error_category_exp_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesRasGetStateExp2
 if __use_win_types:
-    _zesRasGetStateExp2_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, c_ulong, POINTER(zes_ras_error_category_exp_t), POINTER(zes_ras_state_exp2_t) )
+    _zesRasGetStateExp2_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, c_uint32, POINTER(zes_ras_error_category_exp_t), POINTER(zes_ras_state_exp2_t) )
 else:
-    _zesRasGetStateExp2_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, c_ulong, POINTER(zes_ras_error_category_exp_t), POINTER(zes_ras_state_exp2_t) )
+    _zesRasGetStateExp2_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, c_uint32, POINTER(zes_ras_error_category_exp_t), POINTER(zes_ras_state_exp2_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesRasGetConfigExp
 if __use_win_types:
-    _zesRasGetConfigExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, c_ulong, POINTER(zes_ras_config_exp_t) )
+    _zesRasGetConfigExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t) )
 else:
-    _zesRasGetConfigExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, c_ulong, POINTER(zes_ras_config_exp_t) )
+    _zesRasGetConfigExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesRasSetConfigExp
 if __use_win_types:
-    _zesRasSetConfigExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, c_ulong, POINTER(zes_ras_config_exp_t) )
+    _zesRasSetConfigExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t) )
 else:
-    _zesRasSetConfigExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, c_ulong, POINTER(zes_ras_config_exp_t) )
+    _zesRasSetConfigExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, c_uint32, POINTER(zes_ras_config_exp_t) )
 
 
 ###############################################################################
@@ -4445,16 +4659,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesDiagnosticsGetTests
 if __use_win_types:
-    _zesDiagnosticsGetTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_ulong), POINTER(zes_diag_test_t) )
+    _zesDiagnosticsGetTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_uint32), POINTER(zes_diag_test_t) )
 else:
-    _zesDiagnosticsGetTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_ulong), POINTER(zes_diag_test_t) )
+    _zesDiagnosticsGetTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_uint32), POINTER(zes_diag_test_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesDiagnosticsRunTests
 if __use_win_types:
-    _zesDiagnosticsRunTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, c_ulong, c_ulong, POINTER(zes_diag_result_t) )
+    _zesDiagnosticsRunTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, c_uint32, c_uint32, POINTER(zes_diag_result_t) )
 else:
-    _zesDiagnosticsRunTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, c_ulong, c_ulong, POINTER(zes_diag_result_t) )
+    _zesDiagnosticsRunTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, c_uint32, c_uint32, POINTER(zes_diag_result_t) )
 
 
 ###############################################################################
@@ -4476,16 +4690,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFMemoryUtilizationExp
 if __use_win_types:
-    _zesVFManagementGetVFMemoryUtilizationExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp_t) )
+    _zesVFManagementGetVFMemoryUtilizationExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_mem_exp_t) )
 else:
-    _zesVFManagementGetVFMemoryUtilizationExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp_t) )
+    _zesVFManagementGetVFMemoryUtilizationExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_mem_exp_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFEngineUtilizationExp
 if __use_win_types:
-    _zesVFManagementGetVFEngineUtilizationExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp_t) )
+    _zesVFManagementGetVFEngineUtilizationExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_engine_exp_t) )
 else:
-    _zesVFManagementGetVFEngineUtilizationExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp_t) )
+    _zesVFManagementGetVFEngineUtilizationExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_engine_exp_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementSetVFTelemetryModeExp
@@ -4497,9 +4711,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementSetVFTelemetrySamplingIntervalExp
 if __use_win_types:
-    _zesVFManagementSetVFTelemetrySamplingIntervalExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, zes_vf_info_util_exp_flags_t, c_ulonglong )
+    _zesVFManagementSetVFTelemetrySamplingIntervalExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, zes_vf_info_util_exp_flags_t, c_uint64 )
 else:
-    _zesVFManagementSetVFTelemetrySamplingIntervalExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, zes_vf_info_util_exp_flags_t, c_ulonglong )
+    _zesVFManagementSetVFTelemetrySamplingIntervalExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, zes_vf_info_util_exp_flags_t, c_uint64 )
 
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp
@@ -4511,16 +4725,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFMemoryUtilizationExp2
 if __use_win_types:
-    _zesVFManagementGetVFMemoryUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
+    _zesVFManagementGetVFMemoryUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_mem_exp2_t) )
 else:
-    _zesVFManagementGetVFMemoryUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
+    _zesVFManagementGetVFMemoryUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_mem_exp2_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFEngineUtilizationExp2
 if __use_win_types:
-    _zesVFManagementGetVFEngineUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
+    _zesVFManagementGetVFEngineUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_engine_exp2_t) )
 else:
-    _zesVFManagementGetVFEngineUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
+    _zesVFManagementGetVFEngineUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_uint32), POINTER(zes_vf_util_engine_exp2_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp2
@@ -4571,16 +4785,16 @@ class _zes_info_log_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zesInfoLogInstanceReadWithMetadataExt
 if __use_win_types:
-    _zesInfoLogInstanceReadWithMetadataExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+    _zesInfoLogInstanceReadWithMetadataExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_uint64, POINTER(c_uint32), POINTER(c_uint8), POINTER(c_uint32), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
 else:
-    _zesInfoLogInstanceReadWithMetadataExt_t = CFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+    _zesInfoLogInstanceReadWithMetadataExt_t = CFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_uint64, POINTER(c_uint32), POINTER(c_uint8), POINTER(c_uint32), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesInfoLogInstancePeekWithMetadataExt
 if __use_win_types:
-    _zesInfoLogInstancePeekWithMetadataExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+    _zesInfoLogInstancePeekWithMetadataExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_uint64, POINTER(c_uint32), POINTER(c_uint8), POINTER(c_uint32), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
 else:
-    _zesInfoLogInstancePeekWithMetadataExt_t = CFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_ulonglong, POINTER(c_ulong), POINTER(c_ubyte), POINTER(c_ulong), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
+    _zesInfoLogInstancePeekWithMetadataExt_t = CFUNCTYPE( ze_result_t, zes_info_log_instance_handle_t, c_uint64, POINTER(c_uint32), POINTER(c_uint8), POINTER(c_uint32), POINTER(zes_info_log_metadata_ext_t), POINTER(zes_info_log_read_status_ext_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesInfoLogInstanceDeleteExt
@@ -4731,6 +4945,7 @@ class ZES_DDI:
         self.zesDriverEventRegisterExt = _zesDriverEventRegisterExt_t(self.__dditable.Driver.pfnEventRegisterExt)
         self.zesDriverEventListenExt = _zesDriverEventListenExt_t(self.__dditable.Driver.pfnEventListenExt)
         self.zesDriverEnumInfoLogsExt = _zesDriverEnumInfoLogsExt_t(self.__dditable.Driver.pfnEnumInfoLogsExt)
+        self.zesDriverGetPciDeviceProperties = _zesDriverGetPciDeviceProperties_t(self.__dditable.Driver.pfnGetPciDeviceProperties)
 
         # call driver to get function pointers
         _DriverExp = _zes_driver_exp_dditable_t()

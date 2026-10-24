@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.19-r1.19.12
+ * @version v1.20-r1.20.41
  *
  */
 #ifndef _ZE_DDI_H
@@ -689,6 +689,17 @@ typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetCompilerInfo_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceGetCompilerInfoSupported 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetCompilerInfoSupported_t)(
+    ze_device_handle_t,
+    ze_device_compiler_info_t,
+    const void*,
+    const void*,
+    const char*,
+    ze_bool_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _ze_device_dditable_t
 {
@@ -721,6 +732,7 @@ typedef struct _ze_device_dditable_t
     ze_pfnDeviceValidateRuntimeRequirements_t                   pfnValidateRuntimeRequirements;
     ze_pfnDeviceGetCounterBasedEventMaxValue_t                  pfnGetCounterBasedEventMaxValue;
     ze_pfnDeviceGetCompilerInfo_t                               pfnGetCompilerInfo;
+    ze_pfnDeviceGetCompilerInfoSupported_t                      pfnGetCompilerInfoSupported;
 } ze_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -977,6 +989,30 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueGetQosExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandQueueSignalExternalSemaphoreExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueSignalExternalSemaphoreExt_t)(
+    ze_command_queue_handle_t,
+    uint32_t,
+    ze_external_semaphore_ext_handle_t*,
+    ze_external_semaphore_signal_params_ext_t*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandQueueWaitExternalSemaphoreExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandQueueWaitExternalSemaphoreExt_t)(
+    ze_command_queue_handle_t,
+    uint32_t,
+    ze_external_semaphore_ext_handle_t*,
+    ze_external_semaphore_wait_params_ext_t*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandQueue functions pointers
 typedef struct _ze_command_queue_dditable_t
 {
@@ -992,6 +1028,8 @@ typedef struct _ze_command_queue_dditable_t
     ze_pfnCommandQueueSetPriorityExt_t                          pfnSetPriorityExt;
     ze_pfnCommandQueueSetQosExt_t                               pfnSetQosExt;
     ze_pfnCommandQueueGetQosExt_t                               pfnGetQosExt;
+    ze_pfnCommandQueueSignalExternalSemaphoreExt_t              pfnSignalExternalSemaphoreExt;
+    ze_pfnCommandQueueWaitExternalSemaphoreExt_t                pfnWaitExternalSemaphoreExt;
 } ze_command_queue_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1549,6 +1587,71 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendWaitOnEventsWithParamete
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListVisitExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListVisitExt_t)(
+    ze_command_list_handle_t,
+    const ze_command_visit_ext_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListGetNextCommandIdExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetNextCommandIdExt_t)(
+    ze_command_list_handle_t,
+    const ze_mutable_command_id_ext_desc_t*,
+    uint64_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetNextCommandIdWithKernelsExt_t)(
+    ze_command_list_handle_t,
+    const ze_mutable_command_id_ext_desc_t*,
+    uint32_t,
+    ze_kernel_handle_t*,
+    uint64_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandsExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandsExt_t)(
+    ze_command_list_handle_t,
+    const ze_mutable_commands_ext_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListIsMutableExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListIsMutableExt_t)(
+    ze_command_list_handle_t,
+    ze_bool_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandSignalEventExt_t)(
+    ze_command_list_handle_t,
+    uint64_t,
+    ze_event_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandWaitEventsExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandWaitEventsExt_t)(
+    ze_command_list_handle_t,
+    uint64_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandKernelsExt_t)(
+    ze_command_list_handle_t,
+    uint32_t,
+    uint64_t*,
+    ze_kernel_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandList functions pointers
 typedef struct _ze_command_list_dditable_t
 {
@@ -1606,6 +1709,14 @@ typedef struct _ze_command_list_dditable_t
     ze_pfnCommandListAppendHostFunction_t                       pfnAppendHostFunction;
     ze_pfnCommandListAppendSignalEventWithParameters_t          pfnAppendSignalEventWithParameters;
     ze_pfnCommandListAppendWaitOnEventsWithParameters_t         pfnAppendWaitOnEventsWithParameters;
+    ze_pfnCommandListVisitExt_t                                 pfnVisitExt;
+    ze_pfnCommandListGetNextCommandIdExt_t                      pfnGetNextCommandIdExt;
+    ze_pfnCommandListGetNextCommandIdWithKernelsExt_t           pfnGetNextCommandIdWithKernelsExt;
+    ze_pfnCommandListUpdateMutableCommandsExt_t                 pfnUpdateMutableCommandsExt;
+    ze_pfnCommandListIsMutableExt_t                             pfnIsMutableExt;
+    ze_pfnCommandListUpdateMutableCommandSignalEventExt_t       pfnUpdateMutableCommandSignalEventExt;
+    ze_pfnCommandListUpdateMutableCommandWaitEventsExt_t        pfnUpdateMutableCommandWaitEventsExt;
+    ze_pfnCommandListUpdateMutableCommandKernelsExt_t           pfnUpdateMutableCommandKernelsExt;
 } ze_command_list_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3220,6 +3331,13 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGraphGetIdExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGraphVisitExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphVisitExt_t)(
+    ze_graph_handle_t,
+    const ze_command_visit_ext_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Graph functions pointers
 typedef struct _ze_graph_dditable_t
 {
@@ -3233,6 +3351,7 @@ typedef struct _ze_graph_dditable_t
     ze_pfnGraphPauseCaptureExt_t                                pfnPauseCaptureExt;
     ze_pfnGraphResumeCaptureExt_t                               pfnResumeCaptureExt;
     ze_pfnGraphGetIdExt_t                                       pfnGetIdExt;
+    ze_pfnGraphVisitExt_t                                       pfnVisitExt;
 } ze_graph_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

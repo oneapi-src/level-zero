@@ -145,6 +145,10 @@ inline std::string to_string(zex_mem_graph_free_callback_fn_t ptr) {
     return to_string(reinterpret_cast<const void*>(ptr));
 }
 
+inline std::string to_string(ze_command_visit_ext_default_op_callback_t ptr) {
+    return to_string(reinterpret_cast<const void*>(ptr));
+}
+
 // For primitive types and Level Zero typedef'd types
 // Since most Level Zero types are typedef'd to uint32_t, we can't distinguish them by type
 inline std::string to_string(uint32_t value) { return std::to_string(value); }
@@ -847,6 +851,20 @@ inline std::string to_string(const ze_event_counter_based_external_aggregate_sto
 }
 
 inline std::string to_string(const ze_event_counter_based_external_aggregate_storage_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_event_ext_flags_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_event_ext_flags_desc_t& desc) {
     return to_string(&desc);
 }
 
@@ -3092,6 +3110,192 @@ inline std::string to_string(const ze_command_queue_qos_ext_properties_t* desc) 
 }
 
 inline std::string to_string(const ze_command_queue_qos_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_concrete_visitor_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", fname=" << to_string(desc->fname);
+    oss << ", callback=" << to_string(desc->callback);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_concrete_visitor_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_command_visit_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", userData=" << to_string(desc->userData);
+    oss << ", hReappendTargetCommandList=" << to_string(&desc->hReappendTargetCommandList);
+    oss << ", beforeDefaultOpClb=" << to_string(&desc->beforeDefaultOpClb);
+    oss << ", defaultOp=" << to_string(&desc->defaultOp);
+    oss << ", afterDefaultOpClb=" << to_string(&desc->afterDefaultOpClb);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_command_visit_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_init_driver_properties_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_init_driver_properties_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_command_id_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_command_id_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_command_list_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", mutableCommandListFlags=" << to_string(&desc->mutableCommandListFlags);
+    oss << ", mutableCommandFlags=" << to_string(&desc->mutableCommandFlags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_command_list_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_command_list_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(&desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_command_list_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_commands_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", flags=" << to_string(desc->flags);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_commands_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_kernel_argument_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", commandId=" << to_string(desc->commandId);
+    oss << ", argIndex=" << to_string(desc->argIndex);
+    oss << ", argSize=" << to_string(desc->argSize);
+    oss << ", pArgValue=" << to_string(desc->pArgValue);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_kernel_argument_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_group_count_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", commandId=" << to_string(desc->commandId);
+    oss << ", pGroupCount=" << to_string(desc->pGroupCount);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_group_count_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_group_size_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", commandId=" << to_string(desc->commandId);
+    oss << ", groupSizeX=" << to_string(desc->groupSizeX);
+    oss << ", groupSizeY=" << to_string(desc->groupSizeY);
+    oss << ", groupSizeZ=" << to_string(desc->groupSizeZ);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_group_size_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_global_offset_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", commandId=" << to_string(desc->commandId);
+    oss << ", offsetX=" << to_string(desc->offsetX);
+    oss << ", offsetY=" << to_string(desc->offsetY);
+    oss << ", offsetZ=" << to_string(desc->offsetZ);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_global_offset_ext_desc_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const ze_mutable_graph_argument_ext_desc_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", commandId=" << to_string(desc->commandId);
+    oss << ", argIndex=" << to_string(desc->argIndex);
+    oss << ", pArgValue=" << to_string(desc->pArgValue);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const ze_mutable_graph_argument_ext_desc_t& desc) {
     return to_string(&desc);
 }
 
