@@ -198,6 +198,20 @@ inline std::string to_string(const zes_device_ext_properties_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const zes_device_index_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", deviceIndex=" << to_string(desc->deviceIndex);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_device_index_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const zes_process_state_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -1623,6 +1637,62 @@ inline std::string to_string(const zes_info_log_read_status_ext_t* desc) {
 }
 
 inline std::string to_string(const zes_info_log_read_status_ext_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_device_gpu_topology_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", numSlices=" << to_string(desc->numSlices);
+    oss << ", numXeCores=" << to_string(desc->numXeCores);
+    oss << ", numVectorEngines=" << to_string(desc->numVectorEngines);
+    oss << ", numMatrixEngines=" << to_string(desc->numMatrixEngines);
+    oss << ", numThreads=" << to_string(desc->numThreads);
+    oss << ", generationName=" << to_string(desc->generationName);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_device_gpu_topology_ext_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_pci_config_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", vendorId=" << to_string(desc->vendorId);
+    oss << ", deviceId=" << to_string(desc->deviceId);
+    oss << ", subsystemVendorId=" << to_string(desc->subsystemVendorId);
+    oss << ", subsystemDeviceId=" << to_string(desc->subsystemDeviceId);
+    oss << ", pcieCapabilityVersion=" << to_string(desc->pcieCapabilityVersion);
+    oss << ", supportedLinkSpeeds=" << to_string(&desc->supportedLinkSpeeds);
+    oss << ", revision=" << to_string(desc->revision);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_pci_config_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_driver_pci_device_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", address=" << to_string(&desc->address);
+    oss << ", maxSpeed=" << to_string(&desc->maxSpeed);
+    oss << ", configProperties=" << to_string(&desc->configProperties);
+    oss << ", status=" << to_string(&desc->status);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_driver_pci_device_properties_t& desc) {
     return to_string(&desc);
 }
 

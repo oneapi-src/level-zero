@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -149,6 +149,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zesDriverEventListenExt") );
             initialzesDdiTable.Driver.pfnEnumInfoLogsExt = reinterpret_cast<zes_pfnDriverEnumInfoLogsExt_t>(
                 GET_FUNCTION_PTR(loader, "zesDriverEnumInfoLogsExt") );
+            initialzesDdiTable.Driver.pfnGetPciDeviceProperties = reinterpret_cast<zes_pfnDriverGetPciDeviceProperties_t>(
+                GET_FUNCTION_PTR(loader, "zesDriverGetPciDeviceProperties") );
             initialzesDdiTable.Driver.pfnGet = reinterpret_cast<zes_pfnDriverGet_t>(
                 GET_FUNCTION_PTR(loader, "zesDriverGet") );
             initialzesDdiTable.Driver.pfnGetExtensionProperties = reinterpret_cast<zes_pfnDriverGetExtensionProperties_t>(

@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.19-r1.19.12
+ * @version v1.20-r1.20.41
  *
  */
 #ifndef _ZES_DDI_H
@@ -562,6 +562,14 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDriverEnumInfoLogsExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverGetPciDeviceProperties 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverGetPciDeviceProperties_t)(
+    zes_driver_handle_t,
+    uint32_t*,
+    zes_driver_pci_device_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver functions pointers
 typedef struct _zes_driver_dditable_t
 {
@@ -574,6 +582,7 @@ typedef struct _zes_driver_dditable_t
     zes_pfnDriverEventRegisterExt_t                             pfnEventRegisterExt;
     zes_pfnDriverEventListenExt_t                               pfnEventListenExt;
     zes_pfnDriverEnumInfoLogsExt_t                              pfnEnumInfoLogsExt;
+    zes_pfnDriverGetPciDeviceProperties_t                       pfnGetPciDeviceProperties;
 } zes_driver_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

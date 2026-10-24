@@ -1,15 +1,17 @@
 """
- Copyright (C) 2019-2025 Intel Corporation
+ Copyright (C) 2019-2026 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
  @file zer.py
- @version v1.19-r1.19.12
+ @version v1.20-r1.20.41
 
  """
 import platform
 from ctypes import *
 from enum import *
+# Uses types and macros from the core API.
+from ze import *
 
 ###############################################################################
 __version__ = "1.0"
@@ -38,16 +40,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zerTranslateDeviceHandleToIdentifier
 if __use_win_types:
-    _zerTranslateDeviceHandleToIdentifier_t = WINFUNCTYPE( uint32_t, ze_device_handle_t )
+    _zerTranslateDeviceHandleToIdentifier_t = WINFUNCTYPE( c_uint32, ze_device_handle_t )
 else:
-    _zerTranslateDeviceHandleToIdentifier_t = CFUNCTYPE( uint32_t, ze_device_handle_t )
+    _zerTranslateDeviceHandleToIdentifier_t = CFUNCTYPE( c_uint32, ze_device_handle_t )
 
 ###############################################################################
 ## @brief Function-pointer for zerTranslateIdentifierToDeviceHandle
 if __use_win_types:
-    _zerTranslateIdentifierToDeviceHandle_t = WINFUNCTYPE( ze_device_handle_t, c_ulong )
+    _zerTranslateIdentifierToDeviceHandle_t = WINFUNCTYPE( ze_device_handle_t, c_uint32 )
 else:
-    _zerTranslateIdentifierToDeviceHandle_t = CFUNCTYPE( ze_device_handle_t, c_ulong )
+    _zerTranslateIdentifierToDeviceHandle_t = CFUNCTYPE( ze_device_handle_t, c_uint32 )
 
 ###############################################################################
 ## @brief Function-pointer for zerGetDefaultContext

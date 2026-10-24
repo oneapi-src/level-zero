@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.19-r1.19.12
+ * @version v1.20-r1.20.41
  *
  */
 #ifndef _ZET_API_H
@@ -89,12 +89,13 @@ typedef enum _zet_structure_type_t
     ZET_STRUCTURE_TYPE_DEVICE_DEBUG_PROPERTIES = 0x6,                       ///< ::zet_device_debug_properties_t
     ZET_STRUCTURE_TYPE_DEBUG_MEMORY_SPACE_DESC = 0x7,                       ///< ::zet_debug_memory_space_desc_t
     ZET_STRUCTURE_TYPE_DEBUG_REGSET_PROPERTIES = 0x8,                       ///< ::zet_debug_regset_properties_t
-    ZET_STRUCTURE_TYPE_GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9,      ///< ::zet_metric_global_timestamps_resolution_exp_t. Deprecated, use
-                                                                            ///< ::ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP.
+    ZET_STRUCTURE_TYPE_GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9,      ///< [DEPRECATED since 1.7]
+                                                                            ///< ::zet_metric_global_timestamps_resolution_exp_t. Use
+                                                                            ///< ::ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP instead.
     ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP = 0x9,       ///< ::zet_metric_global_timestamps_resolution_exp_t
     ZET_STRUCTURE_TYPE_TRACER_EXP_DESC = 0x00010001,                        ///< ::zet_tracer_exp_desc_t
-    ZET_STRUCTURE_TYPE_METRICS_CALCULATE_EXP_DESC = 0x00010002,             ///< ::zet_metric_calculate_exp_desc_t. Deprecated, use
-                                                                            ///< ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC.
+    ZET_STRUCTURE_TYPE_METRICS_CALCULATE_EXP_DESC = 0x00010002,             ///< [DEPRECATED since 1.7] ::zet_metric_calculate_exp_desc_t. Use
+                                                                            ///< ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC instead.
     ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC = 0x00010002,              ///< ::zet_metric_calculate_exp_desc_t
     ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_EXP_PROPERTIES = 0x00010003,     ///< ::zet_metric_programmable_exp_properties_t
     ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_PARAM_INFO_EXP = 0x00010004,     ///< ::zet_metric_programmable_param_info_exp_t
@@ -1145,8 +1146,8 @@ typedef enum _zet_metric_type_t
                                                                             ///< that can wrap around
     ZET_METRIC_TYPE_EXP_EXPORT_DMA_BUF = 0x7ffffffd,                        ///< Metric which exports linux dma_buf, which could be imported/mapped to
                                                                             ///< the host process
-    ZET_METRIC_TYPE_IP_EXP = 0x7ffffffe,                                    ///< Metric type: instruction pointer. Deprecated, use
-                                                                            ///< ::ZET_METRIC_TYPE_IP.
+    ZET_METRIC_TYPE_IP_EXP = 0x7ffffffe,                                    ///< [DEPRECATED since 1.7] Metric type: instruction pointer. Use
+                                                                            ///< ::ZET_METRIC_TYPE_IP instead.
     ZET_METRIC_TYPE_IP = 0x7ffffffe,                                        ///< Metric type: instruction pointer
     ZET_METRIC_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_TYPE_* ENUMs
 
@@ -1386,6 +1387,11 @@ typedef struct _zet_metric_streamer_desc_t
 /// @details
 ///     - The notification event must have been created from an event pool that
 ///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
+///     - The notification event must **not** be a Counter Based Event. The
+///       Driver signals the notification event from the host and the
+///       application resets it, neither of which is allowed for Counter Based
+///       Events. ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT is returned
+///       if `hNotificationEvent` is a Counter Based Event.
 ///     - The duration of the signal event created from an event pool that was
 ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
 ///       However, for consistency and orthogonality the event will report
@@ -1528,10 +1534,10 @@ zetMetricStreamerReadData(
                                                                             ///< If the size returns the full size requested, the application may need
                                                                             ///< to issue additional reads to
                                                                             ///< retrieve any remaining reports that did not fit into the buffer.
-                                                                            ///< @deprecated: The behavior of passing in zero size and the function
-                                                                            ///< returning the required size is deprecated,
-                                                                            ///<             for now it returns only the maximum buffer size regardless
-                                                                            ///< of how much data there is available to be read.
+                                                                            ///< Passing in zero size to get the required size is deprecated behavior;
+                                                                            ///< for now the function returns
+                                                                            ///< only the maximum buffer size regardless of how much data there is
+                                                                            ///< available to be read.
     uint8_t* pRawData                                                       ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing streamer
                                                                             ///< reports in raw format
     );
@@ -1774,6 +1780,9 @@ zetCommandListAppendMetricQueryBegin(
 ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
 ///       However, for consistency and orthogonality the event will report
 ///       correctly as signaled when used by other event API functionality.
+///     - `hSignalEvent` must **not** be a Counter Based Event.
+///       ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT is returned if
+///       `hSignalEvent` is a Counter Based Event.
 ///     - If numWaitEvents is zero, then all previous commands are completed
 ///       prior to the execution of the query.
 ///     - If numWaitEvents is non-zero, then all phWaitEvents must be signaled
@@ -1981,17 +1990,28 @@ zetKernelGetProfileInfo(
 #pragma endregion
 #endif
 // Intel 'oneAPI' Level-Zero Tool Experimental Extension APIs for API Tracing
+// [DEPRECATED since 1.14] Not supported in L0 drivers; tracing moved to the loader. Use L0 Loader API Tracing (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing) instead.
 #if !defined(__GNUC__)
 #pragma region tracing
 #endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZET_API_TRACING_EXP_NAME
-/// @brief API Tracing Experimental Extension Name
+/// @brief [DEPRECATED since 1.14] API Tracing Experimental Extension Name
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 #define ZET_API_TRACING_EXP_NAME  "ZET_experimental_api_tracing"
 #endif // ZET_API_TRACING_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief API Tracing Experimental Extension Version(s)
+/// @brief [DEPRECATED since 1.14] API Tracing Experimental Extension Version(s)
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 typedef enum _zet_api_tracing_exp_version_t
 {
     ZET_API_TRACING_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),              ///< version 1.0
@@ -2001,11 +2021,22 @@ typedef enum _zet_api_tracing_exp_version_t
 } zet_api_tracing_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Alias the existing callbacks definition for 'core' callbacks
+/// @brief [DEPRECATED since 1.14] Alias the existing callbacks definition for
+///        'core' callbacks
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 typedef ze_callbacks_t zet_core_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Tracer descriptor
+/// @brief [DEPRECATED since 1.14] Tracer descriptor
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 typedef struct _zet_tracer_exp_desc_t
 {
     zet_structure_type_t stype;                                             ///< [in] type of this structure
@@ -2016,17 +2047,19 @@ typedef struct _zet_tracer_exp_desc_t
 } zet_tracer_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Creates a tracer on the context.
+/// @brief [DEPRECATED since 1.14] Creates a tracer on the context.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application must only use the tracer for the context which was
 ///       provided during creation.
 ///     - The tracer is created in the disabled state.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2056,18 +2089,20 @@ zetTracerExpCreate(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Destroys a tracer.
+/// @brief [DEPRECATED since 1.14] Destroys a tracer.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
 ///     - The implementation of this function must be thread-safe.
 ///     - The implementation of this function will stall and wait on any
 ///       outstanding threads executing callbacks before freeing any Host
 ///       allocations associated with this tracer.
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2092,19 +2127,21 @@ zetTracerExpDestroy(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Sets the collection of callbacks to be executed **before** driver
-///        execution.
+/// @brief [DEPRECATED since 1.14] Sets the collection of callbacks to be
+///        executed **before** driver execution.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
 ///       functions for which the tracing functions are changing.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2131,19 +2168,21 @@ zetTracerExpSetPrologues(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Sets the collection of callbacks to be executed **after** driver
-///        execution.
+/// @brief [DEPRECATED since 1.14] Sets the collection of callbacks to be
+///        executed **after** driver execution.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
 ///       functions for which the tracing functions are changing.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2170,14 +2209,16 @@ zetTracerExpSetEpilogues(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Enables (or disables) the tracer
+/// @brief [DEPRECATED since 1.14] Enables (or disables) the tracer
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
+/// 
+/// @deprecated Since 1.14. Not supported in L0 drivers; tracing moved to the loader.
+///             Use L0 Loader API Tracing
+///             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+///             instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2219,7 +2260,8 @@ zetTracerExpSetEnabled(
 typedef enum _ze_calculate_multiple_metrics_exp_version_t
 {
     ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),///< version 1.0
-    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
+    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),///< version 1.1
+    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 1 ),///< latest known version
     ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_* ENUMs
 
 } ze_calculate_multiple_metrics_exp_version_t;
@@ -2237,6 +2279,9 @@ typedef enum _ze_calculate_multiple_metrics_exp_version_t
 ///     - All metric values are calculated into a single buffer; use the metric
 ///       counts to determine which metric values belong to which set.
 ///     - The application may call this function from simultaneous threads.
+///     - Version 1.1 introduces flexibility for implementations to change
+///       internal data processing behaviors. Read details on
+///       implementation-specific notes.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2935,12 +2980,10 @@ zetMetricCreateFromProgrammableExp2(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Create metric handles by applying parameter values on the metric
-///        programmable handle.
+/// @brief [DEPRECATED since 1.11] Create metric handles by applying parameter
+///        values on the metric programmable handle.
 /// 
-/// @details
-///     - This API is deprecated. Please use
-///       ::zetMetricCreateFromProgrammableExp2()
+/// @deprecated Since 1.11. Use ::zetMetricCreateFromProgrammableExp2 instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3038,11 +3081,9 @@ zetDeviceCreateMetricGroupsFromMetricsExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Create metric group handle.
+/// @brief [DEPRECATED since 1.12] Create metric group handle.
 /// 
-/// @details
-///     - This API is deprecated. Please use
-///       ::zetDeviceCreateMetricGroupsFromMetricsExp 
+/// @deprecated Since 1.12. Use ::zetDeviceCreateMetricGroupsFromMetricsExp instead.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3398,6 +3439,11 @@ typedef struct _zet_metric_entry_exp_t
 /// @details
 ///     - The notification event must have been created from an event pool that
 ///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
+///     - The notification event must **not** be a Counter Based Event. The
+///       Driver signals the notification event from the host and the
+///       application resets it, neither of which is allowed for Counter Based
+///       Events. ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT is returned
+///       if `hNotificationEvent` is a Counter Based Event.
 ///     - The duration of the signal event created from an event pool that was
 ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
 ///       However, for consistency and orthogonality the event will report

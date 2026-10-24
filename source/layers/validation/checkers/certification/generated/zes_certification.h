@@ -1,7 +1,7 @@
 /*
  * ***THIS FILE IS GENERATED. ***
  *
- * Copyright (C) 2025 Intel Corporation
+ * Copyright (C) 2025-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -1019,6 +1019,12 @@ public:
     }
     virtual ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesDriverGetPciDevicePropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_pci_device_properties_t* pProperties ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

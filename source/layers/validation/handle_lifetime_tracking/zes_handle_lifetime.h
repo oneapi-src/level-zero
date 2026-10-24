@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See handle_lifetime.h.mako for modifications
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -185,6 +185,7 @@ namespace validation_layer
         ze_result_t zesInfoLogInstanceReadWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override;
         ze_result_t zesInfoLogInstancePeekWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override;
         ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) override;
+        ze_result_t zesDriverGetPciDevicePropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_pci_device_properties_t* pProperties ) override;
     };
 
 }
