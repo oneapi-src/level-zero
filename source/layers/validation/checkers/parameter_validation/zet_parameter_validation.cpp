@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See param.cpp.mako for modifications
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -499,10 +499,10 @@ namespace validation_layer
                                                         ///< If the size returns the full size requested, the application may need
                                                         ///< to issue additional reads to
                                                         ///< retrieve any remaining reports that did not fit into the buffer.
-                                                        ///< @deprecated: The behavior of passing in zero size and the function
-                                                        ///< returning the required size is deprecated,
-                                                        ///<             for now it returns only the maximum buffer size regardless
-                                                        ///< of how much data there is available to be read.
+                                                        ///< Passing in zero size to get the required size is deprecated behavior;
+                                                        ///< for now the function returns
+                                                        ///< only the maximum buffer size regardless of how much data there is
+                                                        ///< available to be read.
         uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing streamer
                                                         ///< reports in raw format
         )

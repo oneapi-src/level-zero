@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -5202,6 +5202,41 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetPciDeviceProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetPciDeviceProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI devices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of PCI devices supported by the driver.
+                                                        ///< if count is greater than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall update the value with the correct number
+                                                        ///< of PCI devices supported by the driver.
+        zes_driver_pci_device_properties_t* pProperties ///< [in,out][optional][range(0, *pCount)] array of PCI device properties.
+                                                        ///< if count is less than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall only retrieve that number of PCI device properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPciDeviceProperties = context.zesDdiTable.Driver.pfnGetPciDeviceProperties;
+        if( nullptr != pfnGetPciDeviceProperties )
+        {
+            result = pfnGetPciDeviceProperties( hDriver, pCount, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesDriverGetPciDeviceProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -5503,6 +5538,10 @@ zesGetDriverProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_19) {
     pDdiTable->pfnEnumInfoLogsExt                        = driver::zesDriverEnumInfoLogsExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_20) {
+    pDdiTable->pfnGetPciDeviceProperties                 = driver::zesDriverGetPciDeviceProperties;
     }
 
     if (version >= ZE_API_VERSION_1_5) {

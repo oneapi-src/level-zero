@@ -7031,8 +7031,8 @@ namespace validation_layer
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
 ) {
@@ -7082,8 +7082,8 @@ namespace validation_layer
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
 ) {
@@ -7525,6 +7525,112 @@ namespace validation_layer
         
         oss << "hCommandList=";
         oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "numSemaphores=";
+        oss << loader::to_string(numSemaphores);
+        
+        oss << ", ";
+        oss << "phSemaphores=";
+        oss << loader::to_string(phSemaphores);
+        
+        oss << ", ";
+        oss << "waitParams=";
+        oss << loader::to_string(waitParams);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandQueueSignalExternalSemaphoreExt(
+        ze_result_t result,
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be signaled by the command queue.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before signaling; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before signaling
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueSignalExternalSemaphoreExt(";
+        
+        
+        oss << "hCommandQueue=";
+        oss << loader::to_string(hCommandQueue);
+        
+        oss << ", ";
+        oss << "numSemaphores=";
+        oss << loader::to_string(numSemaphores);
+        
+        oss << ", ";
+        oss << "phSemaphores=";
+        oss << loader::to_string(phSemaphores);
+        
+        oss << ", ";
+        oss << "signalParams=";
+        oss << loader::to_string(signalParams);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandQueueWaitExternalSemaphoreExt(
+        ze_result_t result,
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be waited on by the command queue.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before waiting; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before waiting
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandQueueWaitExternalSemaphoreExt(";
+        
+        
+        oss << "hCommandQueue=";
+        oss << loader::to_string(hCommandQueue);
         
         oss << ", ";
         oss << "numSemaphores=";
@@ -8616,6 +8722,60 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeDeviceGetCompilerInfoSupported(
+        ze_result_t result,
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info category the queried element belongs to
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        const void* pElement,                           ///< [in] element whose support is being checked; its type is determined by
+                                                        ///< paramName
+        const char* pValue,                             ///< [in][optional] for the option categories, a null-terminated value to
+                                                        ///< check together with the option named by pElement.
+                                                        ///< When nullptr, only the element itself is checked. Ignored for
+                                                        ///< non-option categories.
+        ze_bool_t* pSupported                           ///< [out] on success, set to true if the element (and value, when
+                                                        ///< provided) is supported by the device compiler, false otherwise
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeDeviceGetCompilerInfoSupported(";
+        
+        
+        oss << "hDevice=";
+        oss << loader::to_string(hDevice);
+        
+        oss << ", ";
+        oss << "paramName=";
+        oss << loader::to_string(paramName);
+        
+        oss << ", ";
+        oss << "pNext=";
+        oss << loader::to_string(pNext);
+        
+        oss << ", ";
+        oss << "pElement=";
+        oss << loader::to_string(pElement);
+        
+        oss << ", ";
+        oss << "pValue=";
+        oss << loader::to_string(pValue);
+        
+        oss << ", ";
+        oss << "pSupported=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pSupported != nullptr) {
+            oss << loader::to_string(*pSupported);
+        } else {
+            oss << loader::to_string(pSupported);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandQueueSetQosExt(
         ze_result_t result,
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
@@ -8660,6 +8820,293 @@ namespace validation_layer
         oss << ", ";
         oss << "pProperties=";
         oss << loader::to_string(pProperties);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListVisitExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListVisitExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "pDesc=";
+        oss << loader::to_string(pDesc);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeGraphVisitExt(
+        ze_result_t result,
+        ze_graph_handle_t hGraph,                       ///< [in] handle of graph to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeGraphVisitExt(";
+        
+        
+        oss << "hGraph=";
+        oss << loader::to_string(hGraph);
+        
+        oss << ", ";
+        oss << "pDesc=";
+        oss << loader::to_string(pDesc);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListGetNextCommandIdExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetNextCommandIdExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "desc=";
+        oss << loader::to_string(desc);
+        
+        oss << ", ";
+        oss << "pCommandId=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pCommandId != nullptr) {
+            oss << loader::to_string(*pCommandId);
+        } else {
+            oss << loader::to_string(pCommandId);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListGetNextCommandIdWithKernelsExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExt
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListGetNextCommandIdWithKernelsExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "desc=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && desc != nullptr) {
+            oss << loader::to_string(*desc);
+        } else {
+            oss << loader::to_string(desc);
+        }
+        
+        oss << ", ";
+        oss << "numKernels=";
+        oss << loader::to_string(numKernels);
+        
+        oss << ", ";
+        oss << "phKernels=";
+        oss << loader::to_string(phKernels);
+        
+        oss << ", ";
+        oss << "pCommandId=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pCommandId != nullptr) {
+            oss << loader::to_string(*pCommandId);
+        } else {
+            oss << loader::to_string(pCommandId);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListUpdateMutableCommandsExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_ext_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandsExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "desc=";
+        oss << loader::to_string(desc);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListIsMutableExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                        ///< mutable extension
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListIsMutableExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "pIsMutable=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pIsMutable != nullptr) {
+            oss << loader::to_string(*pIsMutable);
+        } else {
+            oss << loader::to_string(pIsMutable);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListUpdateMutableCommandSignalEventExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandSignalEventExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "commandId=";
+        oss << loader::to_string(commandId);
+        
+        oss << ", ";
+        oss << "hSignalEvent=";
+        oss << loader::to_string(hSignalEvent);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListUpdateMutableCommandWaitEventsExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandWaitEventsExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "commandId=";
+        oss << loader::to_string(commandId);
+        
+        oss << ", ";
+        oss << "numWaitEvents=";
+        oss << loader::to_string(numWaitEvents);
+        
+        oss << ", ";
+        oss << "phWaitEvents=";
+        oss << loader::to_string(phWaitEvents);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zeCommandListUpdateMutableCommandKernelsExt(
+        ze_result_t result,
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zeCommandListUpdateMutableCommandKernelsExt(";
+        
+        
+        oss << "hCommandList=";
+        oss << loader::to_string(hCommandList);
+        
+        oss << ", ";
+        oss << "numKernels=";
+        oss << loader::to_string(numKernels);
+        
+        oss << ", ";
+        oss << "pCommandId=";
+        oss << loader::to_string(pCommandId);
+        
+        oss << ", ";
+        oss << "phKernels=";
+        oss << loader::to_string(phKernels);
         oss << ")";
         context.logger->log_trace(oss.str());
         return result;
@@ -18341,8 +18788,8 @@ namespace validation_layer
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
         )
@@ -18394,8 +18841,8 @@ namespace validation_layer
                                                         ///< appended command lists
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
                                                         ///< command lists; must be 0 if nullptr == phWaitEvents
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before executing appended command lists.
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handles of events to wait on
+                                                        ///< before executing appended command lists.
                                                         ///<    - if not null, all wait events must be satisfied prior to the start
                                                         ///< of any appended command list(s)
         )
@@ -18982,6 +19429,108 @@ namespace validation_layer
         }
 
         return logAndPropagateResult_zeCommandListAppendWaitExternalSemaphoreExt(driver_result, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueSignalExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueSignalExternalSemaphoreExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be signaled by the command queue.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before signaling; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before signaling
+        )
+    {
+        context.logger->log_trace("zeCommandQueueSignalExternalSemaphoreExt(hCommandQueue, numSemaphores, phSemaphoresLocal, signalParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnSignalExternalSemaphoreExt = context.zeDdiTable.CommandQueue.pfnSignalExternalSemaphoreExt;
+
+        if( nullptr == pfnSignalExternalSemaphoreExt )
+            return logAndPropagateResult_zeCommandQueueSignalExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSignalExternalSemaphoreExtPrologue( hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueSignalExternalSemaphoreExt(result, hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueSignalExternalSemaphoreExtPrologue( hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueSignalExternalSemaphoreExt(result, hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnSignalExternalSemaphoreExt( hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSignalExternalSemaphoreExtEpilogue( hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueSignalExternalSemaphoreExt(result, hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandQueueSignalExternalSemaphoreExt(driver_result, hCommandQueue, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueWaitExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueWaitExternalSemaphoreExt(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] The command queue handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore handles to be waited on by the command queue.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in][range(0, numSemaphores)] The array of pointers to external
+                                                        ///< semaphore wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before waiting; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before waiting
+        )
+    {
+        context.logger->log_trace("zeCommandQueueWaitExternalSemaphoreExt(hCommandQueue, numSemaphores, phSemaphoresLocal, waitParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnWaitExternalSemaphoreExt = context.zeDdiTable.CommandQueue.pfnWaitExternalSemaphoreExt;
+
+        if( nullptr == pfnWaitExternalSemaphoreExt )
+            return logAndPropagateResult_zeCommandQueueWaitExternalSemaphoreExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueWaitExternalSemaphoreExtPrologue( hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueWaitExternalSemaphoreExt(result, hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueWaitExternalSemaphoreExtPrologue( hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueWaitExternalSemaphoreExt(result, hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnWaitExternalSemaphoreExt( hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueWaitExternalSemaphoreExtEpilogue( hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandQueueWaitExternalSemaphoreExt(result, hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandQueueWaitExternalSemaphoreExt(driver_result, hCommandQueue, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -20516,6 +21065,57 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetCompilerInfoSupported
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetCompilerInfoSupported(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_device_compiler_info_t paramName,            ///< [in] compiler-info category the queried element belongs to
+        const void* pNext,                              ///< [in][optional] additional extensions passed to the function
+        const void* pElement,                           ///< [in] element whose support is being checked; its type is determined by
+                                                        ///< paramName
+        const char* pValue,                             ///< [in][optional] for the option categories, a null-terminated value to
+                                                        ///< check together with the option named by pElement.
+                                                        ///< When nullptr, only the element itself is checked. Ignored for
+                                                        ///< non-option categories.
+        ze_bool_t* pSupported                           ///< [out] on success, set to true if the element (and value, when
+                                                        ///< provided) is supported by the device compiler, false otherwise
+        )
+    {
+        context.logger->log_trace("zeDeviceGetCompilerInfoSupported(hDevice, paramName, pNext, pElement, pValue, pSupported)");
+
+        auto pfnGetCompilerInfoSupported = context.zeDdiTable.Device.pfnGetCompilerInfoSupported;
+
+        if( nullptr == pfnGetCompilerInfoSupported )
+            return logAndPropagateResult_zeDeviceGetCompilerInfoSupported(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDevice, paramName, pNext, pElement, pValue, pSupported);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCompilerInfoSupportedPrologue( hDevice, paramName, pNext, pElement, pValue, pSupported );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetCompilerInfoSupported(result, hDevice, paramName, pNext, pElement, pValue, pSupported);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCompilerInfoSupportedPrologue( hDevice, paramName, pNext, pElement, pValue, pSupported );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetCompilerInfoSupported(result, hDevice, paramName, pNext, pElement, pValue, pSupported);
+        }
+
+        auto driver_result = pfnGetCompilerInfoSupported( hDevice, paramName, pNext, pElement, pValue, pSupported );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCompilerInfoSupportedEpilogue( hDevice, paramName, pNext, pElement, pValue, pSupported ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeDeviceGetCompilerInfoSupported(result, hDevice, paramName, pNext, pElement, pValue, pSupported);
+        }
+
+        return logAndPropagateResult_zeDeviceGetCompilerInfoSupported(driver_result, hDevice, paramName, pNext, pElement, pValue, pSupported);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandQueueSetQosExt
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandQueueSetQosExt(
@@ -20597,6 +21197,399 @@ namespace validation_layer
         }
 
         return logAndPropagateResult_zeCommandQueueGetQosExt(driver_result, hCommandQueue, pProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListVisitExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListVisitExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+        )
+    {
+        context.logger->log_trace("zeCommandListVisitExt(hCommandList, pDesc)");
+
+        auto pfnVisitExt = context.zeDdiTable.CommandList.pfnVisitExt;
+
+        if( nullptr == pfnVisitExt )
+            return logAndPropagateResult_zeCommandListVisitExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pDesc);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListVisitExtPrologue( hCommandList, pDesc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListVisitExt(result, hCommandList, pDesc);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListVisitExtPrologue( hCommandList, pDesc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListVisitExt(result, hCommandList, pDesc);
+        }
+
+        auto driver_result = pfnVisitExt( hCommandList, pDesc );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListVisitExtEpilogue( hCommandList, pDesc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListVisitExt(result, hCommandList, pDesc);
+        }
+
+        return logAndPropagateResult_zeCommandListVisitExt(driver_result, hCommandList, pDesc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeGraphVisitExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeGraphVisitExt(
+        ze_graph_handle_t hGraph,                       ///< [in] handle of graph to visit
+        const ze_command_visit_ext_desc_t* pDesc        ///< [in] pointer to command visit descriptor
+        )
+    {
+        context.logger->log_trace("zeGraphVisitExt(hGraph, pDesc)");
+
+        auto pfnVisitExt = context.zeDdiTable.Graph.pfnVisitExt;
+
+        if( nullptr == pfnVisitExt )
+            return logAndPropagateResult_zeGraphVisitExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hGraph, pDesc);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphVisitExtPrologue( hGraph, pDesc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphVisitExt(result, hGraph, pDesc);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeGraphVisitExtPrologue( hGraph, pDesc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphVisitExt(result, hGraph, pDesc);
+        }
+
+        auto driver_result = pfnVisitExt( hGraph, pDesc );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeGraphVisitExtEpilogue( hGraph, pDesc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeGraphVisitExt(result, hGraph, pDesc);
+        }
+
+        return logAndPropagateResult_zeGraphVisitExt(driver_result, hGraph, pDesc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        context.logger->log_trace("zeCommandListGetNextCommandIdExt(hCommandList, desc, pCommandId)");
+
+        auto pfnGetNextCommandIdExt = context.zeDdiTable.CommandList.pfnGetNextCommandIdExt;
+
+        if( nullptr == pfnGetNextCommandIdExt )
+            return logAndPropagateResult_zeCommandListGetNextCommandIdExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, desc, pCommandId);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdExtPrologue( hCommandList, desc, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetNextCommandIdExt(result, hCommandList, desc, pCommandId);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetNextCommandIdExtPrologue( hCommandList, desc, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetNextCommandIdExt(result, hCommandList, desc, pCommandId);
+        }
+
+        auto driver_result = pfnGetNextCommandIdExt( hCommandList, desc, pCommandId );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdExtEpilogue( hCommandList, desc, pCommandId ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetNextCommandIdExt(result, hCommandList, desc, pCommandId);
+        }
+
+        return logAndPropagateResult_zeCommandListGetNextCommandIdExt(driver_result, hCommandList, desc, pCommandId);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdWithKernelsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdWithKernelsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_ext_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExt
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        context.logger->log_trace("zeCommandListGetNextCommandIdWithKernelsExt(hCommandList, desc, numKernels, phKernelsLocal, pCommandId)");
+
+        auto pfnGetNextCommandIdWithKernelsExt = context.zeDdiTable.CommandList.pfnGetNextCommandIdWithKernelsExt;
+
+        if( nullptr == pfnGetNextCommandIdWithKernelsExt )
+            return logAndPropagateResult_zeCommandListGetNextCommandIdWithKernelsExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, desc, numKernels, phKernels, pCommandId);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdWithKernelsExtPrologue( hCommandList, desc, numKernels, phKernels, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetNextCommandIdWithKernelsExt(result, hCommandList, desc, numKernels, phKernels, pCommandId);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetNextCommandIdWithKernelsExtPrologue( hCommandList, desc, numKernels, phKernels, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetNextCommandIdWithKernelsExt(result, hCommandList, desc, numKernels, phKernels, pCommandId);
+        }
+
+        auto driver_result = pfnGetNextCommandIdWithKernelsExt( hCommandList, desc, numKernels, phKernels, pCommandId );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdWithKernelsExtEpilogue( hCommandList, desc, numKernels, phKernels, pCommandId ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListGetNextCommandIdWithKernelsExt(result, hCommandList, desc, numKernels, phKernels, pCommandId);
+        }
+
+        return logAndPropagateResult_zeCommandListGetNextCommandIdWithKernelsExt(driver_result, hCommandList, desc, numKernels, phKernels, pCommandId);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_ext_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandsExt(hCommandList, desc)");
+
+        auto pfnUpdateMutableCommandsExt = context.zeDdiTable.CommandList.pfnUpdateMutableCommandsExt;
+
+        if( nullptr == pfnUpdateMutableCommandsExt )
+            return logAndPropagateResult_zeCommandListUpdateMutableCommandsExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, desc);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandsExtPrologue( hCommandList, desc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandsExt(result, hCommandList, desc);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandsExtPrologue( hCommandList, desc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandsExt(result, hCommandList, desc);
+        }
+
+        auto driver_result = pfnUpdateMutableCommandsExt( hCommandList, desc );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandsExtEpilogue( hCommandList, desc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandsExt(result, hCommandList, desc);
+        }
+
+        return logAndPropagateResult_zeCommandListUpdateMutableCommandsExt(driver_result, hCommandList, desc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListIsMutableExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListIsMutableExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsMutable                           ///< [out] pointer bool determining whether command list was created with
+                                                        ///< mutable extension
+        )
+    {
+        context.logger->log_trace("zeCommandListIsMutableExt(hCommandList, pIsMutable)");
+
+        auto pfnIsMutableExt = context.zeDdiTable.CommandList.pfnIsMutableExt;
+
+        if( nullptr == pfnIsMutableExt )
+            return logAndPropagateResult_zeCommandListIsMutableExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, pIsMutable);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsMutableExtPrologue( hCommandList, pIsMutable );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsMutableExt(result, hCommandList, pIsMutable);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListIsMutableExtPrologue( hCommandList, pIsMutable );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsMutableExt(result, hCommandList, pIsMutable);
+        }
+
+        auto driver_result = pfnIsMutableExt( hCommandList, pIsMutable );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsMutableExtEpilogue( hCommandList, pIsMutable ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListIsMutableExt(result, hCommandList, pIsMutable);
+        }
+
+        return logAndPropagateResult_zeCommandListIsMutableExt(driver_result, hCommandList, pIsMutable);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandSignalEventExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandSignalEventExt(hCommandList, commandId, hSignalEvent)");
+
+        auto pfnUpdateMutableCommandSignalEventExt = context.zeDdiTable.CommandList.pfnUpdateMutableCommandSignalEventExt;
+
+        if( nullptr == pfnUpdateMutableCommandSignalEventExt )
+            return logAndPropagateResult_zeCommandListUpdateMutableCommandSignalEventExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, commandId, hSignalEvent);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandSignalEventExtPrologue( hCommandList, commandId, hSignalEvent );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandSignalEventExt(result, hCommandList, commandId, hSignalEvent);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandSignalEventExtPrologue( hCommandList, commandId, hSignalEvent );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandSignalEventExt(result, hCommandList, commandId, hSignalEvent);
+        }
+
+        auto driver_result = pfnUpdateMutableCommandSignalEventExt( hCommandList, commandId, hSignalEvent );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandSignalEventExtEpilogue( hCommandList, commandId, hSignalEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandSignalEventExt(result, hCommandList, commandId, hSignalEvent);
+        }
+
+        return logAndPropagateResult_zeCommandListUpdateMutableCommandSignalEventExt(driver_result, hCommandList, commandId, hSignalEvent);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandWaitEventsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandWaitEventsExt(hCommandList, commandId, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnUpdateMutableCommandWaitEventsExt = context.zeDdiTable.CommandList.pfnUpdateMutableCommandWaitEventsExt;
+
+        if( nullptr == pfnUpdateMutableCommandWaitEventsExt )
+            return logAndPropagateResult_zeCommandListUpdateMutableCommandWaitEventsExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, commandId, numWaitEvents, phWaitEvents);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandWaitEventsExtPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandWaitEventsExt(result, hCommandList, commandId, numWaitEvents, phWaitEvents);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandWaitEventsExtPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandWaitEventsExt(result, hCommandList, commandId, numWaitEvents, phWaitEvents);
+        }
+
+        auto driver_result = pfnUpdateMutableCommandWaitEventsExt( hCommandList, commandId, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandWaitEventsExtEpilogue( hCommandList, commandId, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandWaitEventsExt(result, hCommandList, commandId, numWaitEvents, phWaitEvents);
+        }
+
+        return logAndPropagateResult_zeCommandListUpdateMutableCommandWaitEventsExt(driver_result, hCommandList, commandId, numWaitEvents, phWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandKernelsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandKernelsExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandKernelsExt(hCommandList, numKernels, pCommandId, phKernelsLocal)");
+
+        auto pfnUpdateMutableCommandKernelsExt = context.zeDdiTable.CommandList.pfnUpdateMutableCommandKernelsExt;
+
+        if( nullptr == pfnUpdateMutableCommandKernelsExt )
+            return logAndPropagateResult_zeCommandListUpdateMutableCommandKernelsExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hCommandList, numKernels, pCommandId, phKernels);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandKernelsExtPrologue( hCommandList, numKernels, pCommandId, phKernels );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandKernelsExt(result, hCommandList, numKernels, pCommandId, phKernels);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandKernelsExtPrologue( hCommandList, numKernels, pCommandId, phKernels );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandKernelsExt(result, hCommandList, numKernels, pCommandId, phKernels);
+        }
+
+        auto driver_result = pfnUpdateMutableCommandKernelsExt( hCommandList, numKernels, pCommandId, phKernels );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandKernelsExtEpilogue( hCommandList, numKernels, pCommandId, phKernels ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zeCommandListUpdateMutableCommandKernelsExt(result, hCommandList, numKernels, pCommandId, phKernels);
+        }
+
+        return logAndPropagateResult_zeCommandListUpdateMutableCommandKernelsExt(driver_result, hCommandList, numKernels, pCommandId, phKernels);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -21123,6 +22116,10 @@ zeGetDeviceProcAddrTable(
         dditable.pfnSetCacheAdviceExt                        = pDdiTable->pfnSetCacheAdviceExt;
         pDdiTable->pfnSetCacheAdviceExt                      = validation_layer::zeDeviceSetCacheAdviceExt;
     }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnGetCompilerInfoSupported                 = pDdiTable->pfnGetCompilerInfoSupported;
+        pDdiTable->pfnGetCompilerInfoSupported               = validation_layer::zeDeviceGetCompilerInfoSupported;
+    }
     if (version >= ZE_API_VERSION_1_3) {
         dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
         pDdiTable->pfnPciGetPropertiesExt                    = validation_layer::zeDevicePciGetPropertiesExt;
@@ -21291,6 +22288,14 @@ zeGetCommandQueueProcAddrTable(
     if (version >= ZE_API_VERSION_1_19) {
         dditable.pfnGetQosExt                                = pDdiTable->pfnGetQosExt;
         pDdiTable->pfnGetQosExt                              = validation_layer::zeCommandQueueGetQosExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnSignalExternalSemaphoreExt               = pDdiTable->pfnSignalExternalSemaphoreExt;
+        pDdiTable->pfnSignalExternalSemaphoreExt             = validation_layer::zeCommandQueueSignalExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnWaitExternalSemaphoreExt                 = pDdiTable->pfnWaitExternalSemaphoreExt;
+        pDdiTable->pfnWaitExternalSemaphoreExt               = validation_layer::zeCommandQueueWaitExternalSemaphoreExt;
     }
     if (version >= ZE_API_VERSION_1_9) {
         dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
@@ -21510,6 +22515,38 @@ zeGetCommandListProcAddrTable(
     if (version >= ZE_API_VERSION_1_18) {
         dditable.pfnAppendWaitOnEventsWithParameters         = pDdiTable->pfnAppendWaitOnEventsWithParameters;
         pDdiTable->pfnAppendWaitOnEventsWithParameters       = validation_layer::zeCommandListAppendWaitOnEventsWithParameters;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnVisitExt                                 = pDdiTable->pfnVisitExt;
+        pDdiTable->pfnVisitExt                               = validation_layer::zeCommandListVisitExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnGetNextCommandIdExt                      = pDdiTable->pfnGetNextCommandIdExt;
+        pDdiTable->pfnGetNextCommandIdExt                    = validation_layer::zeCommandListGetNextCommandIdExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnGetNextCommandIdWithKernelsExt           = pDdiTable->pfnGetNextCommandIdWithKernelsExt;
+        pDdiTable->pfnGetNextCommandIdWithKernelsExt         = validation_layer::zeCommandListGetNextCommandIdWithKernelsExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnUpdateMutableCommandsExt                 = pDdiTable->pfnUpdateMutableCommandsExt;
+        pDdiTable->pfnUpdateMutableCommandsExt               = validation_layer::zeCommandListUpdateMutableCommandsExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnIsMutableExt                             = pDdiTable->pfnIsMutableExt;
+        pDdiTable->pfnIsMutableExt                           = validation_layer::zeCommandListIsMutableExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnUpdateMutableCommandSignalEventExt       = pDdiTable->pfnUpdateMutableCommandSignalEventExt;
+        pDdiTable->pfnUpdateMutableCommandSignalEventExt     = validation_layer::zeCommandListUpdateMutableCommandSignalEventExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnUpdateMutableCommandWaitEventsExt        = pDdiTable->pfnUpdateMutableCommandWaitEventsExt;
+        pDdiTable->pfnUpdateMutableCommandWaitEventsExt      = validation_layer::zeCommandListUpdateMutableCommandWaitEventsExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnUpdateMutableCommandKernelsExt           = pDdiTable->pfnUpdateMutableCommandKernelsExt;
+        pDdiTable->pfnUpdateMutableCommandKernelsExt         = validation_layer::zeCommandListUpdateMutableCommandKernelsExt;
     }
     if (version >= ZE_API_VERSION_1_3) {
         dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
@@ -22582,6 +23619,10 @@ zeGetGraphProcAddrTable(
     if (version >= ZE_API_VERSION_1_18) {
         dditable.pfnGetIdExt                                 = pDdiTable->pfnGetIdExt;
         pDdiTable->pfnGetIdExt                               = validation_layer::zeGraphGetIdExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnVisitExt                                 = pDdiTable->pfnVisitExt;
+        pDdiTable->pfnVisitExt                               = validation_layer::zeGraphVisitExt;
     }
     return result;
 }

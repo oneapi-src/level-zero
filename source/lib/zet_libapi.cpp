@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -1371,6 +1371,11 @@ zetContextActivateMetricGroups(
 /// @details
 ///     - The notification event must have been created from an event pool that
 ///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
+///     - The notification event must **not** be a Counter Based Event. The
+///       Driver signals the notification event from the host and the
+///       application resets it, neither of which is allowed for Counter Based
+///       Events. ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT is returned
+///       if `hNotificationEvent` is a Counter Based Event.
 ///     - The duration of the signal event created from an event pool that was
 ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
 ///       However, for consistency and orthogonality the event will report
@@ -1612,10 +1617,10 @@ zetMetricStreamerReadData(
                                                     ///< If the size returns the full size requested, the application may need
                                                     ///< to issue additional reads to
                                                     ///< retrieve any remaining reports that did not fit into the buffer.
-                                                    ///< @deprecated: The behavior of passing in zero size and the function
-                                                    ///< returning the required size is deprecated,
-                                                    ///<             for now it returns only the maximum buffer size regardless
-                                                    ///< of how much data there is available to be read.
+                                                    ///< Passing in zero size to get the required size is deprecated behavior;
+                                                    ///< for now the function returns
+                                                    ///< only the maximum buffer size regardless of how much data there is
+                                                    ///< available to be read.
     uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing streamer
                                                     ///< reports in raw format
     )
@@ -2067,6 +2072,9 @@ zetCommandListAppendMetricQueryBegin(
 ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
 ///       However, for consistency and orthogonality the event will report
 ///       correctly as signaled when used by other event API functionality.
+///     - `hSignalEvent` must **not** be a Counter Based Event.
+///       ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT is returned if
+///       `hSignalEvent` is a Counter Based Event.
 ///     - If numWaitEvents is zero, then all previous commands are completed
 ///       prior to the execution of the query.
 ///     - If numWaitEvents is non-zero, then all phWaitEvents must be signaled
@@ -2342,9 +2350,6 @@ zetKernelGetProfileInfo(
 /// @brief Creates a tracer on the context.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application must only use the tracer for the context which was
 ///       provided during creation.
 ///     - The tracer is created in the disabled state.
@@ -2415,9 +2420,6 @@ zetTracerExpCreate(
 /// @brief Destroys a tracer.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
 ///     - The implementation of this function must be thread-safe.
@@ -2485,9 +2487,6 @@ zetTracerExpDestroy(
 ///        execution.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
@@ -2557,9 +2556,6 @@ zetTracerExpSetPrologues(
 ///        execution.
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
@@ -2628,9 +2624,6 @@ zetTracerExpSetEpilogues(
 /// @brief Enables (or disables) the tracer
 /// 
 /// @details
-///     - @deprecated This function is not supported in L0 drivers and has been
-///       replaced by the Loader Tracing Layer. See the Loader Tracing
-///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
 /// 
@@ -2702,6 +2695,9 @@ zetTracerExpSetEnabled(
 ///     - All metric values are calculated into a single buffer; use the metric
 ///       counts to determine which metric values belong to which set.
 ///     - The application may call this function from simultaneous threads.
+///     - Version 1.1 introduces flexibility for implementations to change
+///       internal data processing behaviors. Read details on
+///       implementation-specific notes.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3406,10 +3402,6 @@ zetMetricCreateFromProgrammableExp2(
 /// @brief Create metric handles by applying parameter values on the metric
 ///        programmable handle.
 /// 
-/// @details
-///     - This API is deprecated. Please use
-///       ::zetMetricCreateFromProgrammableExp2()
-/// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
@@ -3573,10 +3565,6 @@ zetDeviceCreateMetricGroupsFromMetricsExp(
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Create metric group handle.
-/// 
-/// @details
-///     - This API is deprecated. Please use
-///       ::zetDeviceCreateMetricGroupsFromMetricsExp 
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4079,6 +4067,11 @@ zetDeviceGetConcurrentMetricGroupsExp(
 /// @details
 ///     - The notification event must have been created from an event pool that
 ///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
+///     - The notification event must **not** be a Counter Based Event. The
+///       Driver signals the notification event from the host and the
+///       application resets it, neither of which is allowed for Counter Based
+///       Events. ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT is returned
+///       if `hNotificationEvent` is a Counter Based Event.
 ///     - The duration of the signal event created from an event pool that was
 ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
 ///       However, for consistency and orthogonality the event will report

@@ -5199,6 +5199,42 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDriverGetPciDeviceProperties(
+        ze_result_t result,
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI devices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of PCI devices supported by the driver.
+                                                        ///< if count is greater than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall update the value with the correct number
+                                                        ///< of PCI devices supported by the driver.
+        zes_driver_pci_device_properties_t* pProperties ///< [in,out][optional][range(0, *pCount)] array of PCI device properties.
+                                                        ///< if count is less than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall only retrieve that number of PCI device properties.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesDriverGetPciDeviceProperties(";
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
+        oss << ", ";
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
+        oss << ", ";
+        oss << "pProperties=";
+        oss << loader::to_string(pProperties);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesInit
@@ -12909,6 +12945,56 @@ namespace validation_layer
         return logAndPropagateResult_zesInfoLogInstanceDeleteExt(driver_result, hInfoLogInstance);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetPciDeviceProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetPciDeviceProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI devices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of PCI devices supported by the driver.
+                                                        ///< if count is greater than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall update the value with the correct number
+                                                        ///< of PCI devices supported by the driver.
+        zes_driver_pci_device_properties_t* pProperties ///< [in,out][optional][range(0, *pCount)] array of PCI device properties.
+                                                        ///< if count is less than the number of PCI devices supported by the
+                                                        ///< driver, then the driver shall only retrieve that number of PCI device properties.
+        )
+    {
+        context.logger->log_trace("zesDriverGetPciDeviceProperties(hDriver, pCount, pProperties)");
+
+        auto pfnGetPciDeviceProperties = context.zesDdiTable.Driver.pfnGetPciDeviceProperties;
+
+        if( nullptr == pfnGetPciDeviceProperties )
+            return logAndPropagateResult_zesDriverGetPciDeviceProperties(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, pCount, pProperties);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDriverGetPciDevicePropertiesPrologue( hDriver, pCount, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDriverGetPciDeviceProperties(result, hDriver, pCount, pProperties);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDriverGetPciDevicePropertiesPrologue( hDriver, pCount, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDriverGetPciDeviceProperties(result, hDriver, pCount, pProperties);
+        }
+
+        auto driver_result = pfnGetPciDeviceProperties( hDriver, pCount, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDriverGetPciDevicePropertiesEpilogue( hDriver, pCount, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDriverGetPciDeviceProperties(result, hDriver, pCount, pProperties);
+        }
+
+        return logAndPropagateResult_zesDriverGetPciDeviceProperties(driver_result, hDriver, pCount, pProperties);
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -13219,6 +13305,10 @@ zesGetDriverProcAddrTable(
     if (version >= ZE_API_VERSION_1_19) {
         dditable.pfnEnumInfoLogsExt                          = pDdiTable->pfnEnumInfoLogsExt;
         pDdiTable->pfnEnumInfoLogsExt                        = validation_layer::zesDriverEnumInfoLogsExt;
+    }
+    if (version >= ZE_API_VERSION_1_20) {
+        dditable.pfnGetPciDeviceProperties                   = pDdiTable->pfnGetPciDeviceProperties;
+        pDdiTable->pfnGetPciDeviceProperties                 = validation_layer::zesDriverGetPciDeviceProperties;
     }
     if (version >= ZE_API_VERSION_1_5) {
         dditable.pfnGet                                      = pDdiTable->pfnGet;

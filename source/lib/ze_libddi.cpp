@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -192,6 +192,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDeviceReserveCacheExt") );
             initialzeDdiTable.Device.pfnSetCacheAdviceExt = reinterpret_cast<ze_pfnDeviceSetCacheAdviceExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceSetCacheAdviceExt") );
+            initialzeDdiTable.Device.pfnGetCompilerInfoSupported = reinterpret_cast<ze_pfnDeviceGetCompilerInfoSupported_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceGetCompilerInfoSupported") );
             initialzeDdiTable.Device.pfnPciGetPropertiesExt = reinterpret_cast<ze_pfnDevicePciGetPropertiesExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDevicePciGetPropertiesExt") );
             initialzeDdiTable.Device.pfnGetRootDevice = reinterpret_cast<ze_pfnDeviceGetRootDevice_t>(
@@ -258,6 +260,10 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeCommandQueueSetQosExt") );
             initialzeDdiTable.CommandQueue.pfnGetQosExt = reinterpret_cast<ze_pfnCommandQueueGetQosExt_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandQueueGetQosExt") );
+            initialzeDdiTable.CommandQueue.pfnSignalExternalSemaphoreExt = reinterpret_cast<ze_pfnCommandQueueSignalExternalSemaphoreExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandQueueSignalExternalSemaphoreExt") );
+            initialzeDdiTable.CommandQueue.pfnWaitExternalSemaphoreExt = reinterpret_cast<ze_pfnCommandQueueWaitExternalSemaphoreExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandQueueWaitExternalSemaphoreExt") );
             initialzeDdiTable.CommandQueue.pfnGetOrdinal = reinterpret_cast<ze_pfnCommandQueueGetOrdinal_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandQueueGetOrdinal") );
             initialzeDdiTable.CommandQueue.pfnGetIndex = reinterpret_cast<ze_pfnCommandQueueGetIndex_t>(
@@ -361,6 +367,22 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendSignalEventWithParameters") );
             initialzeDdiTable.CommandList.pfnAppendWaitOnEventsWithParameters = reinterpret_cast<ze_pfnCommandListAppendWaitOnEventsWithParameters_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendWaitOnEventsWithParameters") );
+            initialzeDdiTable.CommandList.pfnVisitExt = reinterpret_cast<ze_pfnCommandListVisitExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListVisitExt") );
+            initialzeDdiTable.CommandList.pfnGetNextCommandIdExt = reinterpret_cast<ze_pfnCommandListGetNextCommandIdExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListGetNextCommandIdExt") );
+            initialzeDdiTable.CommandList.pfnGetNextCommandIdWithKernelsExt = reinterpret_cast<ze_pfnCommandListGetNextCommandIdWithKernelsExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListGetNextCommandIdWithKernelsExt") );
+            initialzeDdiTable.CommandList.pfnUpdateMutableCommandsExt = reinterpret_cast<ze_pfnCommandListUpdateMutableCommandsExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListUpdateMutableCommandsExt") );
+            initialzeDdiTable.CommandList.pfnIsMutableExt = reinterpret_cast<ze_pfnCommandListIsMutableExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListIsMutableExt") );
+            initialzeDdiTable.CommandList.pfnUpdateMutableCommandSignalEventExt = reinterpret_cast<ze_pfnCommandListUpdateMutableCommandSignalEventExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListUpdateMutableCommandSignalEventExt") );
+            initialzeDdiTable.CommandList.pfnUpdateMutableCommandWaitEventsExt = reinterpret_cast<ze_pfnCommandListUpdateMutableCommandWaitEventsExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListUpdateMutableCommandWaitEventsExt") );
+            initialzeDdiTable.CommandList.pfnUpdateMutableCommandKernelsExt = reinterpret_cast<ze_pfnCommandListUpdateMutableCommandKernelsExt_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListUpdateMutableCommandKernelsExt") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyToMemoryExt_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendImageCopyToMemoryExt") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyFromMemoryExt_t>(
@@ -776,6 +798,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeGraphResumeCaptureExt") );
             initialzeDdiTable.Graph.pfnGetIdExt = reinterpret_cast<ze_pfnGraphGetIdExt_t>(
                 GET_FUNCTION_PTR(loader, "zeGraphGetIdExt") );
+            initialzeDdiTable.Graph.pfnVisitExt = reinterpret_cast<ze_pfnGraphVisitExt_t>(
+                GET_FUNCTION_PTR(loader, "zeGraphVisitExt") );
         }
 
         return result;

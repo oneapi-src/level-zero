@@ -1,10 +1,10 @@
 """
- Copyright (C) 2019-2025 Intel Corporation
+ Copyright (C) 2019-2026 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.19-r1.19.12
+ @version v1.20-r1.20.41
 
  """
 import platform
@@ -55,7 +55,7 @@ def ZE_MINOR_VERSION( _ver ):
 
 ###############################################################################
 ## @brief compiler-independent type
-class ze_bool_t(c_ubyte):
+class ze_bool_t(c_uint8):
     pass
 
 ###############################################################################
@@ -260,7 +260,7 @@ class ze_result_t(c_int):
 class ze_structure_type_v(IntEnum):
     DRIVER_PROPERTIES = 0x1                                                 ## ::ze_driver_properties_t
     DRIVER_IPC_PROPERTIES = 0x2                                             ## ::ze_driver_ipc_properties_t
-    DEVICE_PROPERTIES = 0x3                                                 ## ::ze_device_properties_t. @deprecated since 1.17: Use
+    DEVICE_PROPERTIES = 0x3                                                 ## [DEPRECATED since 1.17] ::ze_device_properties_t. Use
                                                                             ## ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 instead.
     DEVICE_COMPUTE_PROPERTIES = 0x4                                         ## ::ze_device_compute_properties_t
     DEVICE_MODULE_PROPERTIES = 0x5                                          ## ::ze_device_module_properties_t
@@ -325,7 +325,8 @@ class ze_structure_type_v(IntEnum):
     DEVICE_PROPERTIES_1_2 = 0x00020006                                      ## ::ze_device_properties_t
     IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007                                ## ::ze_image_memory_properties_exp_t
     POWER_SAVING_HINT_EXP_DESC = 0x00020008                                 ## ::ze_context_power_saving_hint_exp_desc_t
-    COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009                              ## ::ze_copy_bandwidth_exp_properties_t
+    COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009                              ## [DEPRECATED since 1.14] ::ze_copy_bandwidth_exp_properties_t. No
+                                                                            ## replacement.
     DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x0002000A                        ## ::ze_device_p2p_bandwidth_exp_properties_t
     FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B                               ## ::ze_fabric_vertex_exp_properties_t
     FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C                                 ## ::ze_fabric_edge_exp_properties_t
@@ -388,6 +389,19 @@ class ze_structure_type_v(IntEnum):
     IPC_PHYS_MEM_HANDLE_RANGE_EXT_DESC = 0x0002004B                         ## ::ze_ipc_phys_mem_handle_range_ext_desc_t
     COMMAND_QUEUE_QOS_EXT_DESC = 0x0002004C                                 ## ::ze_command_queue_qos_ext_desc_t
     COMMAND_QUEUE_QOS_EXT_PROPERTIES = 0x0002004D                           ## ::ze_command_queue_qos_ext_properties_t
+    MUTABLE_COMMAND_LIST_EXT_PROPERTIES = 0x0002004E                        ## ::ze_mutable_command_list_ext_properties_t
+    MUTABLE_COMMAND_LIST_EXT_DESC = 0x0002004F                              ## ::ze_mutable_command_list_ext_desc_t
+    MUTABLE_COMMAND_ID_EXT_DESC = 0x00020050                                ## ::ze_mutable_command_id_ext_desc_t
+    MUTABLE_COMMANDS_EXT_DESC = 0x00020051                                  ## ::ze_mutable_commands_ext_desc_t
+    MUTABLE_KERNEL_ARGUMENT_EXT_DESC = 0x00020052                           ## ::ze_mutable_kernel_argument_ext_desc_t
+    MUTABLE_GROUP_COUNT_EXT_DESC = 0x00020053                               ## ::ze_mutable_group_count_ext_desc_t
+    MUTABLE_GROUP_SIZE_EXT_DESC = 0x00020054                                ## ::ze_mutable_group_size_ext_desc_t
+    MUTABLE_GLOBAL_OFFSET_EXT_DESC = 0x00020055                             ## ::ze_mutable_global_offset_ext_desc_t
+    MUTABLE_GRAPH_ARGUMENT_EXT_DESC = 0x00020056                            ## ::ze_mutable_graph_argument_ext_desc_t
+    EVENT_EXT_FLAGS_DESC = 0x00020057                                       ## ::ze_event_ext_flags_desc_t
+    INIT_DRIVER_PROPERTIES_EXT_DESC = 0x00020058                            ## ::ze_init_driver_properties_ext_desc_t
+    COMMAND_VISIT_EXT_DESC = 0x00020059                                     ## ::ze_command_visit_ext_desc_t
+    CONCRETE_VISITOR_EXT_DESC = 0x0002005A                                  ## ::ze_concrete_visitor_ext_desc_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -446,7 +460,7 @@ ZE_MAX_UUID_SIZE = 16
 ## @brief Universal unique id (UUID)
 class ze_uuid_t(Structure):
     _fields_ = [
-        ("id", c_ubyte * ZE_MAX_UUID_SIZE)                              ## [out] opaque data representing a UUID
+        ("id", c_uint8 * ZE_MAX_UUID_SIZE)                              ## [out] opaque data representing a UUID
     ]
 
 ###############################################################################
@@ -575,7 +589,8 @@ class ze_api_version_v(IntEnum):
     _1_17 = ZE_MAKE_VERSION( 1, 17 )                                        ## version 1.17
     _1_18 = ZE_MAKE_VERSION( 1, 18 )                                        ## version 1.18
     _1_19 = ZE_MAKE_VERSION( 1, 19 )                                        ## version 1.19
-    CURRENT = ZE_MAKE_VERSION( 1, 19 )                                      ## latest known version
+    _1_20 = ZE_MAKE_VERSION( 1, 20 )                                        ## version 1.20
+    CURRENT = ZE_MAKE_VERSION( 1, 20 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -584,7 +599,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 19 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 20 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -594,7 +609,7 @@ ZE_MAX_DRIVER_UUID_SIZE = 16
 ## @brief Driver universal unique id (UUID)
 class ze_driver_uuid_t(Structure):
     _fields_ = [
-        ("id", c_ubyte * ZE_MAX_DRIVER_UUID_SIZE)                       ## [out] opaque data representing a driver UUID
+        ("id", c_uint8 * ZE_MAX_DRIVER_UUID_SIZE)                       ## [out] opaque data representing a driver UUID
     ]
 
 ###############################################################################
@@ -605,7 +620,7 @@ class ze_driver_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("uuid", ze_driver_uuid_t),                                     ## [out] universal unique identifier.
-        ("driverVersion", c_ulong)                                      ## [out] driver version
+        ("driverVersion", c_uint32)                                     ## [out] driver version
                                                                         ## The driver version is a non-zero, monotonically increasing value where
                                                                         ## higher values always indicate a more recent version.
     ]
@@ -645,7 +660,7 @@ ZE_MAX_EXTENSION_NAME = 256
 class ze_driver_extension_properties_t(Structure):
     _fields_ = [
         ("name", c_char * ZE_MAX_EXTENSION_NAME),                       ## [out] extension name
-        ("version", c_ulong)                                            ## [out] extension version using ::ZE_MAKE_VERSION
+        ("version", c_uint32)                                           ## [out] extension version using ::ZE_MAKE_VERSION
     ]
 
 ###############################################################################
@@ -670,7 +685,7 @@ ZE_MAX_DEVICE_UUID_SIZE = 16
 ## @brief Device universal unique id (UUID)
 class ze_device_uuid_t(Structure):
     _fields_ = [
-        ("id", c_ubyte * ZE_MAX_DEVICE_UUID_SIZE)                       ## [out] opaque data representing a device UUID
+        ("id", c_uint8 * ZE_MAX_DEVICE_UUID_SIZE)                       ## [out] opaque data representing a device UUID
     ]
 
 ###############################################################################
@@ -698,32 +713,33 @@ class ze_device_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", ze_device_type_t),                                     ## [out] generic device type
-        ("vendorId", c_ulong),                                          ## [out] vendor id from PCI configuration
-        ("deviceId", c_ulong),                                          ## [out] device id from PCI configuration.
+        ("vendorId", c_uint32),                                         ## [out] vendor id from PCI configuration
+        ("deviceId", c_uint32),                                         ## [out] device id from PCI configuration.
                                                                         ## Note, the device id uses little-endian format.
         ("flags", ze_device_property_flags_t),                          ## [out] 0 (none) or a valid combination of ::ze_device_property_flag_t
-        ("subdeviceId", c_ulong),                                       ## [out] sub-device id. Only valid if ::ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE
+        ("subdeviceId", c_uint32),                                      ## [out] sub-device id. Only valid if ::ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE
                                                                         ## is set.
-        ("coreClockRate", c_ulong),                                     ## [out] Clock rate for device core.
-        ("maxMemAllocSize", c_ulonglong),                               ## [out] Maximum memory allocation size.
-        ("maxHardwareContexts", c_ulong),                               ## [out] Maximum number of logical hardware contexts.
-        ("maxCommandQueuePriority", c_ulong),                           ## [out] Maximum priority for command queues. Higher value is higher
+        ("coreClockRate", c_uint32),                                    ## [out] Clock rate for device core.
+        ("maxMemAllocSize", c_uint64),                                  ## [out] Maximum memory allocation size.
+        ("maxHardwareContexts", c_uint32),                              ## [out] Maximum number of logical hardware contexts.
+        ("maxCommandQueuePriority", c_uint32),                          ## [out] Maximum priority for command queues. Higher value is higher
                                                                         ## priority.
-        ("numThreadsPerEU", c_ulong),                                   ## [out] Maximum number of threads per EU.
-        ("physicalEUSimdWidth", c_ulong),                               ## [out] The physical EU simd width.
-        ("numEUsPerSubslice", c_ulong),                                 ## [out] Maximum number of EUs per sub-slice.
-        ("numSubslicesPerSlice", c_ulong),                              ## [out] Maximum number of sub-slices per slice.
-        ("numSlices", c_ulong),                                         ## [out] Maximum number of slices.
-        ("timerResolution", c_ulonglong),                               ## [out] @deprecated when using ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES
-                                                                        ## since 1.17: Use ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 to obtain
-                                                                        ## timerResolution in cycles/sec for profiling and timestamps.
-        ("timestampValidBits", c_ulong),                                ## [out] Returns the number of valid bits in the timestamp value. (i.e
+        ("numThreadsPerEU", c_uint32),                                  ## [out] Maximum number of threads per EU.
+        ("physicalEUSimdWidth", c_uint32),                              ## [out] The physical EU simd width.
+        ("numEUsPerSubslice", c_uint32),                                ## [out] Maximum number of EUs per sub-slice.
+        ("numSubslicesPerSlice", c_uint32),                             ## [out] Maximum number of sub-slices per slice.
+        ("numSlices", c_uint32),                                        ## [out] Maximum number of slices.
+        ("timerResolution", c_uint64),                                  ## [out] Returns the resolution of device timer in cycles per second used
+                                                                        ## for profiling, timestamps, etc. Requires
+                                                                        ## stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2; with the deprecated
+                                                                        ## ::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES the units are nanoseconds.
+        ("timestampValidBits", c_uint32),                               ## [out] Returns the number of valid bits in the timestamp value. (i.e
                                                                         ## can be used to calculate the max value of the device timestamp in
                                                                         ## hardware or get the mask of valid bits in the timestamp value).
                                                                         ## timestampValidBits may or may not be same as the
                                                                         ## kernelTimestampValidBits as they may be tracked using different
                                                                         ## register sizes which are platform specific.
-        ("kernelTimestampValidBits", c_ulong),                          ## [out] Returns the number of valid bits in the kernel timestamp values.
+        ("kernelTimestampValidBits", c_uint32),                         ## [out] Returns the number of valid bits in the kernel timestamp values.
                                                                         ## (i.e can beused to calculate the max value of the  kernel timestamp in
                                                                         ## hardware or get the mask of valid bits in the kernel timestamp value).
         ("uuid", ze_device_uuid_t),                                     ## [out] universal unique identifier. Note: Subdevices will have their
@@ -735,15 +751,15 @@ class ze_device_properties_t(Structure):
 ## @brief Device thread identifier.
 class ze_device_thread_t(Structure):
     _fields_ = [
-        ("slice", c_ulong),                                             ## [in,out] the slice number.
+        ("slice", c_uint32),                                            ## [in,out] the slice number.
                                                                         ## Must be `UINT32_MAX` (all) or less than the `numSlices` member of ::ze_device_properties_t.
-        ("subslice", c_ulong),                                          ## [in,out] the sub-slice number within its slice.
+        ("subslice", c_uint32),                                         ## [in,out] the sub-slice number within its slice.
                                                                         ## Must be `UINT32_MAX` (all) or less than the `numSubslicesPerSlice`
                                                                         ## member of ::ze_device_properties_t.
-        ("eu", c_ulong),                                                ## [in,out] the EU number within its sub-slice.
+        ("eu", c_uint32),                                               ## [in,out] the EU number within its sub-slice.
                                                                         ## Must be `UINT32_MAX` (all) or less than the `numEUsPerSubslice` member
                                                                         ## of ::ze_device_properties_t.
-        ("thread", c_ulong)                                             ## [in,out] the thread number within its EU.
+        ("thread", c_uint32)                                            ## [in,out] the thread number within its EU.
                                                                         ## Must be `UINT32_MAX` (all) or less than the `numThreadsPerEU` member
                                                                         ## of ::ze_device_properties_t.
     ]
@@ -759,18 +775,18 @@ class ze_device_compute_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("maxTotalGroupSize", c_ulong),                                 ## [out] Maximum items per compute group. (groupSizeX * groupSizeY *
+        ("maxTotalGroupSize", c_uint32),                                ## [out] Maximum items per compute group. (groupSizeX * groupSizeY *
                                                                         ## groupSizeZ) <= maxTotalGroupSize
-        ("maxGroupSizeX", c_ulong),                                     ## [out] Maximum items for X dimension in group
-        ("maxGroupSizeY", c_ulong),                                     ## [out] Maximum items for Y dimension in group
-        ("maxGroupSizeZ", c_ulong),                                     ## [out] Maximum items for Z dimension in group
-        ("maxGroupCountX", c_ulong),                                    ## [out] Maximum groups that can be launched for x dimension
-        ("maxGroupCountY", c_ulong),                                    ## [out] Maximum groups that can be launched for y dimension
-        ("maxGroupCountZ", c_ulong),                                    ## [out] Maximum groups that can be launched for z dimension
-        ("maxSharedLocalMemory", c_ulong),                              ## [out] Maximum shared local memory per group.
-        ("numSubGroupSizes", c_ulong),                                  ## [out] Number of subgroup sizes supported. This indicates number of
+        ("maxGroupSizeX", c_uint32),                                    ## [out] Maximum items for X dimension in group
+        ("maxGroupSizeY", c_uint32),                                    ## [out] Maximum items for Y dimension in group
+        ("maxGroupSizeZ", c_uint32),                                    ## [out] Maximum items for Z dimension in group
+        ("maxGroupCountX", c_uint32),                                   ## [out] Maximum groups that can be launched for x dimension
+        ("maxGroupCountY", c_uint32),                                   ## [out] Maximum groups that can be launched for y dimension
+        ("maxGroupCountZ", c_uint32),                                   ## [out] Maximum groups that can be launched for z dimension
+        ("maxSharedLocalMemory", c_uint32),                             ## [out] Maximum shared local memory per group.
+        ("numSubGroupSizes", c_uint32),                                 ## [out] Number of subgroup sizes supported. This indicates number of
                                                                         ## entries in subGroupSizes.
-        ("subGroupSizes", c_ulong * ZE_SUBGROUPSIZE_COUNT)              ## [out] Size group sizes supported.
+        ("subGroupSizes", c_uint32 * ZE_SUBGROUPSIZE_COUNT)             ## [out] Size group sizes supported.
     ]
 
 ###############################################################################
@@ -880,7 +896,7 @@ ZE_MAX_NATIVE_KERNEL_UUID_SIZE = 16
 ## @brief Native kernel universal unique id (UUID)
 class ze_native_kernel_uuid_t(Structure):
     _fields_ = [
-        ("id", c_ubyte * ZE_MAX_NATIVE_KERNEL_UUID_SIZE)                ## [out] opaque data representing a native kernel UUID
+        ("id", c_uint8 * ZE_MAX_NATIVE_KERNEL_UUID_SIZE)                ## [out] opaque data representing a native kernel UUID
     ]
 
 ###############################################################################
@@ -921,7 +937,7 @@ class ze_device_module_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("spirvVersionSupported", c_ulong),                             ## [out] Maximum supported SPIR-V version.
+        ("spirvVersionSupported", c_uint32),                            ## [out] Maximum supported SPIR-V version.
                                                                         ## Returns zero if SPIR-V is not supported.
                                                                         ## Contains major and minor attributes, use ::ZE_MAJOR_VERSION and ::ZE_MINOR_VERSION.
         ("flags", ze_device_module_flags_t),                            ## [out] 0 or a valid combination of ::ze_device_module_flag_t
@@ -933,8 +949,8 @@ class ze_device_module_properties_t(Structure):
         ("fp64flags", ze_device_fp_flags_t),                            ## [out] Capabilities for double-precision floating-point operations.
                                                                         ## returns 0 (if ::ZE_DEVICE_MODULE_FLAG_FP64 is not set) or a
                                                                         ## combination of ::ze_device_fp_flag_t.
-        ("maxArgumentsSize", c_ulong),                                  ## [out] Maximum kernel argument size that is supported.
-        ("printfBufferSize", c_ulong),                                  ## [out] Maximum size of internal buffer that holds output of printf
+        ("maxArgumentsSize", c_uint32),                                 ## [out] Maximum kernel argument size that is supported.
+        ("printfBufferSize", c_uint32),                                 ## [out] Maximum size of internal buffer that holds output of printf
                                                                         ## calls from kernel.
         ("nativeKernelSupported", ze_native_kernel_uuid_t)              ## [out] Compatibility UUID of supported native kernel.
                                                                         ## UUID may or may not be the same across driver release, devices, or
@@ -970,7 +986,7 @@ class ze_command_queue_group_properties_t(Structure):
                                                                         ## ::ze_command_queue_group_property_flag_t
         ("maxMemoryFillPatternSize", c_size_t),                         ## [out] maximum `pattern_size` supported by command queue group.
                                                                         ## See ::zeCommandListAppendMemoryFill for more details.
-        ("numQueues", c_ulong)                                          ## [out] the number of physical engines within the group.
+        ("numQueues", c_uint32)                                         ## [out] the number of physical engines within the group.
     ]
 
 ###############################################################################
@@ -993,9 +1009,9 @@ class ze_device_memory_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_memory_property_flags_t),                   ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_device_memory_property_flag_t
-        ("maxClockRate", c_ulong),                                      ## [out] Maximum clock rate for device memory.
-        ("maxBusWidth", c_ulong),                                       ## [out] Maximum bus width between device and memory.
-        ("totalSize", c_ulonglong),                                     ## [out] Total memory size in bytes that is available to the device.
+        ("maxClockRate", c_uint32),                                     ## [out] Maximum clock rate for device memory.
+        ("maxBusWidth", c_uint32),                                      ## [out] Maximum bus width between device and memory.
+        ("totalSize", c_uint64),                                        ## [out] Total memory size in bytes that is available to the device.
         ("name", c_char * ZE_MAX_DEVICE_NAME)                           ## [out] Memory name
     ]
 
@@ -1065,22 +1081,22 @@ class ze_device_image_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("maxImageDims1D", c_ulong),                                    ## [out] Maximum image dimensions for 1D resources. if 0, then 1D images
+        ("maxImageDims1D", c_uint32),                                   ## [out] Maximum image dimensions for 1D resources. if 0, then 1D images
                                                                         ## are unsupported.
-        ("maxImageDims2D", c_ulong),                                    ## [out] Maximum image dimensions for 2D resources. if 0, then 2D images
+        ("maxImageDims2D", c_uint32),                                   ## [out] Maximum image dimensions for 2D resources. if 0, then 2D images
                                                                         ## are unsupported.
-        ("maxImageDims3D", c_ulong),                                    ## [out] Maximum image dimensions for 3D resources. if 0, then 3D images
+        ("maxImageDims3D", c_uint32),                                   ## [out] Maximum image dimensions for 3D resources. if 0, then 3D images
                                                                         ## are unsupported.
-        ("maxImageBufferSize", c_ulonglong),                            ## [out] Maximum image buffer size in bytes. if 0, then buffer images are
+        ("maxImageBufferSize", c_uint64),                               ## [out] Maximum image buffer size in bytes. if 0, then buffer images are
                                                                         ## unsupported.
-        ("maxImageArraySlices", c_ulong),                               ## [out] Maximum image array slices. if 0, then image arrays are
+        ("maxImageArraySlices", c_uint32),                              ## [out] Maximum image array slices. if 0, then image arrays are
                                                                         ## unsupported.
-        ("maxSamplers", c_ulong),                                       ## [out] Max samplers that can be used in kernel. if 0, then sampling is
+        ("maxSamplers", c_uint32),                                      ## [out] Max samplers that can be used in kernel. if 0, then sampling is
                                                                         ## unsupported.
-        ("maxReadImageArgs", c_ulong),                                  ## [out] Returns the maximum number of simultaneous image objects that
+        ("maxReadImageArgs", c_uint32),                                 ## [out] Returns the maximum number of simultaneous image objects that
                                                                         ## can be read from by a kernel. if 0, then reading images is
                                                                         ## unsupported.
-        ("maxWriteImageArgs", c_ulong)                                  ## [out] Returns the maximum number of simultaneous image objects that
+        ("maxWriteImageArgs", c_uint32)                                 ## [out] Returns the maximum number of simultaneous image objects that
                                                                         ## can be written to by a kernel. if 0, then writing images is
                                                                         ## unsupported.
     ]
@@ -1128,6 +1144,8 @@ class ze_device_event_properties_flags_v(IntEnum):
     COUNTER_BASED_IPC = ZE_BIT(1)                                           ## Counter-based Event IPC sharing supported
     COUNTER_BASED_EXTERNAL_SYNC_ALLOCATION = ZE_BIT(2)                      ## Counter-based Event with external sync allocation supported
     COUNTER_BASED_EXTERNAL_INTERRUPT_WAIT = ZE_BIT(3)                       ## Counter-based Event waiting for external interrupt id supported
+    COUNTER_BASED_IPC_BIDIRECTIONAL = ZE_BIT(4)                             ## Counter-based Event IPC sharing is bi-directional. See
+                                                                            ## ::zeEventCounterBasedOpenIpcHandle
 
 class ze_device_event_properties_flags_t(c_int):
     def __str__(self):
@@ -1198,7 +1216,15 @@ class ze_validate_runtime_requirements_output_t(Structure):
 ###############################################################################
 ## @brief Supported context creation flags
 class ze_context_flags_v(IntEnum):
-    TBD = ZE_BIT(0)                                                         ## reserved for future use
+    OPTIMIZE_MEMORY = ZE_BIT(0)                                             ## Reduce memory footprint; may trade performance for lower memory usage;
+                                                                            ## mutually exclusive with ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE. If
+                                                                            ## neither this nor OPTIMIZE_PERFORMANCE is set, the memory/performance
+                                                                            ## trade-off is driver implementation specific
+    OPTIMIZE_PERFORMANCE = ZE_BIT(1)                                        ## Explicitly optimize for performance; may trade memory footprint for
+                                                                            ## higher performance; mutually exclusive with
+                                                                            ## ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY. If neither this nor OPTIMIZE_MEMORY
+                                                                            ## is set, the memory/performance trade-off is driver implementation
+                                                                            ## specific
 
 class ze_context_flags_t(c_int):
     def __str__(self):
@@ -1220,13 +1246,14 @@ class ze_context_desc_t(Structure):
 ###############################################################################
 ## @brief Supported command queue flags
 class ze_command_queue_flags_v(IntEnum):
-    EXPLICIT_ONLY = ZE_BIT(0)                                               ## command queue should be optimized for submission to a single device engine.
+    EXPLICIT_ONLY = ZE_BIT(0)                                               ## [DEPRECATED since 1.13] command queue should be optimized for
+                                                                            ## submission to a single device engine.
                                                                             ## driver **must** disable any implicit optimizations for distributing
                                                                             ## work across multiple engines.
                                                                             ## this flag should be used when applications want full control over
-                                                                            ## multi-engine submission and scheduling.
-                                                                            ## This flag is **DEPRECATED** as flag
-                                                                            ## ::ZE_COMMAND_LIST_FLAG_EXPLICIT_ONLY is **DEPRECATED**.
+                                                                            ## multi-engine submission and scheduling. To place work on specific
+                                                                            ## sub-devices, submit to sub-device handles or set
+                                                                            ## ZE_FLAT_DEVICE_HIERARCHY=FLAT. Related: ::zeDeviceGetSubDevices.
     IN_ORDER = ZE_BIT(1)                                                    ## To be used only when creating immediate command lists. Commands
                                                                             ## appended to the immediate command
                                                                             ## list are executed in-order, with driver implementation enforcing
@@ -1280,8 +1307,8 @@ class ze_command_queue_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("ordinal", c_ulong),                                           ## [in] command queue group ordinal
-        ("index", c_ulong),                                             ## [in] command queue index within the group;
+        ("ordinal", c_uint32),                                          ## [in] command queue group ordinal
+        ("index", c_uint32),                                            ## [in] command queue index within the group;
                                                                         ## must be zero. 
         ("flags", ze_command_queue_flags_t),                            ## [in] usage flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_command_queue_flag_t;
@@ -1302,14 +1329,14 @@ class ze_command_list_flags_v(IntEnum):
                                                                             ## throughput. 
                                                                             ## using this flag may increase Host overhead of ::zeCommandListClose and ::zeCommandQueueExecuteCommandLists.
                                                                             ## therefore, this flag should **not** be set for low-latency usage-models.
-    EXPLICIT_ONLY = ZE_BIT(2)                                               ## command list should be optimized for submission to a single command
-                                                                            ## queue and device engine.
+    EXPLICIT_ONLY = ZE_BIT(2)                                               ## [DEPRECATED since 1.13] command list should be optimized for
+                                                                            ## submission to a single command queue and device engine.
                                                                             ## driver **must** disable any implicit optimizations for distributing
                                                                             ## work across multiple engines.
                                                                             ## this flag should be used when applications want full control over
-                                                                            ## multi-engine submission and scheduling.
-                                                                            ## This flag is **DEPRECATED** and implementations are not expected to
-                                                                            ## support this feature.
+                                                                            ## multi-engine submission and scheduling. To place work on specific
+                                                                            ## sub-devices, submit to sub-device handles or set
+                                                                            ## ZE_FLAT_DEVICE_HIERARCHY=FLAT. Related: ::zeDeviceGetSubDevices.
     IN_ORDER = ZE_BIT(3)                                                    ## commands appended to this command list are executed in-order, with
                                                                             ## driver implementation
                                                                             ## enforcing dependencies between them. Application is not required to
@@ -1319,12 +1346,17 @@ class ze_command_list_flags_v(IntEnum):
                                                                             ## application is allowed to pass signal and wait events to each appended
                                                                             ## command to implement
                                                                             ## more complex dependency graphs. Cannot be combined with ::ZE_COMMAND_LIST_FLAG_RELAXED_ORDERING.
-    EXP_CLONEABLE = ZE_BIT(4)                                               ## this command list may be cloned using ::zeCommandListCreateCloneExp
-                                                                            ## after ::zeCommandListClose.
+    EXP_CLONEABLE = ZE_BIT(4)                                               ## [DEPRECATED since 1.17] this command list may be cloned using
+                                                                            ## ::zeCommandListCreateCloneExp after ::zeCommandListClose. Mutable
+                                                                            ## command lists replace command list cloning. Use
+                                                                            ## ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
     COPY_OFFLOAD_HINT = ZE_BIT(5)                                           ## Try to offload copy operations to different engines. Applicable only
                                                                             ## for compute queues.
                                                                             ## This is only a hint. Driver may ignore it per append call, based on
                                                                             ## platform capabilities or internal heuristics.
+    ENABLE_COMMAND_VISIT = ZE_BIT(6)                                        ## command list is configured to support command visit via ::zeCommandListVisitExt.
+                                                                            ## this flag should be set when command visit is required.
+                                                                            ## this flag is intended only for non-immediate (i.e. recorded) command lists.
 
 class ze_command_list_flags_t(c_int):
     def __str__(self):
@@ -1338,7 +1370,7 @@ class ze_command_list_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("commandQueueGroupOrdinal", c_ulong),                          ## [in] command queue group ordinal to which this command list will be
+        ("commandQueueGroupOrdinal", c_uint32),                         ## [in] command queue group ordinal to which this command list will be
                                                                         ## submitted
         ("flags", ze_command_list_flags_t)                              ## [in] usage flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_command_list_flag_t;
@@ -1350,12 +1382,12 @@ class ze_command_list_desc_t(Structure):
 ## @brief Copy region descriptor
 class ze_copy_region_t(Structure):
     _fields_ = [
-        ("originX", c_ulong),                                           ## [in] The origin x offset for region in bytes
-        ("originY", c_ulong),                                           ## [in] The origin y offset for region in rows
-        ("originZ", c_ulong),                                           ## [in] The origin z offset for region in slices
-        ("width", c_ulong),                                             ## [in] The region width relative to origin in bytes
-        ("height", c_ulong),                                            ## [in] The region height relative to origin in rows
-        ("depth", c_ulong)                                              ## [in] The region depth relative to origin in slices. Set this to 0 for
+        ("originX", c_uint32),                                          ## [in] The origin x offset for region in bytes
+        ("originY", c_uint32),                                          ## [in] The origin y offset for region in rows
+        ("originZ", c_uint32),                                          ## [in] The origin z offset for region in slices
+        ("width", c_uint32),                                            ## [in] The region width relative to origin in bytes
+        ("height", c_uint32),                                           ## [in] The region height relative to origin in rows
+        ("depth", c_uint32)                                             ## [in] The region depth relative to origin in slices. Set this to 0 for
                                                                         ## 2D copy.
     ]
 
@@ -1363,12 +1395,12 @@ class ze_copy_region_t(Structure):
 ## @brief Region descriptor
 class ze_image_region_t(Structure):
     _fields_ = [
-        ("originX", c_ulong),                                           ## [in] The origin x offset for region in pixels
-        ("originY", c_ulong),                                           ## [in] The origin y offset for region in pixels
-        ("originZ", c_ulong),                                           ## [in] The origin z offset for region in pixels
-        ("width", c_ulong),                                             ## [in] The region width relative to origin in pixels
-        ("height", c_ulong),                                            ## [in] The region height relative to origin in pixels
-        ("depth", c_ulong)                                              ## [in] The region depth relative to origin. For 1D or 2D images, set
+        ("originX", c_uint32),                                          ## [in] The origin x offset for region in pixels
+        ("originY", c_uint32),                                          ## [in] The origin y offset for region in pixels
+        ("originZ", c_uint32),                                          ## [in] The origin z offset for region in pixels
+        ("width", c_uint32),                                            ## [in] The region width relative to origin in pixels
+        ("height", c_uint32),                                           ## [in] The region height relative to origin in pixels
+        ("depth", c_uint32)                                             ## [in] The region depth relative to origin. For 1D or 2D images, set
                                                                         ## this to 1.
     ]
 
@@ -1418,7 +1450,7 @@ class ze_event_pool_desc_t(Structure):
                                                                         ## must be 0 (default) or a valid combination of ::ze_event_pool_flag_t;
                                                                         ## default behavior is signals and waits are visible to the entire device
                                                                         ## and peer devices.
-        ("count", c_ulong)                                              ## [in] number of events within the pool; must be greater than 0
+        ("count", c_uint32)                                             ## [in] number of events within the pool; must be greater than 0
     ]
 
 ###############################################################################
@@ -1442,7 +1474,8 @@ class ze_event_counter_based_flags_v(IntEnum):
     IMMEDIATE = ZE_BIT(0)                                                   ## Counter-based event is used for immediate command lists (default)
     NON_IMMEDIATE = ZE_BIT(1)                                               ## Counter-based event is used for non-immediate command lists
     HOST_VISIBLE = ZE_BIT(2)                                                ## Signals and waits are also visible to host
-    IPC = ZE_BIT(3)                                                         ## Event can be shared across processes for waiting
+    IPC = ZE_BIT(3)                                                         ## Event can be shared across processes. The sharing mode is reported by
+                                                                            ## ::ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC_BIDIRECTIONAL
     DEVICE_TIMESTAMP = ZE_BIT(4)                                            ## Event contains timestamps populated in the device time domain.
                                                                             ## Implementation of this can be vendor specific, but typically pulled
                                                                             ## from timers on the offload device and not the host.
@@ -1456,10 +1489,12 @@ class ze_event_counter_based_flags_v(IntEnum):
     GRAPH_EXTERNAL = ZE_BIT(6)                                              ## Counter-based event is used for synchronization between recorded graph
                                                                             ## commands and commands submitted outside the graph (see
                                                                             ## ::zeGraphInstantiateExt in ::ZE_RECORD_REPLAY_GRAPH_EXT_NAME for details).
-    IPC_BIDIRECTIONAL = ZE_BIT(7)                                           ## Extends ::ZE_EVENT_COUNTER_BASED_FLAG_IPC with bi-directional sharing.
-                                                                            ## Event opened in another process observes the latest state and can also
-                                                                            ## be used for signaling.
-                                                                            ## Must be combined with ::ZE_EVENT_COUNTER_BASED_FLAG_IPC
+    IPC_BIDIRECTIONAL = ZE_BIT(7)                                           ## [DEPRECATED since 1.20] Extends ::ZE_EVENT_COUNTER_BASED_FLAG_IPC with
+                                                                            ## bi-directional sharing. Event opened in another process observes the
+                                                                            ## latest state and can also be used for signaling.
+                                                                            ## Must be combined with ::ZE_EVENT_COUNTER_BASED_FLAG_IPC. Ignored. The
+                                                                            ## IPC sharing mode depends on the device. Related:
+                                                                            ## ::ZE_DEVICE_EVENT_PROPERTIES_FLAG_COUNTER_BASED_IPC_BIDIRECTIONAL.
 
 class ze_event_counter_based_flags_t(c_int):
     def __str__(self):
@@ -1481,6 +1516,22 @@ class ze_event_sync_mode_flags_t(c_int):
 
 
 ###############################################################################
+## @brief Event extension flags
+class ze_event_ext_flags_v(IntEnum):
+    APPEND_GRAPH_EXTERNAL = ZE_BIT(0)                                       ## Causes the specified event to be treated as if it had been created
+                                                                            ## with ::ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL for this append
+                                                                            ## operation only.
+                                                                            ## If the event was created with
+                                                                            ## ::ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL, this flag has no effect.
+                                                                            ## If this flag is used on a non-recording command list, then
+                                                                            ## ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE is returned.
+
+class ze_event_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
 ## @brief Event sync mode descriptor
 class ze_event_sync_mode_desc_t(Structure):
     _fields_ = [
@@ -1488,7 +1539,7 @@ class ze_event_sync_mode_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("syncModeFlags", ze_event_sync_mode_flags_t),                  ## [in] valid combination of ::ze_event_sync_mode_flag_t
-        ("externalInterruptId", c_ulong)                                ## [in] External interrupt id. Used only when
+        ("externalInterruptId", c_uint32)                               ## [in] External interrupt id. Used only when
                                                                         ## ::ZE_EVENT_SYNC_MODE_FLAG_EXTERNAL_INTERRUPT_WAIT flag is set
     ]
 
@@ -1499,7 +1550,7 @@ class ze_event_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("index", c_ulong),                                             ## [in] index of the event within the pool; must be less than the count
+        ("index", c_uint32),                                            ## [in] index of the event within the pool; must be less than the count
                                                                         ## specified during pool creation
         ("signal", ze_event_scope_flags_t),                             ## [in] defines the scope of relevant cache hierarchies to flush on a
                                                                         ## signal action before the event is triggered.
@@ -1542,9 +1593,9 @@ class ze_event_counter_based_external_sync_allocation_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("deviceAddress", POINTER(c_ulonglong)),                        ## [in] device address for external synchronization allocation
-        ("hostAddress", POINTER(c_ulonglong)),                          ## [in] host address for external synchronization allocation
-        ("completionValue", c_ulonglong)                                ## [in] completion value for external synchronization allocation.
+        ("deviceAddress", POINTER(c_uint64)),                           ## [in] device address for external synchronization allocation
+        ("hostAddress", POINTER(c_uint64)),                             ## [in] host address for external synchronization allocation
+        ("completionValue", c_uint64)                                   ## [in] completion value for external synchronization allocation.
                                                                         ## Must not exceed the value returned by ::zeDeviceGetCounterBasedEventMaxValue.
                                                                         ## User is also responsible for ensuring that any value written by the
                                                                         ## application to `deviceAddress` or `hostAddress` does not exceed that maximum.
@@ -1558,7 +1609,7 @@ class ze_event_counter_based_external_aggregate_storage_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("deviceAddress", POINTER(c_ulonglong)),                        ## [in] device address that would be updated with atomic_add upon
+        ("deviceAddress", POINTER(c_uint64)),                           ## [in] device address that would be updated with atomic_add upon
                                                                         ## signaling of this event, must be device USM memory.
                                                                         ## When this event is signaled from append operations that execute on
                                                                         ## more than one device, the driver performs cross-device (peer) atomic
@@ -1569,13 +1620,24 @@ class ze_event_counter_based_external_aggregate_storage_desc_t(Structure):
                                                                         ## by ::zeDeviceGetMemoryAccessProperties). Using cross-device signaling
                                                                         ## on devices that do not support cross-device atomics results in
                                                                         ## undefined behavior.
-        ("incrementValue", c_ulonglong),                                ## [in] value which would by atomically added upon each completion
-        ("completionValue", c_ulonglong)                                ## [in] final completion value, when value under deviceAddress is equal
+        ("incrementValue", c_uint64),                                   ## [in] value which would by atomically added upon each completion
+        ("completionValue", c_uint64)                                   ## [in] final completion value, when value under deviceAddress is equal
                                                                         ## or greater then this value then event is considered as completed.
                                                                         ## Must not exceed the value returned by ::zeDeviceGetCounterBasedEventMaxValue.
                                                                         ## User is responsible for ensuring that the value aggregated under
                                                                         ## `deviceAddress` (initial value plus any number of `incrementValue`
                                                                         ## additions) does not exceed that maximum at any point in time.
+    ]
+
+###############################################################################
+## @brief Event extension flags descriptor
+class ze_event_ext_flags_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_event_ext_flags_t)                                 ## [in] event extension flags.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_event_ext_flags_t
     ]
 
 ###############################################################################
@@ -1588,8 +1650,8 @@ class ze_event_counter_based_external_aggregate_storage_desc_t(Structure):
 ##       the `kernelTimestampValidBits` member of ::ze_device_properties_t.
 class ze_kernel_timestamp_data_t(Structure):
     _fields_ = [
-        ("kernelStart", c_ulonglong),                                   ## [out] time sample in tick counts at start of kernel execution
-        ("kernelEnd", c_ulonglong)                                      ## [out] time sample in tick counts at end of kernel execution
+        ("kernelStart", c_uint64),                                      ## [out] time sample in tick counts at start of kernel execution
+        ("kernelEnd", c_uint64)                                         ## [out] time sample in tick counts at end of kernel execution
     ]
 
 ###############################################################################
@@ -1761,7 +1823,7 @@ class ze_image_desc_t(Structure):
         ("type", ze_image_type_t),                                      ## [in] image type. Media format layouts are unsupported for
                                                                         ## ::ZE_IMAGE_TYPE_BUFFER
         ("format", ze_image_format_t),                                  ## [in] image format
-        ("width", c_ulonglong),                                         ## [in] width dimension.
+        ("width", c_uint64),                                            ## [in] width dimension.
                                                                         ## ::ZE_IMAGE_TYPE_BUFFER: size in bytes; see the `maxImageBufferSize`
                                                                         ## member of ::ze_device_image_properties_t for limits.
                                                                         ## ::ZE_IMAGE_TYPE_1D, ::ZE_IMAGE_TYPE_1DARRAY: width in pixels; see the
@@ -1770,21 +1832,21 @@ class ze_image_desc_t(Structure):
                                                                         ## `maxImageDims2D` member of ::ze_device_image_properties_t for limits.
                                                                         ## ::ZE_IMAGE_TYPE_3D: width in pixels; see the `maxImageDims3D` member
                                                                         ## of ::ze_device_image_properties_t for limits.
-        ("height", c_ulong),                                            ## [in] height dimension.
+        ("height", c_uint32),                                           ## [in] height dimension.
                                                                         ## ::ZE_IMAGE_TYPE_2D, ::ZE_IMAGE_TYPE_2DARRAY: height in pixels; see the
                                                                         ## `maxImageDims2D` member of ::ze_device_image_properties_t for limits.
                                                                         ## ::ZE_IMAGE_TYPE_3D: height in pixels; see the `maxImageDims3D` member
                                                                         ## of ::ze_device_image_properties_t for limits.
                                                                         ## other: ignored.
-        ("depth", c_ulong),                                             ## [in] depth dimension.
+        ("depth", c_uint32),                                            ## [in] depth dimension.
                                                                         ## ::ZE_IMAGE_TYPE_3D: depth in pixels; see the `maxImageDims3D` member
                                                                         ## of ::ze_device_image_properties_t for limits.
                                                                         ## other: ignored.
-        ("arraylevels", c_ulong),                                       ## [in] array levels.
+        ("arraylevels", c_uint32),                                      ## [in] array levels.
                                                                         ## ::ZE_IMAGE_TYPE_1DARRAY, ::ZE_IMAGE_TYPE_2DARRAY: see the
                                                                         ## `maxImageArraySlices` member of ::ze_device_image_properties_t for limits.
                                                                         ## other: ignored.
-        ("miplevels", c_ulong)                                          ## [in] mipmap levels (must be 0)
+        ("miplevels", c_uint32)                                         ## [in] mipmap levels (must be 0)
     ]
 
 ###############################################################################
@@ -1831,7 +1893,7 @@ class ze_device_mem_alloc_desc_t(Structure):
         ("flags", ze_device_mem_alloc_flags_t),                         ## [in] flags specifying additional allocation controls.
                                                                         ## must be 0 (default) or a valid combination of ::ze_device_mem_alloc_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
-        ("ordinal", c_ulong)                                            ## [in] ordinal of the device's local memory to allocate from.
+        ("ordinal", c_uint32)                                           ## [in] ordinal of the device's local memory to allocate from.
                                                                         ## must be less than the count returned from ::zeDeviceGetMemoryProperties.
     ]
 
@@ -1885,8 +1947,8 @@ class ze_memory_allocation_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", ze_memory_type_t),                                     ## [out] type of allocated memory
-        ("id", c_ulonglong),                                            ## [out] identifier for this allocation
-        ("pageSize", c_ulonglong)                                       ## [out] page size used for allocation
+        ("id", c_uint64),                                               ## [out] identifier for this allocation
+        ("pageSize", c_uint64)                                          ## [out] page size used for allocation
     ]
 
 ###############################################################################
@@ -2050,6 +2112,9 @@ class ze_memory_atomic_attr_exp_flags_t(c_int):
 class ze_module_format_v(IntEnum):
     IL_SPIRV = 0                                                            ## Format is SPIRV IL format
     NATIVE = 1                                                              ## Format is device native format
+    PISA = 2                                                                ## Format is PISA assembly text, as defined by the Portable ISA (PISA)
+                                                                            ## Specification
+    OCLC = 3                                                                ## Format is OpenCL C source
 
 class ze_module_format_t(c_int):
     def __str__(self):
@@ -2060,8 +2125,8 @@ class ze_module_format_t(c_int):
 ## @brief Specialization constants - User defined constants
 class ze_module_constants_t(Structure):
     _fields_ = [
-        ("numConstants", c_ulong),                                      ## [in] Number of specialization constants.
-        ("pConstantIds", POINTER(c_ulong)),                             ## [in][range(0, numConstants)] Array of IDs that is sized to
+        ("numConstants", c_uint32),                                     ## [in] Number of specialization constants.
+        ("pConstantIds", POINTER(c_uint32)),                            ## [in][range(0, numConstants)] Array of IDs that is sized to
                                                                         ## numConstants.
         ("pConstantValues", POINTER(c_void_p))                          ## [in][range(0, numConstants)] Array of pointers to values that is sized
                                                                         ## to numConstants.
@@ -2075,10 +2140,12 @@ class ze_module_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("format", ze_module_format_t),                                 ## [in] Module format passed in with pInputModule
-        ("inputSize", c_size_t),                                        ## [in] size of input IL or ISA from pInputModule.
-        ("pInputModule", POINTER(c_ubyte)),                             ## [in] pointer to IL or ISA
-        ("pBuildFlags", c_char_p),                                      ## [in][optional] string containing one or more (comma-separated)
-                                                                        ## compiler flags. If unsupported, flag is ignored with a warning.
+        ("inputSize", c_size_t),                                        ## [in] size in bytes of input pointed to by pInputModule
+        ("pInputModule", POINTER(c_uint8)),                             ## [in] pointer to input in format as defined by format
+        ("pBuildFlags", c_char_p),                                      ## [in][optional] string containing one or more space-separated compiler
+                                                                        ## flags. If unsupported, flag is ignored with a warning. For
+                                                                        ## ::ZE_MODULE_FORMAT_OCLC, OpenCL C build options (e.g. "-D", "-cl-std")
+                                                                        ## are also accepted.
                                                                         ##  - "-ze-opt-disable"
                                                                         ##       - Disable optimizations
                                                                         ##  - "-ze-opt-level"
@@ -2193,8 +2260,8 @@ ZE_MAX_MODULE_UUID_SIZE = 16
 ## @brief Kernel universal unique id (UUID)
 class ze_kernel_uuid_t(Structure):
     _fields_ = [
-        ("kid", c_ubyte * ZE_MAX_KERNEL_UUID_SIZE),                     ## [out] opaque data representing a kernel UUID
-        ("mid", c_ubyte * ZE_MAX_MODULE_UUID_SIZE)                      ## [out] opaque data representing the kernel's module UUID
+        ("kid", c_uint8 * ZE_MAX_KERNEL_UUID_SIZE),                     ## [out] opaque data representing a kernel UUID
+        ("mid", c_uint8 * ZE_MAX_MODULE_UUID_SIZE)                      ## [out] opaque data representing the kernel's module UUID
     ]
 
 ###############################################################################
@@ -2204,22 +2271,22 @@ class ze_kernel_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("numKernelArgs", c_ulong),                                     ## [out] number of kernel arguments.
-        ("requiredGroupSizeX", c_ulong),                                ## [out] required group size in the X dimension,
+        ("numKernelArgs", c_uint32),                                    ## [out] number of kernel arguments.
+        ("requiredGroupSizeX", c_uint32),                               ## [out] required group size in the X dimension,
                                                                         ## or zero if there is no required group size
-        ("requiredGroupSizeY", c_ulong),                                ## [out] required group size in the Y dimension,
+        ("requiredGroupSizeY", c_uint32),                               ## [out] required group size in the Y dimension,
                                                                         ## or zero if there is no required group size
-        ("requiredGroupSizeZ", c_ulong),                                ## [out] required group size in the Z dimension,
+        ("requiredGroupSizeZ", c_uint32),                               ## [out] required group size in the Z dimension,
                                                                         ## or zero if there is no required group size
-        ("requiredNumSubGroups", c_ulong),                              ## [out] required number of subgroups per thread group,
+        ("requiredNumSubGroups", c_uint32),                             ## [out] required number of subgroups per thread group,
                                                                         ## or zero if there is no required number of subgroups
-        ("requiredSubgroupSize", c_ulong),                              ## [out] required subgroup size,
+        ("requiredSubgroupSize", c_uint32),                             ## [out] required subgroup size,
                                                                         ## or zero if there is no required subgroup size
-        ("maxSubgroupSize", c_ulong),                                   ## [out] maximum subgroup size
-        ("maxNumSubgroups", c_ulong),                                   ## [out] maximum number of subgroups per thread group
-        ("localMemSize", c_ulong),                                      ## [out] local memory size used by each thread group
-        ("privateMemSize", c_ulong),                                    ## [out] private memory size allocated by compiler used by each thread
-        ("spillMemSize", c_ulong),                                      ## [out] spill memory size allocated by compiler
+        ("maxSubgroupSize", c_uint32),                                  ## [out] maximum subgroup size
+        ("maxNumSubgroups", c_uint32),                                  ## [out] maximum number of subgroups per thread group
+        ("localMemSize", c_uint32),                                     ## [out] local memory size used by each thread group
+        ("privateMemSize", c_uint32),                                   ## [out] private memory size allocated by compiler used by each thread
+        ("spillMemSize", c_uint32),                                     ## [out] spill memory size allocated by compiler
         ("uuid", ze_kernel_uuid_t)                                      ## [out] universal unique identifier.
     ]
 
@@ -2235,25 +2302,25 @@ class ze_kernel_preferred_group_size_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("preferredMultiple", c_ulong)                                  ## [out] preferred group size multiple
+        ("preferredMultiple", c_uint32)                                 ## [out] preferred group size multiple
     ]
 
 ###############################################################################
 ## @brief Kernel dispatch group count.
 class ze_group_count_t(Structure):
     _fields_ = [
-        ("groupCountX", c_ulong),                                       ## [in] number of thread groups in X dimension
-        ("groupCountY", c_ulong),                                       ## [in] number of thread groups in Y dimension
-        ("groupCountZ", c_ulong)                                        ## [in] number of thread groups in Z dimension
+        ("groupCountX", c_uint32),                                      ## [in] number of thread groups in X dimension
+        ("groupCountY", c_uint32),                                      ## [in] number of thread groups in Y dimension
+        ("groupCountZ", c_uint32)                                       ## [in] number of thread groups in Z dimension
     ]
 
 ###############################################################################
 ## @brief Kernel dispatch group sizes.
 class ze_group_size_t(Structure):
     _fields_ = [
-        ("groupSizeX", c_ulong),                                        ## [in] size of thread group in X dimension
-        ("groupSizeY", c_ulong),                                        ## [in] size of thread group in Y dimension
-        ("groupSizeZ", c_ulong)                                         ## [in] size of thread group in Z dimension
+        ("groupSizeX", c_uint32),                                       ## [in] size of thread group in X dimension
+        ("groupSizeY", c_uint32),                                       ## [in] size of thread group in Y dimension
+        ("groupSizeZ", c_uint32)                                        ## [in] size of thread group in Z dimension
     ]
 
 ###############################################################################
@@ -2289,13 +2356,13 @@ class ze_module_program_exp_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("count", c_ulong),                                             ## [in] Count of input modules
+        ("count", c_uint32),                                            ## [in] Count of input modules
         ("inputSizes", POINTER(c_size_t)),                              ## [in][range(0, count)] sizes of each input module in pInputModules.
-        ("pInputModules", POINTER(c_ubyte*)),                           ## [in][range(0, count)] pointer to an array of binary modules in format
+        ("pInputModules", POINTER(POINTER(c_uint8))),                   ## [in][range(0, count)] pointer to an array of binary modules in format
                                                                         ## specified as part of ::ze_module_desc_t.
         ("pBuildFlags", POINTER(c_char_p)),                             ## [in][optional][range(0, count)] array of strings containing build
                                                                         ## flags. See pBuildFlags in ::ze_module_desc_t.
-        ("pConstants", POINTER(ze_module_constants_t*))                 ## [in][optional][range(0, count)] pointer to array of specialization
+        ("pConstants", POINTER(POINTER(ze_module_constants_t)))         ## [in][optional][range(0, count)] pointer to array of specialization
                                                                         ## constant strings. Valid only for SPIR-V input. This must be set to
                                                                         ## nullptr if no specialization constants are provided.
     ]
@@ -2337,7 +2404,7 @@ class ze_device_raytracing_ext_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_raytracing_ext_flags_t),                    ## [out] 0 or a valid combination of ::ze_device_raytracing_ext_flags_t
-        ("maxBVHLevels", c_ulong)                                       ## [out] Maximum number of BVH levels supported
+        ("maxBVHLevels", c_uint32)                                      ## [out] Maximum number of BVH levels supported
     ]
 
 ###############################################################################
@@ -2451,8 +2518,8 @@ class ze_physical_mem_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("id", c_ulonglong),                                            ## [out] unique identifier for the physical memory object
-        ("size", c_ulonglong)                                           ## [out] size of the physical memory object in bytes
+        ("id", c_uint64),                                               ## [out] unique identifier for the physical memory object
+        ("size", c_uint64)                                              ## [out] size of the physical memory object in bytes
     ]
 
 ###############################################################################
@@ -2564,15 +2631,17 @@ class ze_relaxed_allocation_limits_ext_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief [DEPRECATED] Relaxed Allocation Limits Extension Name. Use
-##        ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
+## @brief [DEPRECATED since 1.17] Relaxed Allocation Limits Extension Name
+## 
+## @deprecated Since 1.17. Use ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
 ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME = "ZE_experimental_relaxed_allocation_limits"
 
 ###############################################################################
-## @brief [DEPRECATED] Relaxed Allocation Limits Extension Version(s). Use
-##        ::ze_relaxed_allocation_limits_ext_version_t instead.
+## @brief [DEPRECATED since 1.17] Relaxed Allocation Limits Extension Version(s)
+## 
+## @deprecated Since 1.17. Use ::ZE_RELAXED_ALLOCATION_LIMITS_EXT_NAME instead.
 class ze_relaxed_allocation_limits_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## [DEPRECATED] version 1.0
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_relaxed_allocation_limits_exp_version_t(c_int):
@@ -2581,12 +2650,12 @@ class ze_relaxed_allocation_limits_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief [DEPRECATED] Supported relaxed memory allocation flags. Use
-##        ::ze_relaxed_allocation_limits_ext_flags_t instead.
+## @brief [DEPRECATED since 1.17] Supported relaxed memory allocation flags
+## 
+## @deprecated Since 1.17. Use ::ze_relaxed_allocation_limits_ext_flags_t instead.
 class ze_relaxed_allocation_limits_exp_flags_v(IntEnum):
-    MAX_SIZE = ZE_BIT(0)                                                    ## [DEPRECATED] Allocation size may exceed the `maxMemAllocSize` member
-                                                                            ## of ::ze_device_properties_t. Use
-                                                                            ## ::ze_relaxed_allocation_limits_ext_flags_t MAX_SIZE instead.
+    MAX_SIZE = ZE_BIT(0)                                                    ## Allocation size may exceed the `maxMemAllocSize` member of
+                                                                            ## ::ze_device_properties_t.
 
 class ze_relaxed_allocation_limits_exp_flags_t(c_int):
     def __str__(self):
@@ -2594,24 +2663,23 @@ class ze_relaxed_allocation_limits_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief [DEPRECATED] Relaxed limits memory allocation descriptor. Use
-##        ::ze_relaxed_allocation_limits_ext_desc_t instead.
+## @brief [DEPRECATED since 1.17] Relaxed limits memory allocation descriptor
 ## 
 ## @details
-##     - [DEPRECATED] This structure may be passed to ::zeMemAllocShared or
+##     - This structure may be passed to ::zeMemAllocShared or
 ##       ::zeMemAllocDevice, via the `pNext` member of
-##       ::ze_device_mem_alloc_desc_t. Use
-##       ::ze_relaxed_allocation_limits_ext_desc_t instead.
-##     - [DEPRECATED] This structure may also be passed to ::zeMemAllocHost,
-##       via the `pNext` member of ::ze_host_mem_alloc_desc_t. Use
-##       ::ze_relaxed_allocation_limits_ext_desc_t instead.
+##       ::ze_device_mem_alloc_desc_t.
+##     - This structure may also be passed to ::zeMemAllocHost, via the `pNext`
+##       member of ::ze_host_mem_alloc_desc_t.
+## 
+## @deprecated Since 1.17. Use ::ze_relaxed_allocation_limits_ext_desc_t instead.
 class ze_relaxed_allocation_limits_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("flags", ze_relaxed_allocation_limits_exp_flags_t)             ## [in] [DEPRECATED] no longer supported, use
-                                                                        ## ::ze_relaxed_allocation_limits_ext_desc_t instead
+        ("flags", ze_relaxed_allocation_limits_exp_flags_t)             ## [in] flags specifying allocation limits to relax.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
     ]
 
 ###############################################################################
@@ -2632,12 +2700,12 @@ class ze_cache_reservation_ext_version_t(c_int):
 ###############################################################################
 ## @brief Cache Reservation Region
 class ze_cache_ext_region_v(IntEnum):
-    ZE_CACHE_REGION_DEFAULT = 0                                             ## [DEPRECATED] utilize driver default scheme. Use
-                                                                            ## ::ZE_CACHE_EXT_REGION_DEFAULT.
-    ZE_CACHE_RESERVE_REGION = 1                                             ## [DEPRECATED] utilize reserved region. Use
-                                                                            ## ::ZE_CACHE_EXT_REGION_RESERVED.
-    ZE_CACHE_NON_RESERVED_REGION = 2                                        ## [DEPRECATED] utilize non-reserverd region. Use
-                                                                            ## ::ZE_CACHE_EXT_REGION_NON_RESERVED.
+    ZE_CACHE_REGION_DEFAULT = 0                                             ## [DEPRECATED since 1.7] utilize driver default scheme. Use
+                                                                            ## ::ZE_CACHE_EXT_REGION_DEFAULT instead.
+    ZE_CACHE_RESERVE_REGION = 1                                             ## [DEPRECATED since 1.7] utilize reserved region. Use
+                                                                            ## ::ZE_CACHE_EXT_REGION_RESERVED instead.
+    ZE_CACHE_NON_RESERVED_REGION = 2                                        ## [DEPRECATED since 1.7] utilize non-reserverd region. Use
+                                                                            ## ::ZE_CACHE_EXT_REGION_NON_RESERVED instead.
     DEFAULT = 0                                                             ## utilize driver default scheme
     RESERVED = 1                                                            ## utilize reserved region
     NON_RESERVED = 2                                                        ## utilize non-reserverd region
@@ -2700,9 +2768,9 @@ class ze_image_memory_properties_exp_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("size", c_ulonglong),                                          ## [out] size of image allocation in bytes.
-        ("rowPitch", c_ulonglong),                                      ## [out] size of image row in bytes.
-        ("slicePitch", c_ulonglong)                                     ## [out] size of image slice in bytes.
+        ("size", c_uint64),                                             ## [out] size of image allocation in bytes.
+        ("rowPitch", c_uint64),                                         ## [out] size of image row in bytes.
+        ("slicePitch", c_uint64)                                        ## [out] size of image slice in bytes.
     ]
 
 ###############################################################################
@@ -2721,11 +2789,15 @@ class ze_image_view_ext_version_t(c_int):
 
 
 ###############################################################################
-## @brief Image View Extension Name
+## @brief [DEPRECATED since 1.5] Image View Extension Name
+## 
+## @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_EXT_NAME instead.
 ZE_IMAGE_VIEW_EXP_NAME = "ZE_experimental_image_view"
 
 ###############################################################################
-## @brief Image View Extension Version(s)
+## @brief [DEPRECATED since 1.5] Image View Extension Version(s)
+## 
+## @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_EXT_NAME instead.
 class ze_image_view_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -2757,15 +2829,19 @@ class ze_image_view_planar_ext_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("planeIndex", c_ulong)                                         ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
+        ("planeIndex", c_uint32)                                        ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
     ]
 
 ###############################################################################
-## @brief Image View Planar Extension Name
+## @brief [DEPRECATED since 1.5] Image View Planar Extension Name
+## 
+## @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_PLANAR_EXT_NAME instead.
 ZE_IMAGE_VIEW_PLANAR_EXP_NAME = "ZE_experimental_image_view_planar"
 
 ###############################################################################
-## @brief Image View Planar Extension Version(s)
+## @brief [DEPRECATED since 1.5] Image View Planar Extension Version(s)
+## 
+## @deprecated Since 1.5. Use ::ZE_IMAGE_VIEW_PLANAR_EXT_NAME instead.
 class ze_image_view_planar_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -2776,14 +2852,15 @@ class ze_image_view_planar_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Image view planar descriptor
+## @brief [DEPRECATED since 1.5] Image view planar descriptor
+## 
+## @deprecated Since 1.5. Use ::ze_image_view_planar_ext_desc_t instead.
 class ze_image_view_planar_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("planeIndex", c_ulong)                                         ## [DEPRECATED] no longer supported, use
-                                                                        ## ::ze_image_view_planar_ext_desc_t instead
+        ("planeIndex", c_uint32)                                        ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
     ]
 
 ###############################################################################
@@ -2900,7 +2977,7 @@ class ze_eu_count_ext_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("numTotalEUs", c_ulong)                                        ## [out] Total number of EUs available
+        ("numTotalEUs", c_uint32)                                       ## [out] Total number of EUs available
     ]
 
 ###############################################################################
@@ -2928,21 +3005,21 @@ class ze_pci_properties_ext_version_t(c_int):
 ##       is useful for locating the device in the PCI switch fabric.
 class ze_pci_address_ext_t(Structure):
     _fields_ = [
-        ("domain", c_ulong),                                            ## [out] PCI domain number
-        ("bus", c_ulong),                                               ## [out] PCI BDF bus number
-        ("device", c_ulong),                                            ## [out] PCI BDF device number
-        ("function", c_ulong)                                           ## [out] PCI BDF function number
+        ("domain", c_uint32),                                           ## [out] PCI domain number
+        ("bus", c_uint32),                                              ## [out] PCI BDF bus number
+        ("device", c_uint32),                                           ## [out] PCI BDF device number
+        ("function", c_uint32)                                          ## [out] PCI BDF function number
     ]
 
 ###############################################################################
 ## @brief Device PCI speed
 class ze_pci_speed_ext_t(Structure):
     _fields_ = [
-        ("genVersion", c_int32_t),                                      ## [out] The link generation. A value of -1 means that this property is
+        ("genVersion", c_int32),                                        ## [out] The link generation. A value of -1 means that this property is
                                                                         ## unknown.
-        ("width", c_int32_t),                                           ## [out] The number of lanes. A value of -1 means that this property is
+        ("width", c_int32),                                             ## [out] The number of lanes. A value of -1 means that this property is
                                                                         ## unknown.
-        ("maxBandwidth", c_int64_t)                                     ## [out] The theoretical maximum bandwidth in bytes/sec (sum of all
+        ("maxBandwidth", c_int64)                                       ## [out] The theoretical maximum bandwidth in bytes/sec (sum of all
                                                                         ## lanes). A value of -1 means that this property is unknown.
     ]
 
@@ -3026,7 +3103,7 @@ class ze_image_allocation_ext_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("id", c_ulonglong)                                             ## [out] identifier for this allocation
+        ("id", c_uint64)                                                ## [out] identifier for this allocation
     ]
 
 ###############################################################################
@@ -3204,32 +3281,33 @@ class ze_device_p2p_bandwidth_exp_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("logicalBandwidth", c_ulong),                                  ## [out] total logical design bandwidth for all links connecting the two
+        ("logicalBandwidth", c_uint32),                                 ## [out] total logical design bandwidth for all links connecting the two
                                                                         ## devices
-        ("physicalBandwidth", c_ulong),                                 ## [out] total physical design bandwidth for all links connecting the two
+        ("physicalBandwidth", c_uint32),                                ## [out] total physical design bandwidth for all links connecting the two
                                                                         ## devices
         ("bandwidthUnit", ze_bandwidth_unit_t),                         ## [out] bandwidth unit
-        ("logicalLatency", c_ulong),                                    ## [out] average logical design latency for all links connecting the two
+        ("logicalLatency", c_uint32),                                   ## [out] average logical design latency for all links connecting the two
                                                                         ## devices
-        ("physicalLatency", c_ulong),                                   ## [out] average physical design latency for all links connecting the two
+        ("physicalLatency", c_uint32),                                  ## [out] average physical design latency for all links connecting the two
                                                                         ## devices
         ("latencyUnit", ze_latency_unit_t)                              ## [out] latency unit
     ]
 
 ###############################################################################
-## @brief Copy Bandwidth Properties
+## @brief [DEPRECATED since 1.14] Copy Bandwidth Properties
 ## 
 ## @details
 ##     - This structure may be passed to
 ##       ::zeDeviceGetCommandQueueGroupProperties by having the pNext member of
 ##       ::ze_command_queue_group_properties_t point at this struct.
-##     - [DEPRECATED]
+## 
+## @deprecated Since 1.14. No replacement.
 class ze_copy_bandwidth_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("copyBandwidth", c_ulong),                                     ## [out] design bandwidth supported by this engine type for copy
+        ("copyBandwidth", c_uint32),                                    ## [out] design bandwidth supported by this engine type for copy
                                                                         ## operations
         ("copyBandwidthUnit", ze_bandwidth_unit_t)                      ## [out] copy bandwidth unit
     ]
@@ -3257,7 +3335,7 @@ ZE_MAX_DEVICE_LUID_SIZE_EXT = 8
 ## @brief Device local identifier (LUID)
 class ze_device_luid_ext_t(Structure):
     _fields_ = [
-        ("id", c_ubyte * ZE_MAX_DEVICE_LUID_SIZE_EXT)                   ## [out] opaque data representing a device LUID
+        ("id", c_uint8 * ZE_MAX_DEVICE_LUID_SIZE_EXT)                   ## [out] opaque data representing a device LUID
     ]
 
 ###############################################################################
@@ -3275,7 +3353,7 @@ class ze_device_luid_ext_properties_t(Structure):
                                                                         ## The returned LUID can be cast to a LUID object and must be equal to
                                                                         ## the locally
                                                                         ## unique identifier of an IDXGIAdapter1 object that corresponds to the device.
-        ("nodeMask", c_ulong)                                           ## [out] node mask.
+        ("nodeMask", c_uint32)                                          ## [out] node mask.
                                                                         ## The returned node mask must contain exactly one bit.
                                                                         ## If the device is running on an operating system that supports the
                                                                         ## Direct3D 12 API
@@ -3340,10 +3418,10 @@ class ze_fabric_edge_exp_duplexity_t(c_int):
 ##       is useful for locating the device in the PCI switch fabric.
 class ze_fabric_vertex_pci_exp_address_t(Structure):
     _fields_ = [
-        ("domain", c_ulong),                                            ## [out] PCI domain number
-        ("bus", c_ulong),                                               ## [out] PCI BDF bus number
-        ("device", c_ulong),                                            ## [out] PCI BDF device number
-        ("function", c_ulong)                                           ## [out] PCI BDF function number
+        ("domain", c_uint32),                                           ## [out] PCI domain number
+        ("bus", c_uint32),                                              ## [out] PCI BDF bus number
+        ("device", c_uint32),                                           ## [out] PCI BDF device number
+        ("function", c_uint32)                                          ## [out] PCI BDF function number
     ]
 
 ###############################################################################
@@ -3373,9 +3451,9 @@ class ze_fabric_edge_exp_properties_t(Structure):
         ("uuid", ze_uuid_t),                                            ## [out] universal unique identifier.
         ("model", c_char * ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE),          ## [out] Description of fabric edge technology. Will be set to the string
                                                                         ## "unknown" if this cannot be determined for this edge
-        ("bandwidth", c_ulong),                                         ## [out] design bandwidth
+        ("bandwidth", c_uint32),                                        ## [out] design bandwidth
         ("bandwidthUnit", ze_bandwidth_unit_t),                         ## [out] bandwidth unit
-        ("latency", c_ulong),                                           ## [out] design latency
+        ("latency", c_uint32),                                          ## [out] design latency
         ("latencyUnit", ze_latency_unit_t),                             ## [out] latency unit
         ("duplexity", ze_fabric_edge_exp_duplexity_t)                   ## [out] Duplexity of the fabric edge
     ]
@@ -3444,11 +3522,11 @@ class ze_device_memory_ext_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", ze_device_memory_ext_type_t),                          ## [out] The memory type
-        ("physicalSize", c_ulonglong),                                  ## [out] Physical memory size in bytes. A value of 0 indicates that this
+        ("physicalSize", c_uint64),                                     ## [out] Physical memory size in bytes. A value of 0 indicates that this
                                                                         ## property is not known. However, a call to ::zesMemoryGetState() will
                                                                         ## correctly return the total size of usable memory.
-        ("readBandwidth", c_ulong),                                     ## [out] Design bandwidth for reads
-        ("writeBandwidth", c_ulong),                                    ## [out] Design bandwidth for writes
+        ("readBandwidth", c_uint32),                                    ## [out] Design bandwidth for reads
+        ("writeBandwidth", c_uint32),                                   ## [out] Design bandwidth for writes
         ("bandwidthUnit", ze_bandwidth_unit_t)                          ## [out] bandwidth unit
     ]
 
@@ -3493,7 +3571,7 @@ class ze_device_ip_version_ext_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("ipVersion", c_ulong)                                          ## [out] Device IP version. The meaning of the device IP version is
+        ("ipVersion", c_uint32)                                         ## [out] Device IP version. The meaning of the device IP version is
                                                                         ## implementation-defined, but newer devices should have a higher
                                                                         ## version than older devices.
     ]
@@ -3525,7 +3603,7 @@ class ze_kernel_max_group_size_properties_ext_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("maxGroupSize", c_ulong)                                       ## [out] maximum group size that can be used to execute the kernel. This
+        ("maxGroupSize", c_uint32)                                      ## [out] maximum group size that can be used to execute the kernel. This
                                                                         ## value may be less than or equal to the `maxTotalGroupSize` member of
                                                                         ## ::ze_device_compute_properties_t.
     ]
@@ -3569,7 +3647,7 @@ class ze_memory_sub_allocations_exp_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("pCount", POINTER(c_ulong)),                                   ## [in,out] pointer to the number of sub-allocations.
+        ("pCount", POINTER(c_uint32)),                                  ## [in,out] pointer to the number of sub-allocations.
                                                                         ## if count is zero, then the driver shall update the value with the
                                                                         ## total number of sub-allocations on which the allocation has been divided.
                                                                         ## if count is greater than the number of sub-allocations, then the
@@ -3624,9 +3702,9 @@ class ze_event_query_kernel_timestamps_ext_properties_t(Structure):
 ## @brief Kernel timestamp clock data synchronized to the host time domain
 class ze_synchronized_timestamp_data_ext_t(Structure):
     _fields_ = [
-        ("kernelStart", c_ulonglong),                                   ## [out] start of kernel execution in nanoseconds, on the host time
+        ("kernelStart", c_uint64),                                      ## [out] start of kernel execution in nanoseconds, on the host time
                                                                         ## domain.
-        ("kernelEnd", c_ulonglong)                                      ## [out] end of kernel execution in nanoseconds, on the host time domain.
+        ("kernelEnd", c_uint64)                                         ## [out] end of kernel execution in nanoseconds, on the host time domain.
     ]
 
 ###############################################################################
@@ -3653,11 +3731,17 @@ class ze_event_query_kernel_timestamps_results_ext_properties_t(Structure):
     ]
 
 ###############################################################################
-## @brief Ray Tracing Acceleration Structure Builder Extension Name
+## @brief [DEPRECATED since 1.13] Ray Tracing Acceleration Structure Builder
+##        Extension Name
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 ZE_RTAS_BUILDER_EXP_NAME = "ZE_experimental_rtas_builder"
 
 ###############################################################################
-## @brief Ray Tracing Acceleration Structure Builder Extension Version(s)
+## @brief [DEPRECATED since 1.13] Ray Tracing Acceleration Structure Builder
+##        Extension Version(s)
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 class ze_rtas_builder_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -3668,7 +3752,10 @@ class ze_rtas_builder_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Ray tracing acceleration structure device flags
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure device
+##        flags
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_device_ext_flags_t instead.
 class ze_rtas_device_exp_flags_v(IntEnum):
     RESERVED = ZE_BIT(0)                                                    ## reserved for future use
 
@@ -3678,11 +3765,13 @@ class ze_rtas_device_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Ray tracing acceleration structure format
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure format
 ## 
 ## @details
 ##     - This is an opaque ray tracing acceleration structure format
 ##       identifier.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_format_ext_t instead.
 class ze_rtas_format_exp_v(IntEnum):
     INVALID = 0                                                             ## Invalid acceleration structure format
     MAX = 0x7ffffffe                                                        ## Maximum acceleration structure format code
@@ -3693,7 +3782,10 @@ class ze_rtas_format_exp_t(c_int):
 
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder flags
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        flags
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_ext_flags_t instead.
 class ze_rtas_builder_exp_flags_v(IntEnum):
     RESERVED = ZE_BIT(0)                                                    ## Reserved for future use
 
@@ -3703,7 +3795,10 @@ class ze_rtas_builder_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder parallel operation flags
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        parallel operation flags
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_parallel_operation_ext_flags_t instead.
 class ze_rtas_parallel_operation_exp_flags_v(IntEnum):
     RESERVED = ZE_BIT(0)                                                    ## Reserved for future use
 
@@ -3713,7 +3808,10 @@ class ze_rtas_parallel_operation_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder geometry flags
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        geometry flags
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_geometry_ext_flags_t instead.
 class ze_rtas_builder_geometry_exp_flags_v(IntEnum):
     NON_OPAQUE = ZE_BIT(0)                                                  ## non-opaque geometries invoke an any-hit shader
 
@@ -3723,13 +3821,18 @@ class ze_rtas_builder_geometry_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Packed ray tracing acceleration structure builder geometry flags (see
-##        ::ze_rtas_builder_geometry_exp_flags_t)
-class ze_rtas_builder_packed_geometry_exp_flags_t(c_ubyte):
+## @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure
+##        builder geometry flags (see ::ze_rtas_builder_geometry_exp_flags_t)
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
+class ze_rtas_builder_packed_geometry_exp_flags_t(c_uint8):
     pass
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder instance flags
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        instance flags
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_instance_ext_flags_t instead.
 class ze_rtas_builder_instance_exp_flags_v(IntEnum):
     TRIANGLE_CULL_DISABLE = ZE_BIT(0)                                       ## disables culling of front-facing and back-facing triangles
     TRIANGLE_FRONT_COUNTERCLOCKWISE = ZE_BIT(1)                             ## reverses front and back face of triangles
@@ -3744,13 +3847,16 @@ class ze_rtas_builder_instance_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Packed ray tracing acceleration structure builder instance flags (see
-##        ::ze_rtas_builder_instance_exp_flags_t)
-class ze_rtas_builder_packed_instance_exp_flags_t(c_ubyte):
+## @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure
+##        builder instance flags (see ::ze_rtas_builder_instance_exp_flags_t)
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
+class ze_rtas_builder_packed_instance_exp_flags_t(c_uint8):
     pass
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder build operation flags
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        build operation flags
 ## 
 ## @details
 ##     - These flags allow the application to tune the acceleration structure
@@ -3761,6 +3867,8 @@ class ze_rtas_builder_packed_instance_exp_flags_t(c_ubyte):
 ##       times for non-opaque primitives, unless
 ##       ::ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION is specified.
 ##     - Usage of any of these flags may reduce ray tracing performance.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_build_op_ext_flags_t instead.
 class ze_rtas_builder_build_op_exp_flags_v(IntEnum):
     COMPACT = ZE_BIT(0)                                                     ## build more compact acceleration structure
     NO_DUPLICATE_ANYHIT_INVOCATION = ZE_BIT(1)                              ## guarantees single any-hit shader invocation per primitive
@@ -3771,7 +3879,8 @@ class ze_rtas_builder_build_op_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder build quality hint
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        build quality hint
 ## 
 ## @details
 ##     - Depending on use case different quality modes for acceleration
@@ -3784,6 +3893,8 @@ class ze_rtas_builder_build_op_exp_flags_t(c_int):
 ##     - Higher ray tracing performance can be achieved by using a high-quality
 ##       build, but acceleration structure build performance might be
 ##       significantly reduced.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_build_quality_hint_ext_t instead.
 class ze_rtas_builder_build_quality_hint_exp_v(IntEnum):
     LOW = 0                                                                 ## build low-quality acceleration structure (fast)
     MEDIUM = 1                                                              ## build medium-quality acceleration structure (slower)
@@ -3795,7 +3906,10 @@ class ze_rtas_builder_build_quality_hint_exp_t(c_int):
 
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder geometry type
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        geometry type
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_geometry_type_ext_t instead.
 class ze_rtas_builder_geometry_type_exp_v(IntEnum):
     TRIANGLES = 0                                                           ## triangle mesh geometry type
     QUADS = 1                                                               ## quad mesh geometry type
@@ -3808,18 +3922,23 @@ class ze_rtas_builder_geometry_type_exp_t(c_int):
 
 
 ###############################################################################
-## @brief Packed ray tracing acceleration structure builder geometry type (see
-##        ::ze_rtas_builder_geometry_type_exp_t)
-class ze_rtas_builder_packed_geometry_type_exp_t(c_ubyte):
+## @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure
+##        builder geometry type (see ::ze_rtas_builder_geometry_type_exp_t)
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
+class ze_rtas_builder_packed_geometry_type_exp_t(c_uint8):
     pass
 
 ###############################################################################
-## @brief Ray tracing acceleration structure data buffer element format
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure data buffer
+##        element format
 ## 
 ## @details
 ##     - Specifies the format of data buffer elements.
 ##     - Data buffers may contain instancing transform matrices, triangle/quad
 ##       vertex indices, etc...
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_input_data_format_ext_t instead.
 class ze_rtas_builder_input_data_format_exp_v(IntEnum):
     FLOAT3 = 0                                                              ## 3-component float vector (see ::ze_rtas_float3_exp_t)
     FLOAT3X4_COLUMN_MAJOR = 1                                               ## 3x4 affine transformation in column-major format (see
@@ -3839,24 +3958,34 @@ class ze_rtas_builder_input_data_format_exp_t(c_int):
 
 
 ###############################################################################
-## @brief Packed ray tracing acceleration structure data buffer element format
-##        (see ::ze_rtas_builder_input_data_format_exp_t)
-class ze_rtas_builder_packed_input_data_format_exp_t(c_ubyte):
+## @brief [DEPRECATED since 1.13] Packed ray tracing acceleration structure data
+##        buffer element format (see ::ze_rtas_builder_input_data_format_exp_t)
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
+class ze_rtas_builder_packed_input_data_format_exp_t(c_uint8):
     pass
 
 ###############################################################################
-## @brief Handle of ray tracing acceleration structure builder object
+## @brief [DEPRECATED since 1.13] Handle of ray tracing acceleration structure
+##        builder object
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 class ze_rtas_builder_exp_handle_t(c_void_p):
     pass
 
 ###############################################################################
-## @brief Handle of ray tracing acceleration structure builder parallel
-##        operation object
+## @brief [DEPRECATED since 1.13] Handle of ray tracing acceleration structure
+##        builder parallel operation object
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
 class ze_rtas_parallel_operation_exp_handle_t(c_void_p):
     pass
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder descriptor
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        descriptor
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_ext_desc_t instead.
 class ze_rtas_builder_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -3866,7 +3995,10 @@ class ze_rtas_builder_exp_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder properties
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        properties
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_ext_properties_t instead.
 class ze_rtas_builder_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -3885,8 +4017,10 @@ class ze_rtas_builder_exp_properties_t(Structure):
     ]
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder parallel operation
-##        properties
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        parallel operation properties
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_parallel_operation_ext_properties_t instead.
 class ze_rtas_parallel_operation_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -3894,17 +4028,20 @@ class ze_rtas_parallel_operation_exp_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_rtas_parallel_operation_exp_flags_t),              ## [out] ray tracing acceleration structure builder parallel operation
                                                                         ## flags
-        ("maxConcurrency", c_ulong)                                     ## [out] maximum number of threads that may join the parallel operation
+        ("maxConcurrency", c_uint32)                                    ## [out] maximum number of threads that may join the parallel operation
     ]
 
 ###############################################################################
-## @brief Ray tracing acceleration structure device properties
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure device
+##        properties
 ## 
 ## @details
 ##     - This structure may be passed to ::zeDeviceGetProperties, via `pNext`
 ##       member of ::ze_device_properties_t.
 ##     - The implementation shall populate `format` with a value other than
 ##       ::ZE_RTAS_FORMAT_EXP_INVALID when the device supports ray tracing.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_device_ext_properties_t instead.
 class ze_rtas_device_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -3912,11 +4049,13 @@ class ze_rtas_device_exp_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_rtas_device_exp_flags_t),                          ## [out] ray tracing acceleration structure device flags
         ("rtasFormat", ze_rtas_format_exp_t),                           ## [out] ray tracing acceleration structure format
-        ("rtasBufferAlignment", c_ulong)                                ## [out] required alignment of acceleration structure buffer
+        ("rtasBufferAlignment", c_uint32)                               ## [out] required alignment of acceleration structure buffer
     ]
 
 ###############################################################################
-## @brief A 3-component vector type
+## @brief [DEPRECATED since 1.13] A 3-component vector type
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_float3_ext_t instead.
 class ze_rtas_float3_exp_t(Structure):
     _fields_ = [
         ("x", c_float),                                                 ## [in] x-coordinate of float3 vector
@@ -3925,7 +4064,8 @@ class ze_rtas_float3_exp_t(Structure):
     ]
 
 ###############################################################################
-## @brief 3x4 affine transformation in column-major layout
+## @brief [DEPRECATED since 1.13] 3x4 affine transformation in column-major
+##        layout
 ## 
 ## @details
 ##     - A 3x4 affine transformation in column major layout, consisting of vectors
@@ -3935,6 +4075,9 @@ class ze_rtas_float3_exp_t(Structure):
 ##          - p=(p_x, p_y, p_z)
 ##     - The transformation transforms a point (x, y, z) to: `x*vx + y*vy +
 ##       z*vz + p`.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_transform_float3x4_column_major_ext_t
+##             instead.
 class ze_rtas_transform_float3x4_column_major_exp_t(Structure):
     _fields_ = [
         ("vx_x", c_float),                                              ## [in] element 0 of column 0 of 3x4 matrix
@@ -3952,8 +4095,8 @@ class ze_rtas_transform_float3x4_column_major_exp_t(Structure):
     ]
 
 ###############################################################################
-## @brief 3x4 affine transformation in column-major layout with aligned column
-##        vectors
+## @brief [DEPRECATED since 1.13] 3x4 affine transformation in column-major
+##        layout with aligned column vectors
 ## 
 ## @details
 ##     - A 3x4 affine transformation in column major layout, consisting of vectors
@@ -3965,6 +4108,9 @@ class ze_rtas_transform_float3x4_column_major_exp_t(Structure):
 ##       z*vz + p`.
 ##     - The column vectors are aligned to 16-bytes and pad members are
 ##       ignored.
+## 
+## @deprecated Since 1.13. Use
+##             ::ze_rtas_transform_float3x4_aligned_column_major_ext_t instead.
 class ze_rtas_transform_float3x4_aligned_column_major_exp_t(Structure):
     _fields_ = [
         ("vx_x", c_float),                                              ## [in] element 0 of column 0 of 3x4 matrix
@@ -3986,7 +4132,7 @@ class ze_rtas_transform_float3x4_aligned_column_major_exp_t(Structure):
     ]
 
 ###############################################################################
-## @brief 3x4 affine transformation in row-major layout
+## @brief [DEPRECATED since 1.13] 3x4 affine transformation in row-major layout
 ## 
 ## @details
 ##     - A 3x4 affine transformation in row-major layout, consisting of vectors
@@ -3996,6 +4142,8 @@ class ze_rtas_transform_float3x4_aligned_column_major_exp_t(Structure):
 ##          - p=(p_x, p_y, p_z)
 ##     - The transformation transforms a point (x, y, z) to: `x*vx + y*vy +
 ##       z*vz + p`.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_transform_float3x4_row_major_ext_t instead.
 class ze_rtas_transform_float3x4_row_major_exp_t(Structure):
     _fields_ = [
         ("vx_x", c_float),                                              ## [in] element 0 of row 0 of 3x4 matrix
@@ -4013,16 +4161,18 @@ class ze_rtas_transform_float3x4_row_major_exp_t(Structure):
     ]
 
 ###############################################################################
-## @brief A 3-dimensional axis-aligned bounding-box with lower and upper bounds
-##        in each dimension
+## @brief [DEPRECATED since 1.13] A 3-dimensional axis-aligned bounding-box with
+##        lower and upper bounds in each dimension
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_aabb_ext_t instead.
 class ze_rtas_aabb_exp_t(Structure):
     _fields_ = [
-        ("lower", ze_rtas_c_float3_exp_t),                              ## [in] lower bounds of AABB
-        ("upper", ze_rtas_c_float3_exp_t)                               ## [in] upper bounds of AABB
+        ("lower", ze_rtas_float3_exp_t),                                ## [in] lower bounds of AABB
+        ("upper", ze_rtas_float3_exp_t)                                 ## [in] upper bounds of AABB
     ]
 
 ###############################################################################
-## @brief Triangle represented using 3 vertex indices
+## @brief [DEPRECATED since 1.13] Triangle represented using 3 vertex indices
 ## 
 ## @details
 ##     - Represents a triangle using 3 vertex indices that index into a vertex
@@ -4031,16 +4181,18 @@ class ze_rtas_aabb_exp_t(Structure):
 ##          - (u=0, v=0) at v0,
 ##          - (u=1, v=0) at v1, and
 ##          - (u=0, v=1) at v2
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_triangle_indices_uint32_ext_t instead.
 class ze_rtas_triangle_indices_uint32_exp_t(Structure):
     _fields_ = [
-        ("v0", c_ulong),                                                ## [in] first index pointing to the first triangle vertex in vertex array
-        ("v1", c_ulong),                                                ## [in] second index pointing to the second triangle vertex in vertex
+        ("v0", c_uint32),                                               ## [in] first index pointing to the first triangle vertex in vertex array
+        ("v1", c_uint32),                                               ## [in] second index pointing to the second triangle vertex in vertex
                                                                         ## array
-        ("v2", c_ulong)                                                 ## [in] third index pointing to the third triangle vertex in vertex array
+        ("v2", c_uint32)                                                ## [in] third index pointing to the third triangle vertex in vertex array
     ]
 
 ###############################################################################
-## @brief Quad represented using 4 vertex indices
+## @brief [DEPRECATED since 1.13] Quad represented using 4 vertex indices
 ## 
 ## @details
 ##     - Represents a quad composed of 4 indices that index into a vertex array
@@ -4057,29 +4209,38 @@ class ze_rtas_triangle_indices_uint32_exp_t(Structure):
 ##       This is achieved by correcting the u'/v' coordinates of the second
 ##       triangle by
 ##       *u = 1-u'* and *v = 1-v'*, yielding a piecewise linear parametrization.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_quad_indices_uint32_ext_t instead.
 class ze_rtas_quad_indices_uint32_exp_t(Structure):
     _fields_ = [
-        ("v0", c_ulong),                                                ## [in] first index pointing to the first quad vertex in vertex array
-        ("v1", c_ulong),                                                ## [in] second index pointing to the second quad vertex in vertex array
-        ("v2", c_ulong),                                                ## [in] third index pointing to the third quad vertex in vertex array
-        ("v3", c_ulong)                                                 ## [in] fourth index pointing to the fourth quad vertex in vertex array
+        ("v0", c_uint32),                                               ## [in] first index pointing to the first quad vertex in vertex array
+        ("v1", c_uint32),                                               ## [in] second index pointing to the second quad vertex in vertex array
+        ("v2", c_uint32),                                               ## [in] third index pointing to the third quad vertex in vertex array
+        ("v3", c_uint32)                                                ## [in] fourth index pointing to the fourth quad vertex in vertex array
     ]
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder geometry info
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        geometry info
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_geometry_info_ext_t instead.
 class ze_rtas_builder_geometry_info_exp_t(Structure):
     _fields_ = [
         ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t)    ## [in] geometry type
     ]
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder triangle mesh geometry info
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        triangle mesh geometry info
 ## 
 ## @details
 ##     - The linear barycentric u/v parametrization of the triangle is defined as:
 ##          - (u=0, v=0) at v0,
 ##          - (u=1, v=0) at v1, and
 ##          - (u=0, v=1) at v2
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_triangles_geometry_info_ext_t
+##             instead.
 class ze_rtas_builder_triangles_geometry_info_exp_t(Structure):
     _fields_ = [
         ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be
@@ -4087,21 +4248,22 @@ class ze_rtas_builder_triangles_geometry_info_exp_t(Structure):
         ("geometryFlags", ze_rtas_builder_packed_geometry_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
         ("triangleFormat", ze_rtas_builder_packed_input_data_format_exp_t), ## [in] format of triangle buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_TRIANGLE_INDICES_UINT32
         ("vertexFormat", ze_rtas_builder_packed_input_data_format_exp_t),   ## [in] format of vertex buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3
-        ("triangleCount", c_ulong),                                     ## [in] number of triangles in triangle buffer
-        ("vertexCount", c_ulong),                                       ## [in] number of vertices in vertex buffer
-        ("triangleStride", c_ulong),                                    ## [in] stride (in bytes) of triangles in triangle buffer
-        ("vertexStride", c_ulong),                                      ## [in] stride (in bytes) of vertices in vertex buffer
+        ("triangleCount", c_uint32),                                    ## [in] number of triangles in triangle buffer
+        ("vertexCount", c_uint32),                                      ## [in] number of vertices in vertex buffer
+        ("triangleStride", c_uint32),                                   ## [in] stride (in bytes) of triangles in triangle buffer
+        ("vertexStride", c_uint32),                                     ## [in] stride (in bytes) of vertices in vertex buffer
         ("pTriangleBuffer", c_void_p),                                  ## [in] pointer to array of triangle indices in specified format
         ("pVertexBuffer", c_void_p)                                     ## [in] pointer to array of triangle vertices in specified format
     ]
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder quad mesh geometry info
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        quad mesh geometry info
 ## 
 ## @details
 ##     - A quad is a triangle pair represented using 4 vertex indices v0, v1,
@@ -4116,46 +4278,53 @@ class ze_rtas_builder_triangles_geometry_info_exp_t(Structure):
 ##       This is achieved by correcting the u'/v' coordinates of the second
 ##       triangle by
 ##       *u = 1-u'* and *v = 1-v'*, yielding a piecewise linear parametrization.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_quads_geometry_info_ext_t instead.
 class ze_rtas_builder_quads_geometry_info_exp_t(Structure):
     _fields_ = [
         ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be ::ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_QUADS
         ("geometryFlags", ze_rtas_builder_packed_geometry_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
         ("quadFormat", ze_rtas_builder_packed_input_data_format_exp_t), ## [in] format of quad buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_QUAD_INDICES_UINT32
         ("vertexFormat", ze_rtas_builder_packed_input_data_format_exp_t),   ## [in] format of vertex buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3
-        ("quadCount", c_ulong),                                         ## [in] number of quads in quad buffer
-        ("vertexCount", c_ulong),                                       ## [in] number of vertices in vertex buffer
-        ("quadStride", c_ulong),                                        ## [in] stride (in bytes) of quads in quad buffer
-        ("vertexStride", c_ulong),                                      ## [in] stride (in bytes) of vertices in vertex buffer
+        ("quadCount", c_uint32),                                        ## [in] number of quads in quad buffer
+        ("vertexCount", c_uint32),                                      ## [in] number of vertices in vertex buffer
+        ("quadStride", c_uint32),                                       ## [in] stride (in bytes) of quads in quad buffer
+        ("vertexStride", c_uint32),                                     ## [in] stride (in bytes) of vertices in vertex buffer
         ("pQuadBuffer", c_void_p),                                      ## [in] pointer to array of quad indices in specified format
         ("pVertexBuffer", c_void_p)                                     ## [in] pointer to array of quad vertices in specified format
     ]
 
 ###############################################################################
-## @brief AABB callback function parameters
+## @brief [DEPRECATED since 1.13] AABB callback function parameters
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_geometry_aabbs_ext_cb_params_t instead.
 class ze_rtas_geometry_aabbs_exp_cb_params_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("primID", c_ulong),                                            ## [in] first primitive to return bounds for
-        ("primIDCount", c_ulong),                                       ## [in] number of primitives to return bounds for
+        ("primID", c_uint32),                                           ## [in] first primitive to return bounds for
+        ("primIDCount", c_uint32),                                      ## [in] number of primitives to return bounds for
         ("pGeomUserPtr", c_void_p),                                     ## [in] pointer provided through geometry descriptor
         ("pBuildUserPtr", c_void_p),                                    ## [in] pointer provided through ::zeRTASBuilderBuildExp function
         ("pBoundsOut", POINTER(ze_rtas_aabb_exp_t))                     ## [out] destination buffer to write AABB bounds to
     ]
 
 ###############################################################################
-## @brief Callback function pointer type to return AABBs for a range of
-##        procedural primitives
+## @brief [DEPRECATED since 1.13] Callback function pointer type to return AABBs
+##        for a range of procedural primitives
+## 
+## @deprecated Since 1.13. Use ::ZE_RTAS_EXT_NAME instead.
+ze_rtas_geometry_aabbs_cb_exp_t = CFUNCTYPE( None, POINTER(ze_rtas_geometry_aabbs_exp_cb_params_t) )
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder procedural primitives
-##        geometry info
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        procedural primitives geometry info
 ## 
 ## @details
 ##     - A host-side bounds callback function is invoked by the acceleration
@@ -4167,6 +4336,9 @@ class ze_rtas_geometry_aabbs_exp_cb_params_t(Structure):
 ##       build to change the bounds of the procedural geometry, for example, to
 ##       build a BVH only over a short time range to implement multi-segment
 ##       motion blur.
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_procedural_geometry_info_ext_t
+##             instead.
 class ze_rtas_builder_procedural_geometry_info_exp_t(Structure):
     _fields_ = [
         ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be
@@ -4174,16 +4346,20 @@ class ze_rtas_builder_procedural_geometry_info_exp_t(Structure):
         ("geometryFlags", ze_rtas_builder_packed_geometry_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
-        ("reserved", c_ubyte),                                          ## [in] reserved for future use
-        ("primCount", c_ulong),                                         ## [in] number of primitives in geometry
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
+        ("reserved", c_uint8),                                          ## [in] reserved for future use
+        ("primCount", c_uint32),                                        ## [in] number of primitives in geometry
         ("pfnGetBoundsCb", ze_rtas_geometry_aabbs_cb_exp_t),            ## [in] pointer to callback function to get the axis-aligned bounding-box
                                                                         ## for a range of primitives
         ("pGeomUserPtr", c_void_p)                                      ## [in] user data pointer passed to callback
     ]
 
 ###############################################################################
-## @brief Ray tracing acceleration structure builder instance geometry info
+## @brief [DEPRECATED since 1.13] Ray tracing acceleration structure builder
+##        instance geometry info
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_instance_geometry_info_ext_t
+##             instead.
 class ze_rtas_builder_instance_geometry_info_exp_t(Structure):
     _fields_ = [
         ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be
@@ -4191,9 +4367,9 @@ class ze_rtas_builder_instance_geometry_info_exp_t(Structure):
         ("instanceFlags", ze_rtas_builder_packed_instance_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
         ("transformFormat", ze_rtas_builder_packed_input_data_format_exp_t),## [in] format of the specified transformation
-        ("instanceUserID", c_ulong),                                    ## [in] user-specified identifier for the instance
+        ("instanceUserID", c_uint32),                                   ## [in] user-specified identifier for the instance
         ("pTransform", c_void_p),                                       ## [in] object-to-world instance transformation in specified format
         ("pBounds", POINTER(ze_rtas_aabb_exp_t)),                       ## [in] object-space axis-aligned bounding-box of the instanced
                                                                         ## acceleration structure
@@ -4201,7 +4377,9 @@ class ze_rtas_builder_instance_geometry_info_exp_t(Structure):
     ]
 
 ###############################################################################
-## @brief 
+## @brief [DEPRECATED since 1.13] 
+## 
+## @deprecated Since 1.13. Use ::ze_rtas_builder_build_op_ext_desc_t instead.
 class ze_rtas_builder_build_op_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -4211,18 +4389,22 @@ class ze_rtas_builder_build_op_exp_desc_t(Structure):
         ("buildQuality", ze_rtas_builder_build_quality_hint_exp_t),     ## [in] acceleration structure build quality hint
         ("buildFlags", ze_rtas_builder_build_op_exp_flags_t),           ## [in] 0 or some combination of ::ze_rtas_builder_build_op_exp_flag_t
                                                                         ## flags
-        ("ppGeometries", POINTER(ze_rtas_builder_geometry_info_exp_t*)),## [in][optional][range(0, `numGeometries`)] NULL or a valid array of
+        ("ppGeometries", POINTER(POINTER(ze_rtas_builder_geometry_info_exp_t))),## [in][optional][range(0, `numGeometries`)] NULL or a valid array of
                                                                         ## pointers to geometry infos
-        ("numGeometries", c_ulong)                                      ## [in] number of geometries in geometry infos array, can be zero when
+        ("numGeometries", c_uint32)                                     ## [in] number of geometries in geometry infos array, can be zero when
                                                                         ## `ppGeometries` is NULL
     ]
 
 ###############################################################################
-## @brief Counter-based Event Pools Extension Name
+## @brief [DEPRECATED since 1.15] Counter-based Event Pools Extension Name
+## 
+## @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME = "ZE_experimental_event_pool_counter_based"
 
 ###############################################################################
-## @brief Counter-based Event Pools Extension Version(s)
+## @brief [DEPRECATED since 1.15] Counter-based Event Pools Extension Version(s)
+## 
+## @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 class ze_event_pool_counter_based_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -4233,7 +4415,10 @@ class ze_event_pool_counter_based_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Supported event flags for defining counter-based event pools.
+## @brief [DEPRECATED since 1.15] Supported event flags for defining
+##        counter-based event pools.
+## 
+## @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 class ze_event_pool_counter_based_exp_flags_v(IntEnum):
     IMMEDIATE = ZE_BIT(0)                                                   ## Counter-based event pool is used for immediate command lists (default)
     NON_IMMEDIATE = ZE_BIT(1)                                               ## Counter-based event pool is for non-immediate command lists
@@ -4244,9 +4429,11 @@ class ze_event_pool_counter_based_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Event pool descriptor for counter-based events. This structure may be
-##        passed to ::zeEventPoolCreate as pNext member of
-##        ::ze_event_pool_desc_t. @deprecated since 1.15
+## @brief [DEPRECATED since 1.15] Event pool descriptor for counter-based
+##        events. This structure may be passed to ::zeEventPoolCreate as pNext
+##        member of ::ze_event_pool_desc_t.
+## 
+## @deprecated Since 1.15. Use ::zeEventCounterBasedCreate instead.
 class ze_event_pool_counter_based_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -4367,11 +4554,17 @@ class ze_custom_pitch_exp_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief Command List Clone Extension Name
+## @brief [DEPRECATED since 1.17] Command List Clone Extension Name
+## 
+## @deprecated Since 1.17. Mutable command lists replace command list cloning. Use
+##             ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 ZE_COMMAND_LIST_CLONE_EXP_NAME = "ZE_experimental_command_list_clone"
 
 ###############################################################################
-## @brief Command List Clone Extension Version(s)
+## @brief [DEPRECATED since 1.17] Command List Clone Extension Version(s)
+## 
+## @deprecated Since 1.17. Mutable command lists replace command list cloning. Use
+##             ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 class ze_command_list_clone_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -4382,11 +4575,18 @@ class ze_command_list_clone_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Immediate Command List Append Extension Name
+## @brief [DEPRECATED since 1.16] Immediate Command List Append Extension Name
+## 
+## @deprecated Since 1.16. Use
+##             ::zeCommandListImmediateAppendCommandListsWithParameters instead.
 ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_NAME = "ZE_experimental_immediate_command_list_append"
 
 ###############################################################################
-## @brief Immediate Command List Append Extension Version(s)
+## @brief [DEPRECATED since 1.16] Immediate Command List Append Extension
+##        Version(s)
+## 
+## @deprecated Since 1.16. Use
+##             ::zeCommandListImmediateAppendCommandListsWithParameters instead.
 class ze_immediate_command_list_append_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -4397,11 +4597,15 @@ class ze_immediate_command_list_append_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Mutable Command List Extension Name
+## @brief [DEPRECATED since 1.20] Mutable Command List Extension Name
+## 
+## @deprecated Since 1.20. Use ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 ZE_MUTABLE_COMMAND_LIST_EXP_NAME = "ZE_experimental_mutable_command_list"
 
 ###############################################################################
-## @brief Mutable Command List Extension Version(s)
+## @brief [DEPRECATED since 1.20] Mutable Command List Extension Version(s)
+## 
+## @deprecated Since 1.20. Use ::ZE_MUTABLE_COMMAND_LIST_EXT_NAME instead.
 class ze_mutable_command_list_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
@@ -4413,7 +4617,9 @@ class ze_mutable_command_list_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Mutable command flags
+## @brief [DEPRECATED since 1.20] Mutable command flags
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_command_ext_flags_t instead.
 class ze_mutable_command_exp_flags_v(IntEnum):
     KERNEL_ARGUMENTS = ZE_BIT(0)                                            ## kernel arguments
     GROUP_COUNT = ZE_BIT(1)                                                 ## kernel group count
@@ -4430,7 +4636,9 @@ class ze_mutable_command_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Mutable command identifier descriptor
+## @brief [DEPRECATED since 1.20] Mutable command identifier descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_command_id_ext_desc_t instead.
 class ze_mutable_command_id_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -4444,7 +4652,9 @@ class ze_mutable_command_id_exp_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief Mutable command list flags
+## @brief [DEPRECATED since 1.20] Mutable command list flags
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_command_list_ext_flags_t instead.
 class ze_mutable_command_list_exp_flags_v(IntEnum):
     RESERVED = ZE_BIT(0)                                                    ## reserved
 
@@ -4454,7 +4664,9 @@ class ze_mutable_command_list_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Mutable command list properties
+## @brief [DEPRECATED since 1.20] Mutable command list properties
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_command_list_ext_properties_t instead.
 class ze_mutable_command_list_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -4465,7 +4677,9 @@ class ze_mutable_command_list_exp_properties_t(Structure):
     ]
 
 ###############################################################################
-## @brief Mutable command list descriptor
+## @brief [DEPRECATED since 1.20] Mutable command list descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_command_list_ext_desc_t instead.
 class ze_mutable_command_list_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -4476,74 +4690,86 @@ class ze_mutable_command_list_exp_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief Mutable commands descriptor
+## @brief [DEPRECATED since 1.20] Mutable commands descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_commands_ext_desc_t instead.
 class ze_mutable_commands_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("flags", c_ulong)                                              ## [in] must be 0, this field is reserved for future use
+        ("flags", c_uint32)                                             ## [in] must be 0, this field is reserved for future use
     ]
 
 ###############################################################################
-## @brief Mutable kernel argument descriptor
+## @brief [DEPRECATED since 1.20] Mutable kernel argument descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_kernel_argument_ext_desc_t instead.
 class ze_mutable_kernel_argument_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("argIndex", c_ulong),                                          ## [in] kernel argument index
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("argIndex", c_uint32),                                         ## [in] kernel argument index
         ("argSize", c_size_t),                                          ## [in] kernel argument size
         ("pArgValue", c_void_p)                                         ## [in] pointer to kernel argument value
     ]
 
 ###############################################################################
-## @brief Mutable kernel group count descriptor
+## @brief [DEPRECATED since 1.20] Mutable kernel group count descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_group_count_ext_desc_t instead.
 class ze_mutable_group_count_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("commandId", c_uint64),                                        ## [in] command identifier
         ("pGroupCount", POINTER(ze_group_count_t))                      ## [in] pointer to group count
     ]
 
 ###############################################################################
-## @brief Mutable kernel group size descriptor
+## @brief [DEPRECATED since 1.20] Mutable kernel group size descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_group_size_ext_desc_t instead.
 class ze_mutable_group_size_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("groupSizeX", c_ulong),                                        ## [in] group size for X dimension to use for the kernel
-        ("groupSizeY", c_ulong),                                        ## [in] group size for Y dimension to use for the kernel
-        ("groupSizeZ", c_ulong)                                         ## [in] group size for Z dimension to use for the kernel
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("groupSizeX", c_uint32),                                       ## [in] group size for X dimension to use for the kernel
+        ("groupSizeY", c_uint32),                                       ## [in] group size for Y dimension to use for the kernel
+        ("groupSizeZ", c_uint32)                                        ## [in] group size for Z dimension to use for the kernel
     ]
 
 ###############################################################################
-## @brief Mutable kernel global offset descriptor
+## @brief [DEPRECATED since 1.20] Mutable kernel global offset descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_global_offset_ext_desc_t instead.
 class ze_mutable_global_offset_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("offsetX", c_ulong),                                           ## [in] global offset for X dimension to use for this kernel
-        ("offsetY", c_ulong),                                           ## [in] global offset for Y dimension to use for this kernel
-        ("offsetZ", c_ulong)                                            ## [in] global offset for Z dimension to use for this kernel
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("offsetX", c_uint32),                                          ## [in] global offset for X dimension to use for this kernel
+        ("offsetY", c_uint32),                                          ## [in] global offset for Y dimension to use for this kernel
+        ("offsetZ", c_uint32)                                           ## [in] global offset for Z dimension to use for this kernel
     ]
 
 ###############################################################################
-## @brief Mutable graph argument descriptor
+## @brief [DEPRECATED since 1.20] Mutable graph argument descriptor
+## 
+## @deprecated Since 1.20. Use ::ze_mutable_graph_argument_ext_desc_t instead.
 class ze_mutable_graph_argument_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("argIndex", c_ulong),                                          ## [in] graph argument index
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("argIndex", c_uint32),                                         ## [in] graph argument index
         ("pArgValue", c_void_p)                                         ## [in] pointer to graph argument value
     ]
 
@@ -4624,7 +4850,8 @@ ZE_EXTERNAL_SEMAPHORES_EXTENSION_NAME = "ZE_extension_external_semaphores"
 ## @brief External Semaphores Extension Version
 class ze_external_semaphore_ext_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
+    CURRENT = ZE_MAKE_VERSION( 1, 1 )                                       ## latest known version
 
 class ze_external_semaphore_ext_version_t(c_int):
     def __str__(self):
@@ -4698,7 +4925,7 @@ class ze_external_semaphore_signal_params_ext_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("value", c_ulonglong)                                          ## [in] [optional] Value to signal.
+        ("value", c_uint64)                                             ## [in] [optional] Value to signal.
                                                                         ## Specified by user as an expected value with some of semaphore types,
                                                                         ## such as ::ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D12_FENCE.
     ]
@@ -4710,7 +4937,7 @@ class ze_external_semaphore_wait_params_ext_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("value", c_ulonglong)                                          ## [in] [optional] Value to wait for.
+        ("value", c_uint64)                                             ## [in] [optional] Value to wait for.
                                                                         ## Specified by user as an expected value with some of semaphore types,
                                                                         ## such as ::ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D12_FENCE.
     ]
@@ -4818,7 +5045,7 @@ class ze_rtas_builder_geometry_ext_flags_t(c_int):
 ###############################################################################
 ## @brief Packed ray tracing acceleration structure builder geometry flags (see
 ##        ::ze_rtas_builder_geometry_ext_flags_t)
-class ze_rtas_builder_packed_geometry_ext_flags_t(c_ubyte):
+class ze_rtas_builder_packed_geometry_ext_flags_t(c_uint8):
     pass
 
 ###############################################################################
@@ -4839,7 +5066,7 @@ class ze_rtas_builder_instance_ext_flags_t(c_int):
 ###############################################################################
 ## @brief Packed ray tracing acceleration structure builder instance flags (see
 ##        ::ze_rtas_builder_instance_ext_flags_t)
-class ze_rtas_builder_packed_instance_ext_flags_t(c_ubyte):
+class ze_rtas_builder_packed_instance_ext_flags_t(c_uint8):
     pass
 
 ###############################################################################
@@ -4903,7 +5130,7 @@ class ze_rtas_builder_geometry_type_ext_t(c_int):
 ###############################################################################
 ## @brief Packed ray tracing acceleration structure builder geometry type (see
 ##        ::ze_rtas_builder_geometry_type_ext_t)
-class ze_rtas_builder_packed_geometry_type_ext_t(c_ubyte):
+class ze_rtas_builder_packed_geometry_type_ext_t(c_uint8):
     pass
 
 ###############################################################################
@@ -4934,7 +5161,7 @@ class ze_rtas_builder_input_data_format_ext_t(c_int):
 ###############################################################################
 ## @brief Packed ray tracing acceleration structure data buffer element format
 ##        (see ::ze_rtas_builder_input_data_format_ext_t)
-class ze_rtas_builder_packed_input_data_format_ext_t(c_ubyte):
+class ze_rtas_builder_packed_input_data_format_ext_t(c_uint8):
     pass
 
 ###############################################################################
@@ -4987,7 +5214,7 @@ class ze_rtas_parallel_operation_ext_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_rtas_parallel_operation_ext_flags_t),              ## [out] ray tracing acceleration structure builder parallel operation
                                                                         ## flags
-        ("maxConcurrency", c_ulong)                                     ## [out] maximum number of threads that may join the parallel operation
+        ("maxConcurrency", c_uint32)                                    ## [out] maximum number of threads that may join the parallel operation
     ]
 
 ###############################################################################
@@ -5005,7 +5232,7 @@ class ze_rtas_device_ext_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_rtas_device_ext_flags_t),                          ## [out] ray tracing acceleration structure device flags
         ("rtasFormat", ze_rtas_format_ext_t),                           ## [out] ray tracing acceleration structure format
-        ("rtasBufferAlignment", c_ulong)                                ## [out] required alignment of acceleration structure buffer
+        ("rtasBufferAlignment", c_uint32)                               ## [out] required alignment of acceleration structure buffer
     ]
 
 ###############################################################################
@@ -5110,8 +5337,8 @@ class ze_rtas_transform_float3x4_row_major_ext_t(Structure):
 ##        in each dimension
 class ze_rtas_aabb_ext_t(Structure):
     _fields_ = [
-        ("lower", ze_rtas_c_float3_ext_t),                              ## [in] lower bounds of AABB
-        ("upper", ze_rtas_c_float3_ext_t)                               ## [in] upper bounds of AABB
+        ("lower", ze_rtas_float3_ext_t),                                ## [in] lower bounds of AABB
+        ("upper", ze_rtas_float3_ext_t)                                 ## [in] upper bounds of AABB
     ]
 
 ###############################################################################
@@ -5126,10 +5353,10 @@ class ze_rtas_aabb_ext_t(Structure):
 ##          - (u=0, v=1) at v2
 class ze_rtas_triangle_indices_uint32_ext_t(Structure):
     _fields_ = [
-        ("v0", c_ulong),                                                ## [in] first index pointing to the first triangle vertex in vertex array
-        ("v1", c_ulong),                                                ## [in] second index pointing to the second triangle vertex in vertex
+        ("v0", c_uint32),                                               ## [in] first index pointing to the first triangle vertex in vertex array
+        ("v1", c_uint32),                                               ## [in] second index pointing to the second triangle vertex in vertex
                                                                         ## array
-        ("v2", c_ulong)                                                 ## [in] third index pointing to the third triangle vertex in vertex array
+        ("v2", c_uint32)                                                ## [in] third index pointing to the third triangle vertex in vertex array
     ]
 
 ###############################################################################
@@ -5152,10 +5379,10 @@ class ze_rtas_triangle_indices_uint32_ext_t(Structure):
 ##       *u = 1-u'* and *v = 1-v'*, yielding a piecewise linear parametrization.
 class ze_rtas_quad_indices_uint32_ext_t(Structure):
     _fields_ = [
-        ("v0", c_ulong),                                                ## [in] first index pointing to the first quad vertex in vertex array
-        ("v1", c_ulong),                                                ## [in] second index pointing to the second quad vertex in vertex array
-        ("v2", c_ulong),                                                ## [in] third index pointing to the third quad vertex in vertex array
-        ("v3", c_ulong)                                                 ## [in] fourth index pointing to the fourth quad vertex in vertex array
+        ("v0", c_uint32),                                               ## [in] first index pointing to the first quad vertex in vertex array
+        ("v1", c_uint32),                                               ## [in] second index pointing to the second quad vertex in vertex array
+        ("v2", c_uint32),                                               ## [in] third index pointing to the third quad vertex in vertex array
+        ("v3", c_uint32)                                                ## [in] fourth index pointing to the fourth quad vertex in vertex array
     ]
 
 ###############################################################################
@@ -5180,15 +5407,15 @@ class ze_rtas_builder_triangles_geometry_info_ext_t(Structure):
         ("geometryFlags", ze_rtas_builder_packed_geometry_ext_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_ext_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
         ("triangleFormat", ze_rtas_builder_packed_input_data_format_ext_t), ## [in] format of triangle buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_TRIANGLE_INDICES_UINT32
         ("vertexFormat", ze_rtas_builder_packed_input_data_format_ext_t),   ## [in] format of vertex buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3
-        ("triangleCount", c_ulong),                                     ## [in] number of triangles in triangle buffer
-        ("vertexCount", c_ulong),                                       ## [in] number of vertices in vertex buffer
-        ("triangleStride", c_ulong),                                    ## [in] stride (in bytes) of triangles in triangle buffer
-        ("vertexStride", c_ulong),                                      ## [in] stride (in bytes) of vertices in vertex buffer
+        ("triangleCount", c_uint32),                                    ## [in] number of triangles in triangle buffer
+        ("vertexCount", c_uint32),                                      ## [in] number of vertices in vertex buffer
+        ("triangleStride", c_uint32),                                   ## [in] stride (in bytes) of triangles in triangle buffer
+        ("vertexStride", c_uint32),                                     ## [in] stride (in bytes) of vertices in vertex buffer
         ("pTriangleBuffer", c_void_p),                                  ## [in] pointer to array of triangle indices in specified format
         ("pVertexBuffer", c_void_p)                                     ## [in] pointer to array of triangle vertices in specified format
     ]
@@ -5215,15 +5442,15 @@ class ze_rtas_builder_quads_geometry_info_ext_t(Structure):
         ("geometryFlags", ze_rtas_builder_packed_geometry_ext_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_ext_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
         ("quadFormat", ze_rtas_builder_packed_input_data_format_ext_t), ## [in] format of quad buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_QUAD_INDICES_UINT32
         ("vertexFormat", ze_rtas_builder_packed_input_data_format_ext_t),   ## [in] format of vertex buffer data, must be
                                                                         ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3
-        ("quadCount", c_ulong),                                         ## [in] number of quads in quad buffer
-        ("vertexCount", c_ulong),                                       ## [in] number of vertices in vertex buffer
-        ("quadStride", c_ulong),                                        ## [in] stride (in bytes) of quads in quad buffer
-        ("vertexStride", c_ulong),                                      ## [in] stride (in bytes) of vertices in vertex buffer
+        ("quadCount", c_uint32),                                        ## [in] number of quads in quad buffer
+        ("vertexCount", c_uint32),                                      ## [in] number of vertices in vertex buffer
+        ("quadStride", c_uint32),                                       ## [in] stride (in bytes) of quads in quad buffer
+        ("vertexStride", c_uint32),                                     ## [in] stride (in bytes) of vertices in vertex buffer
         ("pQuadBuffer", c_void_p),                                      ## [in] pointer to array of quad indices in specified format
         ("pVertexBuffer", c_void_p)                                     ## [in] pointer to array of quad vertices in specified format
     ]
@@ -5235,8 +5462,8 @@ class ze_rtas_geometry_aabbs_ext_cb_params_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("primID", c_ulong),                                            ## [in] first primitive to return bounds for
-        ("primIDCount", c_ulong),                                       ## [in] number of primitives to return bounds for
+        ("primID", c_uint32),                                           ## [in] first primitive to return bounds for
+        ("primIDCount", c_uint32),                                      ## [in] number of primitives to return bounds for
         ("pGeomUserPtr", c_void_p),                                     ## [in] pointer provided through geometry descriptor
         ("pBuildUserPtr", c_void_p),                                    ## [in] pointer provided through ::zeRTASBuilderBuildExt function
         ("pBoundsOut", POINTER(ze_rtas_aabb_ext_t))                     ## [out] destination buffer to write AABB bounds to
@@ -5245,6 +5472,7 @@ class ze_rtas_geometry_aabbs_ext_cb_params_t(Structure):
 ###############################################################################
 ## @brief Callback function pointer type to return AABBs for a range of
 ##        procedural primitives
+ze_rtas_geometry_aabbs_cb_ext_t = CFUNCTYPE( None, POINTER(ze_rtas_geometry_aabbs_ext_cb_params_t) )
 
 ###############################################################################
 ## @brief Ray tracing acceleration structure builder procedural primitives
@@ -5267,9 +5495,9 @@ class ze_rtas_builder_procedural_geometry_info_ext_t(Structure):
         ("geometryFlags", ze_rtas_builder_packed_geometry_ext_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_ext_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
-        ("reserved", c_ubyte),                                          ## [in] reserved for future use
-        ("primCount", c_ulong),                                         ## [in] number of primitives in geometry
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
+        ("reserved", c_uint8),                                          ## [in] reserved for future use
+        ("primCount", c_uint32),                                        ## [in] number of primitives in geometry
         ("pfnGetBoundsCb", ze_rtas_geometry_aabbs_cb_ext_t),            ## [in] pointer to callback function to get the axis-aligned bounding-box
                                                                         ## for a range of primitives
         ("pGeomUserPtr", c_void_p)                                      ## [in] user data pointer passed to callback
@@ -5284,9 +5512,9 @@ class ze_rtas_builder_instance_geometry_info_ext_t(Structure):
         ("instanceFlags", ze_rtas_builder_packed_instance_ext_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_ext_flag_t
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
-        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
         ("transformFormat", ze_rtas_builder_packed_input_data_format_ext_t),## [in] format of the specified transformation
-        ("instanceUserID", c_ulong),                                    ## [in] user-specified identifier for the instance
+        ("instanceUserID", c_uint32),                                   ## [in] user-specified identifier for the instance
         ("pTransform", c_void_p),                                       ## [in] object-to-world instance transformation in specified format
         ("pBounds", POINTER(ze_rtas_aabb_ext_t)),                       ## [in] object-space axis-aligned bounding-box of the instanced
                                                                         ## acceleration structure
@@ -5304,9 +5532,9 @@ class ze_rtas_builder_build_op_ext_desc_t(Structure):
         ("buildQuality", ze_rtas_builder_build_quality_hint_ext_t),     ## [in] acceleration structure build quality hint
         ("buildFlags", ze_rtas_builder_build_op_ext_flags_t),           ## [in] 0 or some combination of ::ze_rtas_builder_build_op_ext_flag_t
                                                                         ## flags
-        ("ppGeometries", POINTER(ze_rtas_builder_geometry_info_ext_t*)),## [in][optional][range(0, `numGeometries`)] NULL or a valid array of
+        ("ppGeometries", POINTER(POINTER(ze_rtas_builder_geometry_info_ext_t))),## [in][optional][range(0, `numGeometries`)] NULL or a valid array of
                                                                         ## pointers to geometry infos
-        ("numGeometries", c_ulong)                                      ## [in] number of geometries in geometry infos array, can be zero when
+        ("numGeometries", c_uint32)                                     ## [in] number of geometries in geometry infos array, can be zero when
                                                                         ## `ppGeometries` is NULL
     ]
 
@@ -5333,21 +5561,21 @@ class ze_device_vector_width_properties_ext_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("vector_width_size", c_ulong),                                 ## [out] The associated vector width size supported by the device.
-        ("preferred_vector_width_char", c_ulong),                       ## [out] The preferred vector width size for char type supported by the device.
-        ("preferred_vector_width_short", c_ulong),                      ## [out] The preferred vector width size for short type supported by the device.
-        ("preferred_vector_width_int", c_ulong),                        ## [out] The preferred vector width size for int type supported by the device.
-        ("preferred_vector_width_long", c_ulong),                       ## [out] The preferred vector width size for long type supported by the device.
-        ("preferred_vector_width_float", c_ulong),                      ## [out] The preferred vector width size for float type supported by the device.
-        ("preferred_vector_width_double", c_ulong),                     ## [out] The preferred vector width size for double type supported by the device.
-        ("preferred_vector_width_half", c_ulong),                       ## [out] The preferred vector width size for half type supported by the device.
-        ("native_vector_width_char", c_ulong),                          ## [out] The native vector width size for char type supported by the device.
-        ("native_vector_width_short", c_ulong),                         ## [out] The native vector width size for short type supported by the device.
-        ("native_vector_width_int", c_ulong),                           ## [out] The native vector width size for int type supported by the device.
-        ("native_vector_width_long", c_ulong),                          ## [out] The native vector width size for long type supported by the device.
-        ("native_vector_width_float", c_ulong),                         ## [out] The native vector width size for float type supported by the device.
-        ("native_vector_width_double", c_ulong),                        ## [out] The native vector width size for double type supported by the device.
-        ("native_vector_width_half", c_ulong)                           ## [out] The native vector width size for half type supported by the device.
+        ("vector_width_size", c_uint32),                                ## [out] The associated vector width size supported by the device.
+        ("preferred_vector_width_char", c_uint32),                      ## [out] The preferred vector width size for char type supported by the device.
+        ("preferred_vector_width_short", c_uint32),                     ## [out] The preferred vector width size for short type supported by the device.
+        ("preferred_vector_width_int", c_uint32),                       ## [out] The preferred vector width size for int type supported by the device.
+        ("preferred_vector_width_long", c_uint32),                      ## [out] The preferred vector width size for long type supported by the device.
+        ("preferred_vector_width_float", c_uint32),                     ## [out] The preferred vector width size for float type supported by the device.
+        ("preferred_vector_width_double", c_uint32),                    ## [out] The preferred vector width size for double type supported by the device.
+        ("preferred_vector_width_half", c_uint32),                      ## [out] The preferred vector width size for half type supported by the device.
+        ("native_vector_width_char", c_uint32),                         ## [out] The native vector width size for char type supported by the device.
+        ("native_vector_width_short", c_uint32),                        ## [out] The native vector width size for short type supported by the device.
+        ("native_vector_width_int", c_uint32),                          ## [out] The native vector width size for int type supported by the device.
+        ("native_vector_width_long", c_uint32),                         ## [out] The native vector width size for long type supported by the device.
+        ("native_vector_width_float", c_uint32),                        ## [out] The native vector width size for float type supported by the device.
+        ("native_vector_width_double", c_uint32),                       ## [out] The native vector width size for double type supported by the device.
+        ("native_vector_width_half", c_uint32)                          ## [out] The native vector width size for half type supported by the device.
     ]
 
 ###############################################################################
@@ -5410,7 +5638,7 @@ class ze_external_memmap_sysmem_ext_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("pSystemMemory", c_void_p),                                    ## [in] system memory pointer to map; must be page-aligned.
-        ("size", c_ulonglong)                                           ## [in] size of the system memory to map; must be a multiple of the page
+        ("size", c_uint64)                                              ## [in] size of the system memory to map; must be a multiple of the page
                                                                         ## size.
     ]
 
@@ -5436,10 +5664,10 @@ class ze_kernel_allocation_exp_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("base", c_ulonglong),                                          ## [out] base address of the allocation
+        ("base", c_uint64),                                             ## [out] base address of the allocation
         ("size", c_size_t),                                             ## [out] size of allocation
         ("type", ze_memory_type_t),                                     ## [out] type of allocation
-        ("argIndex", c_ulong)                                           ## [out] kernel argument index for current allocation, -1 for driver
+        ("argIndex", c_uint32)                                          ## [out] kernel argument index for current allocation, -1 for driver
                                                                         ## internal (not kernel argument) allocations
     ]
 
@@ -5469,7 +5697,7 @@ class ze_device_usablemem_size_ext_properties_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("currUsableMemSize", c_ulonglong)                              ## [out] Returns the available usable memory at the device level. This is
+        ("currUsableMemSize", c_uint64)                                 ## [out] Returns the available usable memory at the device level. This is
                                                                         ## typically less than or equal to the available physical memory on the
                                                                         ## device. It is important to note that usable memory size reported is
                                                                         ## transient in nature and cannot be used to reliably guarantee success
@@ -5578,8 +5806,8 @@ class ze_record_replay_graph_ext_flags_v(IntEnum):
     SUBGRAPHS = ZE_BIT(2)                                                   ## Supports appending a subgraph into a graph
     APPEND_COMMANDLIST = ZE_BIT(3)                                          ## Supports appending a command list into a graph
     CB_EXTERNAL_IPC = ZE_BIT(4)                                             ## Supports waiting/signaling events that were created with both
-                                                                            ## ZEX_COUNTER_BASED_EVENT_FLAG_IPC and
-                                                                            ## ZEX_COUNTER_BASED_EVENT_FLAG_GRAPH_EXTERNAL
+                                                                            ## ZE_EVENT_COUNTER_BASED_FLAG_IPC and
+                                                                            ## ZE_EVENT_COUNTER_BASED_FLAG_GRAPH_EXTERNAL
 
 class ze_record_replay_graph_ext_flags_t(c_int):
     def __str__(self):
@@ -5607,6 +5835,8 @@ class ze_executable_graph_handle_t(c_void_p):
 class ze_record_replay_graph_ext_dump_mode_v(IntEnum):
     DETAILED = 0x0                                                          ## detailed mode (default)
     SIMPLE = 0x1                                                            ## simple mode
+    DETAILED_WITH_EVENT_NODES = 0x2                                         ## detailed mode with all event operations dumped as graph nodes
+    SIMPLE_WITH_EVENT_NODES = 0x3                                           ## simple mode with all event operations dumped as graph nodes
 
 class ze_record_replay_graph_ext_dump_mode_t(c_int):
     def __str__(self):
@@ -5628,9 +5858,11 @@ class ze_record_replay_graph_ext_dump_desc_t(Structure):
 
 ###############################################################################
 ## @brief Callback function pointer type invoked when a graph is destroyed
+zex_mem_graph_free_callback_fn_t = CFUNCTYPE( None, c_void_p )
 
 ###############################################################################
 ## @brief Host Function callback type
+ze_host_function_callback_t = CFUNCTYPE( None, c_void_p )
 
 ###############################################################################
 ## @brief Virtual Memory Read-Only Properties Extension Name
@@ -5718,7 +5950,7 @@ class ze_device_compiler_info_t(c_int):
 ## @brief Name and version entry returned for the OpenCL C compiler-info lists
 class ze_compiler_name_version_t(Structure):
     _fields_ = [
-        ("version", c_ulong),                                           ## [out] packed version of the entry
+        ("version", c_uint32),                                          ## [out] packed version of the entry
         ("name", c_char * ZE_MAX_EXTENSION_NAME)                        ## [out] null-terminated name
     ]
 
@@ -5906,33 +6138,33 @@ class ze_device_npu_properties_ext_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("tileCount", c_ulong),                                         ## [out] Total number of NCE tiles enabled on the device. Equivalent to
+        ("tileCount", c_uint32),                                        ## [out] Total number of NCE tiles enabled on the device. Equivalent to
                                                                         ## popcount(tileEnableMask). Supersedes the `numSlices` member of
                                                                         ## ::ze_device_properties_t for NPU devices.
-        ("tileEnableMask", c_ulong),                                    ## [out] Bitmask of enabled NCE tiles. popcount(tileEnableMask) ==
+        ("tileEnableMask", c_uint32),                                   ## [out] Bitmask of enabled NCE tiles. popcount(tileEnableMask) ==
                                                                         ## tileCount.
-        ("totalShaveCount", c_ulong),                                   ## [out] Total number of SHAVE (VLIW) vector processors across all tiles.
+        ("totalShaveCount", c_uint32),                                  ## [out] Total number of SHAVE (VLIW) vector processors across all tiles.
                                                                         ## Supersedes the `numEUsPerSubslice` member of ::ze_device_properties_t
                                                                         ## for NPU devices.
-        ("int8x8MacsPerTile", c_ulong),                                 ## [out] Multiply-accumulate (MAC) units per tile at INT8 x INT8
+        ("int8x8MacsPerTile", c_uint32),                                ## [out] Multiply-accumulate (MAC) units per tile at INT8 x INT8
                                                                         ## precision (baseline). Throughput at other precisions: 2x for INT8 x
                                                                         ## INT4, 0.5x for FP16 x FP16, 0.5x for INT16 x INT8, 1x for INT16 x
                                                                         ## INT4. Supersedes half the `physicalEUSimdWidth` member of
                                                                         ## ::ze_device_properties_t for NPU devices.
-        ("totalDpuMacs", c_ulong),                                      ## [out] Total DPU MAC units across the device. Derived as tileCount *
+        ("totalDpuMacs", c_uint32),                                     ## [out] Total DPU MAC units across the device. Derived as tileCount *
                                                                         ## int8x8MacsPerTile.
-        ("numComputeEngines", c_ulong),                                 ## [out] Number of compute engines on the device.
-        ("numCopyEngines", c_ulong),                                    ## [out] Number of copy (DMA) engines on the device.
-        ("dpuClockRateHz", c_ulonglong),                                ## [out] DPU compute clock rate, in Hz. Supersedes the `coreClockRate`
+        ("numComputeEngines", c_uint32),                                ## [out] Number of compute engines on the device.
+        ("numCopyEngines", c_uint32),                                   ## [out] Number of copy (DMA) engines on the device.
+        ("dpuClockRateHz", c_uint64),                                   ## [out] DPU compute clock rate, in Hz. Supersedes the `coreClockRate`
                                                                         ## member of ::ze_device_properties_t for NPU devices.
-        ("timestampFreqHz", c_ulonglong),                               ## [out] Device timestamp counter frequency, in Hz. Used to convert raw
+        ("timestampFreqHz", c_uint64),                                  ## [out] Device timestamp counter frequency, in Hz. Used to convert raw
                                                                         ## device tick counts returned by ::zeDeviceGetGlobalTimestamps and
                                                                         ## ::zeCommandListAppendWriteGlobalTimestamp into time durations.
-        ("nnSramSizeBytes", c_ulonglong),                               ## [out] On-chip CMX SRAM size for neural network workloads, in bytes.
-        ("compilerVersion", c_ulong),                                   ## [out] Version of the NPU compiler bundled with this driver, using
+        ("nnSramSizeBytes", c_uint64),                                  ## [out] On-chip CMX SRAM size for neural network workloads, in bytes.
+        ("compilerVersion", c_uint32),                                  ## [out] Version of the NPU compiler bundled with this driver, using
                                                                         ## ::ZE_MAKE_VERSION. Use ::ZE_MAJOR_VERSION and ::ZE_MINOR_VERSION to
                                                                         ## extract the major and minor components.
-        ("maxOVOpsetVersionSupported", c_ulong)                         ## [out] Maximum OpenVINO opset version supported by the bundled NPU
+        ("maxOVOpsetVersionSupported", c_uint32)                        ## [out] Maximum OpenVINO opset version supported by the bundled NPU
                                                                         ## compiler.
     ]
 
@@ -5971,18 +6203,20 @@ class ze_context_power_saving_hint_ext_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("hint", c_ulong)                                               ## [in] power saving hint (default value = 0). This is value from [0,100]
+        ("hint", c_uint32)                                              ## [in] power saving hint (default value = 0). This is value from [0,100]
                                                                         ## and can use pre-defined settings from ::ze_power_saving_hint_ext_type_t.
     ]
 
 ###############################################################################
-## @brief Power Saving Hint Extension Name. @deprecated since 1.18: Use
-##        ::ZE_CONTEXT_POWER_SAVING_HINT_EXT_NAME instead.
+## @brief [DEPRECATED since 1.18] Power Saving Hint Extension Name
+## 
+## @deprecated Since 1.18. Use ::ZE_CONTEXT_POWER_SAVING_HINT_EXT_NAME instead.
 ZE_CONTEXT_POWER_SAVING_HINT_EXP_NAME = "ZE_experimental_power_saving_hint"
 
 ###############################################################################
-## @brief Power Saving Hint Extension Version(s). @deprecated since 1.18: Use
-##        ::ze_context_power_saving_hint_ext_desc_t instead.
+## @brief [DEPRECATED since 1.18] Power Saving Hint Extension Version(s)
+## 
+## @deprecated Since 1.18. Use ::ZE_CONTEXT_POWER_SAVING_HINT_EXT_NAME instead.
 class ze_power_saving_hint_exp_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
     CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
@@ -5993,8 +6227,9 @@ class ze_power_saving_hint_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Supported device types. @deprecated since 1.18: Use
-##        ::ze_power_saving_hint_ext_type_t instead.
+## @brief [DEPRECATED since 1.18] Supported device types
+## 
+## @deprecated Since 1.18. Use ::ze_power_saving_hint_ext_type_t instead.
 class ze_power_saving_hint_type_v(IntEnum):
     MIN = 0                                                                 ## Minimum power savings. The device will make no attempt to save power
                                                                             ## while executing work submitted to this context.
@@ -6007,14 +6242,16 @@ class ze_power_saving_hint_type_t(c_int):
 
 
 ###############################################################################
-## @brief Extended context descriptor containing power saving hint. @deprecated
-##        since 1.18: Use ::ze_context_power_saving_hint_ext_desc_t instead.
+## @brief [DEPRECATED since 1.18] Extended context descriptor containing power
+##        saving hint
+## 
+## @deprecated Since 1.18. Use ::ze_context_power_saving_hint_ext_desc_t instead.
 class ze_context_power_saving_hint_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("hint", c_ulong)                                               ## [in] power saving hint (default value = 0). This is value from [0,100]
+        ("hint", c_uint32)                                              ## [in] power saving hint (default value = 0). This is value from [0,100]
                                                                         ## and can use pre-defined settings from ::ze_power_saving_hint_type_t.
     ]
 
@@ -6102,6 +6339,331 @@ class ze_command_queue_qos_ext_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Command Visit Extension Name
+ZE_COMMAND_VISIT_EXT_NAME = "ZE_extension_command_visit"
+
+###############################################################################
+## @brief Command Visit Extension version(s)
+class ze_command_visit_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_command_visit_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_command_visit_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Calling convention for visit extension callbacks
+# ZE_VISITOR_CCONV not required for python
+
+###############################################################################
+## @brief Callback function pointer type for hooks executed before and after the
+##        default operation during command visit.
+ze_command_visit_ext_default_op_callback_t = CFUNCTYPE( None, c_char_p, c_void_p, POINTER(c_uint32), POINTER(POINTER(ze_event_handle_t)), POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Defines specialized command visit behavior for a specific Level Zero
+##        API function.
+## 
+## @details
+##     - This structure may be passed to ::zeCommandListVisitExt or
+##       ::zeGraphVisitExt via the `pNext` member of
+##       ::ze_command_visit_ext_desc_t.
+##     - Concrete visitors for multiple API functions may be provided by
+##       chaining multiple instances of this structure.
+##     - Each instance in the chain must specify a unique `fname`.
+class ze_concrete_visitor_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("fname", c_char_p),                                            ## [in] Level Zero API function name for which callback behavior is
+                                                                        ## defined
+        ("callback", c_void_p)                                          ## [in] callback function pointer; must have the same return type and
+                                                                        ## parameter list as the visited API function named by `fname`, followed
+                                                                        ## by one additional trailing `void*` parameter that receives `userData`
+                                                                        ## from ::ze_command_visit_ext_desc_t, and must use the
+                                                                        ## ::ZE_VISITOR_CCONV calling convention
+    ]
+
+###############################################################################
+## @brief Defines default operation for command visit.
+class ze_command_visit_ext_default_op_v(IntEnum):
+    IGNORE = 0                                                              ## ignore command if concrete callback is not provided
+    REAPPEND = 1                                                            ## re-append command if concrete callback is not provided
+
+class ze_command_visit_ext_default_op_t(c_int):
+    def __str__(self):
+        return str(ze_command_visit_ext_default_op_v(self.value))
+
+
+###############################################################################
+## @brief Defines behavior of command visit.
+class ze_command_visit_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("userData", c_void_p),                                         ## [in][optional] user-defined data passed to callbacks
+        ("hReappendTargetCommandList", ze_command_list_handle_t),       ## [in][optional] target command list handle used for default re-append
+                                                                        ## operation; must not be null if `defaultOp` is
+                                                                        ## ::ZE_COMMAND_VISIT_EXT_DEFAULT_OP_REAPPEND
+        ("beforeDefaultOpClb", ze_command_visit_ext_default_op_callback_t), ## [in][optional] callback invoked before `defaultOp` for each command
+                                                                        ## that has no concrete visitor
+        ("defaultOp", ze_command_visit_ext_default_op_t),               ## [in] default operation to execute for a given command when no concrete
+                                                                        ## callback is provided for it (via ::ze_concrete_visitor_ext_desc_t)
+        ("afterDefaultOpClb", ze_command_visit_ext_default_op_callback_t)   ## [in][optional] callback invoked after `defaultOp` for each command
+                                                                        ## that has no concrete visitor
+    ]
+
+###############################################################################
+## @brief Init Driver Properties Extension Name
+ZE_INIT_DRIVER_PROPERTIES_EXT_NAME = "ZE_extension_init_driver_properties"
+
+###############################################################################
+## @brief Init Driver Properties Extension Version(s)
+class ze_init_driver_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_init_driver_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_init_driver_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Supported init-time driver property flags
+class ze_init_driver_properties_ext_flags_v(IntEnum):
+    OPTIMIZE_MEMORY = ZE_BIT(0)                                             ## Reduce memory footprint for the driver(s) being initialized; may trade
+                                                                            ## performance for lower memory usage. mirrors
+                                                                            ## ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY, applied driver-wide at
+                                                                            ## initialization instead of per-context. mutually exclusive with
+                                                                            ## OPTIMIZE_PERFORMANCE. if neither this nor OPTIMIZE_PERFORMANCE is set,
+                                                                            ## the memory/performance trade-off is driver implementation specific
+    OPTIMIZE_PERFORMANCE = ZE_BIT(1)                                        ## Explicitly optimize for performance for the driver(s) being
+                                                                            ## initialized; may trade memory footprint for higher performance.
+                                                                            ## mirrors ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE, applied driver-wide at
+                                                                            ## initialization instead of per-context. mutually exclusive with
+                                                                            ## OPTIMIZE_MEMORY. if neither this nor OPTIMIZE_MEMORY is set, the
+                                                                            ## memory/performance trade-off is driver implementation specific
+
+class ze_init_driver_properties_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Init Driver Properties descriptor
+## 
+## @details
+##     - This structure may be passed to ::zeInitDrivers, via the `pNext`
+##       member of ::ze_init_driver_type_desc_t, to declare driver-wide
+##       properties for the driver(s) being initialized. It is a
+##       general-purpose extension point; additional flags may be added to
+##       ::ze_init_driver_properties_ext_flags_t in the future without
+##       requiring a new structure or a new ::ze_structure_type_t value.
+##     - OPTIMIZE_MEMORY requests that the driver(s) being initialized reduce
+##       their memory footprint, mirroring ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY
+##       but applied at driver initialization instead of per-context. When set,
+##       it establishes the default memory-optimization behavior for the
+##       driver(s) initialized by this call; contexts subsequently created via
+##       ::zeContextCreate or ::zeContextCreateEx without an explicit
+##       ::ZE_CONTEXT_FLAG_OPTIMIZE_MEMORY or
+##       ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE flag inherit this default. A
+##       context that explicitly sets its own ::ze_context_flags_t flags
+##       overrides the driver-level default for that context.
+##     - OPTIMIZE_PERFORMANCE explicitly requests that the driver(s) being
+##       initialized optimize for performance, mirroring
+##       ::ZE_CONTEXT_FLAG_OPTIMIZE_PERFORMANCE but applied at driver
+##       initialization instead of per-context. When set, it establishes the
+##       default performance-optimization behavior for the driver(s)
+##       initialized by this call in the same way that setting OPTIMIZE_MEMORY
+##       establishes the opposite default. OPTIMIZE_MEMORY and
+##       OPTIMIZE_PERFORMANCE are mutually exclusive; if both are set,
+##       ::zeInitDrivers returns ::ZE_RESULT_ERROR_INVALID_ARGUMENT.
+##     - If neither OPTIMIZE_MEMORY nor OPTIMIZE_PERFORMANCE is set, the
+##       memory/performance trade-off for the driver(s) initialized by this
+##       call is driver implementation specific.
+##     - The default context returned by ::zeDriverGetDefaultContext is created
+##       by the driver itself, not via ::zeContextCreate or
+##       ::zeContextCreateEx, so the application cannot supply
+##       ::ze_context_flags_t for it. The default context follows the
+##       driver-level default established by this structure, if one was
+##       established; otherwise its memory/performance trade-off is driver
+##       implementation specific.
+##     - If this structure is not provided, the driver must assume no
+##       driver-wide properties were requested and fall back to its standard
+##       default behavior for each unset flag.
+##     - This structure has no effect on drivers already initialized by a prior
+##       call to ::zeInitDrivers or ::zeInit; those drivers keep whatever
+##       behavior was in effect when they were first initialized.
+class ze_init_driver_properties_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_init_driver_properties_ext_flags_t)                ## [in] driver property flags.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_init_driver_properties_ext_flag_t.
+    ]
+
+###############################################################################
+## @brief Mutable Command List Core Extension Name
+ZE_MUTABLE_COMMAND_LIST_EXT_NAME = "ZE_extension_mutable_command_list"
+
+###############################################################################
+## @brief Mutable Command List Extension Version(s)
+class ze_mutable_command_list_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_mutable_command_list_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_mutable_command_list_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Mutable command flags
+class ze_mutable_command_ext_flags_v(IntEnum):
+    KERNEL_ARGUMENTS = ZE_BIT(0)                                            ## kernel arguments
+    GROUP_COUNT = ZE_BIT(1)                                                 ## kernel group count
+    GROUP_SIZE = ZE_BIT(2)                                                  ## kernel group size
+    GLOBAL_OFFSET = ZE_BIT(3)                                               ## kernel global offset
+    SIGNAL_EVENT = ZE_BIT(4)                                                ## command signal event
+    WAIT_EVENTS = ZE_BIT(5)                                                 ## command wait events
+    KERNEL_INSTRUCTION = ZE_BIT(6)                                          ## command kernel
+    GRAPH_ARGUMENTS = ZE_BIT(7)                                             ## graph arguments
+
+class ze_mutable_command_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Mutable command identifier descriptor
+class ze_mutable_command_id_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_mutable_command_ext_flags_t)                       ## [in] mutable command flags.
+                                                                        ##  - must be 0 (default, equivalent to setting all flags bar kernel
+                                                                        ## instruction), or a valid combination of ::ze_mutable_command_ext_flag_t
+                                                                        ##  - in order to include kernel instruction mutation,
+                                                                        ## ::ZE_MUTABLE_COMMAND_EXT_FLAG_KERNEL_INSTRUCTION must be explicitly included
+    ]
+
+###############################################################################
+## @brief Mutable command list flags
+class ze_mutable_command_list_ext_flags_v(IntEnum):
+    RESERVED = ZE_BIT(0)                                                    ## reserved
+
+class ze_mutable_command_list_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Mutable command list properties
+class ze_mutable_command_list_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("mutableCommandListFlags", ze_mutable_command_list_ext_flags_t),   ## [out] mutable command list flags
+        ("mutableCommandFlags", ze_mutable_command_ext_flags_t)         ## [out] mutable command flags
+    ]
+
+###############################################################################
+## @brief Mutable command list descriptor
+class ze_mutable_command_list_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_mutable_command_list_ext_flags_t)                  ## [in] mutable command list flags.
+                                                                        ##  - must be 0 (default) or a valid combination of ::ze_mutable_command_list_ext_flag_t
+    ]
+
+###############################################################################
+## @brief Mutable commands descriptor
+class ze_mutable_commands_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", c_uint32)                                             ## [in] must be 0, this field is reserved for future use
+    ]
+
+###############################################################################
+## @brief Mutable kernel argument descriptor
+class ze_mutable_kernel_argument_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("argIndex", c_uint32),                                         ## [in] kernel argument index
+        ("argSize", c_size_t),                                          ## [in] kernel argument size
+        ("pArgValue", c_void_p)                                         ## [in] pointer to kernel argument value
+    ]
+
+###############################################################################
+## @brief Mutable kernel group count descriptor
+class ze_mutable_group_count_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("pGroupCount", POINTER(ze_group_count_t))                      ## [in] pointer to group count
+    ]
+
+###############################################################################
+## @brief Mutable kernel group size descriptor
+class ze_mutable_group_size_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("groupSizeX", c_uint32),                                       ## [in] group size for X dimension to use for the kernel
+        ("groupSizeY", c_uint32),                                       ## [in] group size for Y dimension to use for the kernel
+        ("groupSizeZ", c_uint32)                                        ## [in] group size for Z dimension to use for the kernel
+    ]
+
+###############################################################################
+## @brief Mutable kernel global offset descriptor
+class ze_mutable_global_offset_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("offsetX", c_uint32),                                          ## [in] global offset for X dimension to use for this kernel
+        ("offsetY", c_uint32),                                          ## [in] global offset for Y dimension to use for this kernel
+        ("offsetZ", c_uint32)                                           ## [in] global offset for Z dimension to use for this kernel
+    ]
+
+###############################################################################
+## @brief Mutable graph argument descriptor
+class ze_mutable_graph_argument_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_uint64),                                        ## [in] command identifier
+        ("argIndex", c_uint32),                                         ## [in] graph argument index
+        ("pArgValue", c_void_p)                                         ## [in] pointer to graph argument value
+    ]
+
+###############################################################################
+## @brief Tracing callback tables are not generated for python; this is opaque
+##        so the tools API can alias it.
+class ze_callbacks_t(Structure):
+    pass
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -6128,9 +6690,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeRTASBuilderCommandListAppendCopyExt
 if __use_win_types:
-    _zeRTASBuilderCommandListAppendCopyExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeRTASBuilderCommandListAppendCopyExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeRTASBuilderCommandListAppendCopyExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeRTASBuilderCommandListAppendCopyExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeRTASBuilderDestroyExt
@@ -6278,9 +6840,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeInitDrivers
 if __use_win_types:
-    _zeInitDrivers_t = WINFUNCTYPE( ze_result_t, POINTER(c_ulong), POINTER(ze_driver_handle_t), POINTER(ze_init_driver_type_desc_t) )
+    _zeInitDrivers_t = WINFUNCTYPE( ze_result_t, POINTER(c_uint32), POINTER(ze_driver_handle_t), POINTER(ze_init_driver_type_desc_t) )
 else:
-    _zeInitDrivers_t = CFUNCTYPE( ze_result_t, POINTER(c_ulong), POINTER(ze_driver_handle_t), POINTER(ze_init_driver_type_desc_t) )
+    _zeInitDrivers_t = CFUNCTYPE( ze_result_t, POINTER(c_uint32), POINTER(ze_driver_handle_t), POINTER(ze_init_driver_type_desc_t) )
 
 
 ###############################################################################
@@ -6294,9 +6856,9 @@ class _ze_global_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeDriverGet
 if __use_win_types:
-    _zeDriverGet_t = WINFUNCTYPE( ze_result_t, POINTER(c_ulong), POINTER(ze_driver_handle_t) )
+    _zeDriverGet_t = WINFUNCTYPE( ze_result_t, POINTER(c_uint32), POINTER(ze_driver_handle_t) )
 else:
-    _zeDriverGet_t = CFUNCTYPE( ze_result_t, POINTER(c_ulong), POINTER(ze_driver_handle_t) )
+    _zeDriverGet_t = CFUNCTYPE( ze_result_t, POINTER(c_uint32), POINTER(ze_driver_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDriverGetApiVersion
@@ -6322,9 +6884,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeDriverGetExtensionProperties
 if __use_win_types:
-    _zeDriverGetExtensionProperties_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_driver_extension_properties_t) )
+    _zeDriverGetExtensionProperties_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_uint32), POINTER(ze_driver_extension_properties_t) )
 else:
-    _zeDriverGetExtensionProperties_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_driver_extension_properties_t) )
+    _zeDriverGetExtensionProperties_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_uint32), POINTER(ze_driver_extension_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDriverGetExtensionFunctionAddress
@@ -6388,16 +6950,16 @@ class _ze_driver_exp_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGet
 if __use_win_types:
-    _zeDeviceGet_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_device_handle_t) )
+    _zeDeviceGet_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_uint32), POINTER(ze_device_handle_t) )
 else:
-    _zeDeviceGet_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_device_handle_t) )
+    _zeDeviceGet_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_uint32), POINTER(ze_device_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetSubDevices
 if __use_win_types:
-    _zeDeviceGetSubDevices_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_handle_t) )
+    _zeDeviceGetSubDevices_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_handle_t) )
 else:
-    _zeDeviceGetSubDevices_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_handle_t) )
+    _zeDeviceGetSubDevices_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetProperties
@@ -6423,16 +6985,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetCommandQueueGroupProperties
 if __use_win_types:
-    _zeDeviceGetCommandQueueGroupProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_command_queue_group_properties_t) )
+    _zeDeviceGetCommandQueueGroupProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_command_queue_group_properties_t) )
 else:
-    _zeDeviceGetCommandQueueGroupProperties_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_command_queue_group_properties_t) )
+    _zeDeviceGetCommandQueueGroupProperties_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_command_queue_group_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetMemoryProperties
 if __use_win_types:
-    _zeDeviceGetMemoryProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_memory_properties_t) )
+    _zeDeviceGetMemoryProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_memory_properties_t) )
 else:
-    _zeDeviceGetMemoryProperties_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_memory_properties_t) )
+    _zeDeviceGetMemoryProperties_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_memory_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetMemoryAccessProperties
@@ -6444,9 +7006,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetCacheProperties
 if __use_win_types:
-    _zeDeviceGetCacheProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_cache_properties_t) )
+    _zeDeviceGetCacheProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_cache_properties_t) )
 else:
-    _zeDeviceGetCacheProperties_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_cache_properties_t) )
+    _zeDeviceGetCacheProperties_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_cache_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetImageProperties
@@ -6486,9 +7048,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetGlobalTimestamps
 if __use_win_types:
-    _zeDeviceGetGlobalTimestamps_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+    _zeDeviceGetGlobalTimestamps_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint64), POINTER(c_uint64) )
 else:
-    _zeDeviceGetGlobalTimestamps_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+    _zeDeviceGetGlobalTimestamps_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint64), POINTER(c_uint64) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceReserveCacheExt
@@ -6535,9 +7097,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetVectorWidthPropertiesExt
 if __use_win_types:
-    _zeDeviceGetVectorWidthPropertiesExt_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_vector_width_properties_ext_t) )
+    _zeDeviceGetVectorWidthPropertiesExt_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_vector_width_properties_ext_t) )
 else:
-    _zeDeviceGetVectorWidthPropertiesExt_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_vector_width_properties_ext_t) )
+    _zeDeviceGetVectorWidthPropertiesExt_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_device_vector_width_properties_ext_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceSynchronize
@@ -6549,9 +7111,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetAggregatedCopyOffloadIncrementValue
 if __use_win_types:
-    _zeDeviceGetAggregatedCopyOffloadIncrementValue_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong) )
+    _zeDeviceGetAggregatedCopyOffloadIncrementValue_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32) )
 else:
-    _zeDeviceGetAggregatedCopyOffloadIncrementValue_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong) )
+    _zeDeviceGetAggregatedCopyOffloadIncrementValue_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetRuntimeRequirements
@@ -6577,9 +7139,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetCounterBasedEventMaxValue
 if __use_win_types:
-    _zeDeviceGetCounterBasedEventMaxValue_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulonglong) )
+    _zeDeviceGetCounterBasedEventMaxValue_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint64) )
 else:
-    _zeDeviceGetCounterBasedEventMaxValue_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulonglong) )
+    _zeDeviceGetCounterBasedEventMaxValue_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_uint64) )
 
 ###############################################################################
 ## @brief Function-pointer for zeDeviceGetCompilerInfo
@@ -6587,6 +7149,13 @@ if __use_win_types:
     _zeDeviceGetCompilerInfo_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, ze_device_compiler_info_t, c_void_p, POINTER(c_size_t), c_void_p )
 else:
     _zeDeviceGetCompilerInfo_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, ze_device_compiler_info_t, c_void_p, POINTER(c_size_t), c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeDeviceGetCompilerInfoSupported
+if __use_win_types:
+    _zeDeviceGetCompilerInfoSupported_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, ze_device_compiler_info_t, c_void_p, c_void_p, c_char_p, POINTER(ze_bool_t) )
+else:
+    _zeDeviceGetCompilerInfoSupported_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, ze_device_compiler_info_t, c_void_p, c_void_p, c_char_p, POINTER(ze_bool_t) )
 
 
 ###############################################################################
@@ -6621,7 +7190,8 @@ class _ze_device_dditable_t(Structure):
         ("pfnGetRuntimeRequirementsKey", c_void_p),                     ## _zeDeviceGetRuntimeRequirementsKey_t
         ("pfnValidateRuntimeRequirements", c_void_p),                   ## _zeDeviceValidateRuntimeRequirements_t
         ("pfnGetCounterBasedEventMaxValue", c_void_p),                  ## _zeDeviceGetCounterBasedEventMaxValue_t
-        ("pfnGetCompilerInfo", c_void_p)                                ## _zeDeviceGetCompilerInfo_t
+        ("pfnGetCompilerInfo", c_void_p),                               ## _zeDeviceGetCompilerInfo_t
+        ("pfnGetCompilerInfoSupported", c_void_p)                       ## _zeDeviceGetCompilerInfoSupported_t
     ]
 
 ###############################################################################
@@ -6698,9 +7268,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeContextCreateEx
 if __use_win_types:
-    _zeContextCreateEx_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_context_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_context_handle_t) )
+    _zeContextCreateEx_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_context_desc_t), c_uint32, POINTER(ze_device_handle_t), POINTER(ze_context_handle_t) )
 else:
-    _zeContextCreateEx_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_context_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_context_handle_t) )
+    _zeContextCreateEx_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_context_desc_t), c_uint32, POINTER(ze_device_handle_t), POINTER(ze_context_handle_t) )
 
 
 ###############################################################################
@@ -6735,30 +7305,30 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandQueueExecuteCommandLists
 if __use_win_types:
-    _zeCommandQueueExecuteCommandLists_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_fence_handle_t )
+    _zeCommandQueueExecuteCommandLists_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint32, POINTER(ze_command_list_handle_t), ze_fence_handle_t )
 else:
-    _zeCommandQueueExecuteCommandLists_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_fence_handle_t )
+    _zeCommandQueueExecuteCommandLists_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint32, POINTER(ze_command_list_handle_t), ze_fence_handle_t )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandQueueSynchronize
 if __use_win_types:
-    _zeCommandQueueSynchronize_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_ulonglong )
+    _zeCommandQueueSynchronize_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint64 )
 else:
-    _zeCommandQueueSynchronize_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_ulonglong )
+    _zeCommandQueueSynchronize_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint64 )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandQueueGetOrdinal
 if __use_win_types:
-    _zeCommandQueueGetOrdinal_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+    _zeCommandQueueGetOrdinal_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_uint32) )
 else:
-    _zeCommandQueueGetOrdinal_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+    _zeCommandQueueGetOrdinal_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandQueueGetIndex
 if __use_win_types:
-    _zeCommandQueueGetIndex_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+    _zeCommandQueueGetIndex_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_uint32) )
 else:
-    _zeCommandQueueGetIndex_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+    _zeCommandQueueGetIndex_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandQueueGetFlags
@@ -6802,6 +7372,20 @@ if __use_win_types:
 else:
     _zeCommandQueueGetQosExt_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_command_queue_qos_ext_properties_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandQueueSignalExternalSemaphoreExt
+if __use_win_types:
+    _zeCommandQueueSignalExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandQueueSignalExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandQueueWaitExternalSemaphoreExt
+if __use_win_types:
+    _zeCommandQueueWaitExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandQueueWaitExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandQueue functions pointers
@@ -6818,7 +7402,9 @@ class _ze_command_queue_dditable_t(Structure):
         ("pfnGetPriority", c_void_p),                                   ## _zeCommandQueueGetPriority_t
         ("pfnSetPriorityExt", c_void_p),                                ## _zeCommandQueueSetPriorityExt_t
         ("pfnSetQosExt", c_void_p),                                     ## _zeCommandQueueSetQosExt_t
-        ("pfnGetQosExt", c_void_p)                                      ## _zeCommandQueueGetQosExt_t
+        ("pfnGetQosExt", c_void_p),                                     ## _zeCommandQueueGetQosExt_t
+        ("pfnSignalExternalSemaphoreExt", c_void_p),                    ## _zeCommandQueueSignalExternalSemaphoreExt_t
+        ("pfnWaitExternalSemaphoreExt", c_void_p)                       ## _zeCommandQueueWaitExternalSemaphoreExt_t
     ]
 
 ###############################################################################
@@ -6859,79 +7445,79 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendWriteGlobalTimestamp
 if __use_win_types:
-    _zeCommandListAppendWriteGlobalTimestamp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulonglong), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWriteGlobalTimestamp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_uint64), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendWriteGlobalTimestamp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulonglong), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWriteGlobalTimestamp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_uint64), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendBarrier
 if __use_win_types:
-    _zeCommandListAppendBarrier_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendBarrier_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendBarrier_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendBarrier_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryRangesBarrier
 if __use_win_types:
-    _zeCommandListAppendMemoryRangesBarrier_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_void_p), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryRangesBarrier_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(c_size_t), POINTER(c_void_p), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendMemoryRangesBarrier_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_void_p), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryRangesBarrier_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(c_size_t), POINTER(c_void_p), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryCopy
 if __use_win_types:
-    _zeCommandListAppendMemoryCopy_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopy_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendMemoryCopy_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopy_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryFill
 if __use_win_types:
-    _zeCommandListAppendMemoryFill_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryFill_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendMemoryFill_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryFill_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryCopyRegion
 if __use_win_types:
-    _zeCommandListAppendMemoryCopyRegion_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, POINTER(ze_copy_region_t), c_ulong, c_ulong, c_void_p, POINTER(ze_copy_region_t), c_ulong, c_ulong, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopyRegion_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, POINTER(ze_copy_region_t), c_uint32, c_uint32, c_void_p, POINTER(ze_copy_region_t), c_uint32, c_uint32, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendMemoryCopyRegion_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, POINTER(ze_copy_region_t), c_ulong, c_ulong, c_void_p, POINTER(ze_copy_region_t), c_ulong, c_ulong, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopyRegion_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, POINTER(ze_copy_region_t), c_uint32, c_uint32, c_void_p, POINTER(ze_copy_region_t), c_uint32, c_uint32, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryCopyFromContext
 if __use_win_types:
-    _zeCommandListAppendMemoryCopyFromContext_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_context_handle_t, c_void_p, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopyFromContext_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_context_handle_t, c_void_p, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendMemoryCopyFromContext_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_context_handle_t, c_void_p, c_size_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopyFromContext_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_context_handle_t, c_void_p, c_size_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendImageCopy
 if __use_win_types:
-    _zeCommandListAppendImageCopy_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopy_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendImageCopy_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopy_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendImageCopyRegion
 if __use_win_types:
-    _zeCommandListAppendImageCopyRegion_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, POINTER(ze_image_region_t), POINTER(ze_image_region_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyRegion_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, POINTER(ze_image_region_t), POINTER(ze_image_region_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendImageCopyRegion_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, POINTER(ze_image_region_t), POINTER(ze_image_region_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyRegion_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, ze_image_handle_t, POINTER(ze_image_region_t), POINTER(ze_image_region_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendImageCopyToMemory
 if __use_win_types:
-    _zeCommandListAppendImageCopyToMemory_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyToMemory_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendImageCopyToMemory_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyToMemory_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendImageCopyFromMemory
 if __use_win_types:
-    _zeCommandListAppendImageCopyFromMemory_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyFromMemory_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendImageCopyFromMemory_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyFromMemory_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryPrefetch
@@ -6957,9 +7543,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendWaitOnEvents
 if __use_win_types:
-    _zeCommandListAppendWaitOnEvents_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWaitOnEvents_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendWaitOnEvents_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWaitOnEvents_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendEventReset
@@ -6971,58 +7557,58 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendQueryKernelTimestamps
 if __use_win_types:
-    _zeCommandListAppendQueryKernelTimestamps_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_event_handle_t), c_void_p, POINTER(c_size_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendQueryKernelTimestamps_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_event_handle_t), c_void_p, POINTER(c_size_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendQueryKernelTimestamps_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_event_handle_t), c_void_p, POINTER(c_size_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendQueryKernelTimestamps_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_event_handle_t), c_void_p, POINTER(c_size_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendLaunchKernel
 if __use_win_types:
-    _zeCommandListAppendLaunchKernel_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernel_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendLaunchKernel_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernel_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendLaunchCooperativeKernel
 if __use_win_types:
-    _zeCommandListAppendLaunchCooperativeKernel_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchCooperativeKernel_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendLaunchCooperativeKernel_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchCooperativeKernel_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendLaunchKernelIndirect
 if __use_win_types:
-    _zeCommandListAppendLaunchKernelIndirect_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernelIndirect_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendLaunchKernelIndirect_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernelIndirect_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendLaunchMultipleKernelsIndirect
 if __use_win_types:
-    _zeCommandListAppendLaunchMultipleKernelsIndirect_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulong), POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchMultipleKernelsIndirect_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_kernel_handle_t), POINTER(c_uint32), POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendLaunchMultipleKernelsIndirect_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulong), POINTER(ze_group_count_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchMultipleKernelsIndirect_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_kernel_handle_t), POINTER(c_uint32), POINTER(ze_group_count_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendImageCopyToMemoryExt
 if __use_win_types:
-    _zeCommandListAppendImageCopyToMemoryExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), c_ulong, c_ulong, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyToMemoryExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), c_uint32, c_uint32, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendImageCopyToMemoryExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), c_ulong, c_ulong, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyToMemoryExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_image_handle_t, POINTER(ze_image_region_t), c_uint32, c_uint32, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendImageCopyFromMemoryExt
 if __use_win_types:
-    _zeCommandListAppendImageCopyFromMemoryExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), c_ulong, c_ulong, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyFromMemoryExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), c_uint32, c_uint32, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendImageCopyFromMemoryExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), c_ulong, c_ulong, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendImageCopyFromMemoryExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), c_uint32, c_uint32, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListHostSynchronize
 if __use_win_types:
-    _zeCommandListHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong )
+    _zeCommandListHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64 )
 else:
-    _zeCommandListHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong )
+    _zeCommandListHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64 )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListGetDeviceHandle
@@ -7041,16 +7627,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListGetOrdinal
 if __use_win_types:
-    _zeCommandListGetOrdinal_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+    _zeCommandListGetOrdinal_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_uint32) )
 else:
-    _zeCommandListGetOrdinal_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+    _zeCommandListGetOrdinal_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListImmediateGetIndex
 if __use_win_types:
-    _zeCommandListImmediateGetIndex_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+    _zeCommandListImmediateGetIndex_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_uint32) )
 else:
-    _zeCommandListImmediateGetIndex_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+    _zeCommandListImmediateGetIndex_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListIsImmediate
@@ -7062,51 +7648,51 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendSignalExternalSemaphoreExt
 if __use_win_types:
-    _zeCommandListAppendSignalExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendSignalExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendSignalExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendSignalExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendWaitExternalSemaphoreExt
 if __use_win_types:
-    _zeCommandListAppendWaitExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWaitExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendWaitExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWaitExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendLaunchKernelWithParameters
 if __use_win_types:
-    _zeCommandListAppendLaunchKernelWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernelWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendLaunchKernelWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernelWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendLaunchKernelWithArguments
 if __use_win_types:
-    _zeCommandListAppendLaunchKernelWithArguments_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, ze_group_count_t, ze_group_c_size_t, **, *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernelWithArguments_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, ze_group_count_t, ze_group_size_t, POINTER(c_void_p), c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendLaunchKernelWithArguments_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, ze_group_count_t, ze_group_c_size_t, **, *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendLaunchKernelWithArguments_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, ze_group_count_t, ze_group_size_t, POINTER(c_void_p), c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryCopyWithParameters
 if __use_win_types:
-    _zeCommandListAppendMemoryCopyWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopyWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendMemoryCopyWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryCopyWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendMemoryFillWithParameters
 if __use_win_types:
-    _zeCommandListAppendMemoryFillWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryFillWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendMemoryFillWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendMemoryFillWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_void_p, c_size_t, c_size_t, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListImmediateAppendCommandListsWithParameters
 if __use_win_types:
-    _zeCommandListImmediateAppendCommandListsWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListImmediateAppendCommandListsWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_command_list_handle_t), c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListImmediateAppendCommandListsWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListImmediateAppendCommandListsWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_command_list_handle_t), c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListGetFlags
@@ -7174,30 +7760,86 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendGraphExt
 if __use_win_types:
-    _zeCommandListAppendGraphExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_executable_graph_handle_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendGraphExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_executable_graph_handle_t, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendGraphExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_executable_graph_handle_t, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendGraphExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_executable_graph_handle_t, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendHostFunction
 if __use_win_types:
-    _zeCommandListAppendHostFunction_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_host_function_callback_t, c_void_p, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendHostFunction_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_host_function_callback_t, c_void_p, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendHostFunction_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_host_function_callback_t, c_void_p, c_void_p, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendHostFunction_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_host_function_callback_t, c_void_p, c_void_p, ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendSignalEventWithParameters
 if __use_win_types:
-    _zeCommandListAppendSignalEventWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, *, ze_event_handle_t )
+    _zeCommandListAppendSignalEventWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_event_handle_t )
 else:
-    _zeCommandListAppendSignalEventWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, *, ze_event_handle_t )
+    _zeCommandListAppendSignalEventWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, ze_event_handle_t )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListAppendWaitOnEventsWithParameters
 if __use_win_types:
-    _zeCommandListAppendWaitOnEventsWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, *, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWaitOnEventsWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListAppendWaitOnEventsWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, *, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListAppendWaitOnEventsWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_void_p, c_uint32, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListVisitExt
+if __use_win_types:
+    _zeCommandListVisitExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_visit_ext_desc_t) )
+else:
+    _zeCommandListVisitExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_visit_ext_desc_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListGetNextCommandIdExt
+if __use_win_types:
+    _zeCommandListGetNextCommandIdExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_ext_desc_t), POINTER(c_uint64) )
+else:
+    _zeCommandListGetNextCommandIdExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_ext_desc_t), POINTER(c_uint64) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExt
+if __use_win_types:
+    _zeCommandListGetNextCommandIdWithKernelsExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_ext_desc_t), c_uint32, POINTER(ze_kernel_handle_t), POINTER(c_uint64) )
+else:
+    _zeCommandListGetNextCommandIdWithKernelsExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_ext_desc_t), c_uint32, POINTER(ze_kernel_handle_t), POINTER(c_uint64) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandsExt
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandsExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_ext_desc_t) )
+else:
+    _zeCommandListUpdateMutableCommandsExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_ext_desc_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListIsMutableExt
+if __use_win_types:
+    _zeCommandListIsMutableExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_bool_t) )
+else:
+    _zeCommandListIsMutableExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_bool_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExt
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandSignalEventExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, ze_event_handle_t )
+else:
+    _zeCommandListUpdateMutableCommandSignalEventExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, ze_event_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandWaitEventsExt
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandWaitEventsExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, c_uint32, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListUpdateMutableCommandWaitEventsExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, c_uint32, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExt
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandKernelsExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(c_uint64), POINTER(ze_kernel_handle_t) )
+else:
+    _zeCommandListUpdateMutableCommandKernelsExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(c_uint64), POINTER(ze_kernel_handle_t) )
 
 
 ###############################################################################
@@ -7257,7 +7899,15 @@ class _ze_command_list_dditable_t(Structure):
         ("pfnAppendGraphExt", c_void_p),                                ## _zeCommandListAppendGraphExt_t
         ("pfnAppendHostFunction", c_void_p),                            ## _zeCommandListAppendHostFunction_t
         ("pfnAppendSignalEventWithParameters", c_void_p),               ## _zeCommandListAppendSignalEventWithParameters_t
-        ("pfnAppendWaitOnEventsWithParameters", c_void_p)               ## _zeCommandListAppendWaitOnEventsWithParameters_t
+        ("pfnAppendWaitOnEventsWithParameters", c_void_p),              ## _zeCommandListAppendWaitOnEventsWithParameters_t
+        ("pfnVisitExt", c_void_p),                                      ## _zeCommandListVisitExt_t
+        ("pfnGetNextCommandIdExt", c_void_p),                           ## _zeCommandListGetNextCommandIdExt_t
+        ("pfnGetNextCommandIdWithKernelsExt", c_void_p),                ## _zeCommandListGetNextCommandIdWithKernelsExt_t
+        ("pfnUpdateMutableCommandsExt", c_void_p),                      ## _zeCommandListUpdateMutableCommandsExt_t
+        ("pfnIsMutableExt", c_void_p),                                  ## _zeCommandListIsMutableExt_t
+        ("pfnUpdateMutableCommandSignalEventExt", c_void_p),            ## _zeCommandListUpdateMutableCommandSignalEventExt_t
+        ("pfnUpdateMutableCommandWaitEventsExt", c_void_p),             ## _zeCommandListUpdateMutableCommandWaitEventsExt_t
+        ("pfnUpdateMutableCommandKernelsExt", c_void_p)                 ## _zeCommandListUpdateMutableCommandKernelsExt_t
     ]
 
 ###############################################################################
@@ -7270,16 +7920,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListImmediateAppendCommandListsExp
 if __use_win_types:
-    _zeCommandListImmediateAppendCommandListsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListImmediateAppendCommandListsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListImmediateAppendCommandListsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListImmediateAppendCommandListsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListGetNextCommandIdExp
 if __use_win_types:
-    _zeCommandListGetNextCommandIdExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
+    _zeCommandListGetNextCommandIdExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_uint64) )
 else:
-    _zeCommandListGetNextCommandIdExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
+    _zeCommandListGetNextCommandIdExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_uint64) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListUpdateMutableCommandsExp
@@ -7291,30 +7941,30 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExp
 if __use_win_types:
-    _zeCommandListUpdateMutableCommandSignalEventExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
+    _zeCommandListUpdateMutableCommandSignalEventExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, ze_event_handle_t )
 else:
-    _zeCommandListUpdateMutableCommandSignalEventExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
+    _zeCommandListUpdateMutableCommandSignalEventExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, ze_event_handle_t )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListUpdateMutableCommandWaitEventsExp
 if __use_win_types:
-    _zeCommandListUpdateMutableCommandWaitEventsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListUpdateMutableCommandWaitEventsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, c_uint32, POINTER(ze_event_handle_t) )
 else:
-    _zeCommandListUpdateMutableCommandWaitEventsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
+    _zeCommandListUpdateMutableCommandWaitEventsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint64, c_uint32, POINTER(ze_event_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp
 if __use_win_types:
-    _zeCommandListGetNextCommandIdWithKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+    _zeCommandListGetNextCommandIdWithKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_uint32, POINTER(ze_kernel_handle_t), POINTER(c_uint64) )
 else:
-    _zeCommandListGetNextCommandIdWithKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+    _zeCommandListGetNextCommandIdWithKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_uint32, POINTER(ze_kernel_handle_t), POINTER(c_uint64) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExp
 if __use_win_types:
-    _zeCommandListUpdateMutableCommandKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
+    _zeCommandListUpdateMutableCommandKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(c_uint64), POINTER(ze_kernel_handle_t) )
 else:
-    _zeCommandListUpdateMutableCommandKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
+    _zeCommandListUpdateMutableCommandKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_uint32, POINTER(c_uint64), POINTER(ze_kernel_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListIsMutableExp
@@ -7403,9 +8053,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeImageGetDeviceOffsetExp
 if __use_win_types:
-    _zeImageGetDeviceOffsetExp_t = WINFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(c_ulonglong) )
+    _zeImageGetDeviceOffsetExp_t = WINFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(c_uint64) )
 else:
-    _zeImageGetDeviceOffsetExp_t = CFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(c_ulonglong) )
+    _zeImageGetDeviceOffsetExp_t = CFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(c_uint64) )
 
 
 ###############################################################################
@@ -7497,9 +8147,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeMemGetPitchFor2dImage
 if __use_win_types:
-    _zeMemGetPitchFor2dImage_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_size_t, c_size_t, c_int, * )
+    _zeMemGetPitchFor2dImage_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_size_t, c_size_t, c_int, POINTER(c_size_t) )
 else:
-    _zeMemGetPitchFor2dImage_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_size_t, c_size_t, c_int, * )
+    _zeMemGetPitchFor2dImage_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_size_t, c_size_t, c_int, POINTER(c_size_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeMemGetIpcHandleWithProperties
@@ -7531,16 +8181,16 @@ class _ze_mem_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeMemGetIpcHandleFromFileDescriptorExp
 if __use_win_types:
-    _zeMemGetIpcHandleFromFileDescriptorExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
+    _zeMemGetIpcHandleFromFileDescriptorExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_uint64, POINTER(ze_ipc_mem_handle_t) )
 else:
-    _zeMemGetIpcHandleFromFileDescriptorExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
+    _zeMemGetIpcHandleFromFileDescriptorExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_uint64, POINTER(ze_ipc_mem_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeMemGetFileDescriptorFromIpcHandleExp
 if __use_win_types:
-    _zeMemGetFileDescriptorFromIpcHandleExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
+    _zeMemGetFileDescriptorFromIpcHandleExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_uint64) )
 else:
-    _zeMemGetFileDescriptorFromIpcHandleExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
+    _zeMemGetFileDescriptorFromIpcHandleExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_uint64) )
 
 ###############################################################################
 ## @brief Function-pointer for zeMemSetAtomicAccessAttributeExp
@@ -7584,9 +8234,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeFenceHostSynchronize
 if __use_win_types:
-    _zeFenceHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t, c_ulonglong )
+    _zeFenceHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t, c_uint64 )
 else:
-    _zeFenceHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t, c_ulonglong )
+    _zeFenceHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t, c_uint64 )
 
 ###############################################################################
 ## @brief Function-pointer for zeFenceQueryStatus
@@ -7617,9 +8267,9 @@ class _ze_fence_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeEventPoolCreate
 if __use_win_types:
-    _zeEventPoolCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
+    _zeEventPoolCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_uint32, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
 else:
-    _zeEventPoolCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
+    _zeEventPoolCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_uint32, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeEventPoolDestroy
@@ -7709,9 +8359,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeEventHostSynchronize
 if __use_win_types:
-    _zeEventHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, c_ulonglong )
+    _zeEventHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, c_uint64 )
 else:
-    _zeEventHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, c_ulonglong )
+    _zeEventHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, c_uint64 )
 
 ###############################################################################
 ## @brief Function-pointer for zeEventQueryStatus
@@ -7737,9 +8387,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeEventQueryKernelTimestampsExt
 if __use_win_types:
-    _zeEventQueryKernelTimestampsExt_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_event_query_kernel_timestamps_results_ext_properties_t) )
+    _zeEventQueryKernelTimestampsExt_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_event_query_kernel_timestamps_results_ext_properties_t) )
 else:
-    _zeEventQueryKernelTimestampsExt_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_event_query_kernel_timestamps_results_ext_properties_t) )
+    _zeEventQueryKernelTimestampsExt_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_event_query_kernel_timestamps_results_ext_properties_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeEventGetEventPool
@@ -7793,9 +8443,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeEventCounterBasedGetDeviceAddress
 if __use_win_types:
-    _zeEventCounterBasedGetDeviceAddress_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+    _zeEventCounterBasedGetDeviceAddress_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(c_uint64), POINTER(c_uint64) )
 else:
-    _zeEventCounterBasedGetDeviceAddress_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+    _zeEventCounterBasedGetDeviceAddress_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(c_uint64), POINTER(c_uint64) )
 
 ###############################################################################
 ## @brief Function-pointer for zeEventGetCounterBasedFlags
@@ -7831,9 +8481,9 @@ class _ze_event_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeEventQueryTimestampsExp
 if __use_win_types:
-    _zeEventQueryTimestampsExp_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_kernel_timestamp_result_t) )
+    _zeEventQueryTimestampsExp_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_kernel_timestamp_result_t) )
 else:
-    _zeEventQueryTimestampsExp_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_kernel_timestamp_result_t) )
+    _zeEventQueryTimestampsExp_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_uint32), POINTER(ze_kernel_timestamp_result_t) )
 
 
 ###############################################################################
@@ -7860,16 +8510,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeModuleDynamicLink
 if __use_win_types:
-    _zeModuleDynamicLink_t = WINFUNCTYPE( ze_result_t, c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+    _zeModuleDynamicLink_t = WINFUNCTYPE( ze_result_t, c_uint32, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
 else:
-    _zeModuleDynamicLink_t = CFUNCTYPE( ze_result_t, c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+    _zeModuleDynamicLink_t = CFUNCTYPE( ze_result_t, c_uint32, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeModuleGetNativeBinary
 if __use_win_types:
-    _zeModuleGetNativeBinary_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zeModuleGetNativeBinary_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 else:
-    _zeModuleGetNativeBinary_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zeModuleGetNativeBinary_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 
 ###############################################################################
 ## @brief Function-pointer for zeModuleGetGlobalPointer
@@ -7881,9 +8531,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeModuleGetKernelNames
 if __use_win_types:
-    _zeModuleGetKernelNames_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
+    _zeModuleGetKernelNames_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_uint32), POINTER(c_char_p) )
 else:
-    _zeModuleGetKernelNames_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
+    _zeModuleGetKernelNames_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_uint32), POINTER(c_char_p) )
 
 ###############################################################################
 ## @brief Function-pointer for zeModuleGetProperties
@@ -7902,9 +8552,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeModuleInspectLinkageExt
 if __use_win_types:
-    _zeModuleInspectLinkageExt_t = WINFUNCTYPE( ze_result_t, POINTER(ze_linkage_inspection_ext_desc_t), c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+    _zeModuleInspectLinkageExt_t = WINFUNCTYPE( ze_result_t, POINTER(ze_linkage_inspection_ext_desc_t), c_uint32, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
 else:
-    _zeModuleInspectLinkageExt_t = CFUNCTYPE( ze_result_t, POINTER(ze_linkage_inspection_ext_desc_t), c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+    _zeModuleInspectLinkageExt_t = CFUNCTYPE( ze_result_t, POINTER(ze_linkage_inspection_ext_desc_t), c_uint32, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeModuleGetDeviceHandle
@@ -7977,30 +8627,30 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeKernelSetGroupSize
 if __use_win_types:
-    _zeKernelSetGroupSize_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_ulong, c_ulong )
+    _zeKernelSetGroupSize_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_uint32, c_uint32 )
 else:
-    _zeKernelSetGroupSize_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_ulong, c_ulong )
+    _zeKernelSetGroupSize_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_uint32, c_uint32 )
 
 ###############################################################################
 ## @brief Function-pointer for zeKernelSuggestGroupSize
 if __use_win_types:
-    _zeKernelSuggestGroupSize_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_ulong, c_ulong, POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong) )
+    _zeKernelSuggestGroupSize_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_uint32, c_uint32, POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32) )
 else:
-    _zeKernelSuggestGroupSize_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_ulong, c_ulong, POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong) )
+    _zeKernelSuggestGroupSize_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_uint32, c_uint32, POINTER(c_uint32), POINTER(c_uint32), POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zeKernelSuggestMaxCooperativeGroupCount
 if __use_win_types:
-    _zeKernelSuggestMaxCooperativeGroupCount_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong) )
+    _zeKernelSuggestMaxCooperativeGroupCount_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_uint32) )
 else:
-    _zeKernelSuggestMaxCooperativeGroupCount_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong) )
+    _zeKernelSuggestMaxCooperativeGroupCount_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_uint32) )
 
 ###############################################################################
 ## @brief Function-pointer for zeKernelSetArgumentValue
 if __use_win_types:
-    _zeKernelSetArgumentValue_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_size_t, c_void_p )
+    _zeKernelSetArgumentValue_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_size_t, c_void_p )
 else:
-    _zeKernelSetArgumentValue_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_size_t, c_void_p )
+    _zeKernelSetArgumentValue_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_size_t, c_void_p )
 
 ###############################################################################
 ## @brief Function-pointer for zeKernelSetIndirectAccess
@@ -8019,9 +8669,9 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeKernelGetSourceAttributes
 if __use_win_types:
-    _zeKernelGetSourceAttributes_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
+    _zeKernelGetSourceAttributes_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_uint32), POINTER(c_char_p) )
 else:
-    _zeKernelGetSourceAttributes_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
+    _zeKernelGetSourceAttributes_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_uint32), POINTER(c_char_p) )
 
 ###############################################################################
 ## @brief Function-pointer for zeKernelGetProperties
@@ -8067,9 +8717,9 @@ class _ze_kernel_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeKernelSetGlobalOffsetExp
 if __use_win_types:
-    _zeKernelSetGlobalOffsetExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_ulong, c_ulong )
+    _zeKernelSetGlobalOffsetExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_uint32, c_uint32 )
 else:
-    _zeKernelSetGlobalOffsetExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_ulong, c_ulong )
+    _zeKernelSetGlobalOffsetExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_uint32, c_uint32, c_uint32 )
 
 ###############################################################################
 ## @brief Function-pointer for zeKernelSchedulingHintExp
@@ -8081,16 +8731,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeKernelGetBinaryExp
 if __use_win_types:
-    _zeKernelGetBinaryExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zeKernelGetBinaryExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 else:
-    _zeKernelGetBinaryExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zeKernelGetBinaryExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_size_t), POINTER(c_uint8) )
 
 ###############################################################################
 ## @brief Function-pointer for zeKernelGetAllocationPropertiesExp
 if __use_win_types:
-    _zeKernelGetAllocationPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong), POINTER(ze_kernel_allocation_exp_properties_t) )
+    _zeKernelGetAllocationPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_uint32), POINTER(ze_kernel_allocation_exp_properties_t) )
 else:
-    _zeKernelGetAllocationPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong), POINTER(ze_kernel_allocation_exp_properties_t) )
+    _zeKernelGetAllocationPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_uint32), POINTER(ze_kernel_allocation_exp_properties_t) )
 
 
 ###############################################################################
@@ -8223,16 +8873,16 @@ class _ze_virtual_mem_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeFabricVertexGetExp
 if __use_win_types:
-    _zeFabricVertexGetExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+    _zeFabricVertexGetExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_uint32), POINTER(ze_fabric_vertex_handle_t) )
 else:
-    _zeFabricVertexGetExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+    _zeFabricVertexGetExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_uint32), POINTER(ze_fabric_vertex_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeFabricVertexGetSubVerticesExp
 if __use_win_types:
-    _zeFabricVertexGetSubVerticesExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+    _zeFabricVertexGetSubVerticesExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(c_uint32), POINTER(ze_fabric_vertex_handle_t) )
 else:
-    _zeFabricVertexGetSubVerticesExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+    _zeFabricVertexGetSubVerticesExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(c_uint32), POINTER(ze_fabric_vertex_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeFabricVertexGetPropertiesExp
@@ -8262,9 +8912,9 @@ class _ze_fabric_vertex_exp_dditable_t(Structure):
 ###############################################################################
 ## @brief Function-pointer for zeFabricEdgeGetExp
 if __use_win_types:
-    _zeFabricEdgeGetExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_edge_handle_t) )
+    _zeFabricEdgeGetExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, ze_fabric_vertex_handle_t, POINTER(c_uint32), POINTER(ze_fabric_edge_handle_t) )
 else:
-    _zeFabricEdgeGetExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_edge_handle_t) )
+    _zeFabricEdgeGetExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, ze_fabric_vertex_handle_t, POINTER(c_uint32), POINTER(ze_fabric_edge_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zeFabricEdgeGetVerticesExp
@@ -8356,9 +9006,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zeGraphGetIdExt
 if __use_win_types:
-    _zeGraphGetIdExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(c_ulonglong) )
+    _zeGraphGetIdExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(c_uint64) )
 else:
-    _zeGraphGetIdExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(c_ulonglong) )
+    _zeGraphGetIdExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(c_uint64) )
+
+###############################################################################
+## @brief Function-pointer for zeGraphVisitExt
+if __use_win_types:
+    _zeGraphVisitExt_t = WINFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(ze_command_visit_ext_desc_t) )
+else:
+    _zeGraphVisitExt_t = CFUNCTYPE( ze_result_t, ze_graph_handle_t, POINTER(ze_command_visit_ext_desc_t) )
 
 
 ###############################################################################
@@ -8374,7 +9031,8 @@ class _ze_graph_dditable_t(Structure):
         ("pfnDestroyExt", c_void_p),                                    ## _zeGraphDestroyExt_t
         ("pfnPauseCaptureExt", c_void_p),                               ## _zeGraphPauseCaptureExt_t
         ("pfnResumeCaptureExt", c_void_p),                              ## _zeGraphResumeCaptureExt_t
-        ("pfnGetIdExt", c_void_p)                                       ## _zeGraphGetIdExt_t
+        ("pfnGetIdExt", c_void_p),                                      ## _zeGraphGetIdExt_t
+        ("pfnVisitExt", c_void_p)                                       ## _zeGraphVisitExt_t
     ]
 
 ###############################################################################
@@ -8579,6 +9237,7 @@ class ZE_DDI:
         self.zeDeviceValidateRuntimeRequirements = _zeDeviceValidateRuntimeRequirements_t(self.__dditable.Device.pfnValidateRuntimeRequirements)
         self.zeDeviceGetCounterBasedEventMaxValue = _zeDeviceGetCounterBasedEventMaxValue_t(self.__dditable.Device.pfnGetCounterBasedEventMaxValue)
         self.zeDeviceGetCompilerInfo = _zeDeviceGetCompilerInfo_t(self.__dditable.Device.pfnGetCompilerInfo)
+        self.zeDeviceGetCompilerInfoSupported = _zeDeviceGetCompilerInfoSupported_t(self.__dditable.Device.pfnGetCompilerInfoSupported)
 
         # call driver to get function pointers
         _DeviceExp = _ze_device_exp_dditable_t()
@@ -8628,6 +9287,8 @@ class ZE_DDI:
         self.zeCommandQueueSetPriorityExt = _zeCommandQueueSetPriorityExt_t(self.__dditable.CommandQueue.pfnSetPriorityExt)
         self.zeCommandQueueSetQosExt = _zeCommandQueueSetQosExt_t(self.__dditable.CommandQueue.pfnSetQosExt)
         self.zeCommandQueueGetQosExt = _zeCommandQueueGetQosExt_t(self.__dditable.CommandQueue.pfnGetQosExt)
+        self.zeCommandQueueSignalExternalSemaphoreExt = _zeCommandQueueSignalExternalSemaphoreExt_t(self.__dditable.CommandQueue.pfnSignalExternalSemaphoreExt)
+        self.zeCommandQueueWaitExternalSemaphoreExt = _zeCommandQueueWaitExternalSemaphoreExt_t(self.__dditable.CommandQueue.pfnWaitExternalSemaphoreExt)
 
         # call driver to get function pointers
         _CommandList = _ze_command_list_dditable_t()
@@ -8691,6 +9352,14 @@ class ZE_DDI:
         self.zeCommandListAppendHostFunction = _zeCommandListAppendHostFunction_t(self.__dditable.CommandList.pfnAppendHostFunction)
         self.zeCommandListAppendSignalEventWithParameters = _zeCommandListAppendSignalEventWithParameters_t(self.__dditable.CommandList.pfnAppendSignalEventWithParameters)
         self.zeCommandListAppendWaitOnEventsWithParameters = _zeCommandListAppendWaitOnEventsWithParameters_t(self.__dditable.CommandList.pfnAppendWaitOnEventsWithParameters)
+        self.zeCommandListVisitExt = _zeCommandListVisitExt_t(self.__dditable.CommandList.pfnVisitExt)
+        self.zeCommandListGetNextCommandIdExt = _zeCommandListGetNextCommandIdExt_t(self.__dditable.CommandList.pfnGetNextCommandIdExt)
+        self.zeCommandListGetNextCommandIdWithKernelsExt = _zeCommandListGetNextCommandIdWithKernelsExt_t(self.__dditable.CommandList.pfnGetNextCommandIdWithKernelsExt)
+        self.zeCommandListUpdateMutableCommandsExt = _zeCommandListUpdateMutableCommandsExt_t(self.__dditable.CommandList.pfnUpdateMutableCommandsExt)
+        self.zeCommandListIsMutableExt = _zeCommandListIsMutableExt_t(self.__dditable.CommandList.pfnIsMutableExt)
+        self.zeCommandListUpdateMutableCommandSignalEventExt = _zeCommandListUpdateMutableCommandSignalEventExt_t(self.__dditable.CommandList.pfnUpdateMutableCommandSignalEventExt)
+        self.zeCommandListUpdateMutableCommandWaitEventsExt = _zeCommandListUpdateMutableCommandWaitEventsExt_t(self.__dditable.CommandList.pfnUpdateMutableCommandWaitEventsExt)
+        self.zeCommandListUpdateMutableCommandKernelsExt = _zeCommandListUpdateMutableCommandKernelsExt_t(self.__dditable.CommandList.pfnUpdateMutableCommandKernelsExt)
 
         # call driver to get function pointers
         _CommandListExp = _ze_command_list_exp_dditable_t()
@@ -8985,6 +9654,7 @@ class ZE_DDI:
         self.zeGraphPauseCaptureExt = _zeGraphPauseCaptureExt_t(self.__dditable.Graph.pfnPauseCaptureExt)
         self.zeGraphResumeCaptureExt = _zeGraphResumeCaptureExt_t(self.__dditable.Graph.pfnResumeCaptureExt)
         self.zeGraphGetIdExt = _zeGraphGetIdExt_t(self.__dditable.Graph.pfnGetIdExt)
+        self.zeGraphVisitExt = _zeGraphVisitExt_t(self.__dditable.Graph.pfnVisitExt)
 
         # call driver to get function pointers
         _ExecutableGraph = _ze_executable_graph_dditable_t()

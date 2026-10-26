@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -455,6 +455,9 @@ zesDeviceGet(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - To get the GPU topology of the device, the application may pass
+///       ::zes_device_gpu_topology_ext_properties_t in the pNext chain of
+///       pProperties.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5187,7 +5190,6 @@ zesFrequencyGetThrottleTime(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5253,7 +5255,6 @@ zesFrequencyOcGetCapabilities(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5327,7 +5328,6 @@ zesFrequencyOcGetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5398,7 +5398,6 @@ zesFrequencyOcSetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5474,7 +5473,6 @@ zesFrequencyOcGetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5547,7 +5545,6 @@ zesFrequencyOcSetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5618,7 +5615,6 @@ zesFrequencyOcSetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5688,7 +5684,6 @@ zesFrequencyOcGetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5757,7 +5752,6 @@ zesFrequencyOcGetIccMax(
 ///     - Setting ocIccMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5825,7 +5819,6 @@ zesFrequencyOcSetIccMax(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5893,7 +5886,6 @@ zesFrequencyOcGetTjMax(
 ///     - Setting ocTjMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -6907,7 +6899,6 @@ zesDeviceEnumPowerDomains(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -7102,7 +7093,6 @@ zesPowerGetEnergyCounter(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] Use ::zesPowerGetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -7170,7 +7160,6 @@ zesPowerGetLimits(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] Use ::zesPowerSetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -7811,8 +7800,6 @@ zesRasGetProperties(
 /// @brief Get RAS error thresholds that control when RAS events are generated
 /// 
 /// @details
-///     - @deprecated since 1.16: This function is deprecated. Please use
-///       ::zesRasGetConfigExp() instead.
 ///     - The driver maintains counters for all RAS error sets and error
 ///       categories. Events are generated when errors occur. The configuration
 ///       enables setting thresholds to limit when events are sent.
@@ -7887,8 +7874,6 @@ zesRasGetConfig(
 /// @brief Set RAS error thresholds that control when RAS events are generated
 /// 
 /// @details
-///     - @deprecated since 1.16: This function is deprecated. Please use
-///       ::zesRasSetConfigExp() instead.
 ///     - The driver maintains counters for all RAS error sets and error
 ///       categories. Events are generated when errors occur. The configuration
 ///       enables setting thresholds to limit when events are sent.
@@ -8603,7 +8588,6 @@ zesSchedulerSetExclusiveMode(
 ///       without enforcing any scheduler fairness policies.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -10362,7 +10346,6 @@ zesDriverGetDeviceByUuidExp(
 /// @brief Get handle of virtual function modules
 /// 
 /// @details
-///     - [DEPRECATED] No longer supported. Use ::zesDeviceEnumEnabledVFExp.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -10437,8 +10420,6 @@ zesDeviceEnumActiveVFExp(
 /// @brief Get virtual function management properties
 /// 
 /// @details
-///     - [DEPRECATED] No longer supported. Use
-///       ::zesVFManagementGetVFCapabilitiesExp.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -10504,8 +10485,6 @@ zesVFManagementGetVFPropertiesExp(
 ///        with Virtual Function (VF)
 /// 
 /// @details
-///     - [DEPRECATED] No longer supported. Use
-///       ::zesVFManagementGetVFMemoryUtilizationExp2.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -10583,8 +10562,6 @@ zesVFManagementGetVFMemoryUtilizationExp(
 ///        with Virtual Function (VF)
 /// 
 /// @details
-///     - [DEPRECATED] No longer supported. Use
-///       ::zesVFManagementGetVFEngineUtilizationExp2.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -10662,7 +10639,6 @@ zesVFManagementGetVFEngineUtilizationExp(
 ///        Virtual Function (VF)
 /// 
 /// @details
-///     - [DEPRECATED] No longer supported.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -10731,7 +10707,6 @@ zesVFManagementSetVFTelemetryModeExp(
 ///        telemetry associated with Virtual Function (VF)
 /// 
 /// @details
-///     - [DEPRECATED] No longer supported.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -10873,8 +10848,6 @@ zesDeviceEnumEnabledVFExp(
 /// @brief Get virtual function management capabilities
 /// 
 /// @details
-///     - [DEPRECATED] No longer supported. Use
-///       ::zesVFManagementGetVFCapabilitiesExp2.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -11901,6 +11874,85 @@ zesInfoLogInstanceDeleteExt(
     }
 
     return pfnDeleteExt( hInfoLogInstance );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the PCI properties of every device supported by the driver that is
+///        present on the PCI bus
+/// 
+/// @details
+///     - This function reports every device supported by the driver that is
+///       present on the PCI bus, whether or not a kernel mode driver is
+///       installed or bound to it.
+///     - SR-IOV virtual functions are not reported.
+///     - This function is supported when ::zesInit is called with
+///       ::ZES_INIT_FLAG_NO_DEVICES.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + `nullptr != pProperties[i].pNext`, as no structures are currently supported in the `pNext` chain.
+ze_result_t ZE_APICALL
+zesDriverGetPciDeviceProperties(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI devices.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of PCI devices supported by the driver.
+                                                    ///< if count is greater than the number of PCI devices supported by the
+                                                    ///< driver, then the driver shall update the value with the correct number
+                                                    ///< of PCI devices supported by the driver.
+    zes_driver_pci_device_properties_t* pProperties ///< [in,out][optional][range(0, *pCount)] array of PCI device properties.
+                                                    ///< if count is less than the number of PCI devices supported by the
+                                                    ///< driver, then the driver shall only retrieve that number of PCI device properties.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDriverGetPciDeviceProperties_t pfnGetPciDeviceProperties = [&result] {
+        auto pfnGetPciDeviceProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetPciDeviceProperties;
+        if( nullptr == pfnGetPciDeviceProperties ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetPciDeviceProperties;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetPciDeviceProperties( hDriver, pCount, pProperties );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetPciDeviceProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetPciDeviceProperties;
+    if( nullptr == pfnGetPciDeviceProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetPciDeviceProperties( hDriver, pCount, pProperties );
     #endif
 }
 

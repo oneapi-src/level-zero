@@ -1,7 +1,7 @@
 /*
  * ***THIS FILE IS GENERATED. ***
  *
- * Copyright (C) 2025 Intel Corporation
+ * Copyright (C) 2025-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -1353,6 +1353,18 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandQueueSignalExternalSemaphoreExtPrologue( ze_command_queue_handle_t hCommandQueue, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandQueueWaitExternalSemaphoreExtPrologue( ze_command_queue_handle_t hCommandQueue, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeRTASBuilderCreateExtPrologue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_13) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -1557,6 +1569,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeDeviceGetCompilerInfoSupportedPrologue( ze_device_handle_t hDevice, ze_device_compiler_info_t paramName, const void* pNext, const void* pElement, const char* pValue, ze_bool_t* pSupported ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandQueueSetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, const ze_command_queue_qos_ext_desc_t* desc ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -1565,6 +1583,60 @@ public:
     }
     virtual ze_result_t zeCommandQueueGetQosExtPrologue( ze_command_queue_handle_t hCommandQueue, ze_command_queue_qos_ext_properties_t* pProperties ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListVisitExtPrologue( ze_command_list_handle_t hCommandList, const ze_command_visit_ext_desc_t* pDesc ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeGraphVisitExtPrologue( ze_graph_handle_t hGraph, const ze_command_visit_ext_desc_t* pDesc ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListGetNextCommandIdExtPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_ext_desc_t* desc, uint64_t* pCommandId ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListGetNextCommandIdWithKernelsExtPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_ext_desc_t* desc, uint32_t numKernels, ze_kernel_handle_t* phKernels, uint64_t* pCommandId ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListUpdateMutableCommandsExtPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_ext_desc_t* desc ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListIsMutableExtPrologue( ze_command_list_handle_t hCommandList, ze_bool_t* pIsMutable ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListUpdateMutableCommandSignalEventExtPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListUpdateMutableCommandWaitEventsExtPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListUpdateMutableCommandKernelsExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_20) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;
