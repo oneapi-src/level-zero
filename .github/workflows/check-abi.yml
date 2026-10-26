@@ -23,7 +23,10 @@ jobs:
   # A failure can be accepted by a reviewer: leave an approval review on the
   # PR head commit with the keyword abi-failure-approved in the review body.
   check-abi:
-    name: check-abi-${{ matrix.base }}
+    # The name must not use matrix: a skipped job shows its name unexpanded.
+    # GitHub appends the matrix value, e.g. "check-abi (master)". Reviews
+    # without the keyword skip this job and show "ABI approval re-check".
+    name: ${{ github.event_name == 'pull_request_review' && 'ABI approval re-check' || 'check-abi' }}
     runs-on: ubuntu-latest
     if: >-
       github.repository_owner == 'oneapi-src' &&
