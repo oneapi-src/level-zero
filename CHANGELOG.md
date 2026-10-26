@@ -1,4 +1,9 @@
 # Level zero loader changelog
+## v1.35.0
+* Update to L0 Zero Spec v1.20.41: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-20-41
+* Feature: Add optional build-time-configured driver search directory for Linux (#541)
+* Fix: Loader returns ZE_RESULT_ERROR_UNSUPPORTED_FEATURE for missing DDI entries (#539)
+* Doc: list ZEL_ENABLE_PERFORMANCE_CHECKER in validation layer README (#510)
 ## v1.34.0
 * Update to L0 Zero Spec v1.19.12: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-19-12
 * Feature: Track zeEventCounterBasedCreate in basic_leak_checker (#513)
