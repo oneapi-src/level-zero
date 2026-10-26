@@ -2177,6 +2177,51 @@ def test_device_health_module(device_handle, device_index, set_health=None):
     return True
 
 
+def test_firmware_module(device_handle, device_index):
+    """Test firmware enumeration and properties"""
+    print(f"\n---- Device {device_index} Firmware Test ----")
+
+    firmware_count = c_uint32(0)
+    rc = pz.zesDeviceEnumFirmwares(device_handle, byref(firmware_count), None)
+    if not check_rc(f"zesDeviceEnumFirmwares(device {device_index}, count)", rc):
+        return False
+
+    if firmware_count.value == 0:
+        print_verbose("No firmware components found on this device")
+        return True
+
+    print_verbose(f"Found {firmware_count.value} firmware component(s)")
+
+    FirmwareArray = pz.zes_firmware_handle_t * firmware_count.value
+    firmware_handles = FirmwareArray()
+
+    rc = pz.zesDeviceEnumFirmwares(
+        device_handle, byref(firmware_count), firmware_handles
+    )
+    if not check_rc(f"zesDeviceEnumFirmwares(device {device_index}, handles)", rc):
+        return False
+
+    for i in range(firmware_count.value):
+        print_verbose(f"\n  Firmware {i}:")
+
+        props = pz.zes_firmware_properties_t()
+        props.stype = pz.ZES_STRUCTURE_TYPE_FIRMWARE_PROPERTIES
+        props.pNext = None
+
+        rc = pz.zesFirmwareGetProperties(firmware_handles[i], byref(props))
+        if not check_rc(f"zesFirmwareGetProperties(firmware {i})", rc):
+            continue
+
+        print_verbose(f"    Name: {props.name.decode('utf-8', errors='ignore')}")
+        print_verbose(f"    Version: {props.version.decode('utf-8', errors='ignore')}")
+        print_verbose(f"    On Subdevice: {bool(props.onSubdevice)}")
+        if props.onSubdevice:
+            print_verbose(f"    Subdevice ID: {props.subdeviceId}")
+        print_verbose(f"    Can Control: {bool(props.canControl)}")
+
+    return True
+
+
 def test_memory_modules(device_handle, device_index):
     """Test memory module enumeration and operations"""
     print(f"\n---- Device {device_index} Memory Modules Test ----")
@@ -2889,6 +2934,8 @@ def run_all_tests():
 
             test_vf_management_module(devices[device_idx], device_idx)
 
+            test_firmware_module(devices[device_idx], device_idx)
+
         if not test_info_log_module(drivers[driver_idx], driver_idx):
             success = False
 
@@ -2923,6 +2970,7 @@ def main():
   %(prog)s -re --clear-ras-state  # RAS tests, clear all error counters (root)
   %(prog)s -s                 # Standby tests only
   %(prog)s -v                 # VF management tests only
+  %(prog)s -i                 # Firmware tests only
   %(prog)s -L                 # Info log properties tests only
   %(prog)s -L --instanceapi   # Info log tests, verify peek and read on a named collection instance
   %(prog)s -L --instanceread --instance mylog --buffersize 1024   # Info log tests, read the records of a named 1 MB collection instance
@@ -3032,6 +3080,9 @@ def main():
         "-v", "--vftelemetry", action="store_true", help="Run only VF management tests"
     )
     parser.add_argument(
+        "-i", "--firmware", action="store_true", help="Run only firmware tests"
+    )
+    parser.add_argument(
         "-L",
         "--infolog",
         action="store_true",
@@ -3139,6 +3190,7 @@ def main():
         or args.rasexp
         or args.standby
         or args.vftelemetry
+        or args.firmware
         or args.infolog
         or args.driverproperties
         or args.event
@@ -3249,6 +3301,9 @@ def main():
 
                 if args.vftelemetry:
                     test_vf_management_module(devices[device_idx], device_idx)
+
+                if args.firmware:
+                    test_firmware_module(devices[device_idx], device_idx)
 
                 if args.reset is not None and args.reset_device in (None, device_idx):
                     test_device_reset(
