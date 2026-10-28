@@ -159,97 +159,107 @@ All meaningful constants and enums are exposed in Python module.
 SUPPORTED APIs
 --------------
 
-| API Function | Module | Since Version | Limitations |
-|--------------|--------|---------------|-------------|
-| `zesInit` | Device | 0.1.0 | None |
-| `zesDriverGet` | Device | 0.1.0 | None |
-| `zesDeviceGet` | Device | 0.1.0 | None |
-| `zesDeviceGetProperties` | Device | 0.1.0 | None |
-| `zesDriverGetDeviceByUuidExp` | Device | 0.1.0 | Experimental API |
-| `zesDeviceProcessesGetState` | Device | 0.1.0 | None |
-| **Driver Management** |-|-|-|
-| `zesDriverGetProperties` | Driver | 0.1.4 | None |
-| `zesDriverGetExtensionProperties` | Driver | 0.1.4 | None |
-| `zesDriverGetExtensionFunctionAddress` | Driver | 0.1.4 | Returns a raw function address |
-| `zesDriverEventListenEx` | Driver | 0.1.4 | Linux: Requires superuser |
-| `zesDriverEventRegisterExt` | Driver | 0.1.4 | None |
-| `zesDriverEventListenExt` | Driver | 0.1.4 | Linux: Requires superuser |
-| `zesDeviceGetState` | Device | 0.1.4 | None |
-| `zesDeviceResetExt` | Device | 0.1.4 | Linux: Requires superuser; all device state is lost |
-| `zesDeviceEventRegister` | Device | 0.1.4 | Linux: Requires superuser |
-| `zesDeviceGetHealthStatusExt` | Device | 0.1.4 | None |
-| `zesDeviceSetHealthStatusExt` | Device | 0.1.4 | Linux: Requires superuser; persisted to non-volatile memory |
-| `zesDeviceEnumFirmwares` | Device | 0.1.4 | None |
-| `zesFirmwareGetProperties` | Firmware | 0.1.4 | None |
-| **Memory Management** |-|-|-|
-| `zesDeviceEnumMemoryModules` | Memory | 0.1.0 | None |
-| `zesMemoryGetProperties` | Memory | 0.1.0 | None |
-| `zesMemoryGetState` | Memory | 0.1.0 | None |
-| `zesMemoryGetBandwidth` | Memory | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
-| **Power Management** |-|-|-|
-| `zesDeviceEnumPowerDomains` | Power | 0.1.0 | None |
-| `zesPowerGetEnergyCounter` | Power | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
-| `zesPowerGetProperties` | Power | 0.1.2 | None |
-| `zesPowerGetLimitsExt` | Power | 0.1.2 | Extended power limits API |
-| `zesPowerSetLimitsExt` | Power | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes |
-| `zesPowerGetUsage` | Power | 0.1.4 | Linux: Requires superuser or read permissions for telem nodes |
-| `zesPowerGetLimitsExt2` | Power | 0.1.4 | None |
-| `zesPowerSetLimitsExt2` | Power | 0.1.4 | Linux: Requires superuser |
-| `zesPowerGetEnergyThreshold` | Power | 0.1.4 | None |
-| `zesPowerSetEnergyThreshold` | Power | 0.1.4 | Linux: Requires superuser |
-| **Frequency Management** |-|-|-|
-| `zesDeviceEnumFrequencyDomains` | Frequency | 0.1.0 | None |
-| `zesFrequencyGetState` | Frequency | 0.1.0 | None |
-| `zesFrequencyGetProperties` | Frequency | 0.1.2 | None |
-| `zesFrequencyGetAvailableClocks` | Frequency | 0.1.2 | None |
-| `zesFrequencyGetRange` | Frequency | 0.1.2 | None |
-| `zesFrequencySetRange` | Frequency | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes |
-| `zesFrequencyGetThrottleTime` | Frequency | 0.1.2 | None |
-| **Temperature Monitoring** |-|-|-|
-| `zesDeviceEnumTemperatureSensors` | Temperature | 0.1.0 | None |
-| `zesTemperatureGetProperties` | Temperature | 0.1.0 | None |
-| `zesTemperatureGetConfig` | Temperature | 0.1.0 | None |
-| `zesTemperatureGetState` | Temperature | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes |
-| `zesTemperatureSetConfig` | Temperature | 0.1.4 | Linux: Requires superuser |
-| **Engine Management** |-|-|-|
-| `zesDeviceEnumEngineGroups` | Engine | 0.1.0 | Linux: Shows "no handles found" error when not in superuser mode |
-| `zesEngineGetProperties` | Engine | 0.1.0 | None |
-| `zesEngineGetActivity` | Engine | 0.1.0 | None |
-| `zesEngineGetActivityExt` | Engine | 0.1.4 | None |
-| **Standby Management** |-|-|-|
-| `zesDeviceEnumStandbyDomains` | Standby | 0.1.4 | None |
-| `zesStandbyGetProperties` | Standby | 0.1.4 | None |
-| `zesStandbyGetMode` | Standby | 0.1.4 | None |
-| `zesStandbySetMode` | Standby | 0.1.4 | Linux: Requires superuser |
-| **Virtual Function (VF) Management** |-|-|-|
-| `zesDeviceEnumEnabledVFExp` | VF Management | 0.1.4 | Experimental API |
-| `zesVFManagementGetVFCapabilitiesExp2` | VF Management | 0.1.4 | Experimental API |
-| `zesVFManagementGetVFEngineUtilizationExp2` | VF Management | 0.1.4 | Experimental API. Linux: Requires superuser |
-| `zesVFManagementGetVFMemoryUtilizationExp2` | VF Management | 0.1.4 | Experimental API |
-| **PCI Management** |-|-|-|
-| `zesDevicePciGetProperties` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
-| `zesDevicePciGetState` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
-| `zesDevicePciGetStats` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes |
-| **ECC (Error Correction Code) Management** |-|-|-|
-| `zesDeviceEccAvailable` | ECC | 0.1.2 | None |
-| `zesDeviceEccConfigurable` | ECC | 0.1.2 | None |
-| `zesDeviceGetEccState` | ECC | 0.1.2 | None |
-| `zesDeviceSetEccState` | ECC | 0.1.2 | None |
-| **RAS (Reliability, Availability, Serviceability)** |-|-|-|
-| `zesDeviceEnumRasErrorSets` | RAS | 0.1.4 | Linux: Requires superuser |
-| `zesRasGetProperties` | RAS | 0.1.4 | None |
-| `zesRasGetSupportedCategoriesExp` | RAS | 0.1.4 | Experimental API |
-| `zesRasGetStateExp2` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
-| `zesRasGetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
-| `zesRasSetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
-| `zesRasClearStateExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser |
-| **Info Log Management** |-|-|-|
-| `zesDriverEnumInfoLogsExt` | Info Log | 0.1.4 | Linux: Requires superuser |
-| `zesInfoLogGetPropertiesExt` | Info Log | 0.1.4 | None |
-| `zesInfoLogCreateInstanceExt` | Info Log | 0.1.4 | Linux: Requires superuser |
-| `zesInfoLogInstanceReadWithMetadataExt` | Info Log | 0.1.4 | Records returned are consumed. Linux: Requires superuser |
-| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.4 | Linux: Requires superuser |
-| `zesInfoLogInstanceDeleteExt` | Info Log | 0.1.4 | Linux: Requires superuser |
+The Linux Dependencies and Windows Dependencies columns list the external libraries that the Level Zero driver needs at runtime on that OS to support the API. Which of them is used depends on the platform.
+- Linux:
+  - `libigsc`: libigsc.so.1 or libigsc.so.0
+  - `libudev`: libudev.so.1
+  - `libnl-genl-3`: libnl-genl-3.so.200
+  - `libtracefs`: libtracefs.so.1, version 1.8.0 or newer
+- Windows:
+  - `igsc.dll`
+
+| API Function | Module | Since Version | Limitations | Linux Dependencies | Windows Dependencies |
+|--------------|--------|---------------|-------------|--------------------|----------------------|
+| `zesInit` | Device | 0.1.0 | None | None | None |
+| `zesDriverGet` | Device | 0.1.0 | None | None | None |
+| `zesDeviceGet` | Device | 0.1.0 | None | None | None |
+| `zesDeviceGetProperties` | Device | 0.1.0 | None | None | None |
+| `zesDriverGetDeviceByUuidExp` | Device | 0.1.0 | Experimental API | None | None |
+| `zesDeviceGetSubDevicePropertiesExp` | Device | 0.1.0 | Experimental API | None | None |
+| `zesDeviceProcessesGetState` | Device | 0.1.0 | None | None | None |
+| **Driver Management** |-|-|-|-|-|
+| `zesDriverGetProperties` | Driver | 0.1.4 | None | None | None |
+| `zesDriverGetExtensionProperties` | Driver | 0.1.4 | None | None | None |
+| `zesDriverGetExtensionFunctionAddress` | Driver | 0.1.4 | Returns a raw function address | None | None |
+| `zesDriverEventListenEx` | Driver | 0.1.4 | Linux: Requires superuser | `libudev`, `libnl-genl-3` | None |
+| `zesDriverEventRegisterExt` | Driver | 0.1.4 | None | None | None |
+| `zesDriverEventListenExt` | Driver | 0.1.4 | Linux: Requires superuser | `libudev`, `libnl-genl-3`, `libtracefs` | None |
+| `zesDeviceGetState` | Device | 0.1.4 | None | `libigsc` | None |
+| `zesDeviceResetExt` | Device | 0.1.4 | Linux: Requires superuser; all device state is lost | None | None |
+| `zesDeviceEventRegister` | Device | 0.1.4 | Linux: Requires superuser | None | None |
+| `zesDeviceGetHealthStatusExt` | Device | 0.1.4 | None | None | None |
+| `zesDeviceSetHealthStatusExt` | Device | 0.1.4 | Linux: Requires superuser; persisted to non-volatile memory | None | None |
+| `zesDeviceEnumFirmwares` | Device | 0.1.4 | None | `libigsc` | `igsc.dll` |
+| `zesFirmwareGetProperties` | Firmware | 0.1.4 | None | `libigsc` | `igsc.dll` |
+| **Memory Management** |-|-|-|-|-|
+| `zesDeviceEnumMemoryModules` | Memory | 0.1.0 | None | None | None |
+| `zesMemoryGetProperties` | Memory | 0.1.0 | None | None | None |
+| `zesMemoryGetState` | Memory | 0.1.0 | None | `libigsc` | None |
+| `zesMemoryGetBandwidth` | Memory | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes | None | None |
+| **Power Management** |-|-|-|-|-|
+| `zesDeviceEnumPowerDomains` | Power | 0.1.0 | None | None | None |
+| `zesPowerGetEnergyCounter` | Power | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes | None | None |
+| `zesPowerGetProperties` | Power | 0.1.2 | None | None | None |
+| `zesPowerGetLimitsExt` | Power | 0.1.2 | Extended power limits API | None | None |
+| `zesPowerSetLimitsExt` | Power | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes | None | None |
+| `zesPowerGetUsage` | Power | 0.1.4 | Linux: Requires superuser or read permissions for telem nodes | None | None |
+| `zesPowerGetLimitsExt2` | Power | 0.1.4 | None | None | None |
+| `zesPowerSetLimitsExt2` | Power | 0.1.4 | Linux: Requires superuser | None | None |
+| `zesPowerGetEnergyThreshold` | Power | 0.1.4 | None | None | None |
+| `zesPowerSetEnergyThreshold` | Power | 0.1.4 | Linux: Requires superuser | None | None |
+| **Frequency Management** |-|-|-|-|-|
+| `zesDeviceEnumFrequencyDomains` | Frequency | 0.1.0 | None | None | None |
+| `zesFrequencyGetState` | Frequency | 0.1.0 | None | None | None |
+| `zesFrequencyGetProperties` | Frequency | 0.1.2 | None | None | None |
+| `zesFrequencyGetAvailableClocks` | Frequency | 0.1.2 | None | None | None |
+| `zesFrequencyGetRange` | Frequency | 0.1.2 | None | None | None |
+| `zesFrequencySetRange` | Frequency | 0.1.2 | Linux: Requires superuser or write permissions for telem nodes | None | None |
+| `zesFrequencyGetThrottleTime` | Frequency | 0.1.2 | None | None | None |
+| **Temperature Monitoring** |-|-|-|-|-|
+| `zesDeviceEnumTemperatureSensors` | Temperature | 0.1.0 | None | None | None |
+| `zesTemperatureGetProperties` | Temperature | 0.1.0 | None | None | None |
+| `zesTemperatureGetConfig` | Temperature | 0.1.0 | None | None | None |
+| `zesTemperatureGetState` | Temperature | 0.1.0 | Linux: Requires superuser or read permissions for telem nodes | None | None |
+| `zesTemperatureSetConfig` | Temperature | 0.1.4 | Linux: Requires superuser | None | None |
+| **Engine Management** |-|-|-|-|-|
+| `zesDeviceEnumEngineGroups` | Engine | 0.1.0 | Linux: Shows "no handles found" error when not in superuser mode | None | None |
+| `zesEngineGetProperties` | Engine | 0.1.0 | None | None | None |
+| `zesEngineGetActivity` | Engine | 0.1.0 | None | None | None |
+| `zesEngineGetActivityExt` | Engine | 0.1.4 | None | None | None |
+| **Standby Management** |-|-|-|-|-|
+| `zesDeviceEnumStandbyDomains` | Standby | 0.1.4 | None | None | None |
+| `zesStandbyGetProperties` | Standby | 0.1.4 | None | None | None |
+| `zesStandbyGetMode` | Standby | 0.1.4 | None | None | None |
+| `zesStandbySetMode` | Standby | 0.1.4 | Linux: Requires superuser | None | None |
+| **Virtual Function (VF) Management** |-|-|-|-|-|
+| `zesDeviceEnumEnabledVFExp` | VF Management | 0.1.4 | Experimental API | None | None |
+| `zesVFManagementGetVFCapabilitiesExp2` | VF Management | 0.1.4 | Experimental API | None | None |
+| `zesVFManagementGetVFEngineUtilizationExp2` | VF Management | 0.1.4 | Experimental API. Linux: Requires superuser | None | None |
+| `zesVFManagementGetVFMemoryUtilizationExp2` | VF Management | 0.1.4 | Experimental API | None | None |
+| **PCI Management** |-|-|-|-|-|
+| `zesDevicePciGetProperties` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes | None | None |
+| `zesDevicePciGetState` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes | None | None |
+| `zesDevicePciGetStats` | PCI | 0.1.2 | Linux: Requires superuser or read permissions for telem nodes | None | None |
+| **ECC (Error Correction Code) Management** |-|-|-|-|-|
+| `zesDeviceEccAvailable` | ECC | 0.1.2 | None | `libigsc` | `igsc.dll` |
+| `zesDeviceEccConfigurable` | ECC | 0.1.2 | None | `libigsc` | `igsc.dll` |
+| `zesDeviceGetEccState` | ECC | 0.1.2 | None | `libigsc` | `igsc.dll` |
+| `zesDeviceSetEccState` | ECC | 0.1.2 | None | `libigsc` | `igsc.dll` |
+| **RAS (Reliability, Availability, Serviceability)** |-|-|-|-|-|
+| `zesDeviceEnumRasErrorSets` | RAS | 0.1.4 | Linux: Requires superuser | `libnl-genl-3`, `libigsc` | None |
+| `zesRasGetProperties` | RAS | 0.1.4 | None | `libnl-genl-3`, `libigsc` | None |
+| `zesRasGetSupportedCategoriesExp` | RAS | 0.1.4 | Experimental API | `libnl-genl-3`, `libigsc` | None |
+| `zesRasGetStateExp2` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser | `libnl-genl-3`, `libigsc` | None |
+| `zesRasGetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser | `libnl-genl-3` | None |
+| `zesRasSetConfigExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser | `libnl-genl-3` | None |
+| `zesRasClearStateExp` | RAS | 0.1.4 | Experimental API. Linux: Requires superuser | `libnl-genl-3`, `libigsc` | None |
+| **Info Log Management** |-|-|-|-|-|
+| `zesDriverEnumInfoLogsExt` | Info Log | 0.1.4 | Linux: Requires superuser | None | None |
+| `zesInfoLogGetPropertiesExt` | Info Log | 0.1.4 | None | None | None |
+| `zesInfoLogCreateInstanceExt` | Info Log | 0.1.4 | Linux: Requires superuser | `libtracefs` | None |
+| `zesInfoLogInstanceReadWithMetadataExt` | Info Log | 0.1.4 | Records returned are consumed. Linux: Requires superuser | `libtracefs` | None |
+| `zesInfoLogInstancePeekWithMetadataExt` | Info Log | 0.1.4 | Linux: Requires superuser | `libtracefs` | None |
+| `zesInfoLogInstanceDeleteExt` | Info Log | 0.1.4 | Linux: Requires superuser | `libtracefs` | None |
 
 RELEASE NOTES
 -------------
