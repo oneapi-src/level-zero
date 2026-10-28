@@ -795,7 +795,11 @@ class CaptureOutput {
 private:
     int original_fd = -1;
     int stream;
-    char filename[50] = "/tmp/capture_output_XXXXXX";
+#if defined(_WIN32)
+    char filename[L_tmpnam_s] = {};
+#else
+    char filename[sizeof("/tmp/capture_output_XXXXXX")] = "/tmp/capture_output_XXXXXX";
+#endif
     bool file_created = false;
     bool ready = false;
 
@@ -806,8 +810,6 @@ private:
         fflush(nullptr);
         const int result = _dup2(original_fd, stream);
         const int error = errno;
-        std::cerr << "CaptureOutput: restore _dup2(" << original_fd << ", " << stream
-                  << ")=" << result << ", errno=" << error << std::endl;
         if (result == -1) {
             ADD_FAILURE() << "Cannot restore captured stream; errno=" << error;
             return false;
@@ -826,12 +828,8 @@ public:
     enum { Stdout = 1, Stderr = 2 };
 
     CaptureOutput(int stream_) : stream(stream_) {
-        std::cerr << "CaptureOutput: stream=" << stream << ", filename buffer="
-                  << sizeof(filename) << ", TEMP='" << getenv_string("TEMP")
-                  << "', TMP='" << getenv_string("TMP") << "'" << std::endl;
         original_fd = _dup(stream);
         const int dup_error = errno;
-        std::cerr << "CaptureOutput: _dup=" << original_fd << ", errno=" << dup_error << std::endl;
         if (original_fd == -1) {
             ADD_FAILURE() << "Cannot duplicate stream; errno=" << dup_error;
             return;
@@ -840,24 +838,17 @@ public:
 #if defined(__linux__)
         fd = mkstemp(filename);
         const int open_error = errno;
-        std::cerr << "CaptureOutput: mkstemp('" << filename << "')=" << fd
-                  << ", errno=" << open_error << std::endl;
         if (fd == -1) {
             ADD_FAILURE() << "Cannot create capture file; errno=" << open_error;
             return;
         }
 #elif defined(_WIN32)
-        std::cerr << "CaptureOutput: calling tmpnam_s" << std::endl;
         const errno_t name_result = tmpnam_s(filename, sizeof(filename));
-        std::cerr << "CaptureOutput: tmpnam_s=" << name_result << ", filename='"
-                  << filename << "', L_tmpnam_s=" << L_tmpnam_s << std::endl;
         if (name_result != 0) {
             ADD_FAILURE() << "Cannot generate capture filename; tmpnam_s=" << name_result;
             return;
         }
-        std::cerr << "CaptureOutput: calling _sopen_s" << std::endl;
         const errno_t open_result = _sopen_s(&fd, filename, _O_CREAT | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE);
-        std::cerr << "CaptureOutput: _sopen_s=" << open_result << ", fd=" << fd << std::endl;
         if (open_result != 0) {
             ADD_FAILURE() << "Cannot open capture file; _sopen_s=" << open_result;
             return;
@@ -865,15 +856,17 @@ public:
 #endif
         file_created = true;
         fflush(nullptr);
-        std::cerr << "CaptureOutput: redirecting fd=" << fd << " to stream=" << stream << std::endl;
         const int redirect_result = _dup2(fd, stream);
         const int redirect_error = errno;
         const int close_result = _close(fd);
         const int close_error = errno;
-        std::cerr << "CaptureOutput: redirect _dup2=" << redirect_result << ", errno="
-                  << redirect_error << "; _close=" << close_result << ", errno=" << close_error << std::endl;
+        if (redirect_result == -1) {
+            ADD_FAILURE() << "Cannot redirect capture stream; errno=" << redirect_error;
+        }
+        if (close_result == -1) {
+            ADD_FAILURE() << "Cannot close capture descriptor; errno=" << close_error;
+        }
         if (redirect_result == -1 || close_result == -1) {
-            ADD_FAILURE() << "Cannot redirect capture stream or close capture descriptor";
             return;
         }
         ready = true;
@@ -914,7 +907,7 @@ TEST(
     desc.pNext = nullptr;
 
     CaptureOutput capture(CaptureOutput::Stdout);
-    ASSERT_TRUE(capture.IsReady()) << "Stdout capture setup failed; see stderr diagnostics";
+    ASSERT_TRUE(capture.IsReady()) << "Stdout capture setup failed";
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
 
     std::string output = capture.GetOutput();
