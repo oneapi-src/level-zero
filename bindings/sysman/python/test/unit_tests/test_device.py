@@ -188,6 +188,36 @@ class TestDeviceFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesDeviceEnumFirmwares")
         mock_func.assert_called_once()
 
+    def test_GivenValidFirmwareHandleWhenCallingZesFirmwareGetPropertiesThenCallSucceedsWithValidProperties(
+        self, mock_get_func
+    ):
+        def mock_get_properties(firmware_handle, properties_ptr):
+            properties = properties_ptr._obj
+            properties.onSubdevice = 1
+            properties.subdeviceId = 1
+            properties.canControl = 1
+            properties.name = b"GFX"
+            properties.version = b"DG02_2.2421"
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_get_func.return_value = mock_func
+
+        firmware_handle = self.pyzes.zes_firmware_handle_t()
+        properties = self.pyzes.zes_firmware_properties_t()
+        properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_FIRMWARE_PROPERTIES
+
+        result = self.pyzes.zesFirmwareGetProperties(firmware_handle, byref(properties))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(properties.onSubdevice, 1)
+        self.assertEqual(properties.subdeviceId, 1)
+        self.assertEqual(properties.canControl, 1)
+        self.assertEqual(properties.name, b"GFX")
+        self.assertEqual(properties.version, b"DG02_2.2421")
+        mock_get_func.assert_called_with("zesFirmwareGetProperties")
+        mock_func.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()

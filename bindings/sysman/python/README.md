@@ -180,6 +180,7 @@ SUPPORTED APIs
 | `zesDeviceGetHealthStatusExt` | Device | 0.1.4 | None |
 | `zesDeviceSetHealthStatusExt` | Device | 0.1.4 | Linux: Requires superuser; persisted to non-volatile memory |
 | `zesDeviceEnumFirmwares` | Device | 0.1.4 | None |
+| `zesFirmwareGetProperties` | Firmware | 0.1.4 | None |
 | **Memory Management** |-|-|-|
 | `zesDeviceEnumMemoryModules` | Memory | 0.1.0 | None |
 | `zesMemoryGetProperties` | Memory | 0.1.0 | None |

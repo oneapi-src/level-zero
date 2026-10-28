@@ -508,6 +508,7 @@ ZES_STRUCTURE_TYPE_INFO_LOG_INSTANCE_EXT_DESC = 0x00020021
 ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT = 0x00020022
 ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT = 0x00020023
 ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES = 0x2F
+ZES_STRUCTURE_TYPE_FIRMWARE_PROPERTIES = 0x8
 
 
 ## Core ze_device UUID struct ##
@@ -1069,6 +1070,18 @@ class zes_info_log_read_status_ext_t(_PrintableStructure):
     _fmt_ = {"consumedDataSize": "%d bytes"}
 
 
+class zes_firmware_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("onSubdevice", ze_bool_t),
+        ("subdeviceId", c_uint32),
+        ("canControl", ze_bool_t),
+        ("name", c_char * ZES_STRING_PROPERTY_SIZE),
+        ("version", c_char * ZES_STRING_PROPERTY_SIZE),
+    ]
+
+
 ## Function access ##
 _getFunctionPointerList: Dict[str, Any] = dict()
 
@@ -1479,6 +1492,26 @@ def zesDeviceEnumFirmwares(hDevice, pCount, phFirmware):
     ]
     funcPtr.restype = ze_result_t
     retVal = funcPtr(hDevice, pCount, phFirmware)
+    return retVal
+
+
+def zesFirmwareGetProperties(hFirmware, pProperties):
+    """Wraps API:
+    ze_result_t zesFirmwareGetProperties(
+        zes_firmware_handle_t hFirmware,
+        zes_firmware_properties_t* pProperties)
+
+    Parameters:
+      hFirmware: firmware handle
+      pProperties: POINTER(zes_firmware_properties_t) - properties structure to fill
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesFirmwareGetProperties")
+    funcPtr.argtypes = [zes_firmware_handle_t, POINTER(zes_firmware_properties_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hFirmware, pProperties)
     return retVal
 
 
