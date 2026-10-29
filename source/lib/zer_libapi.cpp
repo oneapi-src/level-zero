@@ -50,7 +50,6 @@ zerGetLastErrorDescription(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -59,15 +58,11 @@ zerGetLastErrorDescription(
     {
         return ZE_RESULT_SUCCESS;
     }
-    static const zer_pfnGetLastErrorDescription_t pfnGetLastErrorDescription = [&result] {
-        auto pfnGetLastErrorDescription = ze_lib::context->zerDdiTable.load()->Global.pfnGetLastErrorDescription;
-        if( nullptr == pfnGetLastErrorDescription ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetLastErrorDescription;
+    static const zer_pfnGetLastErrorDescription_t pfnGetLastErrorDescription = [] {
+        return ze_lib::context->zerDdiTable.load()->Global.pfnGetLastErrorDescription;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetLastErrorDescription) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetLastErrorDescription( ppString );
     #else
