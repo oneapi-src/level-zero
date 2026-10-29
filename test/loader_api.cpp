@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2024-2025 Intel Corporation
+ * Copyright (C) 2024-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -15,11 +15,14 @@
 #include "zer_api.h"
 
 #include <fstream>
+#include <cerrno>
+#include <cstdio>
 
 #if defined(_WIN32)
     #include <io.h>
-    #include <cstdio>
     #include <fcntl.h>
+    #include <share.h>
+    #include <sys/stat.h>
     #include <windows.h>
     #define putenv_safe _putenv
 #else
@@ -790,47 +793,105 @@ TEST(
 
 class CaptureOutput {
 private:
-    int original_fd;
-    int fd;
+    int original_fd = -1;
     int stream;
-    char filename[50] = "/tmp/capture_output_XXXXXX";
+#if defined(_WIN32)
+    char filename[L_tmpnam_s] = {};
+#else
+    char filename[sizeof("/tmp/capture_output_XXXXXX")] = "/tmp/capture_output_XXXXXX";
+#endif
+    bool file_created = false;
+    bool ready = false;
+
+    bool Restore() {
+        if (original_fd == -1) {
+            return true;
+        }
+        fflush(nullptr);
+        const int result = _dup2(original_fd, stream);
+        const int error = errno;
+        if (result == -1) {
+            ADD_FAILURE() << "Cannot restore captured stream; errno=" << error;
+            return false;
+        }
+        const int close_result = _close(original_fd);
+        const int close_error = errno;
+        original_fd = -1;
+        if (close_result == -1) {
+            ADD_FAILURE() << "Cannot close saved stream descriptor; errno=" << close_error;
+            return false;
+        }
+        return true;
+    }
 
 public:
     enum { Stdout = 1, Stderr = 2 };
 
     CaptureOutput(int stream_) : stream(stream_) {
         original_fd = _dup(stream);
+        const int dup_error = errno;
+        if (original_fd == -1) {
+            ADD_FAILURE() << "Cannot duplicate stream; errno=" << dup_error;
+            return;
+        }
+        int fd = -1;
 #if defined(__linux__)
         fd = mkstemp(filename);
+        const int open_error = errno;
+        if (fd == -1) {
+            ADD_FAILURE() << "Cannot create capture file; errno=" << open_error;
+            return;
+        }
 #elif defined(_WIN32)
-        tmpnam_s(filename, sizeof(filename));
-        _sopen_s(&fd, filename, _O_CREAT | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+        const errno_t name_result = tmpnam_s(filename, sizeof(filename));
+        if (name_result != 0) {
+            ADD_FAILURE() << "Cannot generate capture filename; tmpnam_s=" << name_result;
+            return;
+        }
+        const errno_t open_result = _sopen_s(&fd, filename, _O_CREAT | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+        if (open_result != 0) {
+            ADD_FAILURE() << "Cannot open capture file; _sopen_s=" << open_result;
+            return;
+        }
 #endif
+        file_created = true;
         fflush(nullptr);
-        _dup2(fd, stream);
-        _close(fd);
+        const int redirect_result = _dup2(fd, stream);
+        const int redirect_error = errno;
+        const int close_result = _close(fd);
+        const int close_error = errno;
+        if (redirect_result == -1) {
+            ADD_FAILURE() << "Cannot redirect capture stream; errno=" << redirect_error;
+        }
+        if (close_result == -1) {
+            ADD_FAILURE() << "Cannot close capture descriptor; errno=" << close_error;
+        }
+        if (redirect_result == -1 || close_result == -1) {
+            return;
+        }
+        ready = true;
     }
 
     ~CaptureOutput() {
-        if (original_fd != -1) {
-            fflush(nullptr);
-            _dup2(original_fd, stream);
-            _close(original_fd);
-            original_fd = -1;
-        }
-        if (remove(filename) != 0) {
-            std::cerr << "Deleting file " << filename << " failed.";
+        Restore();
+        if (file_created && remove(filename) != 0) {
+            ADD_FAILURE() << "Deleting capture file '" << filename << "' failed; errno=" << errno;
         }
     }
 
+    bool IsReady() const {
+        return ready;
+    }
+
     std::string GetOutput() {
-        if (original_fd != -1) {
-            fflush(nullptr);
-            _dup2(original_fd, stream);
-            _close(original_fd);
-            original_fd = -1;
+        if (!Restore()) {
+            return {};
         }
         std::ifstream stream(filename);
+        if (!stream.is_open()) {
+            ADD_FAILURE() << "Cannot read capture file '" << filename << "'";
+            return {};
+        }
         std::string output = std::string((std::istreambuf_iterator<char>(stream)),
             std::istreambuf_iterator<char>());
         return output;
@@ -846,6 +907,7 @@ TEST(
     desc.pNext = nullptr;
 
     CaptureOutput capture(CaptureOutput::Stdout);
+    ASSERT_TRUE(capture.IsReady()) << "Stdout capture setup failed";
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
 
     std::string output = capture.GetOutput();

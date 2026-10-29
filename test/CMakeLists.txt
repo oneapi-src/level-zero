@@ -319,8 +319,8 @@ else()
   set_property(TEST tests_multi_driver_stdout APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_ALT_DRIVERS=$<TARGET_FILE:ze_null_test1>,$<TARGET_FILE:ze_null_test2>")
 endif()
 
-add_test(NAME tests_sigle_driver_stdout COMMAND tests --gtest_filter=*GivenZeInitDriverWhenCalledThenNoOutputIsPrintedToStdout)
-set_property(TEST tests_sigle_driver_stdout PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+add_test(NAME tests_single_driver_stdout COMMAND tests --gtest_filter=*GivenZeInitDriverWhenCalledThenNoOutputIsPrintedToStdout)
+set_property(TEST tests_single_driver_stdout PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 
 add_test(NAME tests_multi_driver_drivergetproperties_sort COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingDriverGetPropertiesThenExpectSuccess)
 if (MSVC)
