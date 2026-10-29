@@ -263,6 +263,21 @@ The Linux Dependencies and Windows Dependencies columns list the external librar
 
 RELEASE NOTES
 -------------
+Version 0.1.4
+- **New API Functions:**
+  - Driver: `zesDriverGetProperties`, `zesDriverGetExtensionProperties`, `zesDriverGetExtensionFunctionAddress`, `zesDriverEventListenEx`, `zesDriverEventRegisterExt`, `zesDriverEventListenExt`
+  - Device: `zesDeviceGetState`, `zesDeviceResetExt`, `zesDeviceEventRegister`, `zesDeviceGetHealthStatusExt`, `zesDeviceSetHealthStatusExt`
+  - Firmware: `zesDeviceEnumFirmwares`, `zesFirmwareGetProperties`
+  - Power: `zesPowerGetUsage`, `zesPowerGetLimitsExt2`, `zesPowerSetLimitsExt2`, `zesPowerGetEnergyThreshold`, `zesPowerSetEnergyThreshold`
+  - Temperature: `zesTemperatureSetConfig`
+  - Engine: `zesEngineGetActivityExt`
+  - Standby: `zesDeviceEnumStandbyDomains`, `zesStandbyGetProperties`, `zesStandbyGetMode`, `zesStandbySetMode`
+  - VF Management (experimental): `zesDeviceEnumEnabledVFExp`, `zesVFManagementGetVFCapabilitiesExp2`, `zesVFManagementGetVFEngineUtilizationExp2`, `zesVFManagementGetVFMemoryUtilizationExp2`
+  - RAS: `zesDeviceEnumRasErrorSets`, `zesRasGetProperties`, `zesRasGetSupportedCategoriesExp`, `zesRasGetStateExp2`, `zesRasGetConfigExp`, `zesRasSetConfigExp`, `zesRasClearStateExp`
+  - Info Log: `zesDriverEnumInfoLogsExt`, `zesInfoLogGetPropertiesExt`, `zesInfoLogCreateInstanceExt`, `zesInfoLogInstanceReadWithMetadataExt`, `zesInfoLogInstancePeekWithMetadataExt`, `zesInfoLogInstanceDeleteExt`
+- **Documentation:**
+  - Added Linux Dependencies and Windows Dependencies columns to the SUPPORTED APIs table
+
 Version 0.1.3
 - **Packaging:**
   - `pyzes` is now a package (`pyzes/__init__.py`) instead of a single `pyzes.py` module. `import pyzes` and `from pyzes import *` are unchanged.
