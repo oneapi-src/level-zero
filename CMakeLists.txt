@@ -42,10 +42,16 @@ include(FetchContent)
 
 if(BUILD_L0_LOADER_TESTS)
 	set(INSTALL_GTEST OFF)
+    # FIND_PACKAGE_ARGS (CMake 3.24+) uses an installed GTest 1.14.0 or newer
+    # when one is found, and downloads v1.14.0 otherwise.
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+        set(GTEST_FIND_PACKAGE_ARGS FIND_PACKAGE_ARGS 1.14.0 NAMES GTest)
+    endif()
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG        v1.14.0
+        ${GTEST_FIND_PACKAGE_ARGS}
     )
     add_library(GTest::GTest INTERFACE IMPORTED)
     target_link_libraries(GTest::GTest INTERFACE gtest_main)
