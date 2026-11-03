@@ -1,0 +1,71 @@
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to attach the abicheck baseline to
+        required: true
+
+permissions: read-all
+
+defaults:
+  run:
+    shell: bash
+
+# Stores the ABI facts of a release (loader + both layers, one zstd JSON
+# asset, about 1.4 MB) so build-quick.yml compares PRs against the shipped
+# ABI without rebuilding the tag. Built with the same Release flags and
+# Ubuntu 24.04 toolchain as build-quick.yml's ubuntu:24.04 leg. Write-once: a re-run never replaces the asset; to
+# re-baseline, delete it deliberately first.
+
+jobs:
+  baseline:
+    if: github.repository_owner == 'oneapi-src'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      ASSET: level-zero.abicheck-bundle.json.zst
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: cfg
+          sparse-checkout: .github
+      - name: Build and stage ${{ env.TAG }}
+        run: |
+          cmake -B build -D CMAKE_BUILD_TYPE=Release
+          cmake --build build -j$(nproc)
+          cmake --install build --prefix "$PWD/abi-inst"
+          mkdir -p abi/lib
+          cp -a abi-inst/include abi/
+          cp -a abi-inst/lib/libze_loader.so* abi-inst/lib/libze_validation_layer.so* abi-inst/lib/libze_tracing_layer.so* abi/lib/
+      - name: Record facts
+        uses: abicheck/abicheck@ad964ac65f3352aa78e79c9b646fb70c620666dd # main 2026-10-23; keep in sync with build-quick.yml
+        with:
+          old-library: abi
+          new-library: abi
+          old-header: abi/include/level_zero
+          new-header: abi/include/level_zero
+          old-version: ${{ env.TAG }}
+          new-version: ${{ env.TAG }}
+          build-config: cfg/.github/abicheck.yml
+          python-version: '3.15t'
+          extra-args: --bundle-facts-out level-zero.abicheck-bundle.json
+          pr-comment: 'false'
+          fail-on-breaking: 'false'
+          fail-on-api-break: 'false'
+      - name: Attach to release (write-once)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          zstd -q -19 -T0 level-zero.abicheck-bundle.json -o "$ASSET"
+          if gh release view "$TAG" --json assets -q '.assets[].name' | grep -Fxq "$ASSET"; then
+            echo "::error::$ASSET already exists on $TAG. The baseline is write-once; delete it deliberately (gh release delete-asset $TAG $ASSET) to re-baseline." >&2
+            exit 1
+          fi
+          gh release upload "$TAG" "$ASSET"

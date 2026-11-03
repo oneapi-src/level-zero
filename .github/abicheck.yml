@@ -1,0 +1,5 @@
+# Trusted abicheck config, passed explicitly (build-config) by the abicheck
+# jobs. The stored release baseline (v1.34.0: 133 MB of JSON, about 5M nodes
+# counting keys and scalars) is above abicheck's default decode ceiling of 1M.
+resource_limits:
+  max_bundle_facts_decode_nodes: 12000000
