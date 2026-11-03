@@ -54,7 +54,7 @@ zeInit(
     )
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
-    #ifdef L0_STATIC_LOADER_BUILD
+    #if defined(L0_STATIC_LOADER_BUILD) || defined(L0_STATIC_LOADER_BUILD_NO_DLL)
     if (!ze_lib::context) {
         ze_lib::context = new ze_lib::context_t;
     }
@@ -242,7 +242,7 @@ zeInitDrivers(
     )
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
-    #ifdef L0_STATIC_LOADER_BUILD
+    #if defined(L0_STATIC_LOADER_BUILD) || defined(L0_STATIC_LOADER_BUILD_NO_DLL)
     if (!ze_lib::context) {
         ze_lib::context = new ze_lib::context_t;
     }

@@ -10,7 +10,7 @@
 
 namespace ze_lib
 {
-#ifndef L0_STATIC_LOADER_BUILD
+#if !defined(L0_STATIC_LOADER_BUILD) && !defined(L0_STATIC_LOADER_BUILD_NO_DLL)
     void __attribute__((constructor)) createLibContext() {
         context = new context_t;
     }
