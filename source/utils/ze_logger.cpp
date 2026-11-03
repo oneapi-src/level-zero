@@ -54,6 +54,7 @@ static bool winEnableAnsiColor(int fd) {
 
 #else
 #include <unistd.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pwd.h>
@@ -68,6 +69,117 @@ namespace loader {
 // ---------------------------------------------------------------------------
 // ANSI color codes — only emitted when writing to a tty.
 // ---------------------------------------------------------------------------
+namespace {
+
+std::string currentProcessName() {
+#ifdef _WIN32
+    char module_path[MAX_PATH] = {};
+    const DWORD len = GetModuleFileNameA(nullptr, module_path, MAX_PATH);
+    if (len != 0) {
+        return sanitizeFileNameComponent(baseNameFromPath(std::string(module_path, len)));
+    }
+#else
+    char module_path[PATH_MAX] = {};
+    const ssize_t len = readlink("/proc/self/exe", module_path, sizeof(module_path) - 1);
+    if (len > 0) {
+        module_path[len] = '\0';
+        return sanitizeFileNameComponent(baseNameFromPath(module_path));
+    }
+#endif
+    return "process";
+}
+
+std::string startupTimestampForFileName() {
+    const auto now = std::chrono::system_clock::now();
+    const auto now_t = std::chrono::system_clock::to_time_t(now);
+    std::tm tm_buf{};
+#ifdef _WIN32
+    localtime_s(&tm_buf, &now_t);
+#else
+    localtime_r(&now_t, &tm_buf);
+#endif
+
+    char timestamp[32] = {};
+    std::strftime(timestamp, sizeof(timestamp), "%Y%m%d-%H%M%S", &tm_buf);
+    return timestamp;
+}
+
+} // namespace (internal process-runtime helpers)
+
+// The filename-pattern helpers below are defined at namespace scope (and
+// declared in ze_logger.h) so unit tests can exercise them directly. They are
+// pure string transforms except that expandLogFilePattern() reads the process
+// pid/name/startup-time to fill the %P/%N/%T tokens.
+std::string baseNameFromPath(const std::string &path) {
+    const std::size_t pos = path.find_last_of("\\/");
+    if (pos == std::string::npos) {
+        return path;
+    }
+    return path.substr(pos + 1);
+}
+
+std::string sanitizeFileNameComponent(std::string value) {
+    if (value.empty()) {
+        return "process";
+    }
+    for (char &ch : value) {
+        const unsigned char uch = static_cast<unsigned char>(ch);
+        if (uch < 0x20 || ch == '<' || ch == '>' || ch == ':' || ch == '"' ||
+            ch == '/' || ch == '\\' || ch == '|' || ch == '?' || ch == '*') {
+            ch = '_';
+        }
+    }
+    return value;
+}
+
+std::string expandLogFilePattern(const std::string &pattern) {
+    // Fast path: a filename without any token marker (e.g. the default
+    // "ze_loader.log") is used as-is, avoiding the pid/process-name/timestamp
+    // lookups and their syscalls.
+    if (pattern.find('%') == std::string::npos) {
+        return pattern;
+    }
+
+    // Compute the token values per call. This is not a hot path -- createLogger()
+    // resolves the filename once per process at logger creation -- and computing
+    // the pid here (rather than caching it) keeps %P correct after fork(): a
+    // cached static would otherwise expand to the parent's pid in the child.
+    const std::string pid = std::to_string(static_cast<long long>(GET_PID()));
+    const std::string process_name = currentProcessName();
+    const std::string timestamp = startupTimestampForFileName();
+
+    std::string expanded;
+    expanded.reserve(pattern.size() + pid.size() + process_name.size() + timestamp.size());
+
+    for (std::size_t i = 0; i < pattern.size(); ++i) {
+        if (pattern[i] == '%' && i + 1 < pattern.size()) {
+            switch (pattern[i + 1]) {
+                case '%':
+                    expanded.push_back('%');
+                    ++i;
+                    continue;
+                case 'P':
+                    expanded += pid;
+                    ++i;
+                    continue;
+                case 'N':
+                    expanded += process_name;
+                    ++i;
+                    continue;
+                case 'T':
+                    expanded += timestamp;
+                    ++i;
+                    continue;
+                default:
+                    break;
+            }
+        }
+        expanded.push_back(pattern[i]);
+    }
+
+    return expanded;
+}
+
 namespace {
 
 struct AnsiColor {
@@ -574,12 +686,11 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
     if (loader_file.empty()) {
         loader_file = LOADER_LOG_FILE;
     }
-
-#ifdef _WIN32
-    std::string full_log_file_path = log_directory + "\\" + loader_file;
-#else
-    std::string full_log_file_path = log_directory + "/" + loader_file;
-#endif
+    // ZEL_LOADER_LOG_FILE pattern tokens (%P, %N, %T, %%) are expanded lazily,
+    // only when a file sink is actually created (see below), so the no-op and
+    // console paths never pay for the pid/exe-path/time lookups. A filename
+    // without tokens is used unchanged, preserving existing behaviour.
+    std::string resolved_loader_file;
 
     const uint32_t logging_mode = getenv_tomode("ZEL_ENABLE_LOADER_LOGGING");
     const bool logging_enabled = (logging_mode != 0);
@@ -667,6 +778,17 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
             }
         }
 #endif
+        // Resolve the %P/%N/%T/%% tokens now that a file sink is definitely used.
+        resolved_loader_file = expandLogFilePattern(loader_file);
+        if (resolved_loader_file.empty()) {
+            resolved_loader_file = loader_file;
+        }
+#ifdef _WIN32
+        std::string full_log_file_path = log_directory + "\\" + resolved_loader_file;
+#else
+        std::string full_log_file_path = log_directory + "/" + resolved_loader_file;
+#endif
+
         logger = std::shared_ptr<ZeLogger>(new ZeLogger(full_log_file_path, level, log_pattern));
         output_dest = full_log_file_path;
     }
@@ -679,6 +801,9 @@ std::shared_ptr<ZeLogger> createLogger(const std::string &caller) {
         cfg += "\n  ZEL_LOADER_LOGGING_LEVEL         : " + log_level;
         cfg += "\n  ZEL_LOADER_LOG_DIR               : " + log_directory;
         cfg += "\n  ZEL_LOADER_LOG_FILE              : " + loader_file;
+        if (!log_console) {
+            cfg += "\n  Resolved log filename            : " + resolved_loader_file;
+        }
         cfg += "\n  ZEL_LOADER_LOG_PATTERN           : " + log_pattern;
         cfg += "\n  Output                           : " + output_dest;
         logger->info(cfg);
