@@ -1051,6 +1051,11 @@ else()
   set_property(TEST init_driver_unit_tests PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;")
 endif()
 
+if(BUILD_STATIC)
+  add_test(NAME tests_static_missing_api_called_twice COMMAND tests --gtest_filter=*StaticLoaderMissingApi*GivenApiMissingFromSharedLoaderWhenCallingApiTwiceThenUnsupportedFeatureIsReturnedBothTimes*)
+  set_property(TEST tests_static_missing_api_called_twice PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+endif()
+
 
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.

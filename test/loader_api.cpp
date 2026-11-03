@@ -4059,4 +4059,33 @@ TEST_F(DriverOrderingTest,
     EXPECT_EQ(0, strcmp(errorDesc, "ERROR UNSUPPORTED FEATURE"));
   }
 
+#ifdef L0_STATIC_LOADER_BUILD
+  // The static loader caches each API's function pointer on first call. When the
+  // shared loader does not provide an API, every call must keep returning
+  // ZE_RESULT_ERROR_UNSUPPORTED_FEATURE instead of calling the cached nullptr.
+  // Must run in its own process so zeContextSystemBarrier is not already cached.
+  TEST(
+      StaticLoaderMissingApi,
+      GivenApiMissingFromSharedLoaderWhenCallingApiTwiceThenUnsupportedFeatureIsReturnedBothTimes)
+  {
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    // Emulate an older shared loader that does not export this API.
+    ze_dditable_t *ddiTable = ze_lib::context->zeDdiTable.load();
+    ASSERT_NE(nullptr, ddiTable);
+    auto savedPfn = ddiTable->Context.pfnSystemBarrier;
+    ddiTable->Context.pfnSystemBarrier = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, zeContextSystemBarrier(nullptr, nullptr));
+    EXPECT_EQ(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, zeContextSystemBarrier(nullptr, nullptr));
+
+    ddiTable->Context.pfnSystemBarrier = savedPfn;
+  }
+#endif // L0_STATIC_LOADER_BUILD
+
 } // namespace

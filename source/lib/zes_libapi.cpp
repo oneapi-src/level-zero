@@ -128,22 +128,17 @@ zesDriverGet(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
     if (!ze_lib::context || ze_lib::context->zesDdiTable == nullptr) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverGet_t pfnGet = [&result] {
-        auto pfnGet = ze_lib::context->zesDdiTable.load()->Driver.pfnGet;
-        if( nullptr == pfnGet ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGet;
+    static const zes_pfnDriverGet_t pfnGet = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnGet;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGet) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGet( pCount, phDrivers );
     #else
@@ -200,19 +195,14 @@ zesDriverGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnDriverGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hDriver, pDriverProperties );
     #else
@@ -273,19 +263,14 @@ zesDriverGetExtensionProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverGetExtensionProperties_t pfnGetExtensionProperties = [&result] {
-        auto pfnGetExtensionProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetExtensionProperties;
-        if( nullptr == pfnGetExtensionProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetExtensionProperties;
+    static const zes_pfnDriverGetExtensionProperties_t pfnGetExtensionProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnGetExtensionProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetExtensionProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
     #else
@@ -340,19 +325,14 @@ zesDriverGetExtensionFunctionAddress(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverGetExtensionFunctionAddress_t pfnGetExtensionFunctionAddress = [&result] {
-        auto pfnGetExtensionFunctionAddress = ze_lib::context->zesDdiTable.load()->Driver.pfnGetExtensionFunctionAddress;
-        if( nullptr == pfnGetExtensionFunctionAddress ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetExtensionFunctionAddress;
+    static const zes_pfnDriverGetExtensionFunctionAddress_t pfnGetExtensionFunctionAddress = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnGetExtensionFunctionAddress;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetExtensionFunctionAddress) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
     #else
@@ -417,19 +397,14 @@ zesDeviceGet(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGet_t pfnGet = [&result] {
-        auto pfnGet = ze_lib::context->zesDdiTable.load()->Device.pfnGet;
-        if( nullptr == pfnGet ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGet;
+    static const zes_pfnDeviceGet_t pfnGet = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGet;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGet) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGet( hDriver, pCount, phDevices );
     #else
@@ -484,19 +459,14 @@ zesDeviceGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Device.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnDeviceGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hDevice, pProperties );
     #else
@@ -549,19 +519,14 @@ zesDeviceGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Device.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnDeviceGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hDevice, pState );
     #else
@@ -623,19 +588,14 @@ zesDeviceReset(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceReset_t pfnReset = [&result] {
-        auto pfnReset = ze_lib::context->zesDdiTable.load()->Device.pfnReset;
-        if( nullptr == pfnReset ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnReset;
+    static const zes_pfnDeviceReset_t pfnReset = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnReset;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnReset) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnReset( hDevice, force );
     #else
@@ -698,19 +658,14 @@ zesDeviceResetExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceResetExt_t pfnResetExt = [&result] {
-        auto pfnResetExt = ze_lib::context->zesDdiTable.load()->Device.pfnResetExt;
-        if( nullptr == pfnResetExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnResetExt;
+    static const zes_pfnDeviceResetExt_t pfnResetExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnResetExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnResetExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnResetExt( hDevice, pProperties );
     #else
@@ -780,19 +735,14 @@ zesDeviceProcessesGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceProcessesGetState_t pfnProcessesGetState = [&result] {
-        auto pfnProcessesGetState = ze_lib::context->zesDdiTable.load()->Device.pfnProcessesGetState;
-        if( nullptr == pfnProcessesGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnProcessesGetState;
+    static const zes_pfnDeviceProcessesGetState_t pfnProcessesGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnProcessesGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnProcessesGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnProcessesGetState( hDevice, pCount, pProcesses );
     #else
@@ -844,19 +794,14 @@ zesDevicePciGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDevicePciGetProperties_t pfnPciGetProperties = [&result] {
-        auto pfnPciGetProperties = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetProperties;
-        if( nullptr == pfnPciGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnPciGetProperties;
+    static const zes_pfnDevicePciGetProperties_t pfnPciGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnPciGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnPciGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnPciGetProperties( hDevice, pProperties );
     #else
@@ -908,19 +853,14 @@ zesDevicePciGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDevicePciGetState_t pfnPciGetState = [&result] {
-        auto pfnPciGetState = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetState;
-        if( nullptr == pfnPciGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnPciGetState;
+    static const zes_pfnDevicePciGetState_t pfnPciGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnPciGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnPciGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnPciGetState( hDevice, pState );
     #else
@@ -980,19 +920,14 @@ zesDevicePciGetBars(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDevicePciGetBars_t pfnPciGetBars = [&result] {
-        auto pfnPciGetBars = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetBars;
-        if( nullptr == pfnPciGetBars ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnPciGetBars;
+    static const zes_pfnDevicePciGetBars_t pfnPciGetBars = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnPciGetBars;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnPciGetBars) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnPciGetBars( hDevice, pCount, pProperties );
     #else
@@ -1045,19 +980,14 @@ zesDevicePciGetStats(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDevicePciGetStats_t pfnPciGetStats = [&result] {
-        auto pfnPciGetStats = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetStats;
-        if( nullptr == pfnPciGetStats ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnPciGetStats;
+    static const zes_pfnDevicePciGetStats_t pfnPciGetStats = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnPciGetStats;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnPciGetStats) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnPciGetStats( hDevice, pStats );
     #else
@@ -1108,19 +1038,14 @@ zesDeviceSetOverclockWaiver(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceSetOverclockWaiver_t pfnSetOverclockWaiver = [&result] {
-        auto pfnSetOverclockWaiver = ze_lib::context->zesDdiTable.load()->Device.pfnSetOverclockWaiver;
-        if( nullptr == pfnSetOverclockWaiver ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetOverclockWaiver;
+    static const zes_pfnDeviceSetOverclockWaiver_t pfnSetOverclockWaiver = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnSetOverclockWaiver;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetOverclockWaiver) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetOverclockWaiver( hDevice );
     #else
@@ -1175,19 +1100,14 @@ zesDeviceGetOverclockDomains(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetOverclockDomains_t pfnGetOverclockDomains = [&result] {
-        auto pfnGetOverclockDomains = ze_lib::context->zesDdiTable.load()->Device.pfnGetOverclockDomains;
-        if( nullptr == pfnGetOverclockDomains ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetOverclockDomains;
+    static const zes_pfnDeviceGetOverclockDomains_t pfnGetOverclockDomains = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGetOverclockDomains;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetOverclockDomains) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetOverclockDomains( hDevice, pOverclockDomains );
     #else
@@ -1247,19 +1167,14 @@ zesDeviceGetOverclockControls(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetOverclockControls_t pfnGetOverclockControls = [&result] {
-        auto pfnGetOverclockControls = ze_lib::context->zesDdiTable.load()->Device.pfnGetOverclockControls;
-        if( nullptr == pfnGetOverclockControls ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetOverclockControls;
+    static const zes_pfnDeviceGetOverclockControls_t pfnGetOverclockControls = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGetOverclockControls;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetOverclockControls) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetOverclockControls( hDevice, domainType, pAvailableControls );
     #else
@@ -1312,19 +1227,14 @@ zesDeviceResetOverclockSettings(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceResetOverclockSettings_t pfnResetOverclockSettings = [&result] {
-        auto pfnResetOverclockSettings = ze_lib::context->zesDdiTable.load()->Device.pfnResetOverclockSettings;
-        if( nullptr == pfnResetOverclockSettings ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnResetOverclockSettings;
+    static const zes_pfnDeviceResetOverclockSettings_t pfnResetOverclockSettings = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnResetOverclockSettings;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnResetOverclockSettings) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnResetOverclockSettings( hDevice, onShippedState );
     #else
@@ -1386,19 +1296,14 @@ zesDeviceReadOverclockState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceReadOverclockState_t pfnReadOverclockState = [&result] {
-        auto pfnReadOverclockState = ze_lib::context->zesDdiTable.load()->Device.pfnReadOverclockState;
-        if( nullptr == pfnReadOverclockState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnReadOverclockState;
+    static const zes_pfnDeviceReadOverclockState_t pfnReadOverclockState = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnReadOverclockState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnReadOverclockState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
     #else
@@ -1460,19 +1365,14 @@ zesDeviceEnumOverclockDomains(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumOverclockDomains_t pfnEnumOverclockDomains = [&result] {
-        auto pfnEnumOverclockDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumOverclockDomains;
-        if( nullptr == pfnEnumOverclockDomains ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumOverclockDomains;
+    static const zes_pfnDeviceEnumOverclockDomains_t pfnEnumOverclockDomains = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumOverclockDomains;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumOverclockDomains) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumOverclockDomains( hDevice, pCount, phDomainHandle );
     #else
@@ -1525,19 +1425,14 @@ zesOverclockGetDomainProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockGetDomainProperties_t pfnGetDomainProperties = [&result] {
-        auto pfnGetDomainProperties = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainProperties;
-        if( nullptr == pfnGetDomainProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetDomainProperties;
+    static const zes_pfnOverclockGetDomainProperties_t pfnGetDomainProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetDomainProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetDomainProperties( hDomainHandle, pDomainProperties );
     #else
@@ -1590,19 +1485,14 @@ zesOverclockGetDomainVFProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockGetDomainVFProperties_t pfnGetDomainVFProperties = [&result] {
-        auto pfnGetDomainVFProperties = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainVFProperties;
-        if( nullptr == pfnGetDomainVFProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetDomainVFProperties;
+    static const zes_pfnOverclockGetDomainVFProperties_t pfnGetDomainVFProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainVFProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetDomainVFProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetDomainVFProperties( hDomainHandle, pVFProperties );
     #else
@@ -1659,19 +1549,14 @@ zesOverclockGetDomainControlProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockGetDomainControlProperties_t pfnGetDomainControlProperties = [&result] {
-        auto pfnGetDomainControlProperties = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainControlProperties;
-        if( nullptr == pfnGetDomainControlProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetDomainControlProperties;
+    static const zes_pfnOverclockGetDomainControlProperties_t pfnGetDomainControlProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainControlProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetDomainControlProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
     #else
@@ -1728,19 +1613,14 @@ zesOverclockGetControlCurrentValue(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockGetControlCurrentValue_t pfnGetControlCurrentValue = [&result] {
-        auto pfnGetControlCurrentValue = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlCurrentValue;
-        if( nullptr == pfnGetControlCurrentValue ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetControlCurrentValue;
+    static const zes_pfnOverclockGetControlCurrentValue_t pfnGetControlCurrentValue = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlCurrentValue;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetControlCurrentValue) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
     #else
@@ -1798,19 +1678,14 @@ zesOverclockGetControlPendingValue(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockGetControlPendingValue_t pfnGetControlPendingValue = [&result] {
-        auto pfnGetControlPendingValue = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlPendingValue;
-        if( nullptr == pfnGetControlPendingValue ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetControlPendingValue;
+    static const zes_pfnOverclockGetControlPendingValue_t pfnGetControlPendingValue = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlPendingValue;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetControlPendingValue) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetControlPendingValue( hDomainHandle, DomainControl, pValue );
     #else
@@ -1869,19 +1744,14 @@ zesOverclockSetControlUserValue(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockSetControlUserValue_t pfnSetControlUserValue = [&result] {
-        auto pfnSetControlUserValue = ze_lib::context->zesDdiTable.load()->Overclock.pfnSetControlUserValue;
-        if( nullptr == pfnSetControlUserValue ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetControlUserValue;
+    static const zes_pfnOverclockSetControlUserValue_t pfnSetControlUserValue = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnSetControlUserValue;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetControlUserValue) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
     #else
@@ -1940,19 +1810,14 @@ zesOverclockGetControlState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockGetControlState_t pfnGetControlState = [&result] {
-        auto pfnGetControlState = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlState;
-        if( nullptr == pfnGetControlState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetControlState;
+    static const zes_pfnOverclockGetControlState_t pfnGetControlState = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetControlState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
     #else
@@ -2014,19 +1879,14 @@ zesOverclockGetVFPointValues(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockGetVFPointValues_t pfnGetVFPointValues = [&result] {
-        auto pfnGetVFPointValues = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetVFPointValues;
-        if( nullptr == pfnGetVFPointValues ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFPointValues;
+    static const zes_pfnOverclockGetVFPointValues_t pfnGetVFPointValues = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnGetVFPointValues;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFPointValues) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
     #else
@@ -2083,19 +1943,14 @@ zesOverclockSetVFPointValues(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnOverclockSetVFPointValues_t pfnSetVFPointValues = [&result] {
-        auto pfnSetVFPointValues = ze_lib::context->zesDdiTable.load()->Overclock.pfnSetVFPointValues;
-        if( nullptr == pfnSetVFPointValues ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetVFPointValues;
+    static const zes_pfnOverclockSetVFPointValues_t pfnSetVFPointValues = [] {
+        return ze_lib::context->zesDdiTable.load()->Overclock.pfnSetVFPointValues;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetVFPointValues) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
     #else
@@ -2157,19 +2012,14 @@ zesDeviceEnumDiagnosticTestSuites(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumDiagnosticTestSuites_t pfnEnumDiagnosticTestSuites = [&result] {
-        auto pfnEnumDiagnosticTestSuites = ze_lib::context->zesDdiTable.load()->Device.pfnEnumDiagnosticTestSuites;
-        if( nullptr == pfnEnumDiagnosticTestSuites ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumDiagnosticTestSuites;
+    static const zes_pfnDeviceEnumDiagnosticTestSuites_t pfnEnumDiagnosticTestSuites = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumDiagnosticTestSuites;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumDiagnosticTestSuites) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumDiagnosticTestSuites( hDevice, pCount, phDiagnostics );
     #else
@@ -2222,19 +2072,14 @@ zesDiagnosticsGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDiagnosticsGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Diagnostics.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnDiagnosticsGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Diagnostics.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hDiagnostics, pProperties );
     #else
@@ -2298,19 +2143,14 @@ zesDiagnosticsGetTests(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDiagnosticsGetTests_t pfnGetTests = [&result] {
-        auto pfnGetTests = ze_lib::context->zesDdiTable.load()->Diagnostics.pfnGetTests;
-        if( nullptr == pfnGetTests ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetTests;
+    static const zes_pfnDiagnosticsGetTests_t pfnGetTests = [] {
+        return ze_lib::context->zesDdiTable.load()->Diagnostics.pfnGetTests;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetTests) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetTests( hDiagnostics, pCount, pTests );
     #else
@@ -2376,19 +2216,14 @@ zesDiagnosticsRunTests(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDiagnosticsRunTests_t pfnRunTests = [&result] {
-        auto pfnRunTests = ze_lib::context->zesDdiTable.load()->Diagnostics.pfnRunTests;
-        if( nullptr == pfnRunTests ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnRunTests;
+    static const zes_pfnDiagnosticsRunTests_t pfnRunTests = [] {
+        return ze_lib::context->zesDdiTable.load()->Diagnostics.pfnRunTests;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnRunTests) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
     #else
@@ -2440,19 +2275,14 @@ zesDeviceEccAvailable(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEccAvailable_t pfnEccAvailable = [&result] {
-        auto pfnEccAvailable = ze_lib::context->zesDdiTable.load()->Device.pfnEccAvailable;
-        if( nullptr == pfnEccAvailable ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEccAvailable;
+    static const zes_pfnDeviceEccAvailable_t pfnEccAvailable = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEccAvailable;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEccAvailable) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEccAvailable( hDevice, pAvailable );
     #else
@@ -2504,19 +2334,14 @@ zesDeviceEccConfigurable(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEccConfigurable_t pfnEccConfigurable = [&result] {
-        auto pfnEccConfigurable = ze_lib::context->zesDdiTable.load()->Device.pfnEccConfigurable;
-        if( nullptr == pfnEccConfigurable ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEccConfigurable;
+    static const zes_pfnDeviceEccConfigurable_t pfnEccConfigurable = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEccConfigurable;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEccConfigurable) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEccConfigurable( hDevice, pConfigurable );
     #else
@@ -2568,19 +2393,14 @@ zesDeviceGetEccState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetEccState_t pfnGetEccState = [&result] {
-        auto pfnGetEccState = ze_lib::context->zesDdiTable.load()->Device.pfnGetEccState;
-        if( nullptr == pfnGetEccState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetEccState;
+    static const zes_pfnDeviceGetEccState_t pfnGetEccState = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGetEccState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetEccState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetEccState( hDevice, pState );
     #else
@@ -2641,19 +2461,14 @@ zesDeviceSetEccState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceSetEccState_t pfnSetEccState = [&result] {
-        auto pfnSetEccState = ze_lib::context->zesDdiTable.load()->Device.pfnSetEccState;
-        if( nullptr == pfnSetEccState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetEccState;
+    static const zes_pfnDeviceSetEccState_t pfnSetEccState = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnSetEccState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetEccState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetEccState( hDevice, newState, pState );
     #else
@@ -2715,19 +2530,14 @@ zesDeviceEnumEngineGroups(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumEngineGroups_t pfnEnumEngineGroups = [&result] {
-        auto pfnEnumEngineGroups = ze_lib::context->zesDdiTable.load()->Device.pfnEnumEngineGroups;
-        if( nullptr == pfnEnumEngineGroups ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumEngineGroups;
+    static const zes_pfnDeviceEnumEngineGroups_t pfnEnumEngineGroups = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumEngineGroups;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumEngineGroups) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumEngineGroups( hDevice, pCount, phEngine );
     #else
@@ -2779,19 +2589,14 @@ zesEngineGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnEngineGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Engine.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnEngineGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Engine.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hEngine, pProperties );
     #else
@@ -2846,19 +2651,14 @@ zesEngineGetActivity(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnEngineGetActivity_t pfnGetActivity = [&result] {
-        auto pfnGetActivity = ze_lib::context->zesDdiTable.load()->Engine.pfnGetActivity;
-        if( nullptr == pfnGetActivity ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetActivity;
+    static const zes_pfnEngineGetActivity_t pfnGetActivity = [] {
+        return ze_lib::context->zesDdiTable.load()->Engine.pfnGetActivity;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetActivity) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetActivity( hEngine, pStats );
     #else
@@ -2911,19 +2711,14 @@ zesDeviceEventRegister(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEventRegister_t pfnEventRegister = [&result] {
-        auto pfnEventRegister = ze_lib::context->zesDdiTable.load()->Device.pfnEventRegister;
-        if( nullptr == pfnEventRegister ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEventRegister;
+    static const zes_pfnDeviceEventRegister_t pfnEventRegister = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEventRegister;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEventRegister) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEventRegister( hDevice, events );
     #else
@@ -2995,19 +2790,14 @@ zesDriverEventListen(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverEventListen_t pfnEventListen = [&result] {
-        auto pfnEventListen = ze_lib::context->zesDdiTable.load()->Driver.pfnEventListen;
-        if( nullptr == pfnEventListen ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEventListen;
+    static const zes_pfnDriverEventListen_t pfnEventListen = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnEventListen;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEventListen) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEventListen( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
     #else
@@ -3079,19 +2869,14 @@ zesDriverEventListenEx(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverEventListenEx_t pfnEventListenEx = [&result] {
-        auto pfnEventListenEx = ze_lib::context->zesDdiTable.load()->Driver.pfnEventListenEx;
-        if( nullptr == pfnEventListenEx ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEventListenEx;
+    static const zes_pfnDriverEventListenEx_t pfnEventListenEx = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnEventListenEx;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEventListenEx) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
     #else
@@ -3159,19 +2944,14 @@ zesDriverEventRegisterExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverEventRegisterExt_t pfnEventRegisterExt = [&result] {
-        auto pfnEventRegisterExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEventRegisterExt;
-        if( nullptr == pfnEventRegisterExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEventRegisterExt;
+    static const zes_pfnDriverEventRegisterExt_t pfnEventRegisterExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnEventRegisterExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEventRegisterExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEventRegisterExt( hDriver, events );
     #else
@@ -3263,19 +3043,14 @@ zesDriverEventListenExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverEventListenExt_t pfnEventListenExt = [&result] {
-        auto pfnEventListenExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEventListenExt;
-        if( nullptr == pfnEventListenExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEventListenExt;
+    static const zes_pfnDriverEventListenExt_t pfnEventListenExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnEventListenExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEventListenExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEventListenExt( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents, pDriverEvents );
     #else
@@ -3337,19 +3112,14 @@ zesDeviceEnumFabricPorts(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumFabricPorts_t pfnEnumFabricPorts = [&result] {
-        auto pfnEnumFabricPorts = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFabricPorts;
-        if( nullptr == pfnEnumFabricPorts ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumFabricPorts;
+    static const zes_pfnDeviceEnumFabricPorts_t pfnEnumFabricPorts = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumFabricPorts;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumFabricPorts) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumFabricPorts( hDevice, pCount, phPort );
     #else
@@ -3401,19 +3171,14 @@ zesFabricPortGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnFabricPortGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hPort, pProperties );
     #else
@@ -3466,19 +3231,14 @@ zesFabricPortGetLinkType(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortGetLinkType_t pfnGetLinkType = [&result] {
-        auto pfnGetLinkType = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetLinkType;
-        if( nullptr == pfnGetLinkType ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetLinkType;
+    static const zes_pfnFabricPortGetLinkType_t pfnGetLinkType = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetLinkType;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetLinkType) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetLinkType( hPort, pLinkType );
     #else
@@ -3530,19 +3290,14 @@ zesFabricPortGetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortGetConfig_t pfnGetConfig = [&result] {
-        auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetConfig;
-        if( nullptr == pfnGetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetConfig;
+    static const zes_pfnFabricPortGetConfig_t pfnGetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetConfig( hPort, pConfig );
     #else
@@ -3595,19 +3350,14 @@ zesFabricPortSetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortSetConfig_t pfnSetConfig = [&result] {
-        auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->FabricPort.pfnSetConfig;
-        if( nullptr == pfnSetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetConfig;
+    static const zes_pfnFabricPortSetConfig_t pfnSetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnSetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetConfig( hPort, pConfig );
     #else
@@ -3660,19 +3410,14 @@ zesFabricPortGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnFabricPortGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hPort, pState );
     #else
@@ -3725,19 +3470,14 @@ zesFabricPortGetThroughput(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortGetThroughput_t pfnGetThroughput = [&result] {
-        auto pfnGetThroughput = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetThroughput;
-        if( nullptr == pfnGetThroughput ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetThroughput;
+    static const zes_pfnFabricPortGetThroughput_t pfnGetThroughput = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetThroughput;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetThroughput) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetThroughput( hPort, pThroughput );
     #else
@@ -3793,19 +3533,14 @@ zesFabricPortGetFabricErrorCounters(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortGetFabricErrorCounters_t pfnGetFabricErrorCounters = [&result] {
-        auto pfnGetFabricErrorCounters = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetFabricErrorCounters;
-        if( nullptr == pfnGetFabricErrorCounters ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetFabricErrorCounters;
+    static const zes_pfnFabricPortGetFabricErrorCounters_t pfnGetFabricErrorCounters = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetFabricErrorCounters;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetFabricErrorCounters) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetFabricErrorCounters( hPort, pErrors );
     #else
@@ -3862,19 +3597,14 @@ zesFabricPortGetMultiPortThroughput(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFabricPortGetMultiPortThroughput_t pfnGetMultiPortThroughput = [&result] {
-        auto pfnGetMultiPortThroughput = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetMultiPortThroughput;
-        if( nullptr == pfnGetMultiPortThroughput ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetMultiPortThroughput;
+    static const zes_pfnFabricPortGetMultiPortThroughput_t pfnGetMultiPortThroughput = [] {
+        return ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetMultiPortThroughput;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetMultiPortThroughput) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
     #else
@@ -3936,19 +3666,14 @@ zesDeviceEnumFans(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumFans_t pfnEnumFans = [&result] {
-        auto pfnEnumFans = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFans;
-        if( nullptr == pfnEnumFans ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumFans;
+    static const zes_pfnDeviceEnumFans_t pfnEnumFans = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumFans;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumFans) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumFans( hDevice, pCount, phFan );
     #else
@@ -4000,19 +3725,14 @@ zesFanGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFanGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Fan.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnFanGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Fan.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hFan, pProperties );
     #else
@@ -4065,19 +3785,14 @@ zesFanGetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFanGetConfig_t pfnGetConfig = [&result] {
-        auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->Fan.pfnGetConfig;
-        if( nullptr == pfnGetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetConfig;
+    static const zes_pfnFanGetConfig_t pfnGetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->Fan.pfnGetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetConfig( hFan, pConfig );
     #else
@@ -4128,19 +3843,14 @@ zesFanSetDefaultMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFanSetDefaultMode_t pfnSetDefaultMode = [&result] {
-        auto pfnSetDefaultMode = ze_lib::context->zesDdiTable.load()->Fan.pfnSetDefaultMode;
-        if( nullptr == pfnSetDefaultMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetDefaultMode;
+    static const zes_pfnFanSetDefaultMode_t pfnSetDefaultMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Fan.pfnSetDefaultMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetDefaultMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetDefaultMode( hFan );
     #else
@@ -4195,19 +3905,14 @@ zesFanSetFixedSpeedMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFanSetFixedSpeedMode_t pfnSetFixedSpeedMode = [&result] {
-        auto pfnSetFixedSpeedMode = ze_lib::context->zesDdiTable.load()->Fan.pfnSetFixedSpeedMode;
-        if( nullptr == pfnSetFixedSpeedMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetFixedSpeedMode;
+    static const zes_pfnFanSetFixedSpeedMode_t pfnSetFixedSpeedMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Fan.pfnSetFixedSpeedMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetFixedSpeedMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetFixedSpeedMode( hFan, speed );
     #else
@@ -4263,19 +3968,14 @@ zesFanSetSpeedTableMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFanSetSpeedTableMode_t pfnSetSpeedTableMode = [&result] {
-        auto pfnSetSpeedTableMode = ze_lib::context->zesDdiTable.load()->Fan.pfnSetSpeedTableMode;
-        if( nullptr == pfnSetSpeedTableMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetSpeedTableMode;
+    static const zes_pfnFanSetSpeedTableMode_t pfnSetSpeedTableMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Fan.pfnSetSpeedTableMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetSpeedTableMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetSpeedTableMode( hFan, speedTable );
     #else
@@ -4334,19 +4034,14 @@ zesFanGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFanGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Fan.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnFanGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Fan.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hFan, units, pSpeed );
     #else
@@ -4408,19 +4103,14 @@ zesDeviceEnumFirmwares(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumFirmwares_t pfnEnumFirmwares = [&result] {
-        auto pfnEnumFirmwares = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFirmwares;
-        if( nullptr == pfnEnumFirmwares ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumFirmwares;
+    static const zes_pfnDeviceEnumFirmwares_t pfnEnumFirmwares = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumFirmwares;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumFirmwares) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumFirmwares( hDevice, pCount, phFirmware );
     #else
@@ -4473,19 +4163,14 @@ zesFirmwareGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFirmwareGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Firmware.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnFirmwareGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Firmware.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hFirmware, pProperties );
     #else
@@ -4543,19 +4228,14 @@ zesFirmwareFlash(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFirmwareFlash_t pfnFlash = [&result] {
-        auto pfnFlash = ze_lib::context->zesDdiTable.load()->Firmware.pfnFlash;
-        if( nullptr == pfnFlash ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnFlash;
+    static const zes_pfnFirmwareFlash_t pfnFlash = [] {
+        return ze_lib::context->zesDdiTable.load()->Firmware.pfnFlash;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnFlash) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnFlash( hFirmware, pImage, size );
     #else
@@ -4607,19 +4287,14 @@ zesFirmwareGetFlashProgress(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFirmwareGetFlashProgress_t pfnGetFlashProgress = [&result] {
-        auto pfnGetFlashProgress = ze_lib::context->zesDdiTable.load()->Firmware.pfnGetFlashProgress;
-        if( nullptr == pfnGetFlashProgress ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetFlashProgress;
+    static const zes_pfnFirmwareGetFlashProgress_t pfnGetFlashProgress = [] {
+        return ze_lib::context->zesDdiTable.load()->Firmware.pfnGetFlashProgress;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetFlashProgress) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetFlashProgress( hFirmware, pCompletionPercent );
     #else
@@ -4675,19 +4350,14 @@ zesFirmwareGetConsoleLogs(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFirmwareGetConsoleLogs_t pfnGetConsoleLogs = [&result] {
-        auto pfnGetConsoleLogs = ze_lib::context->zesDdiTable.load()->Firmware.pfnGetConsoleLogs;
-        if( nullptr == pfnGetConsoleLogs ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetConsoleLogs;
+    static const zes_pfnFirmwareGetConsoleLogs_t pfnGetConsoleLogs = [] {
+        return ze_lib::context->zesDdiTable.load()->Firmware.pfnGetConsoleLogs;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetConsoleLogs) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetConsoleLogs( hFirmware, pSize, pFirmwareLog );
     #else
@@ -4749,19 +4419,14 @@ zesDeviceEnumFrequencyDomains(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumFrequencyDomains_t pfnEnumFrequencyDomains = [&result] {
-        auto pfnEnumFrequencyDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFrequencyDomains;
-        if( nullptr == pfnEnumFrequencyDomains ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumFrequencyDomains;
+    static const zes_pfnDeviceEnumFrequencyDomains_t pfnEnumFrequencyDomains = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumFrequencyDomains;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumFrequencyDomains) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumFrequencyDomains( hDevice, pCount, phFrequency );
     #else
@@ -4813,19 +4478,14 @@ zesFrequencyGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnFrequencyGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hFrequency, pProperties );
     #else
@@ -4888,19 +4548,14 @@ zesFrequencyGetAvailableClocks(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyGetAvailableClocks_t pfnGetAvailableClocks = [&result] {
-        auto pfnGetAvailableClocks = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetAvailableClocks;
-        if( nullptr == pfnGetAvailableClocks ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetAvailableClocks;
+    static const zes_pfnFrequencyGetAvailableClocks_t pfnGetAvailableClocks = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnGetAvailableClocks;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetAvailableClocks) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetAvailableClocks( hFrequency, pCount, phFrequency );
     #else
@@ -4953,19 +4608,14 @@ zesFrequencyGetRange(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyGetRange_t pfnGetRange = [&result] {
-        auto pfnGetRange = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetRange;
-        if( nullptr == pfnGetRange ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetRange;
+    static const zes_pfnFrequencyGetRange_t pfnGetRange = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnGetRange;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetRange) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetRange( hFrequency, pLimits );
     #else
@@ -5022,19 +4672,14 @@ zesFrequencySetRange(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencySetRange_t pfnSetRange = [&result] {
-        auto pfnSetRange = ze_lib::context->zesDdiTable.load()->Frequency.pfnSetRange;
-        if( nullptr == pfnSetRange ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetRange;
+    static const zes_pfnFrequencySetRange_t pfnSetRange = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnSetRange;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetRange) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetRange( hFrequency, pLimits );
     #else
@@ -5087,19 +4732,14 @@ zesFrequencyGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnFrequencyGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hFrequency, pState );
     #else
@@ -5152,19 +4792,14 @@ zesFrequencyGetThrottleTime(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyGetThrottleTime_t pfnGetThrottleTime = [&result] {
-        auto pfnGetThrottleTime = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetThrottleTime;
-        if( nullptr == pfnGetThrottleTime ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetThrottleTime;
+    static const zes_pfnFrequencyGetThrottleTime_t pfnGetThrottleTime = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnGetThrottleTime;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetThrottleTime) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetThrottleTime( hFrequency, pThrottleTime );
     #else
@@ -5216,19 +4851,14 @@ zesFrequencyOcGetCapabilities(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcGetCapabilities_t pfnOcGetCapabilities = [&result] {
-        auto pfnOcGetCapabilities = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetCapabilities;
-        if( nullptr == pfnOcGetCapabilities ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcGetCapabilities;
+    static const zes_pfnFrequencyOcGetCapabilities_t pfnOcGetCapabilities = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetCapabilities;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcGetCapabilities) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcGetCapabilities( hFrequency, pOcCapabilities );
     #else
@@ -5289,19 +4919,14 @@ zesFrequencyOcGetFrequencyTarget(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcGetFrequencyTarget_t pfnOcGetFrequencyTarget = [&result] {
-        auto pfnOcGetFrequencyTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetFrequencyTarget;
-        if( nullptr == pfnOcGetFrequencyTarget ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcGetFrequencyTarget;
+    static const zes_pfnFrequencyOcGetFrequencyTarget_t pfnOcGetFrequencyTarget = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetFrequencyTarget;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcGetFrequencyTarget) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcGetFrequencyTarget( hFrequency, pCurrentOcFrequency );
     #else
@@ -5360,19 +4985,14 @@ zesFrequencyOcSetFrequencyTarget(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcSetFrequencyTarget_t pfnOcSetFrequencyTarget = [&result] {
-        auto pfnOcSetFrequencyTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetFrequencyTarget;
-        if( nullptr == pfnOcSetFrequencyTarget ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcSetFrequencyTarget;
+    static const zes_pfnFrequencyOcSetFrequencyTarget_t pfnOcSetFrequencyTarget = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetFrequencyTarget;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcSetFrequencyTarget) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcSetFrequencyTarget( hFrequency, CurrentOcFrequency );
     #else
@@ -5435,19 +5055,14 @@ zesFrequencyOcGetVoltageTarget(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcGetVoltageTarget_t pfnOcGetVoltageTarget = [&result] {
-        auto pfnOcGetVoltageTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetVoltageTarget;
-        if( nullptr == pfnOcGetVoltageTarget ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcGetVoltageTarget;
+    static const zes_pfnFrequencyOcGetVoltageTarget_t pfnOcGetVoltageTarget = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetVoltageTarget;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcGetVoltageTarget) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcGetVoltageTarget( hFrequency, pCurrentVoltageTarget, pCurrentVoltageOffset );
     #else
@@ -5507,19 +5122,14 @@ zesFrequencyOcSetVoltageTarget(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcSetVoltageTarget_t pfnOcSetVoltageTarget = [&result] {
-        auto pfnOcSetVoltageTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetVoltageTarget;
-        if( nullptr == pfnOcSetVoltageTarget ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcSetVoltageTarget;
+    static const zes_pfnFrequencyOcSetVoltageTarget_t pfnOcSetVoltageTarget = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetVoltageTarget;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcSetVoltageTarget) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcSetVoltageTarget( hFrequency, CurrentVoltageTarget, CurrentVoltageOffset );
     #else
@@ -5577,19 +5187,14 @@ zesFrequencyOcSetMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcSetMode_t pfnOcSetMode = [&result] {
-        auto pfnOcSetMode = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetMode;
-        if( nullptr == pfnOcSetMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcSetMode;
+    static const zes_pfnFrequencyOcSetMode_t pfnOcSetMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcSetMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcSetMode( hFrequency, CurrentOcMode );
     #else
@@ -5646,19 +5251,14 @@ zesFrequencyOcGetMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcGetMode_t pfnOcGetMode = [&result] {
-        auto pfnOcGetMode = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetMode;
-        if( nullptr == pfnOcGetMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcGetMode;
+    static const zes_pfnFrequencyOcGetMode_t pfnOcGetMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcGetMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcGetMode( hFrequency, pCurrentOcMode );
     #else
@@ -5713,19 +5313,14 @@ zesFrequencyOcGetIccMax(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcGetIccMax_t pfnOcGetIccMax = [&result] {
-        auto pfnOcGetIccMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetIccMax;
-        if( nullptr == pfnOcGetIccMax ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcGetIccMax;
+    static const zes_pfnFrequencyOcGetIccMax_t pfnOcGetIccMax = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetIccMax;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcGetIccMax) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcGetIccMax( hFrequency, pOcIccMax );
     #else
@@ -5781,19 +5376,14 @@ zesFrequencyOcSetIccMax(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcSetIccMax_t pfnOcSetIccMax = [&result] {
-        auto pfnOcSetIccMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetIccMax;
-        if( nullptr == pfnOcSetIccMax ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcSetIccMax;
+    static const zes_pfnFrequencyOcSetIccMax_t pfnOcSetIccMax = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetIccMax;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcSetIccMax) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcSetIccMax( hFrequency, ocIccMax );
     #else
@@ -5847,19 +5437,14 @@ zesFrequencyOcGetTjMax(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcGetTjMax_t pfnOcGetTjMax = [&result] {
-        auto pfnOcGetTjMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetTjMax;
-        if( nullptr == pfnOcGetTjMax ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcGetTjMax;
+    static const zes_pfnFrequencyOcGetTjMax_t pfnOcGetTjMax = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetTjMax;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcGetTjMax) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcGetTjMax( hFrequency, pOcTjMax );
     #else
@@ -5915,19 +5500,14 @@ zesFrequencyOcSetTjMax(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFrequencyOcSetTjMax_t pfnOcSetTjMax = [&result] {
-        auto pfnOcSetTjMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetTjMax;
-        if( nullptr == pfnOcSetTjMax ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnOcSetTjMax;
+    static const zes_pfnFrequencyOcSetTjMax_t pfnOcSetTjMax = [] {
+        return ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetTjMax;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnOcSetTjMax) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnOcSetTjMax( hFrequency, ocTjMax );
     #else
@@ -5989,19 +5569,14 @@ zesDeviceEnumLeds(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumLeds_t pfnEnumLeds = [&result] {
-        auto pfnEnumLeds = ze_lib::context->zesDdiTable.load()->Device.pfnEnumLeds;
-        if( nullptr == pfnEnumLeds ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumLeds;
+    static const zes_pfnDeviceEnumLeds_t pfnEnumLeds = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumLeds;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumLeds) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumLeds( hDevice, pCount, phLed );
     #else
@@ -6053,19 +5628,14 @@ zesLedGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnLedGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Led.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnLedGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Led.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hLed, pProperties );
     #else
@@ -6117,19 +5687,14 @@ zesLedGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnLedGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Led.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnLedGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Led.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hLed, pState );
     #else
@@ -6180,19 +5745,14 @@ zesLedSetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnLedSetState_t pfnSetState = [&result] {
-        auto pfnSetState = ze_lib::context->zesDdiTable.load()->Led.pfnSetState;
-        if( nullptr == pfnSetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetState;
+    static const zes_pfnLedSetState_t pfnSetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Led.pfnSetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetState( hLed, enable );
     #else
@@ -6246,19 +5806,14 @@ zesLedSetColor(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnLedSetColor_t pfnSetColor = [&result] {
-        auto pfnSetColor = ze_lib::context->zesDdiTable.load()->Led.pfnSetColor;
-        if( nullptr == pfnSetColor ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetColor;
+    static const zes_pfnLedSetColor_t pfnSetColor = [] {
+        return ze_lib::context->zesDdiTable.load()->Led.pfnSetColor;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetColor) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetColor( hLed, pColor );
     #else
@@ -6320,19 +5875,14 @@ zesDeviceEnumMemoryModules(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumMemoryModules_t pfnEnumMemoryModules = [&result] {
-        auto pfnEnumMemoryModules = ze_lib::context->zesDdiTable.load()->Device.pfnEnumMemoryModules;
-        if( nullptr == pfnEnumMemoryModules ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumMemoryModules;
+    static const zes_pfnDeviceEnumMemoryModules_t pfnEnumMemoryModules = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumMemoryModules;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumMemoryModules) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumMemoryModules( hDevice, pCount, phMemory );
     #else
@@ -6384,19 +5934,14 @@ zesMemoryGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnMemoryGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Memory.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnMemoryGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Memory.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hMemory, pProperties );
     #else
@@ -6448,19 +5993,14 @@ zesMemoryGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnMemoryGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Memory.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnMemoryGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Memory.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hMemory, pState );
     #else
@@ -6514,19 +6054,14 @@ zesMemoryGetBandwidth(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnMemoryGetBandwidth_t pfnGetBandwidth = [&result] {
-        auto pfnGetBandwidth = ze_lib::context->zesDdiTable.load()->Memory.pfnGetBandwidth;
-        if( nullptr == pfnGetBandwidth ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetBandwidth;
+    static const zes_pfnMemoryGetBandwidth_t pfnGetBandwidth = [] {
+        return ze_lib::context->zesDdiTable.load()->Memory.pfnGetBandwidth;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetBandwidth) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetBandwidth( hMemory, pBandwidth );
     #else
@@ -6590,19 +6125,14 @@ zesDeviceEnumPerformanceFactorDomains(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumPerformanceFactorDomains_t pfnEnumPerformanceFactorDomains = [&result] {
-        auto pfnEnumPerformanceFactorDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumPerformanceFactorDomains;
-        if( nullptr == pfnEnumPerformanceFactorDomains ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumPerformanceFactorDomains;
+    static const zes_pfnDeviceEnumPerformanceFactorDomains_t pfnEnumPerformanceFactorDomains = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumPerformanceFactorDomains;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumPerformanceFactorDomains) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumPerformanceFactorDomains( hDevice, pCount, phPerf );
     #else
@@ -6655,19 +6185,14 @@ zesPerformanceFactorGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPerformanceFactorGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnPerformanceFactorGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hPerf, pProperties );
     #else
@@ -6720,19 +6245,14 @@ zesPerformanceFactorGetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPerformanceFactorGetConfig_t pfnGetConfig = [&result] {
-        auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnGetConfig;
-        if( nullptr == pfnGetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetConfig;
+    static const zes_pfnPerformanceFactorGetConfig_t pfnGetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnGetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetConfig( hPerf, pFactor );
     #else
@@ -6787,19 +6307,14 @@ zesPerformanceFactorSetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPerformanceFactorSetConfig_t pfnSetConfig = [&result] {
-        auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnSetConfig;
-        if( nullptr == pfnSetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetConfig;
+    static const zes_pfnPerformanceFactorSetConfig_t pfnSetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnSetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetConfig( hPerf, factor );
     #else
@@ -6861,19 +6376,14 @@ zesDeviceEnumPowerDomains(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumPowerDomains_t pfnEnumPowerDomains = [&result] {
-        auto pfnEnumPowerDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumPowerDomains;
-        if( nullptr == pfnEnumPowerDomains ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumPowerDomains;
+    static const zes_pfnDeviceEnumPowerDomains_t pfnEnumPowerDomains = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumPowerDomains;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumPowerDomains) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumPowerDomains( hDevice, pCount, phPower );
     #else
@@ -6926,19 +6436,14 @@ zesDeviceGetCardPowerDomain(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetCardPowerDomain_t pfnGetCardPowerDomain = [&result] {
-        auto pfnGetCardPowerDomain = ze_lib::context->zesDdiTable.load()->Device.pfnGetCardPowerDomain;
-        if( nullptr == pfnGetCardPowerDomain ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetCardPowerDomain;
+    static const zes_pfnDeviceGetCardPowerDomain_t pfnGetCardPowerDomain = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGetCardPowerDomain;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetCardPowerDomain) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetCardPowerDomain( hDevice, phPower );
     #else
@@ -6990,19 +6495,14 @@ zesPowerGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Power.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnPowerGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hPower, pProperties );
     #else
@@ -7055,19 +6555,14 @@ zesPowerGetEnergyCounter(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerGetEnergyCounter_t pfnGetEnergyCounter = [&result] {
-        auto pfnGetEnergyCounter = ze_lib::context->zesDdiTable.load()->Power.pfnGetEnergyCounter;
-        if( nullptr == pfnGetEnergyCounter ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetEnergyCounter;
+    static const zes_pfnPowerGetEnergyCounter_t pfnGetEnergyCounter = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnGetEnergyCounter;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetEnergyCounter) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetEnergyCounter( hPower, pEnergy );
     #else
@@ -7122,19 +6617,14 @@ zesPowerGetLimits(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerGetLimits_t pfnGetLimits = [&result] {
-        auto pfnGetLimits = ze_lib::context->zesDdiTable.load()->Power.pfnGetLimits;
-        if( nullptr == pfnGetLimits ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetLimits;
+    static const zes_pfnPowerGetLimits_t pfnGetLimits = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnGetLimits;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetLimits) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetLimits( hPower, pSustained, pBurst, pPeak );
     #else
@@ -7191,19 +6681,14 @@ zesPowerSetLimits(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerSetLimits_t pfnSetLimits = [&result] {
-        auto pfnSetLimits = ze_lib::context->zesDdiTable.load()->Power.pfnSetLimits;
-        if( nullptr == pfnSetLimits ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetLimits;
+    static const zes_pfnPowerSetLimits_t pfnSetLimits = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnSetLimits;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetLimits) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetLimits( hPower, pSustained, pBurst, pPeak );
     #else
@@ -7258,19 +6743,14 @@ zesPowerGetEnergyThreshold(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerGetEnergyThreshold_t pfnGetEnergyThreshold = [&result] {
-        auto pfnGetEnergyThreshold = ze_lib::context->zesDdiTable.load()->Power.pfnGetEnergyThreshold;
-        if( nullptr == pfnGetEnergyThreshold ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetEnergyThreshold;
+    static const zes_pfnPowerGetEnergyThreshold_t pfnGetEnergyThreshold = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnGetEnergyThreshold;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetEnergyThreshold) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetEnergyThreshold( hPower, pThreshold );
     #else
@@ -7337,19 +6817,14 @@ zesPowerSetEnergyThreshold(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerSetEnergyThreshold_t pfnSetEnergyThreshold = [&result] {
-        auto pfnSetEnergyThreshold = ze_lib::context->zesDdiTable.load()->Power.pfnSetEnergyThreshold;
-        if( nullptr == pfnSetEnergyThreshold ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetEnergyThreshold;
+    static const zes_pfnPowerSetEnergyThreshold_t pfnSetEnergyThreshold = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnSetEnergyThreshold;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetEnergyThreshold) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetEnergyThreshold( hPower, threshold );
     #else
@@ -7412,19 +6887,14 @@ zesPowerGetUsage(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerGetUsage_t pfnGetUsage = [&result] {
-        auto pfnGetUsage = ze_lib::context->zesDdiTable.load()->Power.pfnGetUsage;
-        if( nullptr == pfnGetUsage ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetUsage;
+    static const zes_pfnPowerGetUsage_t pfnGetUsage = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnGetUsage;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetUsage) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetUsage( hPower, pInstantPower, pAveragePower );
     #else
@@ -7486,19 +6956,14 @@ zesDeviceEnumPsus(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumPsus_t pfnEnumPsus = [&result] {
-        auto pfnEnumPsus = ze_lib::context->zesDdiTable.load()->Device.pfnEnumPsus;
-        if( nullptr == pfnEnumPsus ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumPsus;
+    static const zes_pfnDeviceEnumPsus_t pfnEnumPsus = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumPsus;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumPsus) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumPsus( hDevice, pCount, phPsu );
     #else
@@ -7550,19 +7015,14 @@ zesPsuGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPsuGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Psu.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnPsuGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Psu.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hPsu, pProperties );
     #else
@@ -7614,19 +7074,14 @@ zesPsuGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPsuGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Psu.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnPsuGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Psu.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hPsu, pState );
     #else
@@ -7698,19 +7153,14 @@ zesDeviceEnumRasErrorSets(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumRasErrorSets_t pfnEnumRasErrorSets = [&result] {
-        auto pfnEnumRasErrorSets = ze_lib::context->zesDdiTable.load()->Device.pfnEnumRasErrorSets;
-        if( nullptr == pfnEnumRasErrorSets ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumRasErrorSets;
+    static const zes_pfnDeviceEnumRasErrorSets_t pfnEnumRasErrorSets = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumRasErrorSets;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumRasErrorSets) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumRasErrorSets( hDevice, pCount, phRas );
     #else
@@ -7764,19 +7214,14 @@ zesRasGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Ras.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnRasGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Ras.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hRas, pProperties );
     #else
@@ -7838,19 +7283,14 @@ zesRasGetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasGetConfig_t pfnGetConfig = [&result] {
-        auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->Ras.pfnGetConfig;
-        if( nullptr == pfnGetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetConfig;
+    static const zes_pfnRasGetConfig_t pfnGetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->Ras.pfnGetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetConfig( hRas, pConfig );
     #else
@@ -7915,19 +7355,14 @@ zesRasSetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasSetConfig_t pfnSetConfig = [&result] {
-        auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->Ras.pfnSetConfig;
-        if( nullptr == pfnSetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetConfig;
+    static const zes_pfnRasSetConfig_t pfnSetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->Ras.pfnSetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetConfig( hRas, pConfig );
     #else
@@ -7984,19 +7419,14 @@ zesRasGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Ras.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnRasGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Ras.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hRas, clear, pState );
     #else
@@ -8064,19 +7494,14 @@ zesDeviceEnumSchedulers(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumSchedulers_t pfnEnumSchedulers = [&result] {
-        auto pfnEnumSchedulers = ze_lib::context->zesDdiTable.load()->Device.pfnEnumSchedulers;
-        if( nullptr == pfnEnumSchedulers ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumSchedulers;
+    static const zes_pfnDeviceEnumSchedulers_t pfnEnumSchedulers = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumSchedulers;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumSchedulers) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumSchedulers( hDevice, pCount, phScheduler );
     #else
@@ -8128,19 +7553,14 @@ zesSchedulerGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnSchedulerGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hScheduler, pProperties );
     #else
@@ -8193,19 +7613,14 @@ zesSchedulerGetCurrentMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerGetCurrentMode_t pfnGetCurrentMode = [&result] {
-        auto pfnGetCurrentMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetCurrentMode;
-        if( nullptr == pfnGetCurrentMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetCurrentMode;
+    static const zes_pfnSchedulerGetCurrentMode_t pfnGetCurrentMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetCurrentMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetCurrentMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetCurrentMode( hScheduler, pMode );
     #else
@@ -8260,19 +7675,14 @@ zesSchedulerGetTimeoutModeProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerGetTimeoutModeProperties_t pfnGetTimeoutModeProperties = [&result] {
-        auto pfnGetTimeoutModeProperties = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetTimeoutModeProperties;
-        if( nullptr == pfnGetTimeoutModeProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetTimeoutModeProperties;
+    static const zes_pfnSchedulerGetTimeoutModeProperties_t pfnGetTimeoutModeProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetTimeoutModeProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetTimeoutModeProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetTimeoutModeProperties( hScheduler, getDefaults, pConfig );
     #else
@@ -8327,19 +7737,14 @@ zesSchedulerGetTimesliceModeProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerGetTimesliceModeProperties_t pfnGetTimesliceModeProperties = [&result] {
-        auto pfnGetTimesliceModeProperties = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetTimesliceModeProperties;
-        if( nullptr == pfnGetTimesliceModeProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetTimesliceModeProperties;
+    static const zes_pfnSchedulerGetTimesliceModeProperties_t pfnGetTimesliceModeProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetTimesliceModeProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetTimesliceModeProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetTimesliceModeProperties( hScheduler, getDefaults, pConfig );
     #else
@@ -8401,19 +7806,14 @@ zesSchedulerSetTimeoutMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerSetTimeoutMode_t pfnSetTimeoutMode = [&result] {
-        auto pfnSetTimeoutMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetTimeoutMode;
-        if( nullptr == pfnSetTimeoutMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetTimeoutMode;
+    static const zes_pfnSchedulerSetTimeoutMode_t pfnSetTimeoutMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetTimeoutMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetTimeoutMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetTimeoutMode( hScheduler, pProperties, pNeedReload );
     #else
@@ -8474,19 +7874,14 @@ zesSchedulerSetTimesliceMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerSetTimesliceMode_t pfnSetTimesliceMode = [&result] {
-        auto pfnSetTimesliceMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetTimesliceMode;
-        if( nullptr == pfnSetTimesliceMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetTimesliceMode;
+    static const zes_pfnSchedulerSetTimesliceMode_t pfnSetTimesliceMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetTimesliceMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetTimesliceMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetTimesliceMode( hScheduler, pProperties, pNeedReload );
     #else
@@ -8545,19 +7940,14 @@ zesSchedulerSetExclusiveMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerSetExclusiveMode_t pfnSetExclusiveMode = [&result] {
-        auto pfnSetExclusiveMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetExclusiveMode;
-        if( nullptr == pfnSetExclusiveMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetExclusiveMode;
+    static const zes_pfnSchedulerSetExclusiveMode_t pfnSetExclusiveMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetExclusiveMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetExclusiveMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetExclusiveMode( hScheduler, pNeedReload );
     #else
@@ -8617,19 +8007,14 @@ zesSchedulerSetComputeUnitDebugMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnSchedulerSetComputeUnitDebugMode_t pfnSetComputeUnitDebugMode = [&result] {
-        auto pfnSetComputeUnitDebugMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetComputeUnitDebugMode;
-        if( nullptr == pfnSetComputeUnitDebugMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetComputeUnitDebugMode;
+    static const zes_pfnSchedulerSetComputeUnitDebugMode_t pfnSetComputeUnitDebugMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetComputeUnitDebugMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetComputeUnitDebugMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetComputeUnitDebugMode( hScheduler, pNeedReload );
     #else
@@ -8691,19 +8076,14 @@ zesDeviceEnumStandbyDomains(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumStandbyDomains_t pfnEnumStandbyDomains = [&result] {
-        auto pfnEnumStandbyDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumStandbyDomains;
-        if( nullptr == pfnEnumStandbyDomains ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumStandbyDomains;
+    static const zes_pfnDeviceEnumStandbyDomains_t pfnEnumStandbyDomains = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumStandbyDomains;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumStandbyDomains) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumStandbyDomains( hDevice, pCount, phStandby );
     #else
@@ -8755,19 +8135,14 @@ zesStandbyGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnStandbyGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Standby.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnStandbyGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Standby.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hStandby, pProperties );
     #else
@@ -8819,19 +8194,14 @@ zesStandbyGetMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnStandbyGetMode_t pfnGetMode = [&result] {
-        auto pfnGetMode = ze_lib::context->zesDdiTable.load()->Standby.pfnGetMode;
-        if( nullptr == pfnGetMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetMode;
+    static const zes_pfnStandbyGetMode_t pfnGetMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Standby.pfnGetMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetMode( hStandby, pMode );
     #else
@@ -8885,19 +8255,14 @@ zesStandbySetMode(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnStandbySetMode_t pfnSetMode = [&result] {
-        auto pfnSetMode = ze_lib::context->zesDdiTable.load()->Standby.pfnSetMode;
-        if( nullptr == pfnSetMode ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetMode;
+    static const zes_pfnStandbySetMode_t pfnSetMode = [] {
+        return ze_lib::context->zesDdiTable.load()->Standby.pfnSetMode;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetMode) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetMode( hStandby, mode );
     #else
@@ -8959,19 +8324,14 @@ zesDeviceEnumTemperatureSensors(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumTemperatureSensors_t pfnEnumTemperatureSensors = [&result] {
-        auto pfnEnumTemperatureSensors = ze_lib::context->zesDdiTable.load()->Device.pfnEnumTemperatureSensors;
-        if( nullptr == pfnEnumTemperatureSensors ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumTemperatureSensors;
+    static const zes_pfnDeviceEnumTemperatureSensors_t pfnEnumTemperatureSensors = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnEnumTemperatureSensors;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumTemperatureSensors) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumTemperatureSensors( hDevice, pCount, phTemperature );
     #else
@@ -9023,19 +8383,14 @@ zesTemperatureGetProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnTemperatureGetProperties_t pfnGetProperties = [&result] {
-        auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Temperature.pfnGetProperties;
-        if( nullptr == pfnGetProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetProperties;
+    static const zes_pfnTemperatureGetProperties_t pfnGetProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Temperature.pfnGetProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetProperties( hTemperature, pProperties );
     #else
@@ -9091,19 +8446,14 @@ zesTemperatureGetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnTemperatureGetConfig_t pfnGetConfig = [&result] {
-        auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->Temperature.pfnGetConfig;
-        if( nullptr == pfnGetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetConfig;
+    static const zes_pfnTemperatureGetConfig_t pfnGetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->Temperature.pfnGetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetConfig( hTemperature, pConfig );
     #else
@@ -9174,19 +8524,14 @@ zesTemperatureSetConfig(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnTemperatureSetConfig_t pfnSetConfig = [&result] {
-        auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->Temperature.pfnSetConfig;
-        if( nullptr == pfnSetConfig ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetConfig;
+    static const zes_pfnTemperatureSetConfig_t pfnSetConfig = [] {
+        return ze_lib::context->zesDdiTable.load()->Temperature.pfnSetConfig;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetConfig) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetConfig( hTemperature, pConfig );
     #else
@@ -9239,19 +8584,14 @@ zesTemperatureGetState(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnTemperatureGetState_t pfnGetState = [&result] {
-        auto pfnGetState = ze_lib::context->zesDdiTable.load()->Temperature.pfnGetState;
-        if( nullptr == pfnGetState ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetState;
+    static const zes_pfnTemperatureGetState_t pfnGetState = [] {
+        return ze_lib::context->zesDdiTable.load()->Temperature.pfnGetState;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetState) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetState( hTemperature, pTemperature );
     #else
@@ -9313,19 +8653,14 @@ zesPowerGetLimitsExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerGetLimitsExt_t pfnGetLimitsExt = [&result] {
-        auto pfnGetLimitsExt = ze_lib::context->zesDdiTable.load()->Power.pfnGetLimitsExt;
-        if( nullptr == pfnGetLimitsExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetLimitsExt;
+    static const zes_pfnPowerGetLimitsExt_t pfnGetLimitsExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnGetLimitsExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetLimitsExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetLimitsExt( hPower, pCount, pSustained );
     #else
@@ -9388,19 +8723,14 @@ zesPowerSetLimitsExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerSetLimitsExt_t pfnSetLimitsExt = [&result] {
-        auto pfnSetLimitsExt = ze_lib::context->zesDdiTable.load()->Power.pfnSetLimitsExt;
-        if( nullptr == pfnSetLimitsExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetLimitsExt;
+    static const zes_pfnPowerSetLimitsExt_t pfnSetLimitsExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnSetLimitsExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetLimitsExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetLimitsExt( hPower, pCount, pSustained );
     #else
@@ -9454,19 +8784,14 @@ zesPowerGetLimitsExt2(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerGetLimitsExt2_t pfnGetLimitsExt2 = [&result] {
-        auto pfnGetLimitsExt2 = ze_lib::context->zesDdiTable.load()->Power.pfnGetLimitsExt2;
-        if( nullptr == pfnGetLimitsExt2 ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetLimitsExt2;
+    static const zes_pfnPowerGetLimitsExt2_t pfnGetLimitsExt2 = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnGetLimitsExt2;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetLimitsExt2) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetLimitsExt2( hPower, pLimit );
     #else
@@ -9519,19 +8844,14 @@ zesPowerSetLimitsExt2(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnPowerSetLimitsExt2_t pfnSetLimitsExt2 = [&result] {
-        auto pfnSetLimitsExt2 = ze_lib::context->zesDdiTable.load()->Power.pfnSetLimitsExt2;
-        if( nullptr == pfnSetLimitsExt2 ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetLimitsExt2;
+    static const zes_pfnPowerSetLimitsExt2_t pfnSetLimitsExt2 = [] {
+        return ze_lib::context->zesDdiTable.load()->Power.pfnSetLimitsExt2;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetLimitsExt2) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetLimitsExt2( hPower, limit );
     #else
@@ -9598,19 +8918,14 @@ zesEngineGetActivityExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnEngineGetActivityExt_t pfnGetActivityExt = [&result] {
-        auto pfnGetActivityExt = ze_lib::context->zesDdiTable.load()->Engine.pfnGetActivityExt;
-        if( nullptr == pfnGetActivityExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetActivityExt;
+    static const zes_pfnEngineGetActivityExt_t pfnGetActivityExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Engine.pfnGetActivityExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetActivityExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetActivityExt( hEngine, pCount, pStats );
     #else
@@ -9672,19 +8987,14 @@ zesRasGetStateExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasGetStateExp_t pfnGetStateExp = [&result] {
-        auto pfnGetStateExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetStateExp;
-        if( nullptr == pfnGetStateExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetStateExp;
+    static const zes_pfnRasGetStateExp_t pfnGetStateExp = [] {
+        return ze_lib::context->zesDdiTable.load()->RasExp.pfnGetStateExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetStateExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetStateExp( hRas, pCount, pState );
     #else
@@ -9743,19 +9053,14 @@ zesRasClearStateExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasClearStateExp_t pfnClearStateExp = [&result] {
-        auto pfnClearStateExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnClearStateExp;
-        if( nullptr == pfnClearStateExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnClearStateExp;
+    static const zes_pfnRasClearStateExp_t pfnClearStateExp = [] {
+        return ze_lib::context->zesDdiTable.load()->RasExp.pfnClearStateExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnClearStateExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnClearStateExp( hRas, category );
     #else
@@ -9815,19 +9120,14 @@ zesRasGetSupportedCategoriesExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasGetSupportedCategoriesExp_t pfnGetSupportedCategoriesExp = [&result] {
-        auto pfnGetSupportedCategoriesExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetSupportedCategoriesExp;
-        if( nullptr == pfnGetSupportedCategoriesExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetSupportedCategoriesExp;
+    static const zes_pfnRasGetSupportedCategoriesExp_t pfnGetSupportedCategoriesExp = [] {
+        return ze_lib::context->zesDdiTable.load()->RasExp.pfnGetSupportedCategoriesExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetSupportedCategoriesExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetSupportedCategoriesExp( hRas, pCount, pCategories );
     #else
@@ -9891,19 +9191,14 @@ zesRasGetStateExp2(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasGetStateExp2_t pfnGetStateExp2 = [&result] {
-        auto pfnGetStateExp2 = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetStateExp2;
-        if( nullptr == pfnGetStateExp2 ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetStateExp2;
+    static const zes_pfnRasGetStateExp2_t pfnGetStateExp2 = [] {
+        return ze_lib::context->zesDdiTable.load()->RasExp.pfnGetStateExp2;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetStateExp2) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetStateExp2( hRas, count, pCategories, pState );
     #else
@@ -9965,19 +9260,14 @@ zesRasGetConfigExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasGetConfigExp_t pfnGetConfigExp = [&result] {
-        auto pfnGetConfigExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetConfigExp;
-        if( nullptr == pfnGetConfigExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetConfigExp;
+    static const zes_pfnRasGetConfigExp_t pfnGetConfigExp = [] {
+        return ze_lib::context->zesDdiTable.load()->RasExp.pfnGetConfigExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetConfigExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetConfigExp( hRas, count, pConfig );
     #else
@@ -10037,19 +9327,14 @@ zesRasSetConfigExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnRasSetConfigExp_t pfnSetConfigExp = [&result] {
-        auto pfnSetConfigExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnSetConfigExp;
-        if( nullptr == pfnSetConfigExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetConfigExp;
+    static const zes_pfnRasSetConfigExp_t pfnSetConfigExp = [] {
+        return ze_lib::context->zesDdiTable.load()->RasExp.pfnSetConfigExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetConfigExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetConfigExp( hRas, count, pConfig );
     #else
@@ -10106,19 +9391,14 @@ zesFirmwareGetSecurityVersionExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFirmwareGetSecurityVersionExp_t pfnGetSecurityVersionExp = [&result] {
-        auto pfnGetSecurityVersionExp = ze_lib::context->zesDdiTable.load()->FirmwareExp.pfnGetSecurityVersionExp;
-        if( nullptr == pfnGetSecurityVersionExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetSecurityVersionExp;
+    static const zes_pfnFirmwareGetSecurityVersionExp_t pfnGetSecurityVersionExp = [] {
+        return ze_lib::context->zesDdiTable.load()->FirmwareExp.pfnGetSecurityVersionExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetSecurityVersionExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetSecurityVersionExp( hFirmware, pVersion );
     #else
@@ -10167,19 +9447,14 @@ zesFirmwareSetSecurityVersionExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnFirmwareSetSecurityVersionExp_t pfnSetSecurityVersionExp = [&result] {
-        auto pfnSetSecurityVersionExp = ze_lib::context->zesDdiTable.load()->FirmwareExp.pfnSetSecurityVersionExp;
-        if( nullptr == pfnSetSecurityVersionExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetSecurityVersionExp;
+    static const zes_pfnFirmwareSetSecurityVersionExp_t pfnSetSecurityVersionExp = [] {
+        return ze_lib::context->zesDdiTable.load()->FirmwareExp.pfnSetSecurityVersionExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetSecurityVersionExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetSecurityVersionExp( hFirmware );
     #else
@@ -10239,19 +9514,14 @@ zesDeviceGetSubDevicePropertiesExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetSubDevicePropertiesExp_t pfnGetSubDevicePropertiesExp = [&result] {
-        auto pfnGetSubDevicePropertiesExp = ze_lib::context->zesDdiTable.load()->DeviceExp.pfnGetSubDevicePropertiesExp;
-        if( nullptr == pfnGetSubDevicePropertiesExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetSubDevicePropertiesExp;
+    static const zes_pfnDeviceGetSubDevicePropertiesExp_t pfnGetSubDevicePropertiesExp = [] {
+        return ze_lib::context->zesDdiTable.load()->DeviceExp.pfnGetSubDevicePropertiesExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetSubDevicePropertiesExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetSubDevicePropertiesExp( hDevice, pCount, pSubdeviceProps );
     #else
@@ -10310,19 +9580,14 @@ zesDriverGetDeviceByUuidExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverGetDeviceByUuidExp_t pfnGetDeviceByUuidExp = [&result] {
-        auto pfnGetDeviceByUuidExp = ze_lib::context->zesDdiTable.load()->DriverExp.pfnGetDeviceByUuidExp;
-        if( nullptr == pfnGetDeviceByUuidExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetDeviceByUuidExp;
+    static const zes_pfnDriverGetDeviceByUuidExp_t pfnGetDeviceByUuidExp = [] {
+        return ze_lib::context->zesDdiTable.load()->DriverExp.pfnGetDeviceByUuidExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetDeviceByUuidExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetDeviceByUuidExp( hDriver, uuid, phDevice, onSubdevice, subdeviceId );
     #else
@@ -10384,19 +9649,14 @@ zesDeviceEnumActiveVFExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumActiveVFExp_t pfnEnumActiveVFExp = [&result] {
-        auto pfnEnumActiveVFExp = ze_lib::context->zesDdiTable.load()->DeviceExp.pfnEnumActiveVFExp;
-        if( nullptr == pfnEnumActiveVFExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumActiveVFExp;
+    static const zes_pfnDeviceEnumActiveVFExp_t pfnEnumActiveVFExp = [] {
+        return ze_lib::context->zesDdiTable.load()->DeviceExp.pfnEnumActiveVFExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumActiveVFExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumActiveVFExp( hDevice, pCount, phVFhandle );
     #else
@@ -10448,19 +9708,14 @@ zesVFManagementGetVFPropertiesExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementGetVFPropertiesExp_t pfnGetVFPropertiesExp = [&result] {
-        auto pfnGetVFPropertiesExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFPropertiesExp;
-        if( nullptr == pfnGetVFPropertiesExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFPropertiesExp;
+    static const zes_pfnVFManagementGetVFPropertiesExp_t pfnGetVFPropertiesExp = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFPropertiesExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFPropertiesExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFPropertiesExp( hVFhandle, pProperties );
     #else
@@ -10525,19 +9780,14 @@ zesVFManagementGetVFMemoryUtilizationExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementGetVFMemoryUtilizationExp_t pfnGetVFMemoryUtilizationExp = [&result] {
-        auto pfnGetVFMemoryUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp;
-        if( nullptr == pfnGetVFMemoryUtilizationExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFMemoryUtilizationExp;
+    static const zes_pfnVFManagementGetVFMemoryUtilizationExp_t pfnGetVFMemoryUtilizationExp = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFMemoryUtilizationExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFMemoryUtilizationExp( hVFhandle, pCount, pMemUtil );
     #else
@@ -10602,19 +9852,14 @@ zesVFManagementGetVFEngineUtilizationExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementGetVFEngineUtilizationExp_t pfnGetVFEngineUtilizationExp = [&result] {
-        auto pfnGetVFEngineUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp;
-        if( nullptr == pfnGetVFEngineUtilizationExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFEngineUtilizationExp;
+    static const zes_pfnVFManagementGetVFEngineUtilizationExp_t pfnGetVFEngineUtilizationExp = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFEngineUtilizationExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFEngineUtilizationExp( hVFhandle, pCount, pEngineUtil );
     #else
@@ -10670,19 +9915,14 @@ zesVFManagementSetVFTelemetryModeExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementSetVFTelemetryModeExp_t pfnSetVFTelemetryModeExp = [&result] {
-        auto pfnSetVFTelemetryModeExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetryModeExp;
-        if( nullptr == pfnSetVFTelemetryModeExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetVFTelemetryModeExp;
+    static const zes_pfnVFManagementSetVFTelemetryModeExp_t pfnSetVFTelemetryModeExp = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetryModeExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetVFTelemetryModeExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetVFTelemetryModeExp( hVFhandle, flags, enable );
     #else
@@ -10738,19 +9978,14 @@ zesVFManagementSetVFTelemetrySamplingIntervalExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementSetVFTelemetrySamplingIntervalExp_t pfnSetVFTelemetrySamplingIntervalExp = [&result] {
-        auto pfnSetVFTelemetrySamplingIntervalExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
-        if( nullptr == pfnSetVFTelemetrySamplingIntervalExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetVFTelemetrySamplingIntervalExp;
+    static const zes_pfnVFManagementSetVFTelemetrySamplingIntervalExp_t pfnSetVFTelemetrySamplingIntervalExp = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetVFTelemetrySamplingIntervalExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetVFTelemetrySamplingIntervalExp( hVFhandle, flag, samplingInterval );
     #else
@@ -10812,19 +10047,14 @@ zesDeviceEnumEnabledVFExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceEnumEnabledVFExp_t pfnEnumEnabledVFExp = [&result] {
-        auto pfnEnumEnabledVFExp = ze_lib::context->zesDdiTable.load()->DeviceExp.pfnEnumEnabledVFExp;
-        if( nullptr == pfnEnumEnabledVFExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumEnabledVFExp;
+    static const zes_pfnDeviceEnumEnabledVFExp_t pfnEnumEnabledVFExp = [] {
+        return ze_lib::context->zesDdiTable.load()->DeviceExp.pfnEnumEnabledVFExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumEnabledVFExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumEnabledVFExp( hDevice, pCount, phVFhandle );
     #else
@@ -10876,19 +10106,14 @@ zesVFManagementGetVFCapabilitiesExp(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementGetVFCapabilitiesExp_t pfnGetVFCapabilitiesExp = [&result] {
-        auto pfnGetVFCapabilitiesExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFCapabilitiesExp;
-        if( nullptr == pfnGetVFCapabilitiesExp ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFCapabilitiesExp;
+    static const zes_pfnVFManagementGetVFCapabilitiesExp_t pfnGetVFCapabilitiesExp = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFCapabilitiesExp;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFCapabilitiesExp) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFCapabilitiesExp( hVFhandle, pCapability );
     #else
@@ -10952,19 +10177,14 @@ zesVFManagementGetVFMemoryUtilizationExp2(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementGetVFMemoryUtilizationExp2_t pfnGetVFMemoryUtilizationExp2 = [&result] {
-        auto pfnGetVFMemoryUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp2;
-        if( nullptr == pfnGetVFMemoryUtilizationExp2 ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFMemoryUtilizationExp2;
+    static const zes_pfnVFManagementGetVFMemoryUtilizationExp2_t pfnGetVFMemoryUtilizationExp2 = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp2;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFMemoryUtilizationExp2) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFMemoryUtilizationExp2( hVFhandle, pCount, pMemUtil );
     #else
@@ -11028,19 +10248,14 @@ zesVFManagementGetVFEngineUtilizationExp2(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementGetVFEngineUtilizationExp2_t pfnGetVFEngineUtilizationExp2 = [&result] {
-        auto pfnGetVFEngineUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp2;
-        if( nullptr == pfnGetVFEngineUtilizationExp2 ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFEngineUtilizationExp2;
+    static const zes_pfnVFManagementGetVFEngineUtilizationExp2_t pfnGetVFEngineUtilizationExp2 = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp2;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFEngineUtilizationExp2) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
     #else
@@ -11092,19 +10307,14 @@ zesVFManagementGetVFCapabilitiesExp2(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnVFManagementGetVFCapabilitiesExp2_t pfnGetVFCapabilitiesExp2 = [&result] {
-        auto pfnGetVFCapabilitiesExp2 = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFCapabilitiesExp2;
-        if( nullptr == pfnGetVFCapabilitiesExp2 ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetVFCapabilitiesExp2;
+    static const zes_pfnVFManagementGetVFCapabilitiesExp2_t pfnGetVFCapabilitiesExp2 = [] {
+        return ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFCapabilitiesExp2;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetVFCapabilitiesExp2) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetVFCapabilitiesExp2( hVFhandle, pCapability );
     #else
@@ -11160,19 +10370,14 @@ zesDevicePciLinkSpeedUpdateExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDevicePciLinkSpeedUpdateExt_t pfnPciLinkSpeedUpdateExt = [&result] {
-        auto pfnPciLinkSpeedUpdateExt = ze_lib::context->zesDdiTable.load()->Device.pfnPciLinkSpeedUpdateExt;
-        if( nullptr == pfnPciLinkSpeedUpdateExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnPciLinkSpeedUpdateExt;
+    static const zes_pfnDevicePciLinkSpeedUpdateExt_t pfnPciLinkSpeedUpdateExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnPciLinkSpeedUpdateExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnPciLinkSpeedUpdateExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnPciLinkSpeedUpdateExt( hDevice, shouldDowngrade, pendingAction );
     #else
@@ -11229,19 +10434,14 @@ zesDeviceGetHealthStatusExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceGetHealthStatusExt_t pfnGetHealthStatusExt = [&result] {
-        auto pfnGetHealthStatusExt = ze_lib::context->zesDdiTable.load()->Device.pfnGetHealthStatusExt;
-        if( nullptr == pfnGetHealthStatusExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetHealthStatusExt;
+    static const zes_pfnDeviceGetHealthStatusExt_t pfnGetHealthStatusExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnGetHealthStatusExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetHealthStatusExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetHealthStatusExt( hDevice, pHealth );
     #else
@@ -11299,19 +10499,14 @@ zesDeviceSetHealthStatusExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDeviceSetHealthStatusExt_t pfnSetHealthStatusExt = [&result] {
-        auto pfnSetHealthStatusExt = ze_lib::context->zesDdiTable.load()->Device.pfnSetHealthStatusExt;
-        if( nullptr == pfnSetHealthStatusExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnSetHealthStatusExt;
+    static const zes_pfnDeviceSetHealthStatusExt_t pfnSetHealthStatusExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Device.pfnSetHealthStatusExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnSetHealthStatusExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnSetHealthStatusExt( hDevice, health );
     #else
@@ -11377,19 +10572,14 @@ zesDriverEnumInfoLogsExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverEnumInfoLogsExt_t pfnEnumInfoLogsExt = [&result] {
-        auto pfnEnumInfoLogsExt = ze_lib::context->zesDdiTable.load()->Driver.pfnEnumInfoLogsExt;
-        if( nullptr == pfnEnumInfoLogsExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnEnumInfoLogsExt;
+    static const zes_pfnDriverEnumInfoLogsExt_t pfnEnumInfoLogsExt = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnEnumInfoLogsExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnEnumInfoLogsExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnEnumInfoLogsExt( hDriver, pCount, phInfoLogs );
     #else
@@ -11441,19 +10631,14 @@ zesInfoLogGetPropertiesExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnInfoLogGetPropertiesExt_t pfnGetPropertiesExt = [&result] {
-        auto pfnGetPropertiesExt = ze_lib::context->zesDdiTable.load()->InfoLog.pfnGetPropertiesExt;
-        if( nullptr == pfnGetPropertiesExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetPropertiesExt;
+    static const zes_pfnInfoLogGetPropertiesExt_t pfnGetPropertiesExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLog.pfnGetPropertiesExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetPropertiesExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetPropertiesExt( hInfoLog, pProperties );
     #else
@@ -11529,19 +10714,14 @@ zesInfoLogCreateInstanceExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnInfoLogCreateInstanceExt_t pfnCreateInstanceExt = [&result] {
-        auto pfnCreateInstanceExt = ze_lib::context->zesDdiTable.load()->InfoLog.pfnCreateInstanceExt;
-        if( nullptr == pfnCreateInstanceExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnCreateInstanceExt;
+    static const zes_pfnInfoLogCreateInstanceExt_t pfnCreateInstanceExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLog.pfnCreateInstanceExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnCreateInstanceExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnCreateInstanceExt( hInfoLog, pInstanceName, pDesc, phInfoLogInstance );
     #else
@@ -11655,19 +10835,14 @@ zesInfoLogInstanceReadWithMetadataExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnInfoLogInstanceReadWithMetadataExt_t pfnReadWithMetadataExt = [&result] {
-        auto pfnReadWithMetadataExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnReadWithMetadataExt;
-        if( nullptr == pfnReadWithMetadataExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnReadWithMetadataExt;
+    static const zes_pfnInfoLogInstanceReadWithMetadataExt_t pfnReadWithMetadataExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnReadWithMetadataExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnReadWithMetadataExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnReadWithMetadataExt( hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus );
     #else
@@ -11779,19 +10954,14 @@ zesInfoLogInstancePeekWithMetadataExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnInfoLogInstancePeekWithMetadataExt_t pfnPeekWithMetadataExt = [&result] {
-        auto pfnPeekWithMetadataExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnPeekWithMetadataExt;
-        if( nullptr == pfnPeekWithMetadataExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnPeekWithMetadataExt;
+    static const zes_pfnInfoLogInstancePeekWithMetadataExt_t pfnPeekWithMetadataExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnPeekWithMetadataExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnPeekWithMetadataExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnPeekWithMetadataExt( hInfoLogInstance, timeout, pSize, pBuffer, pRecordCount, pDescriptors, pReadStatus );
     #else
@@ -11845,19 +11015,14 @@ zesInfoLogInstanceDeleteExt(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnInfoLogInstanceDeleteExt_t pfnDeleteExt = [&result] {
-        auto pfnDeleteExt = ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnDeleteExt;
-        if( nullptr == pfnDeleteExt ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnDeleteExt;
+    static const zes_pfnInfoLogInstanceDeleteExt_t pfnDeleteExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogInstance.pfnDeleteExt;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnDeleteExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnDeleteExt( hInfoLogInstance );
     #else
@@ -11924,19 +11089,14 @@ zesDriverGetPciDeviceProperties(
     )
 {
     #ifdef L0_STATIC_LOADER_BUILD
-    ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    static const zes_pfnDriverGetPciDeviceProperties_t pfnGetPciDeviceProperties = [&result] {
-        auto pfnGetPciDeviceProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetPciDeviceProperties;
-        if( nullptr == pfnGetPciDeviceProperties ) {
-            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return pfnGetPciDeviceProperties;
+    static const zes_pfnDriverGetPciDeviceProperties_t pfnGetPciDeviceProperties = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnGetPciDeviceProperties;
     }();
-    if (result != ZE_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == pfnGetPciDeviceProperties) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     return pfnGetPciDeviceProperties( hDriver, pCount, pProperties );
     #else

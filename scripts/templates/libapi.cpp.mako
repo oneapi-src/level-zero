@@ -173,9 +173,6 @@ ${th.make_func_name(n, tags, obj)}(
 %endif
 %else:
     #ifdef L0_STATIC_LOADER_BUILD
-    %if ret_type == 'ze_result_t':
-    ze_result_t result = ${X}_RESULT_SUCCESS;
-    %endif
     if(ze_lib::destruction) {
         %if ret_type == 'ze_result_t':
         return ${X}_RESULT_ERROR_UNINITIALIZED;
@@ -199,15 +196,11 @@ ${th.make_func_name(n, tags, obj)}(
     }
     %endif
     %if ret_type == 'ze_result_t':
-    static const ${th.make_pfn_type(n, tags, obj)} ${th.make_pfn_name(n, tags, obj)} = [&result] {
-        auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
-        if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
-            result = ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-        return ${th.make_pfn_name(n, tags, obj)};
+    static const ${th.make_pfn_type(n, tags, obj)} ${th.make_pfn_name(n, tags, obj)} = [] {
+        return ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
     }();
-    if (result != ${X}_RESULT_SUCCESS) {
-        return result;
+    if (nullptr == ${th.make_pfn_name(n, tags, obj)}) {
+        return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     %else:
     static const ${th.make_pfn_type(n, tags, obj)} ${th.make_pfn_name(n, tags, obj)} = [] {
