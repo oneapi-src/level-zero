@@ -323,7 +323,13 @@ namespace ze_lib
                 debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
                 return ZE_RESULT_ERROR_UNINITIALIZED;
             }
-            if (!desc) {
+            if (sysmanOnly) {
+                auto initSysman = initialzesDdiTable.Global.pfnInit;
+                if (initSysman == nullptr) {
+                    return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+                }
+                result = initSysman(flags);
+            } else if (!desc) {
                 result = initLoader(flags);
             } else if (initDriversLoader != nullptr) {
                 uint32_t pInitDriversCount = 0;
