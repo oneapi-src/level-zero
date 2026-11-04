@@ -11,6 +11,10 @@
 #include "ze_api.h"
 #include "zer_api.h"
 
+#include <iterator>
+#include <regex>
+#include <string>
+
 #if defined(_WIN32)
 #define putenv_safe _putenv
 #else
@@ -1055,4 +1059,105 @@ TEST(
     // A null handle is never registered; the handle lifetime checker must reject it.
     uint32_t deviceCount = 0;
     EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_HANDLE, zeDeviceGet(nullptr, &deviceCount, nullptr));
+}
+
+// Verify that the Timing Checker reports correct timing data, not merely that it
+// is transparent. Live mode prints one "[timing] <api> <ns> ns" line per call as
+// it happens (the aggregated summary/CSV are only emitted at process teardown,
+// after this test returns, so live mode is what can be asserted in-process).
+// We call a specific API a known number of times and confirm the checker emits a
+// numeric measurement attributed to that exact API for each call.
+TEST(
+    ValidationLayerTimingChecker,
+    GivenTimingCheckerWithLiveLoggingWhenCallingApisThenPerApiTimingDataIsReported) {
+
+    // Environment (validation layer, timing checker + live mode, null driver) is
+    // supplied by this test's ENVIRONMENT property in test/CMakeLists.txt.
+    testing::internal::CaptureStderr();
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+
+    // Call one API a known number of times so each invocation must be measured.
+    const int expectedCalls = 5;
+    uint32_t driverCount = 0;
+    for (int i = 0; i < expectedCalls; ++i) {
+        EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    }
+
+    const std::string captured = testing::internal::GetCapturedStderr();
+
+    // Each timed call emits a line of the exact form "[timing] zeDriverGet <ns> ns".
+    const std::regex driverGetLine(R"(\[timing\] zeDriverGet ([0-9]+) ns)");
+    const auto matchesEnd = std::sregex_iterator();
+    const auto reports = std::distance(
+        std::sregex_iterator(captured.begin(), captured.end(), driverGetLine), matchesEnd);
+
+    // The checker must report a numeric measurement for at least every explicit
+    // call (the loader may legitimately issue additional internal calls).
+    EXPECT_GE(reports, expectedCalls) << "captured stderr:\n" << captured;
+
+    // The reported durations must be valid, parseable nanosecond counts.
+    for (auto it = std::sregex_iterator(captured.begin(), captured.end(), driverGetLine);
+         it != matchesEnd; ++it) {
+        EXPECT_NO_THROW((void)std::stoull((*it)[1].str()));
+    }
+
+    // A different API that was also called must be measured and attributed to its
+    // own name, confirming per-API attribution rather than a single bucket.
+    EXPECT_NE(captured.find("[timing] zeInitDrivers "), std::string::npos)
+        << "captured stderr:\n" << captured;
+}
+
+// Verify that enabling the Timing Checker is transparent: it records host-side
+// timing for every API call without altering results or crashing. The per-API
+// summary is emitted by the checker at teardown.
+TEST(
+    ValidationLayerTimingChecker,
+    GivenTimingCheckerEnabledWhenCallingApisThenResultsAreUnchangedAndNoCrash) {
+
+    // Environment (validation layer, timing checker, null driver) is supplied by
+    // this test's ENVIRONMENT property in test/CMakeLists.txt.
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    uint32_t driverCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&driverCount, drivers.data()));
+
+    uint32_t deviceCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, nullptr));
+    EXPECT_GT(deviceCount, 0);
+
+    std::vector<ze_device_handle_t> devices(deviceCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data()));
+
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    ze_context_handle_t context = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(drivers[0], &context_desc, &context));
+    EXPECT_NE(context, nullptr);
+
+    ze_command_list_desc_t cmdlist_desc = {};
+    cmdlist_desc.stype = ZE_STRUCTURE_TYPE_COMMAND_LIST_DESC;
+    ze_command_list_handle_t commandList = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListCreate(context, devices[0], &cmdlist_desc, &commandList));
+    EXPECT_NE(commandList, nullptr);
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListDestroy(commandList));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(context));
 }
