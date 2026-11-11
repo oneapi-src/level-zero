@@ -69,7 +69,14 @@ def _LoadZeLibrary():
         # load the library
         libName = "ze_loader"
         if sys.platform.startswith("linux"):
-            libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
+            # Load by SONAME so the dynamic linker resolves the loader
+            # through the standard search path (LD_LIBRARY_PATH, the
+            # ld.so cache, default directories). Hardcoding one distro
+            # location can pin an older loader than the one the Level
+            # Zero runtime itself uses when several loaders coexist,
+            # and a zesInit through the mismatched copy can break
+            # device enumeration for the whole process.
+            libName = "lib" + libName + ".so.1"
         else:
             libName = libName + ".dll"
 
