@@ -9,6 +9,7 @@
 # Python bindings for the libze_intel_gpu.so / ze_intel_gpu.dll library
 ##
 
+import ctypes.util
 import glob
 import os
 import sys
@@ -69,14 +70,25 @@ def _LoadZeLibrary():
         # load the library
         libName = "ze_loader"
         if sys.platform.startswith("linux"):
-            # Load by SONAME so the dynamic linker resolves the loader
-            # through the standard search path (LD_LIBRARY_PATH, the
-            # ld.so cache, default directories). Hardcoding one distro
+            # Resolve the loader SONAME dynamically and load by that
+            # SONAME, so the dynamic linker resolves the loader through
+            # the standard search path (LD_LIBRARY_PATH, the ld.so
+            # cache, default directories). Hardcoding one distro
             # location can pin an older loader than the one the Level
             # Zero runtime itself uses when several loaders coexist,
             # and a zesInit through the mismatched copy can break
             # device enumeration for the whole process.
-            libName = "lib" + libName + ".so.1"
+            # find_library() asks the system (ldconfig) for the current
+            # SONAME, so no major version is hardcoded here and this
+            # keeps working across a Level Zero major version bump.
+            # This is the runtime equivalent of extracting the major
+            # version dynamically: the build-time helper in
+            # scripts/templates/helper.py (get_major_ver) parses a
+            # $X_MAKE_VERSION(...) spec string, which is not available
+            # to pyzes at runtime.
+            # Fall back to the unversioned name, which the dynamic
+            # linker can still resolve through the same search path.
+            libName = ctypes.util.find_library(libName) or "lib" + libName + ".so"
         else:
             libName = libName + ".dll"
 
