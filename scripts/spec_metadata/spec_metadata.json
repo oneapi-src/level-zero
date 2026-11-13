@@ -6,12 +6,12 @@
         "that scripts/templates/*.mako owns. Refresh both files together whenever the spec",
         "is updated -- see scripts/spec_metadata.py refresh."
     ],
-    "api_version": "1.20",
-    "generated_by": "scripts/spec_metadata.py refresh --spec-repo <clone> --ref v1.20.41 --ver 1.20",
+    "api_version": "1.21",
+    "generated_by": "scripts/spec_metadata.py refresh --spec-repo <clone> --ref v1.21.26 --ver 1.21",
     "input_json": "input.json",
-    "input_json_sha256": "e0f06669ba4c23218ff84d5d09b03257aa73130fc2e9aed86a5c89aa94c19550",
-    "spec_commit": "ed9ac097db6387aeaae2b35b65ebcf44aab1fecc",
+    "input_json_sha256": "dff4562a0c20cb0ff8360fd6a856efae06fae7ba51a5fd483ddcd5d8ac782cbe",
+    "spec_commit": "628f3c80921c9a385a8034dac9f39d1c1319238b",
     "spec_repository": "https://github.com/oneapi-src/level-zero-spec",
-    "spec_revision": "1.20.41",
-    "spec_tag": "v1.20.41"
+    "spec_revision": "1.21.26",
+    "spec_tag": "v1.21.26"
 }

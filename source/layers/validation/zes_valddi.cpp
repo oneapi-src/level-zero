@@ -101,6 +101,35 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDriverGetApiVersion(
+        ze_result_t result,
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        zes_api_version_t* pVersion                     ///< [out] api version
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesDriverGetApiVersion(";
+        
+        
+        oss << "hDriver=";
+        oss << loader::to_string(hDriver);
+        
+        oss << ", ";
+        oss << "pVersion=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pVersion != nullptr) {
+            oss << loader::to_string(*pVersion);
+        } else {
+            oss << loader::to_string(pVersion);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDriverGetExtensionProperties(
         ze_result_t result,
         zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
@@ -5199,6 +5228,211 @@ namespace validation_layer
         context.logger->log_trace(oss.str());
         return result;
     }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesInfoLogDecoderContextCreateExt(
+        ze_result_t result,
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the records are read from
+        zes_info_log_decoder_context_handle_t* phDecoderContext ///< [out] handle of the decoder context that was created.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesInfoLogDecoderContextCreateExt(";
+        
+        
+        oss << "hInfoLog=";
+        oss << loader::to_string(hInfoLog);
+        
+        oss << ", ";
+        oss << "phDecoderContext=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && phDecoderContext != nullptr) {
+            oss << loader::to_string(*phDecoderContext);
+        } else {
+            oss << loader::to_string(phDecoderContext);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesInfoLogDecoderContextGetFieldInfoExt(
+        ze_result_t result,
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fields that can be decoded.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fields that can be decoded and shall not return any descriptor.
+                                                        ///< if count is greater than the number of fields that can be decoded,
+                                                        ///< then the driver shall update the value with the correct number of fields.
+        zes_info_log_decodable_field_info_ext_t* pFieldInfos///< [in,out][optional][range(0, *pCount)] array of field descriptions, one
+                                                        ///< element per field.
+                                                        ///< if count is less than the number of fields that can be decoded, then
+                                                        ///< the driver shall only retrieve that number of descriptors.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesInfoLogDecoderContextGetFieldInfoExt(";
+        
+        
+        oss << "hDecoderContext=";
+        oss << loader::to_string(hDecoderContext);
+        
+        oss << ", ";
+        oss << "pCount=";
+        oss << loader::to_string(pCount);
+        
+        oss << ", ";
+        oss << "pFieldInfos=";
+        oss << loader::to_string(pFieldInfos);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesInfoLogDecoderContextDecodeStartExt(
+        ze_result_t result,
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t size,                                  ///< [in] size, in bytes, of the record data in `pBuffer`, as returned in
+                                                        ///< `*pSize` by the read or peek call
+        const uint8_t* pBuffer,                         ///< [in][optional][range(0, size)] the record data, as returned in
+                                                        ///< `pBuffer` by the read or peek call
+        uint32_t recordCount,                           ///< [in] number of records in the batch, as returned in `*pRecordCount` by
+                                                        ///< the read or peek call
+        const zes_info_log_metadata_ext_t* pDescriptors ///< [in][optional][range(0, recordCount)] array of metadata describing
+                                                        ///< each record, as returned in `pDescriptors` by the read or peek call
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesInfoLogDecoderContextDecodeStartExt(";
+        
+        
+        oss << "hDecoderContext=";
+        oss << loader::to_string(hDecoderContext);
+        
+        oss << ", ";
+        oss << "size=";
+        oss << loader::to_string(size);
+        
+        oss << ", ";
+        oss << "pBuffer=";
+        oss << loader::to_string(pBuffer);
+        
+        oss << ", ";
+        oss << "recordCount=";
+        oss << loader::to_string(recordCount);
+        
+        oss << ", ";
+        oss << "pDescriptors=";
+        oss << loader::to_string(pDescriptors);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesInfoLogDecoderContextReadFieldExt(
+        ze_result_t result,
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context, which must be decoding a batch
+        uint32_t fieldId,                               ///< [in] identifier of the field to read, as reported in `fieldId` of
+                                                        ///< ::zes_info_log_decodable_field_info_ext_t
+        uint32_t recordId,                              ///< [in] index of the record in the `pDescriptors` that was passed to
+                                                        ///< ::zesInfoLogDecoderContextDecodeStartExt
+        void* pOutBuffer,                               ///< [in,out][range(0, bufferLen)] buffer that will contain the value of
+                                                        ///< the field
+        size_t bufferLen,                               ///< [in] size, in bytes, of `pOutBuffer`
+        size_t* pBytesCopied                            ///< [out] pointer to the number of bytes written to `pOutBuffer`.
+                                                        ///< the driver shall update the value with zero when the record does not
+                                                        ///< carry the field.
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesInfoLogDecoderContextReadFieldExt(";
+        
+        
+        oss << "hDecoderContext=";
+        oss << loader::to_string(hDecoderContext);
+        
+        oss << ", ";
+        oss << "fieldId=";
+        oss << loader::to_string(fieldId);
+        
+        oss << ", ";
+        oss << "recordId=";
+        oss << loader::to_string(recordId);
+        
+        oss << ", ";
+        oss << "pOutBuffer=";
+        oss << loader::to_string(pOutBuffer);
+        
+        oss << ", ";
+        oss << "bufferLen=";
+        oss << loader::to_string(bufferLen);
+        
+        oss << ", ";
+        oss << "pBytesCopied=";
+        // Dereference output parameter if not null and result is success
+        if (result == ZE_RESULT_SUCCESS && pBytesCopied != nullptr) {
+            oss << loader::to_string(*pBytesCopied);
+        } else {
+            oss << loader::to_string(pBytesCopied);
+        }
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesInfoLogDecoderContextDecodeStopExt(
+        ze_result_t result,
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in] handle of the decoder context
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesInfoLogDecoderContextDecodeStopExt(";
+        
+        
+        oss << "hDecoderContext=";
+        oss << loader::to_string(hDecoderContext);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
+        VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesInfoLogDecoderContextDeleteExt(
+        ze_result_t result,
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the decoder context was created from
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in][release] handle of the decoder context to delete
+) {
+        // Only log success results if verbose logging is enabled
+        if (result == ZE_RESULT_SUCCESS && !context.verboseLogging) {
+            return result;
+        }
+        std::string status = (result == ZE_RESULT_SUCCESS) ? "SUCCESS" : "ERROR";
+        std::ostringstream oss;
+        oss << status << " (" << loader::to_string(result) << ") in zesInfoLogDecoderContextDeleteExt(";
+        
+        
+        oss << "hInfoLog=";
+        oss << loader::to_string(hInfoLog);
+        
+        oss << ", ";
+        oss << "hDecoderContext=";
+        oss << loader::to_string(hDecoderContext);
+        oss << ")";
+        context.logger->log_trace(oss.str());
+        return result;
+    }
         VALIDATION_MAYBE_UNUSED static ze_result_t logAndPropagateResult_zesDriverGetPciDeviceProperties(
         ze_result_t result,
         zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
@@ -5377,6 +5611,48 @@ namespace validation_layer
         }
 
         return logAndPropagateResult_zesDriverGetProperties(driver_result, hDriver, pDriverProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetApiVersion
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetApiVersion(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        zes_api_version_t* pVersion                     ///< [out] api version
+        )
+    {
+        context.logger->log_trace("zesDriverGetApiVersion(hDriver, pVersion)");
+
+        auto pfnGetApiVersion = context.zesDdiTable.Driver.pfnGetApiVersion;
+
+        if( nullptr == pfnGetApiVersion )
+            return logAndPropagateResult_zesDriverGetApiVersion(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDriver, pVersion);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDriverGetApiVersionPrologue( hDriver, pVersion );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDriverGetApiVersion(result, hDriver, pVersion);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDriverGetApiVersionPrologue( hDriver, pVersion );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDriverGetApiVersion(result, hDriver, pVersion);
+        }
+
+        auto driver_result = pfnGetApiVersion( hDriver, pVersion );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDriverGetApiVersionEpilogue( hDriver, pVersion ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesDriverGetApiVersion(result, hDriver, pVersion);
+        }
+
+        return logAndPropagateResult_zesDriverGetApiVersion(driver_result, hDriver, pVersion);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -12946,6 +13222,290 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextCreateExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the records are read from
+        zes_info_log_decoder_context_handle_t* phDecoderContext ///< [out] handle of the decoder context that was created.
+        )
+    {
+        context.logger->log_trace("zesInfoLogDecoderContextCreateExt(hInfoLog, phDecoderContext)");
+
+        auto pfnCreateExt = context.zesDdiTable.InfoLogDecoderContext.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult_zesInfoLogDecoderContextCreateExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hInfoLog, phDecoderContext);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextCreateExtPrologue( hInfoLog, phDecoderContext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextCreateExt(result, hInfoLog, phDecoderContext);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesInfoLogDecoderContextCreateExtPrologue( hInfoLog, phDecoderContext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextCreateExt(result, hInfoLog, phDecoderContext);
+        }
+
+        auto driver_result = pfnCreateExt( hInfoLog, phDecoderContext );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextCreateExtEpilogue( hInfoLog, phDecoderContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextCreateExt(result, hInfoLog, phDecoderContext);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phDecoderContext){
+                context.handleLifetime->addHandle( *phDecoderContext );
+                context.handleLifetime->addDependent( hInfoLog, *phDecoderContext );
+
+            }
+        }
+        return logAndPropagateResult_zesInfoLogDecoderContextCreateExt(driver_result, hInfoLog, phDecoderContext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextGetFieldInfoExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextGetFieldInfoExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fields that can be decoded.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fields that can be decoded and shall not return any descriptor.
+                                                        ///< if count is greater than the number of fields that can be decoded,
+                                                        ///< then the driver shall update the value with the correct number of fields.
+        zes_info_log_decodable_field_info_ext_t* pFieldInfos///< [in,out][optional][range(0, *pCount)] array of field descriptions, one
+                                                        ///< element per field.
+                                                        ///< if count is less than the number of fields that can be decoded, then
+                                                        ///< the driver shall only retrieve that number of descriptors.
+        )
+    {
+        context.logger->log_trace("zesInfoLogDecoderContextGetFieldInfoExt(hDecoderContext, pCount, pFieldInfos)");
+
+        auto pfnGetFieldInfoExt = context.zesDdiTable.InfoLogDecoderContext.pfnGetFieldInfoExt;
+
+        if( nullptr == pfnGetFieldInfoExt )
+            return logAndPropagateResult_zesInfoLogDecoderContextGetFieldInfoExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDecoderContext, pCount, pFieldInfos);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextGetFieldInfoExtPrologue( hDecoderContext, pCount, pFieldInfos );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextGetFieldInfoExt(result, hDecoderContext, pCount, pFieldInfos);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesInfoLogDecoderContextGetFieldInfoExtPrologue( hDecoderContext, pCount, pFieldInfos );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextGetFieldInfoExt(result, hDecoderContext, pCount, pFieldInfos);
+        }
+
+        auto driver_result = pfnGetFieldInfoExt( hDecoderContext, pCount, pFieldInfos );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextGetFieldInfoExtEpilogue( hDecoderContext, pCount, pFieldInfos ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextGetFieldInfoExt(result, hDecoderContext, pCount, pFieldInfos);
+        }
+
+        return logAndPropagateResult_zesInfoLogDecoderContextGetFieldInfoExt(driver_result, hDecoderContext, pCount, pFieldInfos);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDecodeStartExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStartExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t size,                                  ///< [in] size, in bytes, of the record data in `pBuffer`, as returned in
+                                                        ///< `*pSize` by the read or peek call
+        const uint8_t* pBuffer,                         ///< [in][optional][range(0, size)] the record data, as returned in
+                                                        ///< `pBuffer` by the read or peek call
+        uint32_t recordCount,                           ///< [in] number of records in the batch, as returned in `*pRecordCount` by
+                                                        ///< the read or peek call
+        const zes_info_log_metadata_ext_t* pDescriptors ///< [in][optional][range(0, recordCount)] array of metadata describing
+                                                        ///< each record, as returned in `pDescriptors` by the read or peek call
+        )
+    {
+        context.logger->log_trace("zesInfoLogDecoderContextDecodeStartExt(hDecoderContext, size, pBuffer, recordCount, pDescriptors)");
+
+        auto pfnDecodeStartExt = context.zesDdiTable.InfoLogDecoderContext.pfnDecodeStartExt;
+
+        if( nullptr == pfnDecodeStartExt )
+            return logAndPropagateResult_zesInfoLogDecoderContextDecodeStartExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDecoderContext, size, pBuffer, recordCount, pDescriptors);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextDecodeStartExtPrologue( hDecoderContext, size, pBuffer, recordCount, pDescriptors );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDecodeStartExt(result, hDecoderContext, size, pBuffer, recordCount, pDescriptors);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesInfoLogDecoderContextDecodeStartExtPrologue( hDecoderContext, size, pBuffer, recordCount, pDescriptors );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDecodeStartExt(result, hDecoderContext, size, pBuffer, recordCount, pDescriptors);
+        }
+
+        auto driver_result = pfnDecodeStartExt( hDecoderContext, size, pBuffer, recordCount, pDescriptors );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextDecodeStartExtEpilogue( hDecoderContext, size, pBuffer, recordCount, pDescriptors ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDecodeStartExt(result, hDecoderContext, size, pBuffer, recordCount, pDescriptors);
+        }
+
+        return logAndPropagateResult_zesInfoLogDecoderContextDecodeStartExt(driver_result, hDecoderContext, size, pBuffer, recordCount, pDescriptors);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextReadFieldExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextReadFieldExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context, which must be decoding a batch
+        uint32_t fieldId,                               ///< [in] identifier of the field to read, as reported in `fieldId` of
+                                                        ///< ::zes_info_log_decodable_field_info_ext_t
+        uint32_t recordId,                              ///< [in] index of the record in the `pDescriptors` that was passed to
+                                                        ///< ::zesInfoLogDecoderContextDecodeStartExt
+        void* pOutBuffer,                               ///< [in,out][range(0, bufferLen)] buffer that will contain the value of
+                                                        ///< the field
+        size_t bufferLen,                               ///< [in] size, in bytes, of `pOutBuffer`
+        size_t* pBytesCopied                            ///< [out] pointer to the number of bytes written to `pOutBuffer`.
+                                                        ///< the driver shall update the value with zero when the record does not
+                                                        ///< carry the field.
+        )
+    {
+        context.logger->log_trace("zesInfoLogDecoderContextReadFieldExt(hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied)");
+
+        auto pfnReadFieldExt = context.zesDdiTable.InfoLogDecoderContext.pfnReadFieldExt;
+
+        if( nullptr == pfnReadFieldExt )
+            return logAndPropagateResult_zesInfoLogDecoderContextReadFieldExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextReadFieldExtPrologue( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextReadFieldExt(result, hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesInfoLogDecoderContextReadFieldExtPrologue( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextReadFieldExt(result, hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied);
+        }
+
+        auto driver_result = pfnReadFieldExt( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextReadFieldExtEpilogue( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextReadFieldExt(result, hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied);
+        }
+
+        return logAndPropagateResult_zesInfoLogDecoderContextReadFieldExt(driver_result, hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDecodeStopExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStopExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in] handle of the decoder context
+        )
+    {
+        context.logger->log_trace("zesInfoLogDecoderContextDecodeStopExt(hDecoderContext)");
+
+        auto pfnDecodeStopExt = context.zesDdiTable.InfoLogDecoderContext.pfnDecodeStopExt;
+
+        if( nullptr == pfnDecodeStopExt )
+            return logAndPropagateResult_zesInfoLogDecoderContextDecodeStopExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hDecoderContext);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextDecodeStopExtPrologue( hDecoderContext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDecodeStopExt(result, hDecoderContext);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesInfoLogDecoderContextDecodeStopExtPrologue( hDecoderContext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDecodeStopExt(result, hDecoderContext);
+        }
+
+        auto driver_result = pfnDecodeStopExt( hDecoderContext );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextDecodeStopExtEpilogue( hDecoderContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDecodeStopExt(result, hDecoderContext);
+        }
+
+        return logAndPropagateResult_zesInfoLogDecoderContextDecodeStopExt(driver_result, hDecoderContext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDeleteExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDeleteExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the decoder context was created from
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in][release] handle of the decoder context to delete
+        )
+    {
+        context.logger->log_trace("zesInfoLogDecoderContextDeleteExt(hInfoLog, hDecoderContext)");
+
+        auto pfnDeleteExt = context.zesDdiTable.InfoLogDecoderContext.pfnDeleteExt;
+
+        if( nullptr == pfnDeleteExt )
+            return logAndPropagateResult_zesInfoLogDecoderContextDeleteExt(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE, hInfoLog, hDecoderContext);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextDeleteExtPrologue( hInfoLog, hDecoderContext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDeleteExt(result, hInfoLog, hDecoderContext);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesInfoLogDecoderContextDeleteExtPrologue( hInfoLog, hDecoderContext );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDeleteExt(result, hInfoLog, hDecoderContext);
+        }
+
+        auto driver_result = pfnDeleteExt( hInfoLog, hDecoderContext );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesInfoLogDecoderContextDeleteExtEpilogue( hInfoLog, hDecoderContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult_zesInfoLogDecoderContextDeleteExt(result, hInfoLog, hDecoderContext);
+        }
+
+        return logAndPropagateResult_zesInfoLogDecoderContextDeleteExt(driver_result, hInfoLog, hDecoderContext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDriverGetPciDeviceProperties
     __zedlllocal ze_result_t ZE_APICALL
     zesDriverGetPciDeviceProperties(
@@ -13309,6 +13869,10 @@ zesGetDriverProcAddrTable(
     if (version >= ZE_API_VERSION_1_20) {
         dditable.pfnGetPciDeviceProperties                   = pDdiTable->pfnGetPciDeviceProperties;
         pDdiTable->pfnGetPciDeviceProperties                 = validation_layer::zesDriverGetPciDeviceProperties;
+    }
+    if (version >= ZE_API_VERSION_1_21) {
+        dditable.pfnGetApiVersion                            = pDdiTable->pfnGetApiVersion;
+        pDdiTable->pfnGetApiVersion                          = validation_layer::zesDriverGetApiVersion;
     }
     if (version >= ZE_API_VERSION_1_5) {
         dditable.pfnGet                                      = pDdiTable->pfnGet;
@@ -14336,6 +14900,57 @@ zesGetInfoLogProcAddrTable(
     if (version >= ZE_API_VERSION_1_19) {
         dditable.pfnCreateInstanceExt                        = pDdiTable->pfnCreateInstanceExt;
         pDdiTable->pfnCreateInstanceExt                      = validation_layer::zesInfoLogCreateInstanceExt;
+    }
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's InfoLogDecoderContext table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_info_log_decoder_context_dditable_t* pDdiTable  ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zesDdiTable.InfoLogDecoderContext;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_21) {
+        dditable.pfnCreateExt                                = pDdiTable->pfnCreateExt;
+        pDdiTable->pfnCreateExt                              = validation_layer::zesInfoLogDecoderContextCreateExt;
+    }
+    if (version >= ZE_API_VERSION_1_21) {
+        dditable.pfnGetFieldInfoExt                          = pDdiTable->pfnGetFieldInfoExt;
+        pDdiTable->pfnGetFieldInfoExt                        = validation_layer::zesInfoLogDecoderContextGetFieldInfoExt;
+    }
+    if (version >= ZE_API_VERSION_1_21) {
+        dditable.pfnDecodeStartExt                           = pDdiTable->pfnDecodeStartExt;
+        pDdiTable->pfnDecodeStartExt                         = validation_layer::zesInfoLogDecoderContextDecodeStartExt;
+    }
+    if (version >= ZE_API_VERSION_1_21) {
+        dditable.pfnReadFieldExt                             = pDdiTable->pfnReadFieldExt;
+        pDdiTable->pfnReadFieldExt                           = validation_layer::zesInfoLogDecoderContextReadFieldExt;
+    }
+    if (version >= ZE_API_VERSION_1_21) {
+        dditable.pfnDecodeStopExt                            = pDdiTable->pfnDecodeStopExt;
+        pDdiTable->pfnDecodeStopExt                          = validation_layer::zesInfoLogDecoderContextDecodeStopExt;
+    }
+    if (version >= ZE_API_VERSION_1_21) {
+        dditable.pfnDeleteExt                                = pDdiTable->pfnDeleteExt;
+        pDdiTable->pfnDeleteExt                              = validation_layer::zesInfoLogDecoderContextDeleteExt;
     }
     return result;
 }

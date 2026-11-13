@@ -1640,6 +1640,26 @@ inline std::string to_string(const zes_info_log_read_status_ext_t& desc) {
     return to_string(&desc);
 }
 
+inline std::string to_string(const zes_info_log_decodable_field_info_ext_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", desc=" << to_string(desc->desc);
+    oss << ", name=" << to_string(desc->name);
+    oss << ", fieldId=" << to_string(desc->fieldId);
+    oss << ", type=" << to_string(&desc->type);
+    oss << ", requiredBytes=" << to_string(desc->requiredBytes);
+    oss << ", elementCount=" << to_string(desc->elementCount);
+    oss << ", versionString=" << to_string(desc->versionString);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_info_log_decodable_field_info_ext_t& desc) {
+    return to_string(&desc);
+}
+
 inline std::string to_string(const zes_device_gpu_topology_ext_properties_t* desc) {
     if (!desc) return "nullptr";
     std::ostringstream oss;
@@ -1693,6 +1713,20 @@ inline std::string to_string(const zes_driver_pci_device_properties_t* desc) {
 }
 
 inline std::string to_string(const zes_driver_pci_device_properties_t& desc) {
+    return to_string(&desc);
+}
+
+inline std::string to_string(const zes_device_soc_uid_ext_properties_t* desc) {
+    if (!desc) return "nullptr";
+    std::ostringstream oss;
+    oss << "{";
+    oss << "stype=" << to_string(&desc->stype);
+    oss << ", socUid=" << to_string(&desc->socUid);
+    oss << "}";
+    return oss.str();
+}
+
+inline std::string to_string(const zes_device_soc_uid_ext_properties_t& desc) {
     return to_string(&desc);
 }
 

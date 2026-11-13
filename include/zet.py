@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.20-r1.20.41
+ @version v1.21-r1.21.26
 
  """
 import platform
@@ -72,7 +72,12 @@ class zet_metric_query_handle_t(c_void_p):
     pass
 
 ###############################################################################
-## @brief Handle of tracer object
+## @brief [DEPRECATED since 1.14] Handle of tracer object
+## 
+## @deprecated Since 1.14. Only used by the deprecated API Tracing extension. Use L0
+##             Loader API Tracing
+##             (https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing)
+##             instead.
 class zet_tracer_exp_handle_t(c_void_p):
     pass
 

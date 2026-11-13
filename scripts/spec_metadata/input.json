@@ -65,7 +65,7 @@
         },
         "class": {
             "$r": {
-                "ddi_ordinal": 63,
+                "ddi_ordinal": 64,
                 "default_struct": [
                     "$xDefaultGPUImmediateCommandQueueDesc",
                     "$xDefaultGPUDeviceMemAllocDesc",
@@ -196,6 +196,7 @@
                     "$s_pci_bar_properties_1_2_t",
                     "$s_pci_stats_t",
                     "$s_device_gpu_topology_ext_properties_t",
+                    "$s_device_soc_uid_ext_properties_t",
                     "$s_device_ext_state_t",
                     "$s_device_ecc_desc_t",
                     "$s_device_ecc_properties_t",
@@ -236,11 +237,13 @@
             "$sDriver": {
                 "ddi_ordinal": 43,
                 "enum": [
+                    "$s_api_version_t",
                     "$s_event_type_flags_t"
                 ],
                 "function": [
                     "Get",
                     "GetProperties",
+                    "GetApiVersion",
                     "GetExtensionProperties",
                     "GetExtensionFunctionAddress",
                     "EventListen",
@@ -443,13 +446,39 @@
                 "ordinal": 10019000,
                 "owner": "$sDriver",
                 "owns": [
-                    "$sInfoLogInstance"
+                    "$sInfoLogInstance",
+                    "$sInfoLogDecoderContext"
                 ],
                 "struct": [
                     "$s_info_log_ext_properties_t",
                     "$s_info_log_instance_ext_desc_t",
                     "$s_info_log_metadata_ext_t",
                     "$s_info_log_read_status_ext_t"
+                ]
+            },
+            "$sInfoLogDecoderContext": {
+                "ddi_ordinal": 63,
+                "enum": [
+                    "$s_info_log_field_type_ext_t"
+                ],
+                "function": [
+                    "CreateExt",
+                    "GetFieldInfoExt",
+                    "DecodeStartExt",
+                    "ReadFieldExt",
+                    "DecodeStopExt",
+                    "DeleteExt"
+                ],
+                "handle": [
+                    "$s_info_log_decoder_context_handle_t"
+                ],
+                "members": [
+                    "$s_info_log_decoder_context_handle_t"
+                ],
+                "ordinal": 10019000,
+                "owner": "$sInfoLog",
+                "struct": [
+                    "$s_info_log_decodable_field_info_ext_t"
                 ]
             },
             "$sInfoLogInstance": {
@@ -2198,7 +2227,7 @@
                         "type": "uint32_t"
                     },
                     {
-                        "desc": "[in] command queue index within the group;\nmust be zero.\n",
+                        "desc": "[in] command queue index within the group;\nzero-based, so it must be less than the `numQueues` member of $x_command_queue_group_properties_t for the command queue group.\n",
                         "init": 0,
                         "name": "index",
                         "type": "uint32_t"
@@ -2225,6 +2254,35 @@
             }
         },
         "enum": {
+            "$s_api_version_t": {
+                "class": "$sDriver",
+                "etors": [
+                    "$S_API_VERSION_1_0",
+                    "$S_API_VERSION_1_1",
+                    "$S_API_VERSION_1_2",
+                    "$S_API_VERSION_1_3",
+                    "$S_API_VERSION_1_4",
+                    "$S_API_VERSION_1_5",
+                    "$S_API_VERSION_1_6",
+                    "$S_API_VERSION_1_7",
+                    "$S_API_VERSION_1_8",
+                    "$S_API_VERSION_1_9",
+                    "$S_API_VERSION_1_10",
+                    "$S_API_VERSION_1_11",
+                    "$S_API_VERSION_1_12",
+                    "$S_API_VERSION_1_13",
+                    "$S_API_VERSION_1_14",
+                    "$S_API_VERSION_1_15",
+                    "$S_API_VERSION_1_16",
+                    "$S_API_VERSION_1_17",
+                    "$S_API_VERSION_1_18",
+                    "$S_API_VERSION_1_19",
+                    "$S_API_VERSION_1_20",
+                    "$S_API_VERSION_1_21",
+                    "$S_API_VERSION_CURRENT"
+                ],
+                "max": "$S_API_VERSION_CURRENT"
+            },
             "$s_control_state_t": {
                 "class": "$sOverclock",
                 "etors": [
@@ -2312,6 +2370,14 @@
                     "$S_DEVICE_PROPERTY_FLAG_ONDEMANDPAGING"
                 ],
                 "max": "0xf"
+            },
+            "$s_device_soc_uid_ext_version_t": {
+                "class": "",
+                "etors": [
+                    "$S_DEVICE_SOC_UID_EXT_VERSION_1_0",
+                    "$S_DEVICE_SOC_UID_EXT_VERSION_CURRENT"
+                ],
+                "max": "$S_DEVICE_SOC_UID_EXT_VERSION_CURRENT"
             },
             "$s_device_state_ext_flags_t": {
                 "class": "$sDevice",
@@ -2488,6 +2554,17 @@
                 ],
                 "max": "0x3ff"
             },
+            "$s_info_log_field_type_ext_t": {
+                "class": "$sInfoLogDecoderContext",
+                "etors": [
+                    "$S_INFO_LOG_FIELD_TYPE_EXT_UINT32",
+                    "$S_INFO_LOG_FIELD_TYPE_EXT_INT64",
+                    "$S_INFO_LOG_FIELD_TYPE_EXT_DOUBLE",
+                    "$S_INFO_LOG_FIELD_TYPE_EXT_STRING",
+                    "$S_INFO_LOG_FIELD_TYPE_EXT_RAW_BYTES"
+                ],
+                "max": "$S_INFO_LOG_FIELD_TYPE_EXT_RAW_BYTES"
+            },
             "$s_info_log_format_ext_t": {
                 "class": "$sInfoLog",
                 "etors": [
@@ -2517,6 +2594,7 @@
                 "class": "",
                 "etors": [
                     "$S_INFO_LOGS_EXT_VERSION_1_0",
+                    "$S_INFO_LOGS_EXT_VERSION_1_1",
                     "$S_INFO_LOGS_EXT_VERSION_CURRENT"
                 ],
                 "max": "$S_INFO_LOGS_EXT_VERSION_CURRENT"
@@ -2978,9 +3056,11 @@
                     "$S_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES",
                     "$S_STRUCTURE_TYPE_DRIVER_PCI_DEVICE_PROPERTIES",
                     "$S_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES",
-                    "$S_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES"
+                    "$S_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES",
+                    "$S_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES",
+                    "$S_STRUCTURE_TYPE_INFO_LOG_DECODABLE_FIELD_INFO_EXT"
                 ],
-                "max": "$S_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES"
+                "max": "$S_STRUCTURE_TYPE_INFO_LOG_DECODABLE_FIELD_INFO_EXT"
             },
             "$s_sysman_device_mapping_exp_version_t": {
                 "class": "",
@@ -3368,6 +3448,7 @@
                     "$X_API_VERSION_1_18",
                     "$X_API_VERSION_1_19",
                     "$X_API_VERSION_1_20",
+                    "$X_API_VERSION_1_21",
                     "$X_API_VERSION_CURRENT"
                 ],
                 "max": "$X_API_VERSION_CURRENT"
@@ -3495,10 +3576,12 @@
                 "class": "$xCommandQueue",
                 "etors": [
                     "$X_COMMAND_QUEUE_PRIORITY_NORMAL",
+                    "$X_COMMAND_QUEUE_PRIORITY_LOW",
+                    "$X_COMMAND_QUEUE_PRIORITY_HIGH",
                     "$X_COMMAND_QUEUE_PRIORITY_PRIORITY_LOW",
                     "$X_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH"
                 ],
-                "max": "$X_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH"
+                "max": "$X_COMMAND_QUEUE_PRIORITY_HIGH"
             },
             "$x_command_queue_qos_ext_t": {
                 "class": "$xCommandQueue",
@@ -5933,6 +6016,17 @@
                     }
                 ]
             },
+            "$sDriverGetApiVersion": {
+                "class": "$sDriver",
+                "params": [
+                    {
+                        "type": "$s_driver_handle_t"
+                    },
+                    {
+                        "type": "$s_api_version_t*"
+                    }
+                ]
+            },
             "$sDriverGetDeviceByUuidExp": {
                 "class": "$sDriver",
                 "params": [
@@ -6481,6 +6575,93 @@
                     },
                     {
                         "type": "$s_info_log_instance_handle_t*"
+                    }
+                ]
+            },
+            "$sInfoLogDecoderContextCreateExt": {
+                "class": "$sInfoLogDecoderContext",
+                "params": [
+                    {
+                        "type": "$s_info_log_handle_t"
+                    },
+                    {
+                        "type": "$s_info_log_decoder_context_handle_t*"
+                    }
+                ]
+            },
+            "$sInfoLogDecoderContextDecodeStartExt": {
+                "class": "$sInfoLogDecoderContext",
+                "params": [
+                    {
+                        "type": "$s_info_log_decoder_context_handle_t"
+                    },
+                    {
+                        "type": "uint32_t"
+                    },
+                    {
+                        "type": "const uint8_t*"
+                    },
+                    {
+                        "type": "uint32_t"
+                    },
+                    {
+                        "type": "const $s_info_log_metadata_ext_t*"
+                    }
+                ]
+            },
+            "$sInfoLogDecoderContextDecodeStopExt": {
+                "class": "$sInfoLogDecoderContext",
+                "params": [
+                    {
+                        "type": "$s_info_log_decoder_context_handle_t"
+                    }
+                ]
+            },
+            "$sInfoLogDecoderContextDeleteExt": {
+                "class": "$sInfoLogDecoderContext",
+                "params": [
+                    {
+                        "type": "$s_info_log_handle_t"
+                    },
+                    {
+                        "type": "$s_info_log_decoder_context_handle_t"
+                    }
+                ]
+            },
+            "$sInfoLogDecoderContextGetFieldInfoExt": {
+                "class": "$sInfoLogDecoderContext",
+                "params": [
+                    {
+                        "type": "$s_info_log_decoder_context_handle_t"
+                    },
+                    {
+                        "type": "uint32_t*"
+                    },
+                    {
+                        "type": "$s_info_log_decodable_field_info_ext_t*"
+                    }
+                ]
+            },
+            "$sInfoLogDecoderContextReadFieldExt": {
+                "class": "$sInfoLogDecoderContext",
+                "params": [
+                    {
+                        "type": "$s_info_log_decoder_context_handle_t"
+                    },
+                    {
+                        "type": "uint32_t"
+                    },
+                    {
+                        "type": "uint32_t"
+                    },
+                    {
+                        "type": "void*"
+                    },
+                    {
+                        "type": "size_t"
+                    },
+                    {
+                        "type": "size_t*"
                     }
                 ]
             },
@@ -7677,7 +7858,7 @@
                         "type": "uint32_t"
                     },
                     {
-                        "type": "zet_metric_handle_t *"
+                        "type": "$t_metric_handle_t*"
                     },
                     {
                         "type": "const char *"
@@ -12444,6 +12625,9 @@
             "$s_freq_handle_t": {
                 "class": "$sFrequency"
             },
+            "$s_info_log_decoder_context_handle_t": {
+                "class": "$sInfoLogDecoderContext"
+            },
             "$s_info_log_handle_t": {
                 "class": "$sInfoLog"
             },
@@ -12602,6 +12786,12 @@
             }
         },
         "macro": {
+            "$S_API_VERSION_CURRENT_M": {
+                "class": "",
+                "values": [
+                    "$S_MAKE_VERSION( 1, 21 )"
+                ]
+            },
             "$S_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME": {
                 "class": "",
                 "values": [
@@ -12630,6 +12820,12 @@
                 "class": "",
                 "values": [
                     "\"$XS_extension_device_index\""
+                ]
+            },
+            "$S_DEVICE_SOC_UID_EXT_NAME": {
+                "class": "",
+                "values": [
+                    "\"$XS_extension_device_soc_uid\""
                 ]
             },
             "$S_DIAG_FIRST_TEST_INDEX": {
@@ -12666,6 +12862,24 @@
                 "class": "",
                 "values": [
                     "\"$S_extension_info_logs\""
+                ]
+            },
+            "$S_INFO_LOG_FIELD_DESC_SIZE": {
+                "class": "",
+                "values": [
+                    "256"
+                ]
+            },
+            "$S_MAJOR_VERSION": {
+                "class": "",
+                "values": [
+                    "( _ver >> 16 )"
+                ]
+            },
+            "$S_MAKE_VERSION": {
+                "class": "",
+                "values": [
+                    "(( _major << 16 )|( _minor & 0x0000ffff))"
                 ]
             },
             "$S_MAX_EXTENSION_NAME": {
@@ -12726,6 +12940,12 @@
                 "class": "",
                 "values": [
                     "\"$XS_extension_mem_state\""
+                ]
+            },
+            "$S_MINOR_VERSION": {
+                "class": "",
+                "values": [
+                    "( _ver & 0x0000ffff )"
                 ]
             },
             "$S_OEM_SERIAL_ID_EXT_NAME": {
@@ -12967,7 +13187,7 @@
             "$X_API_VERSION_CURRENT_M": {
                 "class": "",
                 "values": [
-                    "$X_MAKE_VERSION( 1, 20 )"
+                    "$X_MAKE_VERSION( 1, 21 )"
                 ]
             },
             "$X_BANDWIDTH_PROPERTIES_EXP_NAME": {
@@ -13777,6 +13997,17 @@
                     }
                 ]
             },
+            "$s_device_soc_uid_ext_properties_t": {
+                "class": "$sDevice",
+                "members": [
+                    {
+                        "desc": "[out] unique identifier of the SOC, most significant byte first.",
+                        "init": null,
+                        "name": "socUid",
+                        "type": "$s_uuid_t"
+                    }
+                ]
+            },
             "$s_device_state_t": {
                 "class": "$sDevice",
                 "members": [
@@ -14454,6 +14685,53 @@
                         "init": null,
                         "name": "timestamp",
                         "type": "uint64_t"
+                    }
+                ]
+            },
+            "$s_info_log_decodable_field_info_ext_t": {
+                "class": "$sInfoLogDecoderContext",
+                "members": [
+                    {
+                        "desc": "[out] human readable description of the field (NULL terminated string value).",
+                        "init": null,
+                        "name": "desc[$S_INFO_LOG_FIELD_DESC_SIZE]",
+                        "type": "char"
+                    },
+                    {
+                        "desc": "[out] name of the field (NULL terminated string value).",
+                        "init": null,
+                        "name": "name[$S_STRING_PROPERTY_SIZE]",
+                        "type": "char"
+                    },
+                    {
+                        "desc": "[out] identifier of the field, to be passed to $sInfoLogDecoderContextReadFieldExt.",
+                        "init": null,
+                        "name": "fieldId",
+                        "type": "uint32_t"
+                    },
+                    {
+                        "desc": "[out] data type of the value of the field.",
+                        "init": null,
+                        "name": "type",
+                        "type": "$s_info_log_field_type_ext_t"
+                    },
+                    {
+                        "desc": "[out] number of bytes that the application must provide to $sInfoLogDecoderContextReadFieldExt to read this field.\nFor $S_INFO_LOG_FIELD_TYPE_EXT_STRING this value includes the null terminator.\n",
+                        "init": null,
+                        "name": "requiredBytes",
+                        "type": "size_t"
+                    },
+                    {
+                        "desc": "[out] number of elements of the data type that the field holds.",
+                        "init": null,
+                        "name": "elementCount",
+                        "type": "size_t"
+                    },
+                    {
+                        "desc": "[out] version of this extension in which the field was first reported.",
+                        "init": null,
+                        "name": "versionString[$S_STRING_PROPERTY_SIZE]",
+                        "type": "char"
                     }
                 ]
             },
@@ -15300,7 +15578,7 @@
                         "type": "$s_power_domain_t"
                     },
                     {
-                        "desc": "[out] the factory default limit of the part.",
+                        "desc": "[in,out][optional] pointer to a caller-allocated $s_power_limit_ext_desc_t\nthat the driver fills with the factory default limit of the part.\nThe application must allocate and initialize (including `stype`) the pointed-to\nstructure and assign its address before calling $sPowerGetProperties.\nIf this is null, the factory default limit will not be returned.\n",
                         "init": null,
                         "name": "defaultLimit",
                         "type": "$s_power_limit_ext_desc_t*"
@@ -15332,19 +15610,19 @@
                         "desc": "[out] indicates if the power limit state (enabled/ignored) can be set (false) or is locked (true).",
                         "init": null,
                         "name": "enabledStateLocked",
-                        "type": "ze_bool_t"
+                        "type": "$x_bool_t"
                     },
                     {
                         "desc": "[in,out] indicates if the limit is enabled (true) or ignored (false). If enabledStateIsLocked is True, this value is ignored.",
                         "init": null,
                         "name": "enabled",
-                        "type": "ze_bool_t"
+                        "type": "$x_bool_t"
                     },
                     {
                         "desc": "[out] indicates if the interval can be modified (false) or is fixed (true).",
                         "init": null,
                         "name": "intervalValueLocked",
-                        "type": "ze_bool_t"
+                        "type": "$x_bool_t"
                     },
                     {
                         "desc": "[in,out] power averaging window in milliseconds. If intervalValueLocked is true, this value is ignored.",
@@ -15356,7 +15634,7 @@
                         "desc": "[out] indicates if the limit can be set (false) or if the limit is fixed (true).",
                         "init": null,
                         "name": "limitValueLocked",
-                        "type": "ze_bool_t"
+                        "type": "$x_bool_t"
                     },
                     {
                         "desc": "[in,out] limit value. If limitValueLocked is true, this value is ignored. The value should be provided in the unit specified by limitUnit.",
@@ -15643,7 +15921,7 @@
                         "desc": "[in] If set to true, all applications that are currently using the device will be forcibly killed.\n",
                         "init": null,
                         "name": "force",
-                        "type": "ze_bool_t"
+                        "type": "$x_bool_t"
                     },
                     {
                         "desc": "[in] Type of reset needs to be performed",
@@ -16849,7 +17127,7 @@
                         "type": "uint32_t"
                     },
                     {
-                        "desc": "[in] command queue index within the group;\nmust be zero. \n",
+                        "desc": "[in] command queue index within the group;\nzero-based, so it must be less than the `numQueues` member of $x_command_queue_group_properties_t for the command queue group.\n",
                         "init": null,
                         "name": "index",
                         "type": "uint32_t"
@@ -17140,37 +17418,37 @@
                         "type": "$x_device_dp_capability_flags_t"
                     },
                     {
-                        "desc": "[out] Supported input data types when dp4v dot product capability is supported.",
+                        "desc": "[out] Supported input data types for the non-systolic vector dot-product path (DP4A). Valid only when $X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is set in dp_caps; a value of 0 indicates no supported input types for this path. The member is named 'dpv4_*' for ABI compatibility; the feature it describes is DP4A.",
                         "init": null,
                         "name": "dpv4_input_types",
                         "type": "$x_device_input_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported output data types when dp4v dot product capability is supported.",
+                        "desc": "[out] Supported output / accumulator data types for the non-systolic vector dot-product path (DP4A). Valid only when $X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is set in dp_caps; a value of 0 indicates no supported output types for this path. The member is named 'dpv4_*' for ABI compatibility; the feature it describes is DP4A.",
                         "init": null,
                         "name": "dpv4_output_types",
                         "type": "$x_device_output_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported input data types when dpas dot product capability is supported.",
+                        "desc": "[out] Supported input data types for the systolic dot-product (DPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_DPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported input types for this path.",
                         "init": null,
                         "name": "dpas_input_types",
                         "type": "$x_device_input_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported output data types when dpas dot product capability is supported.",
+                        "desc": "[out] Supported output / accumulator data types for the systolic dot-product (DPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_DPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported output types for this path.",
                         "init": null,
                         "name": "dpas_output_types",
                         "type": "$x_device_output_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported input data types when bdpas dot product capability is supported.",
+                        "desc": "[out] Supported input data types for the block-scaled systolic dot-product (BDPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_BDPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported input types for this path. The DEVICE_INPUT_DATA_SCALING_* bits in $x_device_input_data_type_flags_t only have meaning in this member.",
                         "init": null,
                         "name": "bdpas_input_types",
                         "type": "$x_device_input_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported output data types when bdpas dot product capability is supported.",
+                        "desc": "[out] Supported output / accumulator data types for the block-scaled systolic dot-product (BDPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_BDPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported output types for this path.",
                         "init": null,
                         "name": "bdpas_output_types",
                         "type": "$x_device_output_data_type_flags_t"
@@ -20076,7 +20354,7 @@
                         "type": "uint8_t"
                     },
                     {
-                        "desc": "[in] format of the specified transformation",
+                        "desc": "[in] format of the specified transformation, must be $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_COLUMN_MAJOR, $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ALIGNED_COLUMN_MAJOR, or $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ROW_MAJOR",
                         "init": null,
                         "name": "transformFormat",
                         "type": "$x_rtas_builder_packed_input_data_format_exp_t"
@@ -20129,7 +20407,7 @@
                         "type": "uint8_t"
                     },
                     {
-                        "desc": "[in] format of the specified transformation",
+                        "desc": "[in] format of the specified transformation, must be $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_COLUMN_MAJOR, $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ALIGNED_COLUMN_MAJOR, or $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ROW_MAJOR",
                         "init": null,
                         "name": "transformFormat",
                         "type": "$x_rtas_builder_packed_input_data_format_ext_t"
@@ -21422,7 +21700,7 @@
                         "desc": "[in] Is sRGB.",
                         "init": null,
                         "name": "sRGB",
-                        "type": "ze_bool_t"
+                        "type": "$x_bool_t"
                     }
                 ]
             },
@@ -22317,6 +22595,20 @@
                 "type": "class",
                 "version": "1.19"
             },
+            "zesInfoLogDecoderContext": {
+                "desc": "C++ wrapper for a Sysman info log decoder context",
+                "members": [
+                    {
+                        "desc": "[in] handle of Sysman info log decoder context object",
+                        "name": "handle",
+                        "type": "zes_info_log_decoder_context_handle_t"
+                    }
+                ],
+                "name": "zesInfoLogDecoderContext",
+                "owner": "zesInfoLog",
+                "type": "class",
+                "version": "1.21"
+            },
             "zesInfoLogInstance": {
                 "desc": "C++ wrapper for a Sysman info log collection instance",
                 "members": [
@@ -22838,7 +23130,7 @@
                         "type": "uint32_t"
                     },
                     {
-                        "desc": "[in] command queue index within the group;\nmust be zero.\n",
+                        "desc": "[in] command queue index within the group;\nzero-based, so it must be less than the `numQueues` member of ze_command_queue_group_properties_t for the command queue group.\n",
                         "init": 0,
                         "name": "index",
                         "type": "uint32_t"
@@ -23001,9 +23293,15 @@
                         "version": "1.20"
                     },
                     {
+                        "desc": "version 1.21",
+                        "name": "ZE_API_VERSION_1_21",
+                        "value": "ZE_MAKE_VERSION( 1, 21 )",
+                        "version": "1.21"
+                    },
+                    {
                         "desc": "latest known version",
                         "name": "ZE_API_VERSION_CURRENT",
-                        "value": "ZE_MAKE_VERSION( 1, 20 )"
+                        "value": "ZE_MAKE_VERSION( 1, 21 )"
                     }
                 ],
                 "name": "ze_api_version_t",
@@ -23133,7 +23431,7 @@
                             "since": "1.7",
                             "use": "ZE_CACHE_EXT_REGION_NON_RESERVED"
                         },
-                        "desc": "utilize non-reserverd region",
+                        "desc": "utilize non-reserved region",
                         "name": "ZE_CACHE_EXT_REGION_ZE_CACHE_NON_RESERVED_REGION",
                         "value": "2"
                     },
@@ -23150,7 +23448,7 @@
                         "version": "1.7"
                     },
                     {
-                        "desc": "utilize non-reserverd region",
+                        "desc": "utilize non-reserved region",
                         "name": "ZE_CACHE_EXT_REGION_NON_RESERVED",
                         "value": "2",
                         "version": "1.7"
@@ -23379,10 +23677,30 @@
                     },
                     {
                         "desc": "lower priority than normal",
+                        "name": "ZE_COMMAND_QUEUE_PRIORITY_LOW",
+                        "value": "1",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "higher priority than normal",
+                        "name": "ZE_COMMAND_QUEUE_PRIORITY_HIGH",
+                        "value": "2",
+                        "version": "1.21"
+                    },
+                    {
+                        "deprecated": {
+                            "since": "1.21",
+                            "use": "ZE_COMMAND_QUEUE_PRIORITY_LOW"
+                        },
+                        "desc": "lower priority than normal",
                         "name": "ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_LOW",
                         "value": "1"
                     },
                     {
+                        "deprecated": {
+                            "since": "1.21",
+                            "use": "ZE_COMMAND_QUEUE_PRIORITY_HIGH"
+                        },
                         "desc": "higher priority than normal",
                         "name": "ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH",
                         "value": "2"
@@ -23607,22 +23925,22 @@
                 "desc": "Supported device compute dot product(dp) capability flags",
                 "etors": [
                     {
-                        "desc": "Supports vector dot product instruction.",
+                        "desc": "Supports the non-systolic vector dot product instruction (DP4A). When set, the dpv4_input_types and dpv4_output_types members of ze_device_compute_dotproduct_ext_properties_t describe the legal data types for this path.",
                         "name": "ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL",
                         "value": "ZE_BIT(0)"
                     },
                     {
-                        "desc": "Supports sytolic dot product with 8 SIMD lanes.",
+                        "desc": "Supports systolic dot product (DPAS) with 8 SIMD lanes.",
                         "name": "ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_SIMD8",
                         "value": "ZE_BIT(1)"
                     },
                     {
-                        "desc": "Supports sytolic dot product with 16 SIMD lanes.",
+                        "desc": "Supports systolic dot product (DPAS) with 16 SIMD lanes.",
                         "name": "ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_SIMD16",
                         "value": "ZE_BIT(2)"
                     },
                     {
-                        "desc": "Supports sytolic dot product with block scaling support with 16 SIMD lanes.",
+                        "desc": "Supports systolic dot product with block-scaling support (BDPAS) with 16 SIMD lanes.",
                         "name": "ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_BDPAS_SIMD16",
                         "value": "ZE_BIT(3)"
                     },
@@ -23642,12 +23960,12 @@
                         "value": "ZE_BIT(6)"
                     },
                     {
-                        "desc": "Supports output matrix row count upto 8",
+                        "desc": "Output-shape modifier for the systolic DPAS/BDPAS path: the output matrix row count is variable, up to 8. Only meaningful when at least one of the DEVICE_SYSTOLIC_DPAS_* or DEVICE_SYSTOLIC_BDPAS_* bits is also set in dp_caps; this bit alone does not advertise DPAS or BDPAS support.",
                         "name": "ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_UPTO8",
                         "value": "ZE_BIT(7)"
                     },
                     {
-                        "desc": "Restricts output matrix row count to 8",
+                        "desc": "Output-shape modifier for the systolic DPAS/BDPAS path: the output matrix row count is fixed at 8. Only meaningful when at least one of the DEVICE_SYSTOLIC_DPAS_* or DEVICE_SYSTOLIC_BDPAS_* bits is also set in dp_caps; this bit alone does not advertise DPAS or BDPAS support.",
                         "name": "ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_FIXED8",
                         "value": "ZE_BIT(8)"
                     }
@@ -23781,15 +24099,23 @@
             },
             "ze_device_input_data_type_flags_t": {
                 "class": "zeDevice",
-                "desc": "Supported device  dot product(dp) input data types flags",
+                "desc": "Supported device dot product (dp) input data type flags. A field value of 0 indicates no supported input data types for the associated dot-product path; non-zero values are the bitwise-OR of the supported type bits defined below. The containing *_input_types field (dpv4_input_types, dpas_input_types, or bdpas_input_types) determines which dot-product path this applies to.",
                 "etors": [
                     {
-                        "desc": "No data types available for the supported dot product operation",
+                        "deprecated": {
+                            "reason": "No replacement; a field value of 0 already indicates that no data types are supported.",
+                            "since": "1.21"
+                        },
+                        "desc": "Indicates that no data types are supported. This bit is semantically equivalent to all other field values being 0 and must not be combined with any other bit of this enum. Retained for ABI compatibility only.",
                         "name": "ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_TYPE_NONE",
                         "value": "ZE_BIT(0)"
                     },
                     {
-                        "desc": "Supports int8 data type with 4 packed data elements per SIMD lane.",
+                        "deprecated": {
+                            "since": "1.21",
+                            "use": "ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE"
+                        },
+                        "desc": "Supports int8 data type with 4 packed data elements per SIMD lane. This enumerator carries a stray 'ZE_' prefix in its name, producing the generated token ZE_DEVICE_INPUT_DATA_TYPE_FLAG_ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE. Retained for ABI compatibility only.",
                         "name": "ZE_DEVICE_INPUT_DATA_TYPE_FLAG_ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE",
                         "value": "ZE_BIT(1)"
                     },
@@ -23839,22 +24165,22 @@
                         "value": "ZE_BIT(10)"
                     },
                     {
-                        "desc": "Supports 8bit integer data type with 4 packed data elements per SIMD lane.This is exclusively for DP4V dot product support",
+                        "desc": "Supports int8 (8-bit signed integer) data type with 4 packed data elements per SIMD lane.",
                         "name": "ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE",
                         "value": "ZE_BIT(11)"
                     },
                     {
-                        "desc": "Supports uint8 data type support for scaling, exclusive to BDPAS dot product support.",
+                        "desc": "Supports uint8 (8-bit unsigned integer) scaling factor. Only meaningful when set in bdpas_input_types; exclusive to the BDPAS dot-product path.",
                         "name": "ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UINT8",
                         "value": "ZE_BIT(12)"
                     },
                     {
-                        "desc": "Supports ue5m3 data type support for scaling, exclusive to BDPAS dot product support.",
+                        "desc": "Supports ue5m3 (unsigned float, 5-bit exponent, 3-bit mantissa) scaling factor. Only meaningful when set in bdpas_input_types; exclusive to the BDPAS dot-product path.",
                         "name": "ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE5M3",
                         "value": "ZE_BIT(13)"
                     },
                     {
-                        "desc": "Supports ue4m3 data type support for scaling, exclusive to BDPAS dot product support.",
+                        "desc": "Supports ue4m3 (unsigned float, 4-bit exponent, 3-bit mantissa) scaling factor. Only meaningful when set in bdpas_input_types; exclusive to the BDPAS dot-product path.",
                         "name": "ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE4M3",
                         "value": "ZE_BIT(14)"
                     }
@@ -24160,7 +24486,7 @@
             },
             "ze_device_output_data_type_flags_t": {
                 "class": "zeDevice",
-                "desc": "Supported device  dot product(dp) output data types or accumulator data types flags",
+                "desc": "Supported device dot product (dp) output / accumulator data type flags. A field value of 0 indicates no supported output data types for the associated dot-product path; non-zero values are the bitwise-OR of the supported type bits defined below.",
                 "etors": [
                     {
                         "desc": "Supports signed and unsigned 32bit integer data type for output",
@@ -28719,6 +29045,154 @@
                 "type": "enum",
                 "version": "1.17"
             },
+            "zes_api_version_t": {
+                "class": "zesDriver",
+                "desc": "Supported sysman API versions",
+                "details": [
+                    "API versions contain major and minor attributes, use ZES_MAJOR_VERSION and ZES_MINOR_VERSION"
+                ],
+                "etors": [
+                    {
+                        "desc": "version 1.0",
+                        "name": "ZES_API_VERSION_1_0",
+                        "value": "ZES_MAKE_VERSION( 1, 0 )"
+                    },
+                    {
+                        "desc": "version 1.1",
+                        "name": "ZES_API_VERSION_1_1",
+                        "value": "ZES_MAKE_VERSION( 1, 1 )",
+                        "version": "1.1"
+                    },
+                    {
+                        "desc": "version 1.2",
+                        "name": "ZES_API_VERSION_1_2",
+                        "value": "ZES_MAKE_VERSION( 1, 2 )",
+                        "version": "1.2"
+                    },
+                    {
+                        "desc": "version 1.3",
+                        "name": "ZES_API_VERSION_1_3",
+                        "value": "ZES_MAKE_VERSION( 1, 3 )",
+                        "version": "1.3"
+                    },
+                    {
+                        "desc": "version 1.4",
+                        "name": "ZES_API_VERSION_1_4",
+                        "value": "ZES_MAKE_VERSION( 1, 4 )",
+                        "version": "1.4"
+                    },
+                    {
+                        "desc": "version 1.5",
+                        "name": "ZES_API_VERSION_1_5",
+                        "value": "ZES_MAKE_VERSION( 1, 5 )",
+                        "version": "1.5"
+                    },
+                    {
+                        "desc": "version 1.6",
+                        "name": "ZES_API_VERSION_1_6",
+                        "value": "ZES_MAKE_VERSION( 1, 6 )",
+                        "version": "1.6"
+                    },
+                    {
+                        "desc": "version 1.7",
+                        "name": "ZES_API_VERSION_1_7",
+                        "value": "ZES_MAKE_VERSION( 1, 7 )",
+                        "version": "1.7"
+                    },
+                    {
+                        "desc": "version 1.8",
+                        "name": "ZES_API_VERSION_1_8",
+                        "value": "ZES_MAKE_VERSION( 1, 8 )",
+                        "version": "1.8"
+                    },
+                    {
+                        "desc": "version 1.9",
+                        "name": "ZES_API_VERSION_1_9",
+                        "value": "ZES_MAKE_VERSION( 1, 9 )",
+                        "version": "1.9"
+                    },
+                    {
+                        "desc": "version 1.10",
+                        "name": "ZES_API_VERSION_1_10",
+                        "value": "ZES_MAKE_VERSION( 1, 10 )",
+                        "version": "1.10"
+                    },
+                    {
+                        "desc": "version 1.11",
+                        "name": "ZES_API_VERSION_1_11",
+                        "value": "ZES_MAKE_VERSION( 1, 11 )",
+                        "version": "1.11"
+                    },
+                    {
+                        "desc": "version 1.12",
+                        "name": "ZES_API_VERSION_1_12",
+                        "value": "ZES_MAKE_VERSION( 1, 12 )",
+                        "version": "1.12"
+                    },
+                    {
+                        "desc": "version 1.13",
+                        "name": "ZES_API_VERSION_1_13",
+                        "value": "ZES_MAKE_VERSION( 1, 13 )",
+                        "version": "1.13"
+                    },
+                    {
+                        "desc": "version 1.14",
+                        "name": "ZES_API_VERSION_1_14",
+                        "value": "ZES_MAKE_VERSION( 1, 14 )",
+                        "version": "1.14"
+                    },
+                    {
+                        "desc": "version 1.15",
+                        "name": "ZES_API_VERSION_1_15",
+                        "value": "ZES_MAKE_VERSION( 1, 15 )",
+                        "version": "1.15"
+                    },
+                    {
+                        "desc": "version 1.16",
+                        "name": "ZES_API_VERSION_1_16",
+                        "value": "ZES_MAKE_VERSION( 1, 16 )",
+                        "version": "1.16"
+                    },
+                    {
+                        "desc": "version 1.17",
+                        "name": "ZES_API_VERSION_1_17",
+                        "value": "ZES_MAKE_VERSION( 1, 17 )",
+                        "version": "1.17"
+                    },
+                    {
+                        "desc": "version 1.18",
+                        "name": "ZES_API_VERSION_1_18",
+                        "value": "ZES_MAKE_VERSION( 1, 18 )",
+                        "version": "1.18"
+                    },
+                    {
+                        "desc": "version 1.19",
+                        "name": "ZES_API_VERSION_1_19",
+                        "value": "ZES_MAKE_VERSION( 1, 19 )",
+                        "version": "1.19"
+                    },
+                    {
+                        "desc": "version 1.20",
+                        "name": "ZES_API_VERSION_1_20",
+                        "value": "ZES_MAKE_VERSION( 1, 20 )",
+                        "version": "1.20"
+                    },
+                    {
+                        "desc": "version 1.21",
+                        "name": "ZES_API_VERSION_1_21",
+                        "value": "ZES_MAKE_VERSION( 1, 21 )",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "latest known version",
+                        "name": "ZES_API_VERSION_CURRENT",
+                        "value": "ZES_MAKE_VERSION( 1, 21 )"
+                    }
+                ],
+                "name": "zes_api_version_t",
+                "type": "enum",
+                "version": "1.21"
+            },
             "zes_control_state_t": {
                 "class": "zesOverclock",
                 "desc": "Overclock control states.",
@@ -28953,6 +29427,25 @@
                 "name": "zes_device_property_flags_t",
                 "type": "enum",
                 "version": "1.7"
+            },
+            "zes_device_soc_uid_ext_version_t": {
+                "desc": "Device SOC Unique ID Extension Version(s)",
+                "etors": [
+                    {
+                        "desc": "version 1.0",
+                        "name": "ZES_DEVICE_SOC_UID_EXT_VERSION_1_0",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "latest known version",
+                        "name": "ZES_DEVICE_SOC_UID_EXT_VERSION_CURRENT",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                    }
+                ],
+                "name": "zes_device_soc_uid_ext_version_t",
+                "type": "enum",
+                "version": "1.21"
             },
             "zes_device_state_ext_flags_t": {
                 "class": "zesDevice",
@@ -29544,6 +30037,45 @@
                 "type": "enum",
                 "version": "1.0"
             },
+            "zes_info_log_field_type_ext_t": {
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Data types of a field decoded from an info log record",
+                "etors": [
+                    {
+                        "desc": "The value of the field is a `uint32_t`.",
+                        "name": "ZES_INFO_LOG_FIELD_TYPE_EXT_UINT32",
+                        "value": "0",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "The value of the field is an `int64_t`.",
+                        "name": "ZES_INFO_LOG_FIELD_TYPE_EXT_INT64",
+                        "value": "1",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "The value of the field is a `double`.",
+                        "name": "ZES_INFO_LOG_FIELD_TYPE_EXT_DOUBLE",
+                        "value": "2",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "The value of the field is a null terminated array of `char`.",
+                        "name": "ZES_INFO_LOG_FIELD_TYPE_EXT_STRING",
+                        "value": "3",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "The value of the field is an array of uninterpreted bytes.",
+                        "name": "ZES_INFO_LOG_FIELD_TYPE_EXT_RAW_BYTES",
+                        "value": "4",
+                        "version": "1.21"
+                    }
+                ],
+                "name": "zes_info_log_field_type_ext_t",
+                "type": "enum",
+                "version": "1.21"
+            },
             "zes_info_log_format_ext_t": {
                 "class": "zesInfoLog",
                 "desc": "Info log record formats",
@@ -29623,9 +30155,15 @@
                         "version": "1.19"
                     },
                     {
+                        "desc": "version 1.1",
+                        "name": "ZES_INFO_LOGS_EXT_VERSION_1_1",
+                        "value": "ZE_MAKE_VERSION( 1, 1 )",
+                        "version": "1.21"
+                    },
+                    {
                         "desc": "latest known version",
                         "name": "ZES_INFO_LOGS_EXT_VERSION_CURRENT",
-                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                        "value": "ZE_MAKE_VERSION( 1, 1 )"
                     }
                 ],
                 "name": "zes_info_logs_ext_version_t",
@@ -31223,6 +31761,18 @@
                         "name": "ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES",
                         "value": "0x00020027",
                         "version": "1.20"
+                    },
+                    {
+                        "desc": "zes_device_soc_uid_ext_properties_t",
+                        "name": "ZES_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES",
+                        "value": "0x00020028",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "zes_info_log_decodable_field_info_ext_t",
+                        "name": "ZES_STRUCTURE_TYPE_INFO_LOG_DECODABLE_FIELD_INFO_EXT",
+                        "value": "0x00020029",
+                        "version": "1.21"
                     }
                 ],
                 "name": "zes_structure_type_t",
@@ -37877,6 +38427,11 @@
                             "`nullptr == pSetCount`",
                             "`nullptr == pTotalMetricValueCount`"
                         ]
+                    },
+                    {
+                        "ZE_RESULT_WARNING_DROPPED_DATA": [
+                            "Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently."
+                        ]
                     }
                 ],
                 "type": "function",
@@ -38103,6 +38658,11 @@
                             "`nullptr == pRawData`",
                             "`nullptr == pSetCount`",
                             "`nullptr == pTotalMetricValueCount`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_WARNING_DROPPED_DATA": [
+                            "Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently."
                         ]
                     }
                 ],
@@ -39414,31 +39974,25 @@
                 "version": "1.10"
             },
             "CreateExt": {
-                "class": "zeGraph",
-                "decl": "static",
-                "desc": "Creates a new graph object.",
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Create a decoder context for an info log",
                 "details": [
-                    "A newly created graph is an empty container for captured operations.",
-                    "The application may instantiate executable graph objects from a recorded graph using zeGraphInstantiateExt.",
-                    "The application may begin capturing into an empty graph using zeCommandListBeginCaptureIntoGraphExt."
+                    "A decoder context decodes the records returned by zesInfoLogInstanceReadWithMetadataExt or by zesInfoLogInstancePeekWithMetadataExt into named fields, which the application reads one at a time using zesInfoLogDecoderContextReadFieldExt.",
+                    "Any number of decoder contexts may exist for one info log.",
+                    "The application may call this function from simultaneous threads."
                 ],
-                "hash": "f7ce1c122aaac408e02d681765504f137d7118891841cf5ea31efdbed4f5039f",
+                "hash": "0620d5f7adcdc46285bbaa31379cdacdf54ae87eb39a3b4bacbf5ba114f7e10e",
                 "name": "CreateExt",
                 "params": [
                     {
-                        "desc": "[in] handle of the context",
-                        "name": "hContext",
-                        "type": "ze_context_handle_t"
+                        "desc": "[in] handle of the info log that the records are read from",
+                        "name": "hInfoLog",
+                        "type": "zes_info_log_handle_t"
                     },
                     {
-                        "desc": "[in][optional] must be null or a pointer to an extension-specific structure (i.e. contains stype and pNext)",
-                        "name": "pNext",
-                        "type": "const void*"
-                    },
-                    {
-                        "desc": "[out] pointer to handle of the graph object created",
-                        "name": "phGraph",
-                        "type": "ze_graph_handle_t*"
+                        "desc": "[out] handle of the decoder context that was created.",
+                        "name": "phDecoderContext",
+                        "type": "zes_info_log_decoder_context_handle_t*"
                     }
                 ],
                 "return_desc": "[out] ze_result_t API result",
@@ -39485,17 +40039,17 @@
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
-                            "`nullptr == hContext`"
+                            "`nullptr == hInfoLog`"
                         ]
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
-                            "`nullptr == phGraph`"
+                            "`nullptr == phDecoderContext`"
                         ]
                     }
                 ],
                 "type": "function",
-                "version": "1.17"
+                "version": "1.21"
             },
             "CreateFromProgrammableExp": {
                 "class": "zetMetric",
@@ -39809,7 +40363,7 @@
                         "ZE_RESULT_ERROR_INVALID_ENUMERATION": [
                             "`0x7 < altdesc->flags`",
                             "`ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode`",
-                            "`ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority`"
+                            "`ZE_COMMAND_QUEUE_PRIORITY_HIGH < altdesc->priority`"
                         ]
                     },
                     {
@@ -39931,7 +40485,7 @@
                     "The metric groups created using this API are managed by the application and cannot be retrieved using zetMetricGroupGet().",
                     "The created metric groups are ready for activation and collection."
                 ],
-                "hash": "ee04ae2896c387da5871785e7599c03a4d78d896df59a843f7776ff538f754ec",
+                "hash": "c6c0b3b798b9fb7baee89aee1f375968c9afb4c81f53f1e9d221aba6bd58f486",
                 "name": "CreateMetricGroupsFromMetricsExp",
                 "ordinal": "2",
                 "params": [
@@ -39946,9 +40500,9 @@
                         "type": "uint32_t"
                     },
                     {
-                        "desc": "[in] metric handles to be added to the metric groups.",
+                        "desc": "[in][range(0, metricCount)] array of metric handles to be added to the metric groups.",
                         "name": "phMetrics",
-                        "type": "zet_metric_handle_t *"
+                        "type": "zet_metric_handle_t*"
                     },
                     {
                         "desc": "[in] prefix to the name created for the metric groups. Must point to a null-terminated character array no longer than ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP.",
@@ -40013,6 +40567,11 @@
                     {
                         "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
                             "`nullptr == hDevice`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == phMetrics`"
                         ]
                     },
                     {
@@ -40135,22 +40694,40 @@
                 "type": "function",
                 "version": "1.10"
             },
-            "DeleteExt": {
-                "class": "zesInfoLogInstance",
-                "desc": "Delete a collection instance of an info log",
+            "DecodeStartExt": {
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Start decoding info log records in a decoder context",
                 "details": [
-                    "Deleting a collection instance stops the collection of records into that instance and releases the resources used by the instance.",
-                    "The application must ensure that no other function is using the handle when calling this function.",
-                    "The application must not call this function from simultaneous threads with the same handle.",
-                    "The implementation of this function must be thread-safe."
+                    "The application must not call this function from simultaneous threads with the same decoder context handle.",
+                    "The application may call this function from simultaneous threads with different decoder context handles."
                 ],
-                "hash": "302680384c2f4d5ab5514e21b1c26228d5e749d6d8626d7895ac9f0cdaaee594",
-                "name": "DeleteExt",
+                "hash": "62584af547a89be936adac4e3609c6130d080f0e4e15e2669f7d6ea53d82a28f",
+                "name": "DecodeStartExt",
                 "params": [
                     {
-                        "desc": "[in][release] handle of the info log collection instance to delete",
-                        "name": "hInfoLogInstance",
-                        "type": "zes_info_log_instance_handle_t"
+                        "desc": "[in] handle of the decoder context",
+                        "name": "hDecoderContext",
+                        "type": "zes_info_log_decoder_context_handle_t"
+                    },
+                    {
+                        "desc": "[in] size, in bytes, of the record data in `pBuffer`, as returned in `*pSize` by the read or peek call",
+                        "name": "size",
+                        "type": "uint32_t"
+                    },
+                    {
+                        "desc": "[in][optional][range(0, size)] the record data, as returned in `pBuffer` by the read or peek call",
+                        "name": "pBuffer",
+                        "type": "const uint8_t*"
+                    },
+                    {
+                        "desc": "[in] number of records in the batch, as returned in `*pRecordCount` by the read or peek call",
+                        "name": "recordCount",
+                        "type": "uint32_t"
+                    },
+                    {
+                        "desc": "[in][optional][range(0, recordCount)] array of metadata describing each record, as returned in `pDescriptors` by the read or peek call",
+                        "name": "pDescriptors",
+                        "type": "const zes_info_log_metadata_ext_t*"
                     }
                 ],
                 "return_desc": "[out] ze_result_t API result",
@@ -40197,12 +40774,153 @@
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
-                            "`nullptr == hInfoLogInstance`"
+                            "`nullptr == hDecoderContext`"
                         ]
                     }
                 ],
                 "type": "function",
-                "version": "1.19"
+                "version": "1.21"
+            },
+            "DecodeStopExt": {
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Stop decoding of info log records that a decoder context is decoding",
+                "details": [
+                    "The application must not call this function from simultaneous threads with the same decoder context handle.",
+                    "The application may call this function from simultaneous threads with different decoder context handles."
+                ],
+                "hash": "d0979f7c4606c70657a0be64ab66ba9866ba0005154f0693017105dc1690238a",
+                "name": "DecodeStopExt",
+                "params": [
+                    {
+                        "desc": "[in] handle of the decoder context",
+                        "name": "hDecoderContext",
+                        "type": "zes_info_log_decoder_context_handle_t"
+                    }
+                ],
+                "return_desc": "[out] ze_result_t API result",
+                "return_type": "ze_result_t",
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_ARGUMENT": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_NOT_AVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNKNOWN": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hDecoderContext`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.21"
+            },
+            "DeleteExt": {
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Delete a decoder context of an info log",
+                "details": [
+                    "The application must ensure that no other function is using the handle when calling this function.",
+                    "The application must not call this function from simultaneous threads with the same handle.",
+                    "The implementation of this function must be thread-safe."
+                ],
+                "hash": "e954dd228b2fe62cfcdccc2c5643bdabe5fc1195dd269ca71b887b4fdf7d8b0e",
+                "name": "DeleteExt",
+                "params": [
+                    {
+                        "desc": "[in] handle of the info log that the decoder context was created from",
+                        "name": "hInfoLog",
+                        "type": "zes_info_log_handle_t"
+                    },
+                    {
+                        "desc": "[in][release] handle of the decoder context to delete",
+                        "name": "hDecoderContext",
+                        "type": "zes_info_log_decoder_context_handle_t"
+                    }
+                ],
+                "return_desc": "[out] ze_result_t API result",
+                "return_type": "ze_result_t",
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_ARGUMENT": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_NOT_AVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNKNOWN": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hInfoLog`",
+                            "`nullptr == hDecoderContext`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.21"
             },
             "Destroy": {
                 "class": "zetTracerExp",
@@ -44589,26 +45307,24 @@
                 "version": "1.14"
             },
             "GetApiVersion": {
-                "class": "zeDriver",
-                "desc": "Returns the API version supported by the specified driver",
+                "class": "zesDriver",
+                "desc": "Returns the API version supported by the specified sysman driver",
                 "details": [
                     "The application may call this function from simultaneous threads.",
-                    "The implementation of this function should be lock-free.",
-                    "Starting from API version 1.17, any driver reporting version 1.17 or later is assumed to support the ZE_DRIVER_DDI_HANDLES_EXT_NAME extension; see ze_driver_ddi_handles_ext_properties_t for details."
+                    "The implementation of this function should be lock-free."
                 ],
-                "hash": "4aeb05f8ea502a5a979a88d1e84cb6f237eed4d53f73fd96e47287706c95a15d",
+                "hash": "76e70d42b083d89e1a534d565b1e6c5ed4b36e00f2f580d750054607f94b8bde",
                 "name": "GetApiVersion",
-                "ordinal": "1",
                 "params": [
                     {
-                        "desc": "[in] handle of the driver instance",
+                        "desc": "[in] handle of the sysman driver instance",
                         "name": "hDriver",
-                        "type": "ze_driver_handle_t"
+                        "type": "zes_driver_handle_t"
                     },
                     {
                         "desc": "[out] api version",
-                        "name": "version",
-                        "type": "ze_api_version_t*"
+                        "name": "pVersion",
+                        "type": "zes_api_version_t*"
                     }
                 ],
                 "return_desc": "[out] ze_result_t API result",
@@ -44660,12 +45376,12 @@
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
-                            "`nullptr == version`"
+                            "`nullptr == pVersion`"
                         ]
                     }
                 ],
                 "type": "function",
-                "version": "1.0"
+                "version": "1.21"
             },
             "GetAtomicAccessAttributeExp": {
                 "class": "zeMem",
@@ -48542,6 +49258,89 @@
                 ],
                 "type": "function",
                 "version": "1.4"
+            },
+            "GetFieldInfoExt": {
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Get the fields that a decoder context can decode from an info log record",
+                "details": [
+                    "The application should first call this function with `pCount` pointing to a value of zero to retrieve the number of fields that can be decoded.",
+                    "A call in which `*pCount` is greater than zero and `pFieldInfos` is nullptr shall report the number of fields and shall not write any descriptor, as a call with a count of zero does.",
+                    "The application may call this function from simultaneous threads."
+                ],
+                "hash": "abe21e9a44be187caca5ee20cbf7f75867078369ee159cb2fb566d5be761affa",
+                "name": "GetFieldInfoExt",
+                "params": [
+                    {
+                        "desc": "[in] handle of the decoder context",
+                        "name": "hDecoderContext",
+                        "type": "zes_info_log_decoder_context_handle_t"
+                    },
+                    {
+                        "desc": "[in,out] pointer to the number of fields that can be decoded.\nif count is zero, then the driver shall update the value with the total number of fields that can be decoded and shall not return any descriptor.\nif count is greater than the number of fields that can be decoded, then the driver shall update the value with the correct number of fields.\n",
+                        "name": "pCount",
+                        "type": "uint32_t*"
+                    },
+                    {
+                        "desc": "[in,out][optional][range(0, *pCount)] array of field descriptions, one element per field.\nif count is less than the number of fields that can be decoded, then the driver shall only retrieve that number of descriptors.\n",
+                        "name": "pFieldInfos",
+                        "type": "zes_info_log_decodable_field_info_ext_t*"
+                    }
+                ],
+                "return_desc": "[out] ze_result_t API result",
+                "return_type": "ze_result_t",
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_ARGUMENT": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_NOT_AVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNKNOWN": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hDecoderContext`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == pCount`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.21"
             },
             "GetFileDescriptorFromIpcHandleExp": {
                 "class": "zeMem",
@@ -59139,7 +59938,12 @@
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_ARGUMENT": [
-                            "Graph is not in a recording state"
+                            "Capture into `hGraph` is already paused"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING": [
+                            "Capture into `hGraph` was never started or has already ended"
                         ]
                     }
                 ],
@@ -60633,7 +61437,7 @@
                     },
                     {
                         "ZE_RESULT_WARNING_DROPPED_DATA": [
-                            "Metric streamer data may have been dropped. Reduce sampling period."
+                            "Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently."
                         ]
                     }
                 ],
@@ -60814,6 +61618,104 @@
                 ],
                 "type": "function",
                 "version": "1.0"
+            },
+            "ReadFieldExt": {
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Read field values of one record that a decoder context is decoding",
+                "details": [
+                    "The application must not call this function from simultaneous threads with the same decoder context handle.",
+                    "The application may call this function from simultaneous threads with different decoder context handles."
+                ],
+                "hash": "450664f556c18c6b4bd8d1c409082affce397fda1ad13eaf1ea23239563db0df",
+                "name": "ReadFieldExt",
+                "params": [
+                    {
+                        "desc": "[in] handle of the decoder context, which must be decoding a batch",
+                        "name": "hDecoderContext",
+                        "type": "zes_info_log_decoder_context_handle_t"
+                    },
+                    {
+                        "desc": "[in] identifier of the field to read, as reported in `fieldId` of zes_info_log_decodable_field_info_ext_t",
+                        "name": "fieldId",
+                        "type": "uint32_t"
+                    },
+                    {
+                        "desc": "[in] index of the record in the `pDescriptors` that was passed to zesInfoLogDecoderContextDecodeStartExt",
+                        "name": "recordId",
+                        "type": "uint32_t"
+                    },
+                    {
+                        "desc": "[in,out][range(0, bufferLen)] buffer that will contain the value of the field",
+                        "name": "pOutBuffer",
+                        "type": "void*"
+                    },
+                    {
+                        "desc": "[in] size, in bytes, of `pOutBuffer`",
+                        "name": "bufferLen",
+                        "type": "size_t"
+                    },
+                    {
+                        "desc": "[out] pointer to the number of bytes written to `pOutBuffer`.\nthe driver shall update the value with zero when the record does not carry the field.\n",
+                        "name": "pBytesCopied",
+                        "type": "size_t*"
+                    }
+                ],
+                "return_desc": "[out] ze_result_t API result",
+                "return_type": "ze_result_t",
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_ARGUMENT": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_NOT_AVAILABLE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNKNOWN": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hDecoderContext`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == pOutBuffer`",
+                            "`nullptr == pBytesCopied`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.21"
             },
             "ReadMemory": {
                 "class": "zetDebug",
@@ -61932,7 +62834,13 @@
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_ARGUMENT": [
-                            "Graph is not in a paused state"
+                            "Capture into `hGraph` is not paused",
+                            "The command list from which `hGraph` was recording is capturing into another graph"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING": [
+                            "Capture into `hGraph` was never started or has already ended"
                         ]
                     }
                 ],
@@ -64513,7 +65421,7 @@
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_ENUMERATION": [
-                            "`ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < priority`"
+                            "`ZE_COMMAND_QUEUE_PRIORITY_HIGH < priority`"
                         ]
                     },
                     {
@@ -67746,6 +68654,13 @@
                 "type": "handle",
                 "version": "1.0"
             },
+            "zes_info_log_decoder_context_handle_t": {
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Handle for a Sysman info log decoder context",
+                "name": "zes_info_log_decoder_context_handle_t",
+                "type": "handle",
+                "version": "1.21"
+            },
             "zes_info_log_handle_t": {
                 "class": "zesInfoLog",
                 "desc": "Handle for a Sysman info log",
@@ -67950,6 +68865,11 @@
             },
             "zet_tracer_exp_handle_t": {
                 "class": "zetTracerExp",
+                "deprecated": {
+                    "reason": "Only used by the deprecated API Tracing extension.",
+                    "since": "1.14",
+                    "use": "L0 Loader API Tracing <https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing>"
+                },
                 "desc": "Handle of tracer object",
                 "name": "zet_tracer_exp_handle_t",
                 "type": "handle",
@@ -67957,6 +68877,13 @@
             }
         },
         "macro": {
+            "ZES_API_VERSION_CURRENT_M": {
+                "desc": "Current sysman API version as a macro",
+                "name": "ZES_API_VERSION_CURRENT_M",
+                "type": "macro",
+                "value": "ZES_MAKE_VERSION( 1, 21 )",
+                "version": "1.21"
+            },
             "ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME": {
                 "desc": "Device ECC default properties Extension Name",
                 "name": "ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME",
@@ -67991,6 +68918,13 @@
                 "type": "macro",
                 "value": "\"ZES_extension_device_index\"",
                 "version": "1.20"
+            },
+            "ZES_DEVICE_SOC_UID_EXT_NAME": {
+                "desc": "Device SOC Unique ID Extension Name",
+                "name": "ZES_DEVICE_SOC_UID_EXT_NAME",
+                "type": "macro",
+                "value": "\"ZES_extension_device_soc_uid\"",
+                "version": "1.21"
             },
             "ZES_DIAG_FIRST_TEST_INDEX": {
                 "desc": "Diagnostic test index to use for the very first test.",
@@ -68033,6 +68967,27 @@
                 "type": "macro",
                 "value": "\"ZES_extension_info_logs\"",
                 "version": "1.19"
+            },
+            "ZES_INFO_LOG_FIELD_DESC_SIZE": {
+                "desc": "Maximum number of characters in the description of a decodable field, including the null terminator.",
+                "name": "ZES_INFO_LOG_FIELD_DESC_SIZE",
+                "type": "macro",
+                "value": "256",
+                "version": "1.21"
+            },
+            "ZES_MAJOR_VERSION": {
+                "desc": "Extracts 'oneAPI' Sysman API major version",
+                "name": "ZES_MAJOR_VERSION( _ver )",
+                "type": "macro",
+                "value": "( _ver >> 16 )",
+                "version": "1.21"
+            },
+            "ZES_MAKE_VERSION": {
+                "desc": "Generates generic 'oneAPI' Sysman API versions",
+                "name": "ZES_MAKE_VERSION( _major, _minor )",
+                "type": "macro",
+                "value": "(( _major << 16 )|( _minor & 0x0000ffff))",
+                "version": "1.21"
             },
             "ZES_MAX_EXTENSION_NAME": {
                 "desc": "Maximum extension name string size",
@@ -68103,6 +69058,13 @@
                 "type": "macro",
                 "value": "\"ZES_extension_mem_state\"",
                 "version": "1.8"
+            },
+            "ZES_MINOR_VERSION": {
+                "desc": "Extracts 'oneAPI' Sysman API minor version",
+                "name": "ZES_MINOR_VERSION( _ver )",
+                "type": "macro",
+                "value": "( _ver & 0x0000ffff )",
+                "version": "1.21"
             },
             "ZES_OEM_SERIAL_ID_EXT_NAME": {
                 "desc": "OEM Serial ID Extension Name",
@@ -68391,7 +69353,7 @@
                 "desc": "Current API version as a macro",
                 "name": "ZE_API_VERSION_CURRENT_M",
                 "type": "macro",
-                "value": "ZE_MAKE_VERSION( 1, 20 )",
+                "value": "ZE_MAKE_VERSION( 1, 21 )",
                 "version": "1.10"
             },
             "ZE_BANDWIDTH_PROPERTIES_EXP_NAME": {
@@ -69195,7 +70157,7 @@
                         "type": "uint32_t"
                     },
                     {
-                        "desc": "[in] command queue index within the group;\nmust be zero. \n",
+                        "desc": "[in] command queue index within the group;\nzero-based, so it must be less than the `numQueues` member of ze_command_queue_group_properties_t for the command queue group.\n",
                         "name": "index",
                         "type": "uint32_t"
                     },
@@ -69715,32 +70677,32 @@
                         "type": "ze_device_dp_capability_flags_t"
                     },
                     {
-                        "desc": "[out] Supported input data types when dp4v dot product capability is supported.",
+                        "desc": "[out] Supported input data types for the non-systolic vector dot-product path (DP4A). Valid only when ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is set in dp_caps; a value of 0 indicates no supported input types for this path. The member is named 'dpv4_*' for ABI compatibility; the feature it describes is DP4A.",
                         "name": "dpv4_input_types",
                         "type": "ze_device_input_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported output data types when dp4v dot product capability is supported.",
+                        "desc": "[out] Supported output / accumulator data types for the non-systolic vector dot-product path (DP4A). Valid only when ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is set in dp_caps; a value of 0 indicates no supported output types for this path. The member is named 'dpv4_*' for ABI compatibility; the feature it describes is DP4A.",
                         "name": "dpv4_output_types",
                         "type": "ze_device_output_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported input data types when dpas dot product capability is supported.",
+                        "desc": "[out] Supported input data types for the systolic dot-product (DPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_DPAS_* bits in ze_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported input types for this path.",
                         "name": "dpas_input_types",
                         "type": "ze_device_input_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported output data types when dpas dot product capability is supported.",
+                        "desc": "[out] Supported output / accumulator data types for the systolic dot-product (DPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_DPAS_* bits in ze_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported output types for this path.",
                         "name": "dpas_output_types",
                         "type": "ze_device_output_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported input data types when bdpas dot product capability is supported.",
+                        "desc": "[out] Supported input data types for the block-scaled systolic dot-product (BDPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_BDPAS_* bits in ze_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported input types for this path. The DEVICE_INPUT_DATA_SCALING_* bits in ze_device_input_data_type_flags_t only have meaning in this member.",
                         "name": "bdpas_input_types",
                         "type": "ze_device_input_data_type_flags_t"
                     },
                     {
-                        "desc": "[out] Supported output data types when bdpas dot product capability is supported.",
+                        "desc": "[out] Supported output / accumulator data types for the block-scaled systolic dot-product (BDPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_BDPAS_* bits in ze_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported output types for this path.",
                         "name": "bdpas_output_types",
                         "type": "ze_device_output_data_type_flags_t"
                     }
@@ -74574,7 +75536,7 @@
                         "type": "uint8_t"
                     },
                     {
-                        "desc": "[in] format of the specified transformation",
+                        "desc": "[in] format of the specified transformation, must be ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_COLUMN_MAJOR, ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ALIGNED_COLUMN_MAJOR, or ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ROW_MAJOR",
                         "name": "transformFormat",
                         "type": "ze_rtas_builder_packed_input_data_format_exp_t"
                     },
@@ -74623,7 +75585,7 @@
                         "type": "uint8_t"
                     },
                     {
-                        "desc": "[in] format of the specified transformation",
+                        "desc": "[in] format of the specified transformation, must be ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_COLUMN_MAJOR, ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ALIGNED_COLUMN_MAJOR, or ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ROW_MAJOR",
                         "name": "transformFormat",
                         "type": "ze_rtas_builder_packed_input_data_format_ext_t"
                     },
@@ -76622,7 +77584,7 @@
             "zes_device_properties_t": {
                 "base": "zes_base_properties_t",
                 "class": "zesDevice",
-                "desc": "Device properties. To get OEM Serial ID, pNext member of this structure should point to an instance of ${s}_oem_serial_id_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES. To get Device Index, pNext member of this structure should point to an instance of ${s}_device_index_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES. To get the GPU topology of the device, pNext member of this structure should point to an instance of ${s}_device_gpu_topology_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES.",
+                "desc": "Device properties. To get OEM Serial ID, pNext member of this structure should point to an instance of ${s}_oem_serial_id_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES. To get Device Index, pNext member of this structure should point to an instance of ${s}_device_index_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES. To get the GPU topology of the device, pNext member of this structure should point to an instance of ${s}_device_gpu_topology_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES. To get the SOC unique ID of the device, pNext member of this structure should point to an instance of zes_device_soc_uid_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES. To get the UUID, type and flags of the device, pNext member of this structure should point to an instance of zes_device_ext_properties_t with its stype set to ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES.",
                 "members": [
                     {
                         "desc": "[in] type of this structure",
@@ -76638,6 +77600,7 @@
                     },
                     {
                         "deprecated": {
+                            "reason": "Get the UUID, type and flags through pNext.",
                             "since": "1.7",
                             "use": "zes_device_ext_properties_t"
                         },
@@ -76684,6 +77647,38 @@
                 "name": "zes_device_properties_t",
                 "type": "struct",
                 "version": "1.0"
+            },
+            "zes_device_soc_uid_ext_properties_t": {
+                "base": "zes_base_properties_t",
+                "class": "zesDevice",
+                "desc": "Device SOC Unique ID Extension structure",
+                "details": [
+                    "This structure can be passed as an extension structure to zesDeviceGetProperties via pNext member",
+                    "Returns the unique ID of the SOC on which the device resides",
+                    "Applications must treat an all-zero socUid as unavailable rather than as a valid identifier"
+                ],
+                "members": [
+                    {
+                        "desc": "[in] type of this structure",
+                        "init": "ZES_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES",
+                        "name": "stype",
+                        "type": "zes_structure_type_t"
+                    },
+                    {
+                        "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains stype and pNext).",
+                        "init": "nullptr",
+                        "name": "pNext",
+                        "type": "void*"
+                    },
+                    {
+                        "desc": "[out] unique identifier of the SOC, most significant byte first.",
+                        "name": "socUid",
+                        "type": "zes_uuid_t"
+                    }
+                ],
+                "name": "zes_device_soc_uid_ext_properties_t",
+                "type": "struct",
+                "version": "1.21"
             },
             "zes_device_state_t": {
                 "base": "zes_base_state_t",
@@ -77612,6 +78607,68 @@
                 "name": "zes_freq_throttle_time_t",
                 "type": "struct",
                 "version": "1.0"
+            },
+            "zes_info_log_decodable_field_info_ext_t": {
+                "base": "zes_base_properties_t",
+                "class": "zesInfoLogDecoderContext",
+                "desc": "Description of one field that a decoder context can decode from an info log record",
+                "details": [
+                    "An array of these structures is returned by zesInfoLogDecoderContextGetFieldInfoExt, one element per field.",
+                    "The fields that are reported are a property of the format of the info log, reported in infoLogFormat of zes_info_log_ext_properties_t, and not of a batch of records. Whether a given record carries a given field is reported per record by zesInfoLogDecoderContextReadFieldExt.",
+                    "The application must locate a field by `name`, and must then use the `fieldId`, `type` and `requiredBytes` that are reported for that name."
+                ],
+                "members": [
+                    {
+                        "desc": "[in] type of this structure",
+                        "init": "ZES_STRUCTURE_TYPE_INFO_LOG_DECODABLE_FIELD_INFO_EXT",
+                        "name": "stype",
+                        "type": "zes_structure_type_t"
+                    },
+                    {
+                        "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains stype and pNext).",
+                        "init": "nullptr",
+                        "name": "pNext",
+                        "type": "void*"
+                    },
+                    {
+                        "desc": "[out] human readable description of the field (NULL terminated string value).",
+                        "name": "desc[ZES_INFO_LOG_FIELD_DESC_SIZE]",
+                        "type": "char"
+                    },
+                    {
+                        "desc": "[out] name of the field (NULL terminated string value).",
+                        "name": "name[ZES_STRING_PROPERTY_SIZE]",
+                        "type": "char"
+                    },
+                    {
+                        "desc": "[out] identifier of the field, to be passed to zesInfoLogDecoderContextReadFieldExt.",
+                        "name": "fieldId",
+                        "type": "uint32_t"
+                    },
+                    {
+                        "desc": "[out] data type of the value of the field.",
+                        "name": "type",
+                        "type": "zes_info_log_field_type_ext_t"
+                    },
+                    {
+                        "desc": "[out] number of bytes that the application must provide to zesInfoLogDecoderContextReadFieldExt to read this field.\nFor ZES_INFO_LOG_FIELD_TYPE_EXT_STRING this value includes the null terminator.\n",
+                        "name": "requiredBytes",
+                        "type": "size_t"
+                    },
+                    {
+                        "desc": "[out] number of elements of the data type that the field holds.",
+                        "name": "elementCount",
+                        "type": "size_t"
+                    },
+                    {
+                        "desc": "[out] version of this extension in which the field was first reported.",
+                        "name": "versionString[ZES_STRING_PROPERTY_SIZE]",
+                        "type": "char"
+                    }
+                ],
+                "name": "zes_info_log_decodable_field_info_ext_t",
+                "type": "struct",
+                "version": "1.21"
             },
             "zes_info_log_ext_properties_t": {
                 "base": "zes_base_properties_t",
@@ -78881,7 +79938,7 @@
                         "type": "zes_power_domain_t"
                     },
                     {
-                        "desc": "[out] the factory default limit of the part.",
+                        "desc": "[in,out][optional] pointer to a caller-allocated zes_power_limit_ext_desc_t\nthat the driver fills with the factory default limit of the part.\nThe application must allocate and initialize (including `stype`) the pointed-to\nstructure and assign its address before calling zesPowerGetProperties.\nIf this is null, the factory default limit will not be returned.\n",
                         "name": "defaultLimit",
                         "type": "zes_power_limit_ext_desc_t*"
                     }
@@ -83419,9 +84476,15 @@
                                 "version": "1.20"
                             },
                             {
+                                "desc": "version 1.21",
+                                "name": "$X_API_VERSION_1_21",
+                                "value": "$X_MAKE_VERSION( 1, 21 )",
+                                "version": "1.21"
+                            },
+                            {
                                 "desc": "latest known version",
                                 "name": "$X_API_VERSION_CURRENT",
-                                "value": "$X_MAKE_VERSION( 1, 20 )"
+                                "value": "$X_MAKE_VERSION( 1, 21 )"
                             }
                         ],
                         "name": "$x_api_version_t",
@@ -83432,7 +84495,7 @@
                         "desc": "Current API version as a macro",
                         "name": "$X_API_VERSION_CURRENT_M",
                         "type": "macro",
-                        "value": "$X_MAKE_VERSION( 1, 20 )",
+                        "value": "$X_MAKE_VERSION( 1, 21 )",
                         "version": "1.10"
                     },
                     {
@@ -84767,22 +85830,22 @@
                         "desc": "Supported device compute dot product(dp) capability flags",
                         "etors": [
                             {
-                                "desc": "Supports vector dot product instruction.",
+                                "desc": "Supports the non-systolic vector dot product instruction (DP4A). When set, the dpv4_input_types and dpv4_output_types members of $x_device_compute_dotproduct_ext_properties_t describe the legal data types for this path.",
                                 "name": "$X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL",
                                 "value": "$X_BIT(0)"
                             },
                             {
-                                "desc": "Supports sytolic dot product with 8 SIMD lanes.",
+                                "desc": "Supports systolic dot product (DPAS) with 8 SIMD lanes.",
                                 "name": "$X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_SIMD8",
                                 "value": "$X_BIT(1)"
                             },
                             {
-                                "desc": "Supports sytolic dot product with 16 SIMD lanes.",
+                                "desc": "Supports systolic dot product (DPAS) with 16 SIMD lanes.",
                                 "name": "$X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_DPAS_SIMD16",
                                 "value": "$X_BIT(2)"
                             },
                             {
-                                "desc": "Supports sytolic dot product with block scaling support with 16 SIMD lanes.",
+                                "desc": "Supports systolic dot product with block-scaling support (BDPAS) with 16 SIMD lanes.",
                                 "name": "$X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_BDPAS_SIMD16",
                                 "value": "$X_BIT(3)"
                             },
@@ -84802,12 +85865,12 @@
                                 "value": "$X_BIT(6)"
                             },
                             {
-                                "desc": "Supports output matrix row count upto 8",
+                                "desc": "Output-shape modifier for the systolic DPAS/BDPAS path: the output matrix row count is variable, up to 8. Only meaningful when at least one of the DEVICE_SYSTOLIC_DPAS_* or DEVICE_SYSTOLIC_BDPAS_* bits is also set in dp_caps; this bit alone does not advertise DPAS or BDPAS support.",
                                 "name": "$X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_UPTO8",
                                 "value": "$X_BIT(7)"
                             },
                             {
-                                "desc": "Restricts output matrix row count to 8",
+                                "desc": "Output-shape modifier for the systolic DPAS/BDPAS path: the output matrix row count is fixed at 8. Only meaningful when at least one of the DEVICE_SYSTOLIC_DPAS_* or DEVICE_SYSTOLIC_BDPAS_* bits is also set in dp_caps; this bit alone does not advertise DPAS or BDPAS support.",
                                 "name": "$X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_FIXED8",
                                 "value": "$X_BIT(8)"
                             }
@@ -84818,15 +85881,23 @@
                     },
                     {
                         "class": "$xDevice",
-                        "desc": "Supported device  dot product(dp) input data types flags",
+                        "desc": "Supported device dot product (dp) input data type flags. A field value of 0 indicates no supported input data types for the associated dot-product path; non-zero values are the bitwise-OR of the supported type bits defined below. The containing *_input_types field (dpv4_input_types, dpas_input_types, or bdpas_input_types) determines which dot-product path this applies to.",
                         "etors": [
                             {
-                                "desc": "No data types available for the supported dot product operation",
+                                "deprecated": {
+                                    "reason": "No replacement; a field value of 0 already indicates that no data types are supported.",
+                                    "since": "1.21"
+                                },
+                                "desc": "Indicates that no data types are supported. This bit is semantically equivalent to all other field values being 0 and must not be combined with any other bit of this enum. Retained for ABI compatibility only.",
                                 "name": "$X_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_TYPE_NONE",
                                 "value": "$X_BIT(0)"
                             },
                             {
-                                "desc": "Supports int8 data type with 4 packed data elements per SIMD lane.",
+                                "deprecated": {
+                                    "since": "1.21",
+                                    "use": "$X_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE"
+                                },
+                                "desc": "Supports int8 data type with 4 packed data elements per SIMD lane. This enumerator carries a stray 'ZE_' prefix in its name, producing the generated token $X_DEVICE_INPUT_DATA_TYPE_FLAG_ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE. Retained for ABI compatibility only.",
                                 "name": "$X_DEVICE_INPUT_DATA_TYPE_FLAG_ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE",
                                 "value": "$X_BIT(1)"
                             },
@@ -84876,22 +85947,22 @@
                                 "value": "$X_BIT(10)"
                             },
                             {
-                                "desc": "Supports 8bit integer data type with 4 packed data elements per SIMD lane.This is exclusively for DP4V dot product support",
+                                "desc": "Supports int8 (8-bit signed integer) data type with 4 packed data elements per SIMD lane.",
                                 "name": "$X_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE",
                                 "value": "$X_BIT(11)"
                             },
                             {
-                                "desc": "Supports uint8 data type support for scaling, exclusive to BDPAS dot product support.",
+                                "desc": "Supports uint8 (8-bit unsigned integer) scaling factor. Only meaningful when set in bdpas_input_types; exclusive to the BDPAS dot-product path.",
                                 "name": "$X_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UINT8",
                                 "value": "$X_BIT(12)"
                             },
                             {
-                                "desc": "Supports ue5m3 data type support for scaling, exclusive to BDPAS dot product support.",
+                                "desc": "Supports ue5m3 (unsigned float, 5-bit exponent, 3-bit mantissa) scaling factor. Only meaningful when set in bdpas_input_types; exclusive to the BDPAS dot-product path.",
                                 "name": "$X_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE5M3",
                                 "value": "$X_BIT(13)"
                             },
                             {
-                                "desc": "Supports ue4m3 data type support for scaling, exclusive to BDPAS dot product support.",
+                                "desc": "Supports ue4m3 (unsigned float, 4-bit exponent, 3-bit mantissa) scaling factor. Only meaningful when set in bdpas_input_types; exclusive to the BDPAS dot-product path.",
                                 "name": "$X_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_SCALING_UE4M3",
                                 "value": "$X_BIT(14)"
                             }
@@ -84902,7 +85973,7 @@
                     },
                     {
                         "class": "$xDevice",
-                        "desc": "Supported device  dot product(dp) output data types or accumulator data types flags",
+                        "desc": "Supported device dot product (dp) output / accumulator data type flags. A field value of 0 indicates no supported output data types for the associated dot-product path; non-zero values are the bitwise-OR of the supported type bits defined below.",
                         "etors": [
                             {
                                 "desc": "Supports signed and unsigned 32bit integer data type for output",
@@ -84977,32 +86048,32 @@
                                 "type": "$x_device_dp_capability_flags_t"
                             },
                             {
-                                "desc": "[out] Supported input data types when dp4v dot product capability is supported.",
+                                "desc": "[out] Supported input data types for the non-systolic vector dot-product path (DP4A). Valid only when $X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is set in dp_caps; a value of 0 indicates no supported input types for this path. The member is named 'dpv4_*' for ABI compatibility; the feature it describes is DP4A.",
                                 "name": "dpv4_input_types",
                                 "type": "$x_device_input_data_type_flags_t"
                             },
                             {
-                                "desc": "[out] Supported output data types when dp4v dot product capability is supported.",
+                                "desc": "[out] Supported output / accumulator data types for the non-systolic vector dot-product path (DP4A). Valid only when $X_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is set in dp_caps; a value of 0 indicates no supported output types for this path. The member is named 'dpv4_*' for ABI compatibility; the feature it describes is DP4A.",
                                 "name": "dpv4_output_types",
                                 "type": "$x_device_output_data_type_flags_t"
                             },
                             {
-                                "desc": "[out] Supported input data types when dpas dot product capability is supported.",
+                                "desc": "[out] Supported input data types for the systolic dot-product (DPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_DPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported input types for this path.",
                                 "name": "dpas_input_types",
                                 "type": "$x_device_input_data_type_flags_t"
                             },
                             {
-                                "desc": "[out] Supported output data types when dpas dot product capability is supported.",
+                                "desc": "[out] Supported output / accumulator data types for the systolic dot-product (DPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_DPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported output types for this path.",
                                 "name": "dpas_output_types",
                                 "type": "$x_device_output_data_type_flags_t"
                             },
                             {
-                                "desc": "[out] Supported input data types when bdpas dot product capability is supported.",
+                                "desc": "[out] Supported input data types for the block-scaled systolic dot-product (BDPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_BDPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported input types for this path. The DEVICE_INPUT_DATA_SCALING_* bits in $x_device_input_data_type_flags_t only have meaning in this member.",
                                 "name": "bdpas_input_types",
                                 "type": "$x_device_input_data_type_flags_t"
                             },
                             {
-                                "desc": "[out] Supported output data types when bdpas dot product capability is supported.",
+                                "desc": "[out] Supported output / accumulator data types for the block-scaled systolic dot-product (BDPAS) path. Valid only when at least one of the DEVICE_SYSTOLIC_BDPAS_* bits in $x_device_dp_capability_flags_t is set in dp_caps; a value of 0 indicates no supported output types for this path.",
                                 "name": "bdpas_output_types",
                                 "type": "$x_device_output_data_type_flags_t"
                             }
@@ -87786,10 +88857,30 @@
                             },
                             {
                                 "desc": "lower priority than normal",
+                                "name": "$X_COMMAND_QUEUE_PRIORITY_LOW",
+                                "value": "1",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "higher priority than normal",
+                                "name": "$X_COMMAND_QUEUE_PRIORITY_HIGH",
+                                "value": "2",
+                                "version": "1.21"
+                            },
+                            {
+                                "deprecated": {
+                                    "since": "1.21",
+                                    "use": "$X_COMMAND_QUEUE_PRIORITY_LOW"
+                                },
+                                "desc": "lower priority than normal",
                                 "name": "$X_COMMAND_QUEUE_PRIORITY_PRIORITY_LOW",
                                 "value": "1"
                             },
                             {
+                                "deprecated": {
+                                    "since": "1.21",
+                                    "use": "$X_COMMAND_QUEUE_PRIORITY_HIGH"
+                                },
                                 "desc": "higher priority than normal",
                                 "name": "$X_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH",
                                 "value": "2"
@@ -87822,7 +88913,7 @@
                                 "type": "uint32_t"
                             },
                             {
-                                "desc": "[in] command queue index within the group;\nmust be zero. \n",
+                                "desc": "[in] command queue index within the group;\nzero-based, so it must be less than the `numQueues` member of $x_command_queue_group_properties_t for the command queue group.\n",
                                 "name": "index",
                                 "type": "uint32_t"
                             },
@@ -87945,7 +89036,7 @@
                                 "$X_RESULT_ERROR_INVALID_ENUMERATION": [
                                     "`0x7 < desc->flags`",
                                     "`$X_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode`",
-                                    "`$X_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < desc->priority`"
+                                    "`$X_COMMAND_QUEUE_PRIORITY_HIGH < desc->priority`"
                                 ]
                             },
                             {
@@ -88930,7 +90021,7 @@
                                 "$X_RESULT_ERROR_INVALID_ENUMERATION": [
                                     "`0x7 < altdesc->flags`",
                                     "`$X_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode`",
-                                    "`$X_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority`"
+                                    "`$X_COMMAND_QUEUE_PRIORITY_HIGH < altdesc->priority`"
                                 ]
                             },
                             {
@@ -89262,6 +90353,7 @@
                         "details": [
                             "The application must call this function only with command lists created with $xCommandListCreateImmediate.",
                             "Waiting on one immediate command list shall not block the concurrent execution of commands appended to other\nimmediate command lists created with either a different ordinal or different index.\n",
+                            "Some implementations may associate immediate command lists created with the same ordinal and index with the same hardware queue.\nIn that case, this function may also wait for commands appended to the other immediate command lists before\nthe last command appended to this command list, and may return $X_RESULT_NOT_READY while those commands are not complete.\n",
                             "The application may call this function from simultaneous threads.",
                             "The implementation of this function should be lock-free."
                         ],
@@ -103909,7 +105001,7 @@
                                     "since": "1.7",
                                     "use": "$X_CACHE_EXT_REGION_NON_RESERVED"
                                 },
-                                "desc": "utilize non-reserverd region",
+                                "desc": "utilize non-reserved region",
                                 "name": "$X_CACHE_EXT_REGION_$X_CACHE_NON_RESERVED_REGION",
                                 "value": "2"
                             },
@@ -103926,7 +105018,7 @@
                                 "version": "1.7"
                             },
                             {
-                                "desc": "utilize non-reserverd region",
+                                "desc": "utilize non-reserved region",
                                 "name": "$X_CACHE_EXT_REGION_NON_RESERVED",
                                 "value": "2",
                                 "version": "1.7"
@@ -105481,7 +106573,7 @@
                             {
                                 "desc": "[in] Is sRGB.",
                                 "name": "sRGB",
-                                "type": "ze_bool_t"
+                                "type": "$x_bool_t"
                             }
                         ],
                         "name": "$x_srgb_ext_desc_t",
@@ -109589,7 +110681,7 @@
                                 "type": "uint8_t"
                             },
                             {
-                                "desc": "[in] format of the specified transformation",
+                                "desc": "[in] format of the specified transformation, must be $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_COLUMN_MAJOR, $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ALIGNED_COLUMN_MAJOR, or $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ROW_MAJOR",
                                 "name": "transformFormat",
                                 "type": "$x_rtas_builder_packed_input_data_format_exp_t"
                             },
@@ -114802,7 +115894,7 @@
                                 "type": "uint8_t"
                             },
                             {
-                                "desc": "[in] format of the specified transformation",
+                                "desc": "[in] format of the specified transformation, must be $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_COLUMN_MAJOR, $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ALIGNED_COLUMN_MAJOR, or $X_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ROW_MAJOR",
                                 "name": "transformFormat",
                                 "type": "$x_rtas_builder_packed_input_data_format_ext_t"
                             },
@@ -118055,7 +119147,12 @@
                             },
                             {
                                 "$X_RESULT_ERROR_INVALID_ARGUMENT": [
-                                    "Graph is not in a recording state"
+                                    "Capture into `hGraph` is already paused"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING": [
+                                    "Capture into `hGraph` was never started or has already ended"
                                 ]
                             }
                         ],
@@ -118120,7 +119217,13 @@
                             },
                             {
                                 "$X_RESULT_ERROR_INVALID_ARGUMENT": [
-                                    "Graph is not in a paused state"
+                                    "Capture into `hGraph` is not paused",
+                                    "The command list from which `hGraph` was recording is capturing into another graph"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING": [
+                                    "Capture into `hGraph` was never started or has already ended"
                                 ]
                             }
                         ],
@@ -118537,7 +119640,7 @@
                             },
                             {
                                 "$X_RESULT_ERROR_INVALID_ENUMERATION": [
-                                    "`$X_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < priority`"
+                                    "`$X_COMMAND_QUEUE_PRIORITY_HIGH < priority`"
                                 ]
                             },
                             {
@@ -121164,6 +122267,11 @@
                     },
                     {
                         "class": "$tTracerExp",
+                        "deprecated": {
+                            "reason": "Only used by the deprecated API Tracing extension.",
+                            "since": "1.14",
+                            "use": "L0 Loader API Tracing <https://github.com/oneapi-src/level-zero/tree/master/source/layers/tracing>"
+                        },
                         "desc": "Handle of tracer object",
                         "name": "$t_tracer_exp_handle_t",
                         "type": "handle",
@@ -124384,7 +125492,7 @@
                             },
                             {
                                 "$X_RESULT_WARNING_DROPPED_DATA": [
-                                    "Metric streamer data may have been dropped. Reduce sampling period."
+                                    "Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently."
                                 ]
                             }
                         ],
@@ -126182,6 +127290,11 @@
                                     "`nullptr == pSetCount`",
                                     "`nullptr == pTotalMetricValueCount`"
                                 ]
+                            },
+                            {
+                                "$X_RESULT_WARNING_DROPPED_DATA": [
+                                    "Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently."
+                                ]
                             }
                         ],
                         "type": "function",
@@ -126640,6 +127753,11 @@
                                     "`nullptr == pCalculateDescriptor`",
                                     "`nullptr == pSetCount`",
                                     "`nullptr == pTotalMetricValueCount`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_WARNING_DROPPED_DATA": [
+                                    "Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently."
                                 ]
                             }
                         ],
@@ -127654,7 +128772,7 @@
                             "The metric groups created using this API are managed by the application and cannot be retrieved using $tMetricGroupGet().",
                             "The created metric groups are ready for activation and collection."
                         ],
-                        "hash": "ee04ae2896c387da5871785e7599c03a4d78d896df59a843f7776ff538f754ec",
+                        "hash": "c6c0b3b798b9fb7baee89aee1f375968c9afb4c81f53f1e9d221aba6bd58f486",
                         "name": "CreateMetricGroupsFromMetricsExp",
                         "ordinal": "2",
                         "params": [
@@ -127669,9 +128787,9 @@
                                 "type": "uint32_t"
                             },
                             {
-                                "desc": "[in] metric handles to be added to the metric groups.",
+                                "desc": "[in][range(0, metricCount)] array of metric handles to be added to the metric groups.",
                                 "name": "phMetrics",
-                                "type": "zet_metric_handle_t *"
+                                "type": "$t_metric_handle_t*"
                             },
                             {
                                 "desc": "[in] prefix to the name created for the metric groups. Must point to a null-terminated character array no longer than $T_MAX_METRIC_GROUP_NAME_PREFIX_EXP.",
@@ -127736,6 +128854,11 @@
                             {
                                 "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
                                     "`nullptr == hDevice`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == phMetrics`"
                                 ]
                             },
                             {
@@ -129731,6 +130854,27 @@
                 "name": "common",
                 "objects": [
                     {
+                        "desc": "Generates generic $OneApi Sysman API versions",
+                        "name": "$S_MAKE_VERSION( _major, _minor )",
+                        "type": "macro",
+                        "value": "(( _major << 16 )|( _minor & 0x0000ffff))",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "Extracts $OneApi Sysman API major version",
+                        "name": "$S_MAJOR_VERSION( _ver )",
+                        "type": "macro",
+                        "value": "( _ver >> 16 )",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "Extracts $OneApi Sysman API minor version",
+                        "name": "$S_MINOR_VERSION( _ver )",
+                        "type": "macro",
+                        "value": "( _ver & 0x0000ffff )",
+                        "version": "1.21"
+                    },
+                    {
                         "alias": "$x_driver_handle_t",
                         "class": "$sDriver",
                         "desc": "Handle to a driver instance",
@@ -130275,6 +131419,18 @@
                                 "name": "$S_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES",
                                 "value": "0x00020027",
                                 "version": "1.20"
+                            },
+                            {
+                                "desc": "$s_device_soc_uid_ext_properties_t",
+                                "name": "$S_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES",
+                                "value": "0x00020028",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "$s_info_log_decodable_field_info_ext_t",
+                                "name": "$S_STRUCTURE_TYPE_INFO_LOG_DECODABLE_FIELD_INFO_EXT",
+                                "value": "0x00020029",
+                                "version": "1.21"
                             }
                         ],
                         "name": "$s_structure_type_t",
@@ -130708,6 +131864,238 @@
                         ],
                         "type": "function",
                         "version": "1.19"
+                    },
+                    {
+                        "class": "$sDriver",
+                        "desc": "Supported sysman API versions",
+                        "details": [
+                            "API versions contain major and minor attributes, use $S_MAJOR_VERSION and $S_MINOR_VERSION"
+                        ],
+                        "etors": [
+                            {
+                                "desc": "version 1.0",
+                                "name": "$S_API_VERSION_1_0",
+                                "value": "$S_MAKE_VERSION( 1, 0 )"
+                            },
+                            {
+                                "desc": "version 1.1",
+                                "name": "$S_API_VERSION_1_1",
+                                "value": "$S_MAKE_VERSION( 1, 1 )",
+                                "version": "1.1"
+                            },
+                            {
+                                "desc": "version 1.2",
+                                "name": "$S_API_VERSION_1_2",
+                                "value": "$S_MAKE_VERSION( 1, 2 )",
+                                "version": "1.2"
+                            },
+                            {
+                                "desc": "version 1.3",
+                                "name": "$S_API_VERSION_1_3",
+                                "value": "$S_MAKE_VERSION( 1, 3 )",
+                                "version": "1.3"
+                            },
+                            {
+                                "desc": "version 1.4",
+                                "name": "$S_API_VERSION_1_4",
+                                "value": "$S_MAKE_VERSION( 1, 4 )",
+                                "version": "1.4"
+                            },
+                            {
+                                "desc": "version 1.5",
+                                "name": "$S_API_VERSION_1_5",
+                                "value": "$S_MAKE_VERSION( 1, 5 )",
+                                "version": "1.5"
+                            },
+                            {
+                                "desc": "version 1.6",
+                                "name": "$S_API_VERSION_1_6",
+                                "value": "$S_MAKE_VERSION( 1, 6 )",
+                                "version": "1.6"
+                            },
+                            {
+                                "desc": "version 1.7",
+                                "name": "$S_API_VERSION_1_7",
+                                "value": "$S_MAKE_VERSION( 1, 7 )",
+                                "version": "1.7"
+                            },
+                            {
+                                "desc": "version 1.8",
+                                "name": "$S_API_VERSION_1_8",
+                                "value": "$S_MAKE_VERSION( 1, 8 )",
+                                "version": "1.8"
+                            },
+                            {
+                                "desc": "version 1.9",
+                                "name": "$S_API_VERSION_1_9",
+                                "value": "$S_MAKE_VERSION( 1, 9 )",
+                                "version": "1.9"
+                            },
+                            {
+                                "desc": "version 1.10",
+                                "name": "$S_API_VERSION_1_10",
+                                "value": "$S_MAKE_VERSION( 1, 10 )",
+                                "version": "1.10"
+                            },
+                            {
+                                "desc": "version 1.11",
+                                "name": "$S_API_VERSION_1_11",
+                                "value": "$S_MAKE_VERSION( 1, 11 )",
+                                "version": "1.11"
+                            },
+                            {
+                                "desc": "version 1.12",
+                                "name": "$S_API_VERSION_1_12",
+                                "value": "$S_MAKE_VERSION( 1, 12 )",
+                                "version": "1.12"
+                            },
+                            {
+                                "desc": "version 1.13",
+                                "name": "$S_API_VERSION_1_13",
+                                "value": "$S_MAKE_VERSION( 1, 13 )",
+                                "version": "1.13"
+                            },
+                            {
+                                "desc": "version 1.14",
+                                "name": "$S_API_VERSION_1_14",
+                                "value": "$S_MAKE_VERSION( 1, 14 )",
+                                "version": "1.14"
+                            },
+                            {
+                                "desc": "version 1.15",
+                                "name": "$S_API_VERSION_1_15",
+                                "value": "$S_MAKE_VERSION( 1, 15 )",
+                                "version": "1.15"
+                            },
+                            {
+                                "desc": "version 1.16",
+                                "name": "$S_API_VERSION_1_16",
+                                "value": "$S_MAKE_VERSION( 1, 16 )",
+                                "version": "1.16"
+                            },
+                            {
+                                "desc": "version 1.17",
+                                "name": "$S_API_VERSION_1_17",
+                                "value": "$S_MAKE_VERSION( 1, 17 )",
+                                "version": "1.17"
+                            },
+                            {
+                                "desc": "version 1.18",
+                                "name": "$S_API_VERSION_1_18",
+                                "value": "$S_MAKE_VERSION( 1, 18 )",
+                                "version": "1.18"
+                            },
+                            {
+                                "desc": "version 1.19",
+                                "name": "$S_API_VERSION_1_19",
+                                "value": "$S_MAKE_VERSION( 1, 19 )",
+                                "version": "1.19"
+                            },
+                            {
+                                "desc": "version 1.20",
+                                "name": "$S_API_VERSION_1_20",
+                                "value": "$S_MAKE_VERSION( 1, 20 )",
+                                "version": "1.20"
+                            },
+                            {
+                                "desc": "version 1.21",
+                                "name": "$S_API_VERSION_1_21",
+                                "value": "$S_MAKE_VERSION( 1, 21 )",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "latest known version",
+                                "name": "$S_API_VERSION_CURRENT",
+                                "value": "$S_MAKE_VERSION( 1, 21 )"
+                            }
+                        ],
+                        "name": "$s_api_version_t",
+                        "type": "enum",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "Current sysman API version as a macro",
+                        "name": "$S_API_VERSION_CURRENT_M",
+                        "type": "macro",
+                        "value": "$S_MAKE_VERSION( 1, 21 )",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sDriver",
+                        "desc": "Returns the API version supported by the specified sysman driver",
+                        "details": [
+                            "The application may call this function from simultaneous threads.",
+                            "The implementation of this function should be lock-free."
+                        ],
+                        "hash": "76e70d42b083d89e1a534d565b1e6c5ed4b36e00f2f580d750054607f94b8bde",
+                        "name": "GetApiVersion",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the sysman driver instance",
+                                "name": "hDriver",
+                                "type": "$s_driver_handle_t"
+                            },
+                            {
+                                "desc": "[out] api version",
+                                "name": "pVersion",
+                                "type": "$s_api_version_t*"
+                            }
+                        ],
+                        "return_desc": "[out] ze_result_t API result",
+                        "return_type": "ze_result_t",
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_NOT_AVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNKNOWN": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hDriver`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == pVersion`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.21"
                     },
                     {
                         "desc": "Maximum extension name string size",
@@ -131162,7 +132550,7 @@
                             {
                                 "desc": "[in] If set to true, all applications that are currently using the device will be forcibly killed.\n",
                                 "name": "force",
-                                "type": "ze_bool_t"
+                                "type": "$x_bool_t"
                             },
                             {
                                 "desc": "[in] Type of reset needs to be performed",
@@ -131240,7 +132628,7 @@
                     {
                         "base": "$s_base_properties_t",
                         "class": "$sDevice",
-                        "desc": "Device properties. To get OEM Serial ID, pNext member of this structure should point to an instance of ${s}_oem_serial_id_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES. To get Device Index, pNext member of this structure should point to an instance of ${s}_device_index_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES. To get the GPU topology of the device, pNext member of this structure should point to an instance of ${s}_device_gpu_topology_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES.",
+                        "desc": "Device properties. To get OEM Serial ID, pNext member of this structure should point to an instance of ${s}_oem_serial_id_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_OEM_SERIAL_ID_EXT_PROPERTIES. To get Device Index, pNext member of this structure should point to an instance of ${s}_device_index_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES. To get the GPU topology of the device, pNext member of this structure should point to an instance of ${s}_device_gpu_topology_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES. To get the SOC unique ID of the device, pNext member of this structure should point to an instance of $s_device_soc_uid_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES. To get the UUID, type and flags of the device, pNext member of this structure should point to an instance of $s_device_ext_properties_t with its stype set to $S_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES.",
                         "members": [
                             {
                                 "desc": "[in] type of this structure",
@@ -131256,6 +132644,7 @@
                             },
                             {
                                 "deprecated": {
+                                    "reason": "Get the UUID, type and flags through pNext.",
                                     "since": "1.7",
                                     "use": "$s_device_ext_properties_t"
                                 },
@@ -131404,7 +132793,8 @@
                         "details": [
                             "The application may call this function from simultaneous threads.",
                             "The implementation of this function should be lock-free.",
-                            "To get the GPU topology of the device, the application may pass $s_device_gpu_topology_ext_properties_t in the pNext chain of pProperties."
+                            "To get the GPU topology of the device, the application may pass $s_device_gpu_topology_ext_properties_t in the pNext chain of pProperties.",
+                            "To get the SOC unique ID of the device, the application may pass $s_device_soc_uid_ext_properties_t in the pNext chain of pProperties."
                         ],
                         "hash": "c558d1b867032600d877bf98f17dfab339d27cf77a33bb46c846981ac08d0fd0",
                         "name": "GetProperties",
@@ -146351,17 +147741,17 @@
                             {
                                 "desc": "[out] indicates if the power limit state (enabled/ignored) can be set (false) or is locked (true).",
                                 "name": "enabledStateLocked",
-                                "type": "ze_bool_t"
+                                "type": "$x_bool_t"
                             },
                             {
                                 "desc": "[in,out] indicates if the limit is enabled (true) or ignored (false). If enabledStateIsLocked is True, this value is ignored.",
                                 "name": "enabled",
-                                "type": "ze_bool_t"
+                                "type": "$x_bool_t"
                             },
                             {
                                 "desc": "[out] indicates if the interval can be modified (false) or is fixed (true).",
                                 "name": "intervalValueLocked",
-                                "type": "ze_bool_t"
+                                "type": "$x_bool_t"
                             },
                             {
                                 "desc": "[in,out] power averaging window in milliseconds. If intervalValueLocked is true, this value is ignored.",
@@ -146371,7 +147761,7 @@
                             {
                                 "desc": "[out] indicates if the limit can be set (false) or if the limit is fixed (true).",
                                 "name": "limitValueLocked",
-                                "type": "ze_bool_t"
+                                "type": "$x_bool_t"
                             },
                             {
                                 "desc": "[in,out] limit value. If limitValueLocked is true, this value is ignored. The value should be provided in the unit specified by limitUnit.",
@@ -146411,7 +147801,7 @@
                                 "type": "$s_power_domain_t"
                             },
                             {
-                                "desc": "[out] the factory default limit of the part.",
+                                "desc": "[in,out][optional] pointer to a caller-allocated $s_power_limit_ext_desc_t\nthat the driver fills with the factory default limit of the part.\nThe application must allocate and initialize (including `stype`) the pointed-to\nstructure and assign its address before calling $sPowerGetProperties.\nIf this is null, the factory default limit will not be returned.\n",
                                 "name": "defaultLimit",
                                 "type": "$s_power_limit_ext_desc_t*"
                             }
@@ -150392,9 +151782,15 @@
                                 "version": "1.19"
                             },
                             {
+                                "desc": "version 1.1",
+                                "name": "$S_INFO_LOGS_EXT_VERSION_1_1",
+                                "value": "$X_MAKE_VERSION( 1, 1 )",
+                                "version": "1.21"
+                            },
+                            {
                                 "desc": "latest known version",
                                 "name": "$S_INFO_LOGS_EXT_VERSION_CURRENT",
-                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                                "value": "$X_MAKE_VERSION( 1, 1 )"
                             }
                         ],
                         "name": "$s_info_logs_ext_version_t",
@@ -151253,6 +152649,622 @@
                         "owner": "$sInfoLog",
                         "type": "class",
                         "version": "1.19"
+                    },
+                    {
+                        "desc": "Maximum number of characters in the description of a decodable field, including the null terminator.",
+                        "name": "$S_INFO_LOG_FIELD_DESC_SIZE",
+                        "type": "macro",
+                        "value": "256",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Handle for a Sysman info log decoder context",
+                        "name": "$s_info_log_decoder_context_handle_t",
+                        "type": "handle",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Data types of a field decoded from an info log record",
+                        "etors": [
+                            {
+                                "desc": "The value of the field is a `uint32_t`.",
+                                "name": "$S_INFO_LOG_FIELD_TYPE_EXT_UINT32",
+                                "value": "0",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "The value of the field is an `int64_t`.",
+                                "name": "$S_INFO_LOG_FIELD_TYPE_EXT_INT64",
+                                "value": "1",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "The value of the field is a `double`.",
+                                "name": "$S_INFO_LOG_FIELD_TYPE_EXT_DOUBLE",
+                                "value": "2",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "The value of the field is a null terminated array of `char`.",
+                                "name": "$S_INFO_LOG_FIELD_TYPE_EXT_STRING",
+                                "value": "3",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "The value of the field is an array of uninterpreted bytes.",
+                                "name": "$S_INFO_LOG_FIELD_TYPE_EXT_RAW_BYTES",
+                                "value": "4",
+                                "version": "1.21"
+                            }
+                        ],
+                        "name": "$s_info_log_field_type_ext_t",
+                        "type": "enum",
+                        "version": "1.21"
+                    },
+                    {
+                        "base": "$s_base_properties_t",
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Description of one field that a decoder context can decode from an info log record",
+                        "details": [
+                            "An array of these structures is returned by $sInfoLogDecoderContextGetFieldInfoExt, one element per field.",
+                            "The fields that are reported are a property of the format of the info log, reported in infoLogFormat of $s_info_log_ext_properties_t, and not of a batch of records. Whether a given record carries a given field is reported per record by $sInfoLogDecoderContextReadFieldExt.",
+                            "The application must locate a field by `name`, and must then use the `fieldId`, `type` and `requiredBytes` that are reported for that name."
+                        ],
+                        "members": [
+                            {
+                                "desc": "[in] type of this structure",
+                                "init": "$S_STRUCTURE_TYPE_INFO_LOG_DECODABLE_FIELD_INFO_EXT",
+                                "name": "stype",
+                                "type": "$s_structure_type_t"
+                            },
+                            {
+                                "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains stype and pNext).",
+                                "init": "nullptr",
+                                "name": "pNext",
+                                "type": "void*"
+                            },
+                            {
+                                "desc": "[out] human readable description of the field (NULL terminated string value).",
+                                "name": "desc[$S_INFO_LOG_FIELD_DESC_SIZE]",
+                                "type": "char"
+                            },
+                            {
+                                "desc": "[out] name of the field (NULL terminated string value).",
+                                "name": "name[$S_STRING_PROPERTY_SIZE]",
+                                "type": "char"
+                            },
+                            {
+                                "desc": "[out] identifier of the field, to be passed to $sInfoLogDecoderContextReadFieldExt.",
+                                "name": "fieldId",
+                                "type": "uint32_t"
+                            },
+                            {
+                                "desc": "[out] data type of the value of the field.",
+                                "name": "type",
+                                "type": "$s_info_log_field_type_ext_t"
+                            },
+                            {
+                                "desc": "[out] number of bytes that the application must provide to $sInfoLogDecoderContextReadFieldExt to read this field.\nFor $S_INFO_LOG_FIELD_TYPE_EXT_STRING this value includes the null terminator.\n",
+                                "name": "requiredBytes",
+                                "type": "size_t"
+                            },
+                            {
+                                "desc": "[out] number of elements of the data type that the field holds.",
+                                "name": "elementCount",
+                                "type": "size_t"
+                            },
+                            {
+                                "desc": "[out] version of this extension in which the field was first reported.",
+                                "name": "versionString[$S_STRING_PROPERTY_SIZE]",
+                                "type": "char"
+                            }
+                        ],
+                        "name": "$s_info_log_decodable_field_info_ext_t",
+                        "type": "struct",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Create a decoder context for an info log",
+                        "details": [
+                            "A decoder context decodes the records returned by $sInfoLogInstanceReadWithMetadataExt or by $sInfoLogInstancePeekWithMetadataExt into named fields, which the application reads one at a time using $sInfoLogDecoderContextReadFieldExt.",
+                            "Any number of decoder contexts may exist for one info log.",
+                            "The application may call this function from simultaneous threads."
+                        ],
+                        "hash": "0620d5f7adcdc46285bbaa31379cdacdf54ae87eb39a3b4bacbf5ba114f7e10e",
+                        "name": "CreateExt",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the info log that the records are read from",
+                                "name": "hInfoLog",
+                                "type": "$s_info_log_handle_t"
+                            },
+                            {
+                                "desc": "[out] handle of the decoder context that was created.",
+                                "name": "phDecoderContext",
+                                "type": "$s_info_log_decoder_context_handle_t*"
+                            }
+                        ],
+                        "return_desc": "[out] ze_result_t API result",
+                        "return_type": "ze_result_t",
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_NOT_AVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNKNOWN": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hInfoLog`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == phDecoderContext`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Get the fields that a decoder context can decode from an info log record",
+                        "details": [
+                            "The application should first call this function with `pCount` pointing to a value of zero to retrieve the number of fields that can be decoded.",
+                            "A call in which `*pCount` is greater than zero and `pFieldInfos` is nullptr shall report the number of fields and shall not write any descriptor, as a call with a count of zero does.",
+                            "The application may call this function from simultaneous threads."
+                        ],
+                        "hash": "abe21e9a44be187caca5ee20cbf7f75867078369ee159cb2fb566d5be761affa",
+                        "name": "GetFieldInfoExt",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the decoder context",
+                                "name": "hDecoderContext",
+                                "type": "$s_info_log_decoder_context_handle_t"
+                            },
+                            {
+                                "desc": "[in,out] pointer to the number of fields that can be decoded.\nif count is zero, then the driver shall update the value with the total number of fields that can be decoded and shall not return any descriptor.\nif count is greater than the number of fields that can be decoded, then the driver shall update the value with the correct number of fields.\n",
+                                "name": "pCount",
+                                "type": "uint32_t*"
+                            },
+                            {
+                                "desc": "[in,out][optional][range(0, *pCount)] array of field descriptions, one element per field.\nif count is less than the number of fields that can be decoded, then the driver shall only retrieve that number of descriptors.\n",
+                                "name": "pFieldInfos",
+                                "type": "$s_info_log_decodable_field_info_ext_t*"
+                            }
+                        ],
+                        "return_desc": "[out] ze_result_t API result",
+                        "return_type": "ze_result_t",
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_NOT_AVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNKNOWN": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hDecoderContext`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == pCount`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Start decoding info log records in a decoder context",
+                        "details": [
+                            "The application must not call this function from simultaneous threads with the same decoder context handle.",
+                            "The application may call this function from simultaneous threads with different decoder context handles."
+                        ],
+                        "hash": "62584af547a89be936adac4e3609c6130d080f0e4e15e2669f7d6ea53d82a28f",
+                        "name": "DecodeStartExt",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the decoder context",
+                                "name": "hDecoderContext",
+                                "type": "$s_info_log_decoder_context_handle_t"
+                            },
+                            {
+                                "desc": "[in] size, in bytes, of the record data in `pBuffer`, as returned in `*pSize` by the read or peek call",
+                                "name": "size",
+                                "type": "uint32_t"
+                            },
+                            {
+                                "desc": "[in][optional][range(0, size)] the record data, as returned in `pBuffer` by the read or peek call",
+                                "name": "pBuffer",
+                                "type": "const uint8_t*"
+                            },
+                            {
+                                "desc": "[in] number of records in the batch, as returned in `*pRecordCount` by the read or peek call",
+                                "name": "recordCount",
+                                "type": "uint32_t"
+                            },
+                            {
+                                "desc": "[in][optional][range(0, recordCount)] array of metadata describing each record, as returned in `pDescriptors` by the read or peek call",
+                                "name": "pDescriptors",
+                                "type": "const $s_info_log_metadata_ext_t*"
+                            }
+                        ],
+                        "return_desc": "[out] ze_result_t API result",
+                        "return_type": "ze_result_t",
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_NOT_AVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNKNOWN": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hDecoderContext`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Read field values of one record that a decoder context is decoding",
+                        "details": [
+                            "The application must not call this function from simultaneous threads with the same decoder context handle.",
+                            "The application may call this function from simultaneous threads with different decoder context handles."
+                        ],
+                        "hash": "450664f556c18c6b4bd8d1c409082affce397fda1ad13eaf1ea23239563db0df",
+                        "name": "ReadFieldExt",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the decoder context, which must be decoding a batch",
+                                "name": "hDecoderContext",
+                                "type": "$s_info_log_decoder_context_handle_t"
+                            },
+                            {
+                                "desc": "[in] identifier of the field to read, as reported in `fieldId` of $s_info_log_decodable_field_info_ext_t",
+                                "name": "fieldId",
+                                "type": "uint32_t"
+                            },
+                            {
+                                "desc": "[in] index of the record in the `pDescriptors` that was passed to $sInfoLogDecoderContextDecodeStartExt",
+                                "name": "recordId",
+                                "type": "uint32_t"
+                            },
+                            {
+                                "desc": "[in,out][range(0, bufferLen)] buffer that will contain the value of the field",
+                                "name": "pOutBuffer",
+                                "type": "void*"
+                            },
+                            {
+                                "desc": "[in] size, in bytes, of `pOutBuffer`",
+                                "name": "bufferLen",
+                                "type": "size_t"
+                            },
+                            {
+                                "desc": "[out] pointer to the number of bytes written to `pOutBuffer`.\nthe driver shall update the value with zero when the record does not carry the field.\n",
+                                "name": "pBytesCopied",
+                                "type": "size_t*"
+                            }
+                        ],
+                        "return_desc": "[out] ze_result_t API result",
+                        "return_type": "ze_result_t",
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_NOT_AVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNKNOWN": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hDecoderContext`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == pOutBuffer`",
+                                    "`nullptr == pBytesCopied`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Stop decoding of info log records that a decoder context is decoding",
+                        "details": [
+                            "The application must not call this function from simultaneous threads with the same decoder context handle.",
+                            "The application may call this function from simultaneous threads with different decoder context handles."
+                        ],
+                        "hash": "d0979f7c4606c70657a0be64ab66ba9866ba0005154f0693017105dc1690238a",
+                        "name": "DecodeStopExt",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the decoder context",
+                                "name": "hDecoderContext",
+                                "type": "$s_info_log_decoder_context_handle_t"
+                            }
+                        ],
+                        "return_desc": "[out] ze_result_t API result",
+                        "return_type": "ze_result_t",
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_NOT_AVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNKNOWN": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hDecoderContext`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.21"
+                    },
+                    {
+                        "class": "$sInfoLogDecoderContext",
+                        "desc": "Delete a decoder context of an info log",
+                        "details": [
+                            "The application must ensure that no other function is using the handle when calling this function.",
+                            "The application must not call this function from simultaneous threads with the same handle.",
+                            "The implementation of this function must be thread-safe."
+                        ],
+                        "hash": "e954dd228b2fe62cfcdccc2c5643bdabe5fc1195dd269ca71b887b4fdf7d8b0e",
+                        "name": "DeleteExt",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the info log that the decoder context was created from",
+                                "name": "hInfoLog",
+                                "type": "$s_info_log_handle_t"
+                            },
+                            {
+                                "desc": "[in][release] handle of the decoder context to delete",
+                                "name": "hDecoderContext",
+                                "type": "$s_info_log_decoder_context_handle_t"
+                            }
+                        ],
+                        "return_desc": "[out] ze_result_t API result",
+                        "return_type": "ze_result_t",
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNSUPPORTED_FEATURE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEPENDENCY_UNAVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_NOT_AVAILABLE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_REQUIRES_RESET": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNKNOWN": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hInfoLog`",
+                                    "`nullptr == hDecoderContext`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "C++ wrapper for a Sysman info log decoder context",
+                        "members": [
+                            {
+                                "desc": "[in] handle of Sysman info log decoder context object",
+                                "name": "handle",
+                                "type": "$s_info_log_decoder_context_handle_t"
+                            }
+                        ],
+                        "name": "$sInfoLogDecoderContext",
+                        "owner": "$sInfoLog",
+                        "type": "class",
+                        "version": "1.21"
                     }
                 ]
             },
@@ -151592,6 +153604,75 @@
                         "version": "1.20"
                     }
                 ]
+            },
+            {
+                "header": {
+                    "desc": "Intel $OneApi Level-Zero Sysman Extension APIs for Device SOC Unique ID",
+                    "ordinal": 10021000,
+                    "type": "header",
+                    "version": "1.21"
+                },
+                "name": "deviceSocUid",
+                "objects": [
+                    {
+                        "desc": "Device SOC Unique ID Extension Name",
+                        "name": "$S_DEVICE_SOC_UID_EXT_NAME",
+                        "type": "macro",
+                        "value": "\"$XS_extension_device_soc_uid\"",
+                        "version": "1.21"
+                    },
+                    {
+                        "desc": "Device SOC Unique ID Extension Version(s)",
+                        "etors": [
+                            {
+                                "desc": "version 1.0",
+                                "name": "$S_DEVICE_SOC_UID_EXT_VERSION_1_0",
+                                "value": "$X_MAKE_VERSION( 1, 0 )",
+                                "version": "1.21"
+                            },
+                            {
+                                "desc": "latest known version",
+                                "name": "$S_DEVICE_SOC_UID_EXT_VERSION_CURRENT",
+                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                            }
+                        ],
+                        "name": "$s_device_soc_uid_ext_version_t",
+                        "type": "enum",
+                        "version": "1.21"
+                    },
+                    {
+                        "base": "$s_base_properties_t",
+                        "class": "$sDevice",
+                        "desc": "Device SOC Unique ID Extension structure",
+                        "details": [
+                            "This structure can be passed as an extension structure to $sDeviceGetProperties via pNext member",
+                            "Returns the unique ID of the SOC on which the device resides",
+                            "Applications must treat an all-zero socUid as unavailable rather than as a valid identifier"
+                        ],
+                        "members": [
+                            {
+                                "desc": "[in] type of this structure",
+                                "init": "$S_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES",
+                                "name": "stype",
+                                "type": "$s_structure_type_t"
+                            },
+                            {
+                                "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains stype and pNext).",
+                                "init": "nullptr",
+                                "name": "pNext",
+                                "type": "void*"
+                            },
+                            {
+                                "desc": "[out] unique identifier of the SOC, most significant byte first.",
+                                "name": "socUid",
+                                "type": "$s_uuid_t"
+                            }
+                        ],
+                        "name": "$s_device_soc_uid_ext_properties_t",
+                        "type": "struct",
+                        "version": "1.21"
+                    }
+                ]
             }
         ],
         [
@@ -151628,7 +153709,7 @@
                                 "type": "uint32_t"
                             },
                             {
-                                "desc": "[in] command queue index within the group;\nmust be zero.\n",
+                                "desc": "[in] command queue index within the group;\nzero-based, so it must be less than the `numQueues` member of $x_command_queue_group_properties_t for the command queue group.\n",
                                 "init": 0,
                                 "name": "index",
                                 "type": "uint32_t"

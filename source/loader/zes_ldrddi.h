@@ -79,6 +79,9 @@ namespace loader
     using zes_info_log_instance_object_t      = object_t < zes_info_log_instance_handle_t >;
     using zes_info_log_instance_factory_t     = singleton_factory_t < zes_info_log_instance_object_t, zes_info_log_instance_handle_t >;
 
+    using zes_info_log_decoder_context_object_t   = object_t < zes_info_log_decoder_context_handle_t >;
+    using zes_info_log_decoder_context_factory_t  = singleton_factory_t < zes_info_log_decoder_context_object_t, zes_info_log_decoder_context_handle_t >;
+
     __zedlllocal ze_result_t ZE_APICALL
     zesloaderInitDriverDDITables(loader::driver_t *driver);
 }
@@ -91,6 +94,11 @@ namespace loader_driver_ddi
     zesDriverGetProperties(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
         zes_driver_properties_t* pDriverProperties      ///< [in,out] query result for sysman driver properties
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetApiVersion(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        zes_api_version_t* pVersion                     ///< [out] api version
         );
     __zedlllocal ze_result_t ZE_APICALL
     zesDriverGetExtensionProperties(
@@ -1490,6 +1498,59 @@ namespace loader_driver_ddi
         zes_info_log_instance_handle_t hInfoLogInstance ///< [in][release] handle of the info log collection instance to delete
         );
     __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextCreateExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the records are read from
+        zes_info_log_decoder_context_handle_t* phDecoderContext ///< [out] handle of the decoder context that was created.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextGetFieldInfoExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fields that can be decoded.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fields that can be decoded and shall not return any descriptor.
+                                                        ///< if count is greater than the number of fields that can be decoded,
+                                                        ///< then the driver shall update the value with the correct number of fields.
+        zes_info_log_decodable_field_info_ext_t* pFieldInfos///< [in,out][optional][range(0, *pCount)] array of field descriptions, one
+                                                        ///< element per field.
+                                                        ///< if count is less than the number of fields that can be decoded, then
+                                                        ///< the driver shall only retrieve that number of descriptors.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStartExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t size,                                  ///< [in] size, in bytes, of the record data in `pBuffer`, as returned in
+                                                        ///< `*pSize` by the read or peek call
+        const uint8_t* pBuffer,                         ///< [in][optional][range(0, size)] the record data, as returned in
+                                                        ///< `pBuffer` by the read or peek call
+        uint32_t recordCount,                           ///< [in] number of records in the batch, as returned in `*pRecordCount` by
+                                                        ///< the read or peek call
+        const zes_info_log_metadata_ext_t* pDescriptors ///< [in][optional][range(0, recordCount)] array of metadata describing
+                                                        ///< each record, as returned in `pDescriptors` by the read or peek call
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextReadFieldExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context, which must be decoding a batch
+        uint32_t fieldId,                               ///< [in] identifier of the field to read, as reported in `fieldId` of
+                                                        ///< ::zes_info_log_decodable_field_info_ext_t
+        uint32_t recordId,                              ///< [in] index of the record in the `pDescriptors` that was passed to
+                                                        ///< ::zesInfoLogDecoderContextDecodeStartExt
+        void* pOutBuffer,                               ///< [in,out][range(0, bufferLen)] buffer that will contain the value of
+                                                        ///< the field
+        size_t bufferLen,                               ///< [in] size, in bytes, of `pOutBuffer`
+        size_t* pBytesCopied                            ///< [out] pointer to the number of bytes written to `pOutBuffer`.
+                                                        ///< the driver shall update the value with zero when the record does not
+                                                        ///< carry the field.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStopExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in] handle of the decoder context
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDeleteExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the decoder context was created from
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in][release] handle of the decoder context to delete
+        );
+    __zedlllocal ze_result_t ZE_APICALL
     zesDriverGetPciDeviceProperties(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI devices.
@@ -1608,6 +1669,10 @@ __zedlllocal void ZE_APICALL
 zesGetInfoLogProcAddrTableLegacy();
 __zedlllocal ze_result_t ZE_APICALL
 zesGetInfoLogProcAddrTableFromDriver(loader::driver_t *driver);
+__zedlllocal void ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTableLegacy();
+__zedlllocal ze_result_t ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTableFromDriver(loader::driver_t *driver);
 __zedlllocal void ZE_APICALL
 zesGetInfoLogInstanceProcAddrTableLegacy();
 __zedlllocal ze_result_t ZE_APICALL

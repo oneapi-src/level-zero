@@ -151,6 +151,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zesDriverEnumInfoLogsExt") );
             initialzesDdiTable.Driver.pfnGetPciDeviceProperties = reinterpret_cast<zes_pfnDriverGetPciDeviceProperties_t>(
                 GET_FUNCTION_PTR(loader, "zesDriverGetPciDeviceProperties") );
+            initialzesDdiTable.Driver.pfnGetApiVersion = reinterpret_cast<zes_pfnDriverGetApiVersion_t>(
+                GET_FUNCTION_PTR(loader, "zesDriverGetApiVersion") );
             initialzesDdiTable.Driver.pfnGet = reinterpret_cast<zes_pfnDriverGet_t>(
                 GET_FUNCTION_PTR(loader, "zesDriverGet") );
             initialzesDdiTable.Driver.pfnGetExtensionProperties = reinterpret_cast<zes_pfnDriverGetExtensionProperties_t>(
@@ -539,6 +541,26 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
+            auto getTable = reinterpret_cast<zes_pfnGetInfoLogDecoderContextProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetInfoLogDecoderContextProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzesDdiTable.InfoLogDecoderContext );
+            initialzesDdiTable.InfoLogDecoderContext.pfnCreateExt = reinterpret_cast<zes_pfnInfoLogDecoderContextCreateExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogDecoderContextCreateExt") );
+            initialzesDdiTable.InfoLogDecoderContext.pfnGetFieldInfoExt = reinterpret_cast<zes_pfnInfoLogDecoderContextGetFieldInfoExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogDecoderContextGetFieldInfoExt") );
+            initialzesDdiTable.InfoLogDecoderContext.pfnDecodeStartExt = reinterpret_cast<zes_pfnInfoLogDecoderContextDecodeStartExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogDecoderContextDecodeStartExt") );
+            initialzesDdiTable.InfoLogDecoderContext.pfnReadFieldExt = reinterpret_cast<zes_pfnInfoLogDecoderContextReadFieldExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogDecoderContextReadFieldExt") );
+            initialzesDdiTable.InfoLogDecoderContext.pfnDecodeStopExt = reinterpret_cast<zes_pfnInfoLogDecoderContextDecodeStopExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogDecoderContextDecodeStopExt") );
+            initialzesDdiTable.InfoLogDecoderContext.pfnDeleteExt = reinterpret_cast<zes_pfnInfoLogDecoderContextDeleteExt_t>(
+                GET_FUNCTION_PTR(loader, "zesInfoLogDecoderContextDeleteExt") );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetInfoLogInstanceProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetInfoLogInstanceProcAddrTable") );
             getTableWithCheck(getTable, version, &initialzesDdiTable.InfoLogInstance );
@@ -688,6 +710,12 @@ namespace ze_lib
         {
             // Optional
             zesGetInfoLogProcAddrTable( version, &initialzesDdiTable.InfoLog );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zesGetInfoLogDecoderContextProcAddrTable( version, &initialzesDdiTable.InfoLogDecoderContext );
         }
 
         if( ZE_RESULT_SUCCESS == result )

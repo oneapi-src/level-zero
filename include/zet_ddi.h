@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.20-r1.20.41
+ * @version v1.21-r1.21.26
  *
  */
 #ifndef _ZET_DDI_H
@@ -274,7 +274,7 @@ typedef ze_result_t (ZE_APICALL *zet_pfnDeviceGetConcurrentMetricGroupsExp_t)(
 typedef ze_result_t (ZE_APICALL *zet_pfnDeviceCreateMetricGroupsFromMetricsExp_t)(
     zet_device_handle_t,
     uint32_t,
-    zet_metric_handle_t *,
+    zet_metric_handle_t*,
     const char *,
     const char *,
     uint32_t *,

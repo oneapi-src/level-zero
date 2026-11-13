@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.20-r1.20.41
+ * @version v1.21-r1.21.26
  *
  */
 #ifndef _ZES_API_H
@@ -25,6 +25,24 @@ extern "C" {
 #if !defined(__GNUC__)
 #pragma region common
 #endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MAKE_VERSION
+/// @brief Generates generic 'oneAPI' Sysman API versions
+#define ZES_MAKE_VERSION( _major, _minor )  (( _major << 16 )|( _minor & 0x0000ffff))
+#endif // ZES_MAKE_VERSION
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MAJOR_VERSION
+/// @brief Extracts 'oneAPI' Sysman API major version
+#define ZES_MAJOR_VERSION( _ver )  ( _ver >> 16 )
+#endif // ZES_MAJOR_VERSION
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MINOR_VERSION
+/// @brief Extracts 'oneAPI' Sysman API minor version
+#define ZES_MINOR_VERSION( _ver )  ( _ver & 0x0000ffff )
+#endif // ZES_MINOR_VERSION
+
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Handle to a driver instance
 typedef ze_driver_handle_t zes_driver_handle_t;
@@ -179,6 +197,8 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_DRIVER_PCI_DEVICE_PROPERTIES = 0x00020025,           ///< ::zes_driver_pci_device_properties_t
     ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES = 0x00020026,            ///< ::zes_device_index_ext_properties_t
     ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES = 0x00020027,     ///< ::zes_device_gpu_topology_ext_properties_t
+    ZES_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES = 0x00020028,          ///< ::zes_device_soc_uid_ext_properties_t
+    ZES_STRUCTURE_TYPE_INFO_LOG_DECODABLE_FIELD_INFO_EXT = 0x00020029,      ///< ::zes_info_log_decodable_field_info_ext_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_STRUCTURE_TYPE_* ENUMs
 
 } zes_structure_type_t;
@@ -656,6 +676,10 @@ typedef struct _zes_info_log_metadata_ext_t zes_info_log_metadata_ext_t;
 typedef struct _zes_info_log_read_status_ext_t zes_info_log_read_status_ext_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_info_log_decodable_field_info_ext_t
+typedef struct _zes_info_log_decodable_field_info_ext_t zes_info_log_decodable_field_info_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_device_gpu_topology_ext_properties_t
 typedef struct _zes_device_gpu_topology_ext_properties_t zes_device_gpu_topology_ext_properties_t;
 
@@ -666,6 +690,10 @@ typedef struct _zes_pci_config_properties_t zes_pci_config_properties_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_driver_pci_device_properties_t
 typedef struct _zes_driver_pci_device_properties_t zes_driver_pci_device_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_device_soc_uid_ext_properties_t
+typedef struct _zes_device_soc_uid_ext_properties_t zes_device_soc_uid_ext_properties_t;
 
 
 #if !defined(__GNUC__)
@@ -823,6 +851,78 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDriverGetProperties(
     zes_driver_handle_t hDriver,                                            ///< [in] handle of the sysman driver instance
     zes_driver_properties_t* pDriverProperties                              ///< [in,out] query result for sysman driver properties
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported sysman API versions
+/// 
+/// @details
+///     - API versions contain major and minor attributes, use
+///       ::ZES_MAJOR_VERSION and ::ZES_MINOR_VERSION
+typedef enum _zes_api_version_t
+{
+    ZES_API_VERSION_1_0 = ZES_MAKE_VERSION( 1, 0 ),                         ///< version 1.0
+    ZES_API_VERSION_1_1 = ZES_MAKE_VERSION( 1, 1 ),                         ///< version 1.1
+    ZES_API_VERSION_1_2 = ZES_MAKE_VERSION( 1, 2 ),                         ///< version 1.2
+    ZES_API_VERSION_1_3 = ZES_MAKE_VERSION( 1, 3 ),                         ///< version 1.3
+    ZES_API_VERSION_1_4 = ZES_MAKE_VERSION( 1, 4 ),                         ///< version 1.4
+    ZES_API_VERSION_1_5 = ZES_MAKE_VERSION( 1, 5 ),                         ///< version 1.5
+    ZES_API_VERSION_1_6 = ZES_MAKE_VERSION( 1, 6 ),                         ///< version 1.6
+    ZES_API_VERSION_1_7 = ZES_MAKE_VERSION( 1, 7 ),                         ///< version 1.7
+    ZES_API_VERSION_1_8 = ZES_MAKE_VERSION( 1, 8 ),                         ///< version 1.8
+    ZES_API_VERSION_1_9 = ZES_MAKE_VERSION( 1, 9 ),                         ///< version 1.9
+    ZES_API_VERSION_1_10 = ZES_MAKE_VERSION( 1, 10 ),                       ///< version 1.10
+    ZES_API_VERSION_1_11 = ZES_MAKE_VERSION( 1, 11 ),                       ///< version 1.11
+    ZES_API_VERSION_1_12 = ZES_MAKE_VERSION( 1, 12 ),                       ///< version 1.12
+    ZES_API_VERSION_1_13 = ZES_MAKE_VERSION( 1, 13 ),                       ///< version 1.13
+    ZES_API_VERSION_1_14 = ZES_MAKE_VERSION( 1, 14 ),                       ///< version 1.14
+    ZES_API_VERSION_1_15 = ZES_MAKE_VERSION( 1, 15 ),                       ///< version 1.15
+    ZES_API_VERSION_1_16 = ZES_MAKE_VERSION( 1, 16 ),                       ///< version 1.16
+    ZES_API_VERSION_1_17 = ZES_MAKE_VERSION( 1, 17 ),                       ///< version 1.17
+    ZES_API_VERSION_1_18 = ZES_MAKE_VERSION( 1, 18 ),                       ///< version 1.18
+    ZES_API_VERSION_1_19 = ZES_MAKE_VERSION( 1, 19 ),                       ///< version 1.19
+    ZES_API_VERSION_1_20 = ZES_MAKE_VERSION( 1, 20 ),                       ///< version 1.20
+    ZES_API_VERSION_1_21 = ZES_MAKE_VERSION( 1, 21 ),                       ///< version 1.21
+    ZES_API_VERSION_CURRENT = ZES_MAKE_VERSION( 1, 21 ),                    ///< latest known version
+    ZES_API_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_API_VERSION_* ENUMs
+
+} zes_api_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_API_VERSION_CURRENT_M
+/// @brief Current sysman API version as a macro
+#define ZES_API_VERSION_CURRENT_M  ZES_MAKE_VERSION( 1, 21 )
+#endif // ZES_API_VERSION_CURRENT_M
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the API version supported by the specified sysman driver
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pVersion`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDriverGetApiVersion(
+    zes_driver_handle_t hDriver,                                            ///< [in] handle of the sysman driver instance
+    zes_api_version_t* pVersion                                             ///< [out] api version
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1084,13 +1184,21 @@ typedef enum _zes_device_property_flag_t
 ///        topology of the device, pNext member of this structure should point to
 ///        an instance of ${s}_device_gpu_topology_ext_properties_t with its
 ///        stype set to ::ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES.
+///        To get the SOC unique ID of the device, pNext member of this structure
+///        should point to an instance of ::zes_device_soc_uid_ext_properties_t
+///        with its stype set to
+///        ::ZES_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES. To get the UUID,
+///        type and flags of the device, pNext member of this structure should
+///        point to an instance of ::zes_device_ext_properties_t with its stype
+///        set to ::ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES.
 typedef struct _zes_device_properties_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
     void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
-    ze_device_properties_t core;                                            ///< [out] [DEPRECATED since 1.7] Core device properties. Use
-                                                                            ///< ::zes_device_ext_properties_t instead.
+    ze_device_properties_t core;                                            ///< [out] [DEPRECATED since 1.7] Core device properties. Get the UUID,
+                                                                            ///< type and flags through pNext. Use ::zes_device_ext_properties_t
+                                                                            ///< instead.
     uint32_t numSubdevices;                                                 ///< [out] Number of sub-devices. A value of 0 indicates that this device
                                                                             ///< doesn't have sub-devices.
     char serialNumber[ZES_STRING_PROPERTY_SIZE];                            ///< [out] Manufacturing serial number (NULL terminated string value). This
@@ -1174,6 +1282,9 @@ typedef struct _zes_device_index_ext_properties_t
 ///     - The implementation of this function should be lock-free.
 ///     - To get the GPU topology of the device, the application may pass
 ///       ::zes_device_gpu_topology_ext_properties_t in the pNext chain of
+///       pProperties.
+///     - To get the SOC unique ID of the device, the application may pass
+///       ::zes_device_soc_uid_ext_properties_t in the pNext chain of
 ///       pProperties.
 /// 
 /// @returns
@@ -7891,7 +8002,11 @@ typedef struct _zes_power_ext_properties_t
     void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     zes_power_domain_t domain;                                              ///< [out] domain that the power limit belongs to.
-    zes_power_limit_ext_desc_t* defaultLimit;                               ///< [out] the factory default limit of the part.
+    zes_power_limit_ext_desc_t* defaultLimit;                               ///< [in,out][optional] pointer to a caller-allocated ::zes_power_limit_ext_desc_t
+                                                                            ///< that the driver fills with the factory default limit of the part.
+                                                                            ///< The application must allocate and initialize (including `stype`) the pointed-to
+                                                                            ///< structure and assign its address before calling ::zesPowerGetProperties.
+                                                                            ///< If this is null, the factory default limit will not be returned.
 
 } zes_power_ext_properties_t;
 
@@ -9800,7 +9915,8 @@ typedef struct _zes_memory_vendor_info_ext_properties_t
 typedef enum _zes_info_logs_ext_version_t
 {
     ZES_INFO_LOGS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),                ///< version 1.0
-    ZES_INFO_LOGS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),            ///< latest known version
+    ZES_INFO_LOGS_EXT_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),                ///< version 1.1
+    ZES_INFO_LOGS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 1 ),            ///< latest known version
     ZES_INFO_LOGS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_INFO_LOGS_EXT_VERSION_* ENUMs
 
 } zes_info_logs_ext_version_t;
@@ -10331,6 +10447,288 @@ zesInfoLogInstanceDeleteExt(
     zes_info_log_instance_handle_t hInfoLogInstance                         ///< [in][release] handle of the info log collection instance to delete
     );
 
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_INFO_LOG_FIELD_DESC_SIZE
+/// @brief Maximum number of characters in the description of a decodable field,
+///        including the null terminator.
+#define ZES_INFO_LOG_FIELD_DESC_SIZE  256
+#endif // ZES_INFO_LOG_FIELD_DESC_SIZE
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle for a Sysman info log decoder context
+typedef struct _zes_info_log_decoder_context_handle_t *zes_info_log_decoder_context_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Data types of a field decoded from an info log record
+typedef enum _zes_info_log_field_type_ext_t
+{
+    ZES_INFO_LOG_FIELD_TYPE_EXT_UINT32 = 0,                                 ///< The value of the field is a `uint32_t`.
+    ZES_INFO_LOG_FIELD_TYPE_EXT_INT64 = 1,                                  ///< The value of the field is an `int64_t`.
+    ZES_INFO_LOG_FIELD_TYPE_EXT_DOUBLE = 2,                                 ///< The value of the field is a `double`.
+    ZES_INFO_LOG_FIELD_TYPE_EXT_STRING = 3,                                 ///< The value of the field is a null terminated array of `char`.
+    ZES_INFO_LOG_FIELD_TYPE_EXT_RAW_BYTES = 4,                              ///< The value of the field is an array of uninterpreted bytes.
+    ZES_INFO_LOG_FIELD_TYPE_EXT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_INFO_LOG_FIELD_TYPE_EXT_* ENUMs
+
+} zes_info_log_field_type_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Description of one field that a decoder context can decode from an
+///        info log record
+/// 
+/// @details
+///     - An array of these structures is returned by
+///       ::zesInfoLogDecoderContextGetFieldInfoExt, one element per field.
+///     - The fields that are reported are a property of the format of the info
+///       log, reported in infoLogFormat of ::zes_info_log_ext_properties_t, and
+///       not of a batch of records. Whether a given record carries a given
+///       field is reported per record by
+///       ::zesInfoLogDecoderContextReadFieldExt.
+///     - The application must locate a field by `name`, and must then use the
+///       `fieldId`, `type` and `requiredBytes` that are reported for that name.
+typedef struct _zes_info_log_decodable_field_info_ext_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    char desc[ZES_INFO_LOG_FIELD_DESC_SIZE];                                ///< [out] human readable description of the field (NULL terminated string
+                                                                            ///< value).
+    char name[ZES_STRING_PROPERTY_SIZE];                                    ///< [out] name of the field (NULL terminated string value).
+    uint32_t fieldId;                                                       ///< [out] identifier of the field, to be passed to
+                                                                            ///< ::zesInfoLogDecoderContextReadFieldExt.
+    zes_info_log_field_type_ext_t type;                                     ///< [out] data type of the value of the field.
+    size_t requiredBytes;                                                   ///< [out] number of bytes that the application must provide to
+                                                                            ///< ::zesInfoLogDecoderContextReadFieldExt to read this field.
+                                                                            ///< For ::ZES_INFO_LOG_FIELD_TYPE_EXT_STRING this value includes the null terminator.
+    size_t elementCount;                                                    ///< [out] number of elements of the data type that the field holds.
+    char versionString[ZES_STRING_PROPERTY_SIZE];                           ///< [out] version of this extension in which the field was first reported.
+
+} zes_info_log_decodable_field_info_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create a decoder context for an info log
+/// 
+/// @details
+///     - A decoder context decodes the records returned by
+///       ::zesInfoLogInstanceReadWithMetadataExt or by
+///       ::zesInfoLogInstancePeekWithMetadataExt into named fields, which the
+///       application reads one at a time using
+///       ::zesInfoLogDecoderContextReadFieldExt.
+///     - Any number of decoder contexts may exist for one info log.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLog`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phDecoderContext`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesInfoLogDecoderContextCreateExt(
+    zes_info_log_handle_t hInfoLog,                                         ///< [in] handle of the info log that the records are read from
+    zes_info_log_decoder_context_handle_t* phDecoderContext                 ///< [out] handle of the decoder context that was created.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the fields that a decoder context can decode from an info log
+///        record
+/// 
+/// @details
+///     - The application should first call this function with `pCount` pointing
+///       to a value of zero to retrieve the number of fields that can be
+///       decoded.
+///     - A call in which `*pCount` is greater than zero and `pFieldInfos` is
+///       nullptr shall report the number of fields and shall not write any
+///       descriptor, as a call with a count of zero does.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesInfoLogDecoderContextGetFieldInfoExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext,                  ///< [in] handle of the decoder context
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of fields that can be decoded.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< total number of fields that can be decoded and shall not return any descriptor.
+                                                                            ///< if count is greater than the number of fields that can be decoded,
+                                                                            ///< then the driver shall update the value with the correct number of fields.
+    zes_info_log_decodable_field_info_ext_t* pFieldInfos                    ///< [in,out][optional][range(0, *pCount)] array of field descriptions, one
+                                                                            ///< element per field.
+                                                                            ///< if count is less than the number of fields that can be decoded, then
+                                                                            ///< the driver shall only retrieve that number of descriptors.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Start decoding info log records in a decoder context
+/// 
+/// @details
+///     - The application must not call this function from simultaneous threads
+///       with the same decoder context handle.
+///     - The application may call this function from simultaneous threads with
+///       different decoder context handles.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesInfoLogDecoderContextDecodeStartExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext,                  ///< [in] handle of the decoder context
+    uint32_t size,                                                          ///< [in] size, in bytes, of the record data in `pBuffer`, as returned in
+                                                                            ///< `*pSize` by the read or peek call
+    const uint8_t* pBuffer,                                                 ///< [in][optional][range(0, size)] the record data, as returned in
+                                                                            ///< `pBuffer` by the read or peek call
+    uint32_t recordCount,                                                   ///< [in] number of records in the batch, as returned in `*pRecordCount` by
+                                                                            ///< the read or peek call
+    const zes_info_log_metadata_ext_t* pDescriptors                         ///< [in][optional][range(0, recordCount)] array of metadata describing
+                                                                            ///< each record, as returned in `pDescriptors` by the read or peek call
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Read field values of one record that a decoder context is decoding
+/// 
+/// @details
+///     - The application must not call this function from simultaneous threads
+///       with the same decoder context handle.
+///     - The application may call this function from simultaneous threads with
+///       different decoder context handles.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pOutBuffer`
+///         + `nullptr == pBytesCopied`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesInfoLogDecoderContextReadFieldExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext,                  ///< [in] handle of the decoder context, which must be decoding a batch
+    uint32_t fieldId,                                                       ///< [in] identifier of the field to read, as reported in `fieldId` of
+                                                                            ///< ::zes_info_log_decodable_field_info_ext_t
+    uint32_t recordId,                                                      ///< [in] index of the record in the `pDescriptors` that was passed to
+                                                                            ///< ::zesInfoLogDecoderContextDecodeStartExt
+    void* pOutBuffer,                                                       ///< [in,out][range(0, bufferLen)] buffer that will contain the value of
+                                                                            ///< the field
+    size_t bufferLen,                                                       ///< [in] size, in bytes, of `pOutBuffer`
+    size_t* pBytesCopied                                                    ///< [out] pointer to the number of bytes written to `pOutBuffer`.
+                                                                            ///< the driver shall update the value with zero when the record does not
+                                                                            ///< carry the field.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Stop decoding of info log records that a decoder context is decoding
+/// 
+/// @details
+///     - The application must not call this function from simultaneous threads
+///       with the same decoder context handle.
+///     - The application may call this function from simultaneous threads with
+///       different decoder context handles.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesInfoLogDecoderContextDecodeStopExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext                   ///< [in] handle of the decoder context
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Delete a decoder context of an info log
+/// 
+/// @details
+///     - The application must ensure that no other function is using the handle
+///       when calling this function.
+///     - The application must not call this function from simultaneous threads
+///       with the same handle.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLog`
+///         + `nullptr == hDecoderContext`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesInfoLogDecoderContextDeleteExt(
+    zes_info_log_handle_t hInfoLog,                                         ///< [in] handle of the info log that the decoder context was created from
+    zes_info_log_decoder_context_handle_t hDecoderContext                   ///< [in][release] handle of the decoder context to delete
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
@@ -10493,6 +10891,47 @@ zesDriverGetPciDeviceProperties(
                                                                             ///< if count is less than the number of PCI devices supported by the
                                                                             ///< driver, then the driver shall only retrieve that number of PCI device properties.
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Device SOC Unique ID
+#if !defined(__GNUC__)
+#pragma region deviceSocUid
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_DEVICE_SOC_UID_EXT_NAME
+/// @brief Device SOC Unique ID Extension Name
+#define ZES_DEVICE_SOC_UID_EXT_NAME  "ZES_extension_device_soc_uid"
+#endif // ZES_DEVICE_SOC_UID_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device SOC Unique ID Extension Version(s)
+typedef enum _zes_device_soc_uid_ext_version_t
+{
+    ZES_DEVICE_SOC_UID_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),           ///< version 1.0
+    ZES_DEVICE_SOC_UID_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),       ///< latest known version
+    ZES_DEVICE_SOC_UID_EXT_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZES_DEVICE_SOC_UID_EXT_VERSION_* ENUMs
+
+} zes_device_soc_uid_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device SOC Unique ID Extension structure
+/// 
+/// @details
+///     - This structure can be passed as an extension structure to
+///       ::zesDeviceGetProperties via pNext member
+///     - Returns the unique ID of the SOC on which the device resides
+///     - Applications must treat an all-zero socUid as unavailable rather than
+///       as a valid identifier
+typedef struct _zes_device_soc_uid_ext_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_uuid_t socUid;                                                      ///< [out] unique identifier of the SOC, most significant byte first.
+
+} zes_device_soc_uid_ext_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion
