@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.20-r1.20.41
+ @version v1.21-r1.21.26
 
  """
 import platform
@@ -590,7 +590,8 @@ class ze_api_version_v(IntEnum):
     _1_18 = ZE_MAKE_VERSION( 1, 18 )                                        ## version 1.18
     _1_19 = ZE_MAKE_VERSION( 1, 19 )                                        ## version 1.19
     _1_20 = ZE_MAKE_VERSION( 1, 20 )                                        ## version 1.20
-    CURRENT = ZE_MAKE_VERSION( 1, 20 )                                      ## latest known version
+    _1_21 = ZE_MAKE_VERSION( 1, 21 )                                        ## version 1.21
+    CURRENT = ZE_MAKE_VERSION( 1, 21 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -599,7 +600,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 20 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 21 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -792,16 +793,26 @@ class ze_device_compute_properties_t(Structure):
 ###############################################################################
 ## @brief Supported device compute dot product(dp) capability flags
 class ze_device_dp_capability_flags_v(IntEnum):
-    DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL = ZE_BIT(0)                           ## Supports vector dot product instruction.
-    DEVICE_SYSTOLIC_DPAS_SIMD8 = ZE_BIT(1)                                  ## Supports sytolic dot product with 8 SIMD lanes.
-    DEVICE_SYSTOLIC_DPAS_SIMD16 = ZE_BIT(2)                                 ## Supports sytolic dot product with 16 SIMD lanes.
-    DEVICE_SYSTOLIC_BDPAS_SIMD16 = ZE_BIT(3)                                ## Supports sytolic dot product with block scaling support with 16 SIMD
-                                                                            ## lanes.
+    DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL = ZE_BIT(0)                           ## Supports the non-systolic vector dot product instruction (DP4A). When
+                                                                            ## set, the dpv4_input_types and dpv4_output_types members of
+                                                                            ## ::ze_device_compute_dotproduct_ext_properties_t describe the legal
+                                                                            ## data types for this path.
+    DEVICE_SYSTOLIC_DPAS_SIMD8 = ZE_BIT(1)                                  ## Supports systolic dot product (DPAS) with 8 SIMD lanes.
+    DEVICE_SYSTOLIC_DPAS_SIMD16 = ZE_BIT(2)                                 ## Supports systolic dot product (DPAS) with 16 SIMD lanes.
+    DEVICE_SYSTOLIC_BDPAS_SIMD16 = ZE_BIT(3)                                ## Supports systolic dot product with block-scaling support (BDPAS) with
+                                                                            ## 16 SIMD lanes.
     DEVICE_SYSTOLIC_DPAS_DEPTH4 = ZE_BIT(4)                                 ## Supports 4 deep systolic for DPAS dot product
     DEVICE_SYSTOLIC_DPAS_DEPTH8 = ZE_BIT(5)                                 ## Supports 8 deep systolic for DPAS dot product
     DEVICE_SYSTOLIC_BDPAS_DEPTH8 = ZE_BIT(6)                                ## Supports 8 deep systolic for BDPAS dot product
-    DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_UPTO8 = ZE_BIT(7)                ## Supports output matrix row count upto 8
-    DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_FIXED8 = ZE_BIT(8)               ## Restricts output matrix row count to 8
+    DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_UPTO8 = ZE_BIT(7)                ## Output-shape modifier for the systolic DPAS/BDPAS path: the output
+                                                                            ## matrix row count is variable, up to 8. Only meaningful when at least
+                                                                            ## one of the DEVICE_SYSTOLIC_DPAS_* or DEVICE_SYSTOLIC_BDPAS_* bits is
+                                                                            ## also set in dp_caps; this bit alone does not advertise DPAS or BDPAS
+                                                                            ## support.
+    DEVICE_SYSTOLIC_OUTPUT_MATRIX_ROWCOUNT_FIXED8 = ZE_BIT(8)               ## Output-shape modifier for the systolic DPAS/BDPAS path: the output
+                                                                            ## matrix row count is fixed at 8. Only meaningful when at least one of
+                                                                            ## the DEVICE_SYSTOLIC_DPAS_* or DEVICE_SYSTOLIC_BDPAS_* bits is also set
+                                                                            ## in dp_caps; this bit alone does not advertise DPAS or BDPAS support.
 
 class ze_device_dp_capability_flags_t(c_int):
     def __str__(self):
@@ -809,10 +820,25 @@ class ze_device_dp_capability_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Supported device  dot product(dp) input data types flags
+## @brief Supported device dot product (dp) input data type flags. A field value
+##        of 0 indicates no supported input data types for the associated
+##        dot-product path; non-zero values are the bitwise-OR of the supported
+##        type bits defined below. The containing *_input_types field
+##        (dpv4_input_types, dpas_input_types, or bdpas_input_types) determines
+##        which dot-product path this applies to.
 class ze_device_input_data_type_flags_v(IntEnum):
-    DEVICE_INPUT_DATA_TYPE_NONE = ZE_BIT(0)                                 ## No data types available for the supported dot product operation
-    ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(1)               ## Supports int8 data type with 4 packed data elements per SIMD lane.
+    DEVICE_INPUT_DATA_TYPE_NONE = ZE_BIT(0)                                 ## [DEPRECATED since 1.21] Indicates that no data types are supported.
+                                                                            ## This bit is semantically equivalent to all other field values being 0
+                                                                            ## and must not be combined with any other bit of this enum. Retained for
+                                                                            ## ABI compatibility only. No replacement; a field value of 0 already
+                                                                            ## indicates that no data types are supported.
+    ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(1)               ## [DEPRECATED since 1.21] Supports int8 data type with 4 packed data
+                                                                            ## elements per SIMD lane. This enumerator carries a stray 'ZE_' prefix
+                                                                            ## in its name, producing the generated token
+                                                                            ## ::ZE_DEVICE_INPUT_DATA_TYPE_FLAG_ZE_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE.
+                                                                            ## Retained for ABI compatibility only. Use
+                                                                            ## ::ZE_DEVICE_INPUT_DATA_TYPE_FLAG_DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE
+                                                                            ## instead.
     DEVICE_INPUT_DATA_INT4_PACK8_PER_SIMD_LANE = ZE_BIT(2)                  ## Supports int4 data type with 8 packed data elements per SIMD lane.
     DEVICE_INPUT_DATA_INT2_PACK8_PER_SIMD_LANE = ZE_BIT(3)                  ## Supports int2 data type with 8 packed data elements per SIMD lane.
     DEVICE_INPUT_DATA_TF32_PACK1_PER_SIMD_LANE = ZE_BIT(4)                  ## Supports tf32 data type with 1 packed data elements per SIMD lane.
@@ -822,14 +848,17 @@ class ze_device_input_data_type_flags_v(IntEnum):
     DEVICE_INPUT_DATA_BF8_PACK4_PER_SIMD_LANE = ZE_BIT(8)                   ## Supports bf8 data type with 4 packed data elements per SIMD lane.
     DEVICE_INPUT_DATA_E2M1_PACK8_PER_SIMD_LANE = ZE_BIT(9)                  ## Supports e2m1 data type with 8 packed data elements per SIMD lane.
     DEVICE_INPUT_DATA_E3M0_PACK8_PER_SIMD_LANE = ZE_BIT(10)                 ## Supports e3m0 data type with 8 packed data elements per SIMD lane.
-    DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(11)                 ## Supports 8bit integer data type with 4 packed data elements per SIMD
-                                                                            ## lane.This is exclusively for DP4V dot product support
-    DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(12)                            ## Supports uint8 data type support for scaling, exclusive to BDPAS dot
-                                                                            ## product support.
-    DEVICE_INPUT_DATA_SCALING_UE5M3 = ZE_BIT(13)                            ## Supports ue5m3 data type support for scaling, exclusive to BDPAS dot
-                                                                            ## product support.
-    DEVICE_INPUT_DATA_SCALING_UE4M3 = ZE_BIT(14)                            ## Supports ue4m3 data type support for scaling, exclusive to BDPAS dot
-                                                                            ## product support.
+    DEVICE_INPUT_DATA_INT8_PACK4_PER_SIMD_LANE = ZE_BIT(11)                 ## Supports int8 (8-bit signed integer) data type with 4 packed data
+                                                                            ## elements per SIMD lane.
+    DEVICE_INPUT_DATA_SCALING_UINT8 = ZE_BIT(12)                            ## Supports uint8 (8-bit unsigned integer) scaling factor. Only
+                                                                            ## meaningful when set in bdpas_input_types; exclusive to the BDPAS
+                                                                            ## dot-product path.
+    DEVICE_INPUT_DATA_SCALING_UE5M3 = ZE_BIT(13)                            ## Supports ue5m3 (unsigned float, 5-bit exponent, 3-bit mantissa)
+                                                                            ## scaling factor. Only meaningful when set in bdpas_input_types;
+                                                                            ## exclusive to the BDPAS dot-product path.
+    DEVICE_INPUT_DATA_SCALING_UE4M3 = ZE_BIT(14)                            ## Supports ue4m3 (unsigned float, 4-bit exponent, 3-bit mantissa)
+                                                                            ## scaling factor. Only meaningful when set in bdpas_input_types;
+                                                                            ## exclusive to the BDPAS dot-product path.
 
 class ze_device_input_data_type_flags_t(c_int):
     def __str__(self):
@@ -837,8 +866,10 @@ class ze_device_input_data_type_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Supported device  dot product(dp) output data types or accumulator
-##        data types flags
+## @brief Supported device dot product (dp) output / accumulator data type
+##        flags. A field value of 0 indicates no supported output data types for
+##        the associated dot-product path; non-zero values are the bitwise-OR of
+##        the supported type bits defined below.
 class ze_device_output_data_type_flags_v(IntEnum):
     DEVICE_OUTPUT_DATA_INT32 = ZE_BIT(0)                                    ## Supports signed and unsigned 32bit integer data type for output
     DEVICE_OUTPUT_DATA_FP32 = ZE_BIT(1)                                     ## Supports fp32 data type for output.
@@ -874,18 +905,38 @@ class ze_device_compute_dotproduct_ext_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("dp_caps", ze_device_dp_capability_flags_t),                   ## [out] indicates dot product capability of the device
-        ("dpv4_input_types", ze_device_input_data_type_flags_t),        ## [out] Supported input data types when dp4v dot product capability is
-                                                                        ## supported.
-        ("dpv4_output_types", ze_device_output_data_type_flags_t),      ## [out] Supported output data types when dp4v dot product capability is
-                                                                        ## supported.
-        ("dpas_input_types", ze_device_input_data_type_flags_t),        ## [out] Supported input data types when dpas dot product capability is
-                                                                        ## supported.
-        ("dpas_output_types", ze_device_output_data_type_flags_t),      ## [out] Supported output data types when dpas dot product capability is
-                                                                        ## supported.
-        ("bdpas_input_types", ze_device_input_data_type_flags_t),       ## [out] Supported input data types when bdpas dot product capability is
-                                                                        ## supported.
-        ("bdpas_output_types", ze_device_output_data_type_flags_t)      ## [out] Supported output data types when bdpas dot product capability is
-                                                                        ## supported.
+        ("dpv4_input_types", ze_device_input_data_type_flags_t),        ## [out] Supported input data types for the non-systolic vector
+                                                                        ## dot-product path (DP4A). Valid only when
+                                                                        ## ::ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is
+                                                                        ## set in dp_caps; a value of 0 indicates no supported input types for
+                                                                        ## this path. The member is named 'dpv4_*' for ABI compatibility; the
+                                                                        ## feature it describes is DP4A.
+        ("dpv4_output_types", ze_device_output_data_type_flags_t),      ## [out] Supported output / accumulator data types for the non-systolic
+                                                                        ## vector dot-product path (DP4A). Valid only when
+                                                                        ## ::ZE_DEVICE_DP_CAPABILITY_FLAG_DEVICE_NON_SYSTOLIC_DPA4_SIMD_ALL is
+                                                                        ## set in dp_caps; a value of 0 indicates no supported output types for
+                                                                        ## this path. The member is named 'dpv4_*' for ABI compatibility; the
+                                                                        ## feature it describes is DP4A.
+        ("dpas_input_types", ze_device_input_data_type_flags_t),        ## [out] Supported input data types for the systolic dot-product (DPAS)
+                                                                        ## path. Valid only when at least one of the DEVICE_SYSTOLIC_DPAS_* bits
+                                                                        ## in ::ze_device_dp_capability_flags_t is set in dp_caps; a value of 0
+                                                                        ## indicates no supported input types for this path.
+        ("dpas_output_types", ze_device_output_data_type_flags_t),      ## [out] Supported output / accumulator data types for the systolic
+                                                                        ## dot-product (DPAS) path. Valid only when at least one of the
+                                                                        ## DEVICE_SYSTOLIC_DPAS_* bits in ::ze_device_dp_capability_flags_t is
+                                                                        ## set in dp_caps; a value of 0 indicates no supported output types for
+                                                                        ## this path.
+        ("bdpas_input_types", ze_device_input_data_type_flags_t),       ## [out] Supported input data types for the block-scaled systolic
+                                                                        ## dot-product (BDPAS) path. Valid only when at least one of the
+                                                                        ## DEVICE_SYSTOLIC_BDPAS_* bits in ::ze_device_dp_capability_flags_t is
+                                                                        ## set in dp_caps; a value of 0 indicates no supported input types for
+                                                                        ## this path. The DEVICE_INPUT_DATA_SCALING_* bits in
+                                                                        ## ::ze_device_input_data_type_flags_t only have meaning in this member.
+        ("bdpas_output_types", ze_device_output_data_type_flags_t)      ## [out] Supported output / accumulator data types for the block-scaled
+                                                                        ## systolic dot-product (BDPAS) path. Valid only when at least one of the
+                                                                        ## DEVICE_SYSTOLIC_BDPAS_* bits in ::ze_device_dp_capability_flags_t is
+                                                                        ## set in dp_caps; a value of 0 indicates no supported output types for
+                                                                        ## this path.
     ]
 
 ###############################################################################
@@ -1292,8 +1343,12 @@ class ze_command_queue_mode_t(c_int):
 ## @brief Supported command queue priorities
 class ze_command_queue_priority_v(IntEnum):
     NORMAL = 0                                                              ## [default] normal priority
-    PRIORITY_LOW = 1                                                        ## lower priority than normal
-    PRIORITY_HIGH = 2                                                       ## higher priority than normal
+    LOW = 1                                                                 ## lower priority than normal
+    HIGH = 2                                                                ## higher priority than normal
+    PRIORITY_LOW = 1                                                        ## [DEPRECATED since 1.21] lower priority than normal. Use
+                                                                            ## ::ZE_COMMAND_QUEUE_PRIORITY_LOW instead.
+    PRIORITY_HIGH = 2                                                       ## [DEPRECATED since 1.21] higher priority than normal. Use
+                                                                            ## ::ZE_COMMAND_QUEUE_PRIORITY_HIGH instead.
 
 class ze_command_queue_priority_t(c_int):
     def __str__(self):
@@ -1309,7 +1364,8 @@ class ze_command_queue_desc_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("ordinal", c_uint32),                                          ## [in] command queue group ordinal
         ("index", c_uint32),                                            ## [in] command queue index within the group;
-                                                                        ## must be zero. 
+                                                                        ## zero-based, so it must be less than the `numQueues` member of
+                                                                        ## ::ze_command_queue_group_properties_t for the command queue group.
         ("flags", ze_command_queue_flags_t),                            ## [in] usage flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_command_queue_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics to balance
@@ -2704,11 +2760,11 @@ class ze_cache_ext_region_v(IntEnum):
                                                                             ## ::ZE_CACHE_EXT_REGION_DEFAULT instead.
     ZE_CACHE_RESERVE_REGION = 1                                             ## [DEPRECATED since 1.7] utilize reserved region. Use
                                                                             ## ::ZE_CACHE_EXT_REGION_RESERVED instead.
-    ZE_CACHE_NON_RESERVED_REGION = 2                                        ## [DEPRECATED since 1.7] utilize non-reserverd region. Use
+    ZE_CACHE_NON_RESERVED_REGION = 2                                        ## [DEPRECATED since 1.7] utilize non-reserved region. Use
                                                                             ## ::ZE_CACHE_EXT_REGION_NON_RESERVED instead.
     DEFAULT = 0                                                             ## utilize driver default scheme
     RESERVED = 1                                                            ## utilize reserved region
-    NON_RESERVED = 2                                                        ## utilize non-reserverd region
+    NON_RESERVED = 2                                                        ## utilize non-reserved region
 
 class ze_cache_ext_region_t(c_int):
     def __str__(self):
@@ -4368,7 +4424,10 @@ class ze_rtas_builder_instance_geometry_info_exp_t(Structure):
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
         ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
-        ("transformFormat", ze_rtas_builder_packed_input_data_format_exp_t),## [in] format of the specified transformation
+        ("transformFormat", ze_rtas_builder_packed_input_data_format_exp_t),## [in] format of the specified transformation, must be
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_COLUMN_MAJOR,
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ALIGNED_COLUMN_MAJOR,
+                                                                        ## or ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3X4_ROW_MAJOR
         ("instanceUserID", c_uint32),                                   ## [in] user-specified identifier for the instance
         ("pTransform", c_void_p),                                       ## [in] object-to-world instance transformation in specified format
         ("pBounds", POINTER(ze_rtas_aabb_exp_t)),                       ## [in] object-space axis-aligned bounding-box of the instanced
@@ -5513,7 +5572,10 @@ class ze_rtas_builder_instance_geometry_info_ext_t(Structure):
                                                                         ## bits representing the geometry flags for all primitives of this
                                                                         ## geometry
         ("geometryMask", c_uint8),                                      ## [in] 8-bit geometry mask for ray masking
-        ("transformFormat", ze_rtas_builder_packed_input_data_format_ext_t),## [in] format of the specified transformation
+        ("transformFormat", ze_rtas_builder_packed_input_data_format_ext_t),## [in] format of the specified transformation, must be
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_COLUMN_MAJOR,
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ALIGNED_COLUMN_MAJOR,
+                                                                        ## or ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXT_FLOAT3X4_ROW_MAJOR
         ("instanceUserID", c_uint32),                                   ## [in] user-specified identifier for the instance
         ("pTransform", c_void_p),                                       ## [in] object-to-world instance transformation in specified format
         ("pBounds", POINTER(ze_rtas_aabb_ext_t)),                       ## [in] object-space axis-aligned bounding-box of the instanced

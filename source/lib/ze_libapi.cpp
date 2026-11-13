@@ -2520,7 +2520,7 @@ zeContextGetStatus(
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
 ///         + `0x7 < desc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode`
-///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < desc->priority`
+///         + `::ZE_COMMAND_QUEUE_PRIORITY_HIGH < desc->priority`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ze_result_t ZE_APICALL
 zeCommandQueueCreate(
@@ -3183,7 +3183,7 @@ zeCommandListCreate(
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
 ///         + `0x7 < altdesc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode`
-///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority`
+///         + `::ZE_COMMAND_QUEUE_PRIORITY_HIGH < altdesc->priority`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ze_result_t ZE_APICALL
 zeCommandListCreateImmediate(
@@ -3491,6 +3491,12 @@ zeCommandListAppendWriteGlobalTimestamp(
 ///       execution of commands appended to other
 ///       immediate command lists created with either a different ordinal or
 ///       different index.
+///     - Some implementations may associate immediate command lists created
+///       with the same ordinal and index with the same hardware queue.
+///       In that case, this function may also wait for commands appended to the
+///       other immediate command lists before
+///       the last command appended to this command list, and may return
+///       ::ZE_RESULT_NOT_READY while those commands are not complete.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -17804,7 +17810,9 @@ zeGraphDestroyExt(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hGraph`
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + Graph is not in a recording state
+///         + Capture into `hGraph` is already paused
+///     - ::ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING
+///         + Capture into `hGraph` was never started or has already ended
 ze_result_t ZE_APICALL
 zeGraphPauseCaptureExt(
     ze_graph_handle_t hGraph                        ///< [in] handle to the graph to pause capture
@@ -17857,7 +17865,10 @@ zeGraphPauseCaptureExt(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hGraph`
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + Graph is not in a paused state
+///         + Capture into `hGraph` is not paused
+///         + The command list from which `hGraph` was recording is capturing into another graph
+///     - ::ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING
+///         + Capture into `hGraph` was never started or has already ended
 ze_result_t ZE_APICALL
 zeGraphResumeCaptureExt(
     ze_graph_handle_t hGraph                        ///< [in] handle to the graph to resume capture
@@ -18060,7 +18071,7 @@ zeCommandListAppendHostFunction(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hCommandQueue`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < priority`
+///         + `::ZE_COMMAND_QUEUE_PRIORITY_HIGH < priority`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION
 ze_result_t ZE_APICALL
 zeCommandQueueSetPriorityExt(

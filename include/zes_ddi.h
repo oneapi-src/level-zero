@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.20-r1.20.41
+ * @version v1.21-r1.21.26
  *
  */
 #ifndef _ZES_DDI_H
@@ -570,6 +570,13 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDriverGetPciDeviceProperties_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverGetApiVersion 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverGetApiVersion_t)(
+    zes_driver_handle_t,
+    zes_api_version_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver functions pointers
 typedef struct _zes_driver_dditable_t
 {
@@ -583,6 +590,7 @@ typedef struct _zes_driver_dditable_t
     zes_pfnDriverEventListenExt_t                               pfnEventListenExt;
     zes_pfnDriverEnumInfoLogsExt_t                              pfnEnumInfoLogsExt;
     zes_pfnDriverGetPciDeviceProperties_t                       pfnGetPciDeviceProperties;
+    zes_pfnDriverGetApiVersion_t                                pfnGetApiVersion;
 } zes_driver_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2204,6 +2212,89 @@ typedef ze_result_t (ZE_APICALL *zes_pfnGetInfoLogInstanceProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogDecoderContextCreateExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogDecoderContextCreateExt_t)(
+    zes_info_log_handle_t,
+    zes_info_log_decoder_context_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogDecoderContextGetFieldInfoExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogDecoderContextGetFieldInfoExt_t)(
+    zes_info_log_decoder_context_handle_t,
+    uint32_t*,
+    zes_info_log_decodable_field_info_ext_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogDecoderContextDecodeStartExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogDecoderContextDecodeStartExt_t)(
+    zes_info_log_decoder_context_handle_t,
+    uint32_t,
+    const uint8_t*,
+    uint32_t,
+    const zes_info_log_metadata_ext_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogDecoderContextReadFieldExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogDecoderContextReadFieldExt_t)(
+    zes_info_log_decoder_context_handle_t,
+    uint32_t,
+    uint32_t,
+    void*,
+    size_t,
+    size_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogDecoderContextDecodeStopExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogDecoderContextDecodeStopExt_t)(
+    zes_info_log_decoder_context_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesInfoLogDecoderContextDeleteExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnInfoLogDecoderContextDeleteExt_t)(
+    zes_info_log_handle_t,
+    zes_info_log_decoder_context_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of InfoLogDecoderContext functions pointers
+typedef struct _zes_info_log_decoder_context_dditable_t
+{
+    zes_pfnInfoLogDecoderContextCreateExt_t                     pfnCreateExt;
+    zes_pfnInfoLogDecoderContextGetFieldInfoExt_t               pfnGetFieldInfoExt;
+    zes_pfnInfoLogDecoderContextDecodeStartExt_t                pfnDecodeStartExt;
+    zes_pfnInfoLogDecoderContextReadFieldExt_t                  pfnReadFieldExt;
+    zes_pfnInfoLogDecoderContextDecodeStopExt_t                 pfnDecodeStopExt;
+    zes_pfnInfoLogDecoderContextDeleteExt_t                     pfnDeleteExt;
+} zes_info_log_decoder_context_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's InfoLogDecoderContext table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zes_info_log_decoder_context_dditable_t* pDdiTable                      ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesGetInfoLogDecoderContextProcAddrTable
+typedef ze_result_t (ZE_APICALL *zes_pfnGetInfoLogDecoderContextProcAddrTable_t)(
+    ze_api_version_t,
+    zes_info_log_decoder_context_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all DDI tables
 typedef struct _zes_dditable_t
 {
@@ -2233,6 +2324,7 @@ typedef struct _zes_dditable_t
     zes_vf_management_exp_dditable_t    VFManagementExp;
     zes_info_log_dditable_t             InfoLog;
     zes_info_log_instance_dditable_t    InfoLogInstance;
+    zes_info_log_decoder_context_dditable_t InfoLogDecoderContext;
 } zes_dditable_t;
 /// @brief Container for all DDI tables with version and tables set by the Driver
 typedef struct _zes_dditable_driver_t
@@ -2265,6 +2357,7 @@ typedef struct _zes_dditable_driver_t
     zes_vf_management_exp_dditable_t *  VFManagementExp;
     zes_info_log_dditable_t *           InfoLog;
     zes_info_log_instance_dditable_t *  InfoLogInstance;
+    zes_info_log_decoder_context_dditable_t *   InfoLogDecoderContext;
 } zes_dditable_driver_t;
 
 #if defined(__cplusplus)

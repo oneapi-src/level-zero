@@ -309,7 +309,7 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
-    virtual ze_result_t zetDeviceCreateMetricGroupsFromMetricsExpPrologue( zet_device_handle_t hDevice, uint32_t metricCount, zet_metric_handle_t * phMetrics, const char * pMetricGroupNamePrefix, const char * pDescription, uint32_t * pMetricGroupCount, zet_metric_group_handle_t* phMetricGroup ) override {
+    virtual ze_result_t zetDeviceCreateMetricGroupsFromMetricsExpPrologue( zet_device_handle_t hDevice, uint32_t metricCount, zet_metric_handle_t* phMetrics, const char * pMetricGroupNamePrefix, const char * pDescription, uint32_t * pMetricGroupCount, zet_metric_group_handle_t* phMetricGroup ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }

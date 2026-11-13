@@ -33,6 +33,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zesDriverGetApiVersionPrologue( zes_driver_handle_t hDriver, zes_api_version_t* pVersion ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_21) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_8) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -1019,6 +1025,42 @@ public:
     }
     virtual ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_19) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogDecoderContextCreateExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_decoder_context_handle_t* phDecoderContext ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_21) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogDecoderContextGetFieldInfoExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext, uint32_t* pCount, zes_info_log_decodable_field_info_ext_t* pFieldInfos ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_21) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogDecoderContextDecodeStartExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext, uint32_t size, const uint8_t* pBuffer, uint32_t recordCount, const zes_info_log_metadata_ext_t* pDescriptors ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_21) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogDecoderContextReadFieldExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext, uint32_t fieldId, uint32_t recordId, void* pOutBuffer, size_t bufferLen, size_t* pBytesCopied ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_21) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogDecoderContextDecodeStopExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_21) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zesInfoLogDecoderContextDeleteExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_decoder_context_handle_t hDecoderContext ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_21) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

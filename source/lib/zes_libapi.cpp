@@ -223,6 +223,65 @@ zesDriverGetProperties(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns the API version supported by the specified sysman driver
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pVersion`
+ze_result_t ZE_APICALL
+zesDriverGetApiVersion(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+    zes_api_version_t* pVersion                     ///< [out] api version
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnDriverGetApiVersion_t pfnGetApiVersion = [] {
+        return ze_lib::context->zesDdiTable.load()->Driver.pfnGetApiVersion;
+    }();
+    if (nullptr == pfnGetApiVersion) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    return pfnGetApiVersion( hDriver, pVersion );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetApiVersion = ze_lib::context->zesDdiTable.load()->Driver.pfnGetApiVersion;
+    if( nullptr == pfnGetApiVersion ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetApiVersion( hDriver, pVersion );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves extension properties
 /// 
 /// @details
@@ -432,6 +491,9 @@ zesDeviceGet(
 ///     - The implementation of this function should be lock-free.
 ///     - To get the GPU topology of the device, the application may pass
 ///       ::zes_device_gpu_topology_ext_properties_t in the pNext chain of
+///       pProperties.
+///     - To get the SOC unique ID of the device, the application may pass
+///       ::zes_device_soc_uid_ext_properties_t in the pNext chain of
 ///       pProperties.
 /// 
 /// @returns
@@ -11039,6 +11101,399 @@ zesInfoLogInstanceDeleteExt(
     }
 
     return pfnDeleteExt( hInfoLogInstance );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create a decoder context for an info log
+/// 
+/// @details
+///     - A decoder context decodes the records returned by
+///       ::zesInfoLogInstanceReadWithMetadataExt or by
+///       ::zesInfoLogInstancePeekWithMetadataExt into named fields, which the
+///       application reads one at a time using
+///       ::zesInfoLogDecoderContextReadFieldExt.
+///     - Any number of decoder contexts may exist for one info log.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLog`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phDecoderContext`
+ze_result_t ZE_APICALL
+zesInfoLogDecoderContextCreateExt(
+    zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the records are read from
+    zes_info_log_decoder_context_handle_t* phDecoderContext ///< [out] handle of the decoder context that was created.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogDecoderContextCreateExt_t pfnCreateExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnCreateExt;
+    }();
+    if (nullptr == pfnCreateExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    return pfnCreateExt( hInfoLog, phDecoderContext );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateExt = ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnCreateExt;
+    if( nullptr == pfnCreateExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateExt( hInfoLog, phDecoderContext );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the fields that a decoder context can decode from an info log
+///        record
+/// 
+/// @details
+///     - The application should first call this function with `pCount` pointing
+///       to a value of zero to retrieve the number of fields that can be
+///       decoded.
+///     - A call in which `*pCount` is greater than zero and `pFieldInfos` is
+///       nullptr shall report the number of fields and shall not write any
+///       descriptor, as a call with a count of zero does.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesInfoLogDecoderContextGetFieldInfoExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of fields that can be decoded.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of fields that can be decoded and shall not return any descriptor.
+                                                    ///< if count is greater than the number of fields that can be decoded,
+                                                    ///< then the driver shall update the value with the correct number of fields.
+    zes_info_log_decodable_field_info_ext_t* pFieldInfos///< [in,out][optional][range(0, *pCount)] array of field descriptions, one
+                                                    ///< element per field.
+                                                    ///< if count is less than the number of fields that can be decoded, then
+                                                    ///< the driver shall only retrieve that number of descriptors.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogDecoderContextGetFieldInfoExt_t pfnGetFieldInfoExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnGetFieldInfoExt;
+    }();
+    if (nullptr == pfnGetFieldInfoExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    return pfnGetFieldInfoExt( hDecoderContext, pCount, pFieldInfos );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFieldInfoExt = ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnGetFieldInfoExt;
+    if( nullptr == pfnGetFieldInfoExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFieldInfoExt( hDecoderContext, pCount, pFieldInfos );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Start decoding info log records in a decoder context
+/// 
+/// @details
+///     - The application must not call this function from simultaneous threads
+///       with the same decoder context handle.
+///     - The application may call this function from simultaneous threads with
+///       different decoder context handles.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+ze_result_t ZE_APICALL
+zesInfoLogDecoderContextDecodeStartExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+    uint32_t size,                                  ///< [in] size, in bytes, of the record data in `pBuffer`, as returned in
+                                                    ///< `*pSize` by the read or peek call
+    const uint8_t* pBuffer,                         ///< [in][optional][range(0, size)] the record data, as returned in
+                                                    ///< `pBuffer` by the read or peek call
+    uint32_t recordCount,                           ///< [in] number of records in the batch, as returned in `*pRecordCount` by
+                                                    ///< the read or peek call
+    const zes_info_log_metadata_ext_t* pDescriptors ///< [in][optional][range(0, recordCount)] array of metadata describing
+                                                    ///< each record, as returned in `pDescriptors` by the read or peek call
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogDecoderContextDecodeStartExt_t pfnDecodeStartExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnDecodeStartExt;
+    }();
+    if (nullptr == pfnDecodeStartExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    return pfnDecodeStartExt( hDecoderContext, size, pBuffer, recordCount, pDescriptors );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDecodeStartExt = ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnDecodeStartExt;
+    if( nullptr == pfnDecodeStartExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDecodeStartExt( hDecoderContext, size, pBuffer, recordCount, pDescriptors );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Read field values of one record that a decoder context is decoding
+/// 
+/// @details
+///     - The application must not call this function from simultaneous threads
+///       with the same decoder context handle.
+///     - The application may call this function from simultaneous threads with
+///       different decoder context handles.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pOutBuffer`
+///         + `nullptr == pBytesCopied`
+ze_result_t ZE_APICALL
+zesInfoLogDecoderContextReadFieldExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context, which must be decoding a batch
+    uint32_t fieldId,                               ///< [in] identifier of the field to read, as reported in `fieldId` of
+                                                    ///< ::zes_info_log_decodable_field_info_ext_t
+    uint32_t recordId,                              ///< [in] index of the record in the `pDescriptors` that was passed to
+                                                    ///< ::zesInfoLogDecoderContextDecodeStartExt
+    void* pOutBuffer,                               ///< [in,out][range(0, bufferLen)] buffer that will contain the value of
+                                                    ///< the field
+    size_t bufferLen,                               ///< [in] size, in bytes, of `pOutBuffer`
+    size_t* pBytesCopied                            ///< [out] pointer to the number of bytes written to `pOutBuffer`.
+                                                    ///< the driver shall update the value with zero when the record does not
+                                                    ///< carry the field.
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogDecoderContextReadFieldExt_t pfnReadFieldExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnReadFieldExt;
+    }();
+    if (nullptr == pfnReadFieldExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    return pfnReadFieldExt( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnReadFieldExt = ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnReadFieldExt;
+    if( nullptr == pfnReadFieldExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnReadFieldExt( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Stop decoding of info log records that a decoder context is decoding
+/// 
+/// @details
+///     - The application must not call this function from simultaneous threads
+///       with the same decoder context handle.
+///     - The application may call this function from simultaneous threads with
+///       different decoder context handles.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDecoderContext`
+ze_result_t ZE_APICALL
+zesInfoLogDecoderContextDecodeStopExt(
+    zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in] handle of the decoder context
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogDecoderContextDecodeStopExt_t pfnDecodeStopExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnDecodeStopExt;
+    }();
+    if (nullptr == pfnDecodeStopExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    return pfnDecodeStopExt( hDecoderContext );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDecodeStopExt = ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnDecodeStopExt;
+    if( nullptr == pfnDecodeStopExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDecodeStopExt( hDecoderContext );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Delete a decoder context of an info log
+/// 
+/// @details
+///     - The application must ensure that no other function is using the handle
+///       when calling this function.
+///     - The application must not call this function from simultaneous threads
+///       with the same handle.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///     - ::ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///     - ::ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET
+///     - ::ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hInfoLog`
+///         + `nullptr == hDecoderContext`
+ze_result_t ZE_APICALL
+zesInfoLogDecoderContextDeleteExt(
+    zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the decoder context was created from
+    zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in][release] handle of the decoder context to delete
+    )
+{
+    #ifdef L0_STATIC_LOADER_BUILD
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zes_pfnInfoLogDecoderContextDeleteExt_t pfnDeleteExt = [] {
+        return ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnDeleteExt;
+    }();
+    if (nullptr == pfnDeleteExt) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+    return pfnDeleteExt( hInfoLog, hDecoderContext );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDeleteExt = ze_lib::context->zesDdiTable.load()->InfoLogDecoderContext.pfnDeleteExt;
+    if( nullptr == pfnDeleteExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDeleteExt( hInfoLog, hDecoderContext );
     #endif
 }
 

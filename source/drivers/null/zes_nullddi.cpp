@@ -109,6 +109,33 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetApiVersion
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetApiVersion(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        zes_api_version_t* pVersion                     ///< [out] api version
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetApiVersion = context.zesDdiTable.Driver.pfnGetApiVersion;
+        if( nullptr != pfnGetApiVersion )
+        {
+            result = pfnGetApiVersion( hDriver, pVersion );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesDriverGetApiVersion", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDriverGetExtensionProperties
     __zedlllocal ze_result_t ZE_APICALL
     zesDriverGetExtensionProperties(
@@ -5203,6 +5230,194 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextCreateExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the records are read from
+        zes_info_log_decoder_context_handle_t* phDecoderContext ///< [out] handle of the decoder context that was created.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExt = context.zesDdiTable.InfoLogDecoderContext.pfnCreateExt;
+        if( nullptr != pfnCreateExt )
+        {
+            result = pfnCreateExt( hInfoLog, phDecoderContext );
+        }
+        else
+        {
+            // generic implementation
+            *phDecoderContext = reinterpret_cast<zes_info_log_decoder_context_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesInfoLogDecoderContextCreateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextGetFieldInfoExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextGetFieldInfoExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fields that can be decoded.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fields that can be decoded and shall not return any descriptor.
+                                                        ///< if count is greater than the number of fields that can be decoded,
+                                                        ///< then the driver shall update the value with the correct number of fields.
+        zes_info_log_decodable_field_info_ext_t* pFieldInfos///< [in,out][optional][range(0, *pCount)] array of field descriptions, one
+                                                        ///< element per field.
+                                                        ///< if count is less than the number of fields that can be decoded, then
+                                                        ///< the driver shall only retrieve that number of descriptors.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFieldInfoExt = context.zesDdiTable.InfoLogDecoderContext.pfnGetFieldInfoExt;
+        if( nullptr != pfnGetFieldInfoExt )
+        {
+            result = pfnGetFieldInfoExt( hDecoderContext, pCount, pFieldInfos );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesInfoLogDecoderContextGetFieldInfoExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDecodeStartExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStartExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t size,                                  ///< [in] size, in bytes, of the record data in `pBuffer`, as returned in
+                                                        ///< `*pSize` by the read or peek call
+        const uint8_t* pBuffer,                         ///< [in][optional][range(0, size)] the record data, as returned in
+                                                        ///< `pBuffer` by the read or peek call
+        uint32_t recordCount,                           ///< [in] number of records in the batch, as returned in `*pRecordCount` by
+                                                        ///< the read or peek call
+        const zes_info_log_metadata_ext_t* pDescriptors ///< [in][optional][range(0, recordCount)] array of metadata describing
+                                                        ///< each record, as returned in `pDescriptors` by the read or peek call
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDecodeStartExt = context.zesDdiTable.InfoLogDecoderContext.pfnDecodeStartExt;
+        if( nullptr != pfnDecodeStartExt )
+        {
+            result = pfnDecodeStartExt( hDecoderContext, size, pBuffer, recordCount, pDescriptors );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesInfoLogDecoderContextDecodeStartExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextReadFieldExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextReadFieldExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context, which must be decoding a batch
+        uint32_t fieldId,                               ///< [in] identifier of the field to read, as reported in `fieldId` of
+                                                        ///< ::zes_info_log_decodable_field_info_ext_t
+        uint32_t recordId,                              ///< [in] index of the record in the `pDescriptors` that was passed to
+                                                        ///< ::zesInfoLogDecoderContextDecodeStartExt
+        void* pOutBuffer,                               ///< [in,out][range(0, bufferLen)] buffer that will contain the value of
+                                                        ///< the field
+        size_t bufferLen,                               ///< [in] size, in bytes, of `pOutBuffer`
+        size_t* pBytesCopied                            ///< [out] pointer to the number of bytes written to `pOutBuffer`.
+                                                        ///< the driver shall update the value with zero when the record does not
+                                                        ///< carry the field.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnReadFieldExt = context.zesDdiTable.InfoLogDecoderContext.pfnReadFieldExt;
+        if( nullptr != pfnReadFieldExt )
+        {
+            result = pfnReadFieldExt( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesInfoLogDecoderContextReadFieldExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDecodeStopExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStopExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in] handle of the decoder context
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDecodeStopExt = context.zesDdiTable.InfoLogDecoderContext.pfnDecodeStopExt;
+        if( nullptr != pfnDecodeStopExt )
+        {
+            result = pfnDecodeStopExt( hDecoderContext );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesInfoLogDecoderContextDecodeStopExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDeleteExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDeleteExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the decoder context was created from
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in][release] handle of the decoder context to delete
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDeleteExt = context.zesDdiTable.InfoLogDecoderContext.pfnDeleteExt;
+        if( nullptr != pfnDeleteExt )
+        {
+            result = pfnDeleteExt( hInfoLog, hDecoderContext );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zesInfoLogDecoderContextDeleteExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDriverGetPciDeviceProperties
     __zedlllocal ze_result_t ZE_APICALL
     zesDriverGetPciDeviceProperties(
@@ -5542,6 +5757,10 @@ zesGetDriverProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_20) {
     pDdiTable->pfnGetPciDeviceProperties                 = driver::zesDriverGetPciDeviceProperties;
+    }
+
+    if (version >= ZE_API_VERSION_1_21) {
+    pDdiTable->pfnGetApiVersion                          = driver::zesDriverGetApiVersion;
     }
 
     if (version >= ZE_API_VERSION_1_5) {
@@ -6527,6 +6746,55 @@ zesGetInfoLogProcAddrTable(
 
     if (version >= ZE_API_VERSION_1_19) {
     pDdiTable->pfnCreateInstanceExt                      = driver::zesInfoLogCreateInstanceExt;
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's InfoLogDecoderContext table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_info_log_decoder_context_dditable_t* pDdiTable  ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(driver::context.version) != ZE_MAJOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_21) {
+    pDdiTable->pfnCreateExt                              = driver::zesInfoLogDecoderContextCreateExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_21) {
+    pDdiTable->pfnGetFieldInfoExt                        = driver::zesInfoLogDecoderContextGetFieldInfoExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_21) {
+    pDdiTable->pfnDecodeStartExt                         = driver::zesInfoLogDecoderContextDecodeStartExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_21) {
+    pDdiTable->pfnReadFieldExt                           = driver::zesInfoLogDecoderContextReadFieldExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_21) {
+    pDdiTable->pfnDecodeStopExt                          = driver::zesInfoLogDecoderContextDecodeStopExt;
+    }
+
+    if (version >= ZE_API_VERSION_1_21) {
+    pDdiTable->pfnDeleteExt                              = driver::zesInfoLogDecoderContextDeleteExt;
     }
 
     return result;

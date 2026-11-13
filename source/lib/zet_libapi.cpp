@@ -1489,7 +1489,7 @@ zetMetricStreamerClose(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pRawDataSize`
 ///     - ::ZE_RESULT_WARNING_DROPPED_DATA
-///         + Metric streamer data may have been dropped. Reduce sampling period.
+///         + Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently.
 ze_result_t ZE_APICALL
 zetMetricStreamerReadData(
     zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
@@ -2527,6 +2527,8 @@ zetTracerExpSetEnabled(
 ///         + `nullptr == pRawData`
 ///         + `nullptr == pSetCount`
 ///         + `nullptr == pTotalMetricValueCount`
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA
+///         + Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently.
 ze_result_t ZE_APICALL
 zetMetricGroupCalculateMultipleMetricValuesExp(
     zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
@@ -2755,6 +2757,8 @@ zetMetricGroupGetExportDataExp(
 ///         + `nullptr == pCalculateDescriptor`
 ///         + `nullptr == pSetCount`
 ///         + `nullptr == pTotalMetricValueCount`
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA
+///         + Metric streamer data may have been dropped. Increase the streamer sampling period or read the streamer data more frequently.
 ze_result_t ZE_APICALL
 zetMetricGroupCalculateMetricExportDataExp(
     ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
@@ -3259,13 +3263,16 @@ zetMetricCreateFromProgrammableExp(
 ///     - ::ZE_RESULT_ERROR_UNKNOWN
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phMetrics`
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///         + metricGroupCount is lesser than the number of metric group handles that could be created.
 ze_result_t ZE_APICALL
 zetDeviceCreateMetricGroupsFromMetricsExp(
     zet_device_handle_t hDevice,                    ///< [in] handle of the device.
     uint32_t metricCount,                           ///< [in] number of metric handles.
-    zet_metric_handle_t * phMetrics,                ///< [in] metric handles to be added to the metric groups.
+    zet_metric_handle_t* phMetrics,                 ///< [in][range(0, metricCount)] array of metric handles to be added to the
+                                                    ///< metric groups.
     const char * pMetricGroupNamePrefix,            ///< [in] prefix to the name created for the metric groups. Must point to a
                                                     ///< null-terminated character array no longer than
                                                     ///< ::ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP.

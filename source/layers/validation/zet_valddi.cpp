@@ -1744,7 +1744,8 @@ namespace validation_layer
         ze_result_t result,
         zet_device_handle_t hDevice,                    ///< [in] handle of the device.
         uint32_t metricCount,                           ///< [in] number of metric handles.
-        zet_metric_handle_t * phMetrics,                ///< [in] metric handles to be added to the metric groups.
+        zet_metric_handle_t* phMetrics,                 ///< [in][range(0, metricCount)] array of metric handles to be added to the
+                                                        ///< metric groups.
         const char * pMetricGroupNamePrefix,            ///< [in] prefix to the name created for the metric groups. Must point to a
                                                         ///< null-terminated character array no longer than
                                                         ///< ::ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP.
@@ -4806,7 +4807,8 @@ namespace validation_layer
     zetDeviceCreateMetricGroupsFromMetricsExp(
         zet_device_handle_t hDevice,                    ///< [in] handle of the device.
         uint32_t metricCount,                           ///< [in] number of metric handles.
-        zet_metric_handle_t * phMetrics,                ///< [in] metric handles to be added to the metric groups.
+        zet_metric_handle_t* phMetrics,                 ///< [in][range(0, metricCount)] array of metric handles to be added to the
+                                                        ///< metric groups.
         const char * pMetricGroupNamePrefix,            ///< [in] prefix to the name created for the metric groups. Must point to a
                                                         ///< null-terminated character array no longer than
                                                         ///< ::ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP.
@@ -4826,7 +4828,7 @@ namespace validation_layer
                                                         ///< Created Metric group handles.
         )
     {
-        context.logger->log_trace("zetDeviceCreateMetricGroupsFromMetricsExp(hDevice, metricCount, phMetrics, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup)");
+        context.logger->log_trace("zetDeviceCreateMetricGroupsFromMetricsExp(hDevice, metricCount, phMetricsLocal, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup)");
 
         auto pfnCreateMetricGroupsFromMetricsExp = context.zetDdiTable.DeviceExp.pfnCreateMetricGroupsFromMetricsExp;
 

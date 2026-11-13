@@ -20,6 +20,7 @@ namespace validation_layer
     class ZESHandleLifetimeValidation : public ZESValidationEntryPoints {
     public:
                         ze_result_t zesDriverGetPropertiesPrologue( zes_driver_handle_t hDriver, zes_driver_properties_t* pDriverProperties ) override;
+        ze_result_t zesDriverGetApiVersionPrologue( zes_driver_handle_t hDriver, zes_api_version_t* pVersion ) override;
         ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
         ze_result_t zesDriverGetExtensionFunctionAddressPrologue( zes_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) override;
         ze_result_t zesDeviceGetPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_device_handle_t* phDevices ) override;
@@ -185,6 +186,12 @@ namespace validation_layer
         ze_result_t zesInfoLogInstanceReadWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override;
         ze_result_t zesInfoLogInstancePeekWithMetadataExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance, uint64_t timeout, uint32_t* pSize, uint8_t* pBuffer, uint32_t* pRecordCount, zes_info_log_metadata_ext_t* pDescriptors, zes_info_log_read_status_ext_t* pReadStatus ) override;
         ze_result_t zesInfoLogInstanceDeleteExtPrologue( zes_info_log_instance_handle_t hInfoLogInstance ) override;
+        ze_result_t zesInfoLogDecoderContextCreateExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_decoder_context_handle_t* phDecoderContext ) override;
+        ze_result_t zesInfoLogDecoderContextGetFieldInfoExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext, uint32_t* pCount, zes_info_log_decodable_field_info_ext_t* pFieldInfos ) override;
+        ze_result_t zesInfoLogDecoderContextDecodeStartExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext, uint32_t size, const uint8_t* pBuffer, uint32_t recordCount, const zes_info_log_metadata_ext_t* pDescriptors ) override;
+        ze_result_t zesInfoLogDecoderContextReadFieldExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext, uint32_t fieldId, uint32_t recordId, void* pOutBuffer, size_t bufferLen, size_t* pBytesCopied ) override;
+        ze_result_t zesInfoLogDecoderContextDecodeStopExtPrologue( zes_info_log_decoder_context_handle_t hDecoderContext ) override;
+        ze_result_t zesInfoLogDecoderContextDeleteExtPrologue( zes_info_log_handle_t hInfoLog, zes_info_log_decoder_context_handle_t hDecoderContext ) override;
         ze_result_t zesDriverGetPciDevicePropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_pci_device_properties_t* pProperties ) override;
     };
 

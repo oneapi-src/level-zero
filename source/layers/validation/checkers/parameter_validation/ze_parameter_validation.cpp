@@ -755,7 +755,7 @@ namespace validation_layer
         if( ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        if( ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < desc->priority )
+        if( ZE_COMMAND_QUEUE_PRIORITY_HIGH < desc->priority )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ParameterValidation::validateExtensions(desc);
@@ -948,7 +948,7 @@ namespace validation_layer
         if( ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        if( ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority )
+        if( ZE_COMMAND_QUEUE_PRIORITY_HIGH < altdesc->priority )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ParameterValidation::validateExtensions(altdesc);
@@ -5373,7 +5373,7 @@ namespace validation_layer
         if( nullptr == hCommandQueue )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-        if( ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < priority )
+        if( ZE_COMMAND_QUEUE_PRIORITY_HIGH < priority )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ZE_RESULT_SUCCESS;

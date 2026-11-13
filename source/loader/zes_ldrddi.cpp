@@ -131,6 +131,9 @@ namespace loader
         zesGetInfoLogProcAddrTableFromDriver(driver);
         result = ZE_RESULT_SUCCESS;
         // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
+        zesGetInfoLogDecoderContextProcAddrTableFromDriver(driver);
+        result = ZE_RESULT_SUCCESS;
+        // Optional DDI Table, ignore failure if a driver implements the ddi table, but returns an error.
         zesGetInfoLogInstanceProcAddrTableFromDriver(driver);
         result = ZE_RESULT_SUCCESS;
         return result;
@@ -277,6 +280,31 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetProperties( hDriver, pDriverProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetApiVersion
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetApiVersion(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        zes_api_version_t* pVersion                     ///< [out] api version
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetApiVersion = dditable->zes.Driver.pfnGetApiVersion;
+        if( nullptr == pfnGetApiVersion )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetApiVersion( hDriver, pVersion );
 
         return result;
     }
@@ -5351,6 +5379,202 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextCreateExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the records are read from
+        zes_info_log_decoder_context_handle_t* phDecoderContext ///< [out] handle of the decoder context that was created.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_info_log_object_t*>( hInfoLog )->dditable;
+        auto pfnCreateExt = dditable->zes.InfoLogDecoderContext.pfnCreateExt;
+        if( nullptr == pfnCreateExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // convert loader handle to driver handle
+        hInfoLog = reinterpret_cast<zes_info_log_object_t*>( hInfoLog )->handle;
+
+        // forward to device-driver
+        result = pfnCreateExt( hInfoLog, phDecoderContext );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phDecoderContext = reinterpret_cast<zes_info_log_decoder_context_handle_t>(
+                context->zes_info_log_decoder_context_factory.getInstance( *phDecoderContext, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextGetFieldInfoExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextGetFieldInfoExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fields that can be decoded.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fields that can be decoded and shall not return any descriptor.
+                                                        ///< if count is greater than the number of fields that can be decoded,
+                                                        ///< then the driver shall update the value with the correct number of fields.
+        zes_info_log_decodable_field_info_ext_t* pFieldInfos///< [in,out][optional][range(0, *pCount)] array of field descriptions, one
+                                                        ///< element per field.
+                                                        ///< if count is less than the number of fields that can be decoded, then
+                                                        ///< the driver shall only retrieve that number of descriptors.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->dditable;
+        auto pfnGetFieldInfoExt = dditable->zes.InfoLogDecoderContext.pfnGetFieldInfoExt;
+        if( nullptr == pfnGetFieldInfoExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // convert loader handle to driver handle
+        hDecoderContext = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->handle;
+
+        // forward to device-driver
+        result = pfnGetFieldInfoExt( hDecoderContext, pCount, pFieldInfos );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDecodeStartExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStartExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context
+        uint32_t size,                                  ///< [in] size, in bytes, of the record data in `pBuffer`, as returned in
+                                                        ///< `*pSize` by the read or peek call
+        const uint8_t* pBuffer,                         ///< [in][optional][range(0, size)] the record data, as returned in
+                                                        ///< `pBuffer` by the read or peek call
+        uint32_t recordCount,                           ///< [in] number of records in the batch, as returned in `*pRecordCount` by
+                                                        ///< the read or peek call
+        const zes_info_log_metadata_ext_t* pDescriptors ///< [in][optional][range(0, recordCount)] array of metadata describing
+                                                        ///< each record, as returned in `pDescriptors` by the read or peek call
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->dditable;
+        auto pfnDecodeStartExt = dditable->zes.InfoLogDecoderContext.pfnDecodeStartExt;
+        if( nullptr == pfnDecodeStartExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // convert loader handle to driver handle
+        hDecoderContext = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->handle;
+
+        // forward to device-driver
+        result = pfnDecodeStartExt( hDecoderContext, size, pBuffer, recordCount, pDescriptors );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextReadFieldExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextReadFieldExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext,  ///< [in] handle of the decoder context, which must be decoding a batch
+        uint32_t fieldId,                               ///< [in] identifier of the field to read, as reported in `fieldId` of
+                                                        ///< ::zes_info_log_decodable_field_info_ext_t
+        uint32_t recordId,                              ///< [in] index of the record in the `pDescriptors` that was passed to
+                                                        ///< ::zesInfoLogDecoderContextDecodeStartExt
+        void* pOutBuffer,                               ///< [in,out][range(0, bufferLen)] buffer that will contain the value of
+                                                        ///< the field
+        size_t bufferLen,                               ///< [in] size, in bytes, of `pOutBuffer`
+        size_t* pBytesCopied                            ///< [out] pointer to the number of bytes written to `pOutBuffer`.
+                                                        ///< the driver shall update the value with zero when the record does not
+                                                        ///< carry the field.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->dditable;
+        auto pfnReadFieldExt = dditable->zes.InfoLogDecoderContext.pfnReadFieldExt;
+        if( nullptr == pfnReadFieldExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // convert loader handle to driver handle
+        hDecoderContext = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->handle;
+
+        // forward to device-driver
+        result = pfnReadFieldExt( hDecoderContext, fieldId, recordId, pOutBuffer, bufferLen, pBytesCopied );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDecodeStopExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDecodeStopExt(
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in] handle of the decoder context
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->dditable;
+        auto pfnDecodeStopExt = dditable->zes.InfoLogDecoderContext.pfnDecodeStopExt;
+        if( nullptr == pfnDecodeStopExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // convert loader handle to driver handle
+        hDecoderContext = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->handle;
+
+        // forward to device-driver
+        result = pfnDecodeStopExt( hDecoderContext );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInfoLogDecoderContextDeleteExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInfoLogDecoderContextDeleteExt(
+        zes_info_log_handle_t hInfoLog,                 ///< [in] handle of the info log that the decoder context was created from
+        zes_info_log_decoder_context_handle_t hDecoderContext   ///< [in][release] handle of the decoder context to delete
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_info_log_object_t*>( hInfoLog )->dditable;
+        auto pfnDeleteExt = dditable->zes.InfoLogDecoderContext.pfnDeleteExt;
+        if( nullptr == pfnDeleteExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // convert loader handle to driver handle
+        hInfoLog = reinterpret_cast<zes_info_log_object_t*>( hInfoLog )->handle;
+
+        // convert loader handle to driver handle
+        hDecoderContext = reinterpret_cast<zes_info_log_decoder_context_object_t*>( hDecoderContext )->handle;
+
+        // forward to device-driver
+        result = pfnDeleteExt( hInfoLog, hDecoderContext );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        // release loader handle
+        context->zes_info_log_decoder_context_factory.release( hDecoderContext );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDriverGetPciDeviceProperties
     __zedlllocal ze_result_t ZE_APICALL
     zesDriverGetPciDeviceProperties(
@@ -5470,6 +5694,7 @@ zesGetDriverProcAddrTableLegacy()
     loader::loaderDispatch->pSysman->Driver->pfnEventListenExt                           = loader::zesDriverEventListenExt;
     loader::loaderDispatch->pSysman->Driver->pfnEnumInfoLogsExt                          = loader::zesDriverEnumInfoLogsExt;
     loader::loaderDispatch->pSysman->Driver->pfnGetPciDeviceProperties                   = loader::zesDriverGetPciDeviceProperties;
+    loader::loaderDispatch->pSysman->Driver->pfnGetApiVersion                            = loader::zesDriverGetApiVersion;
     loader::loaderDispatch->pSysman->Driver->pfnGet                                      = loader::zesDriverGet;
     loader::loaderDispatch->pSysman->Driver->pfnGetExtensionProperties                   = loader::zesDriverGetExtensionProperties;
     loader::loaderDispatch->pSysman->Driver->pfnGetExtensionFunctionAddress              = loader::zesDriverGetExtensionFunctionAddress;
@@ -5753,6 +5978,20 @@ zesGetInfoLogProcAddrTableLegacy()
     // return pointers to the Loader's Functions.
     loader::loaderDispatch->pSysman->InfoLog->pfnGetPropertiesExt                         = loader::zesInfoLogGetPropertiesExt;
     loader::loaderDispatch->pSysman->InfoLog->pfnCreateInstanceExt                        = loader::zesInfoLogCreateInstanceExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for InfoLogDecoderContext table
+__zedlllocal void ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->InfoLogDecoderContext->pfnCreateExt                                = loader::zesInfoLogDecoderContextCreateExt;
+    loader::loaderDispatch->pSysman->InfoLogDecoderContext->pfnGetFieldInfoExt                          = loader::zesInfoLogDecoderContextGetFieldInfoExt;
+    loader::loaderDispatch->pSysman->InfoLogDecoderContext->pfnDecodeStartExt                           = loader::zesInfoLogDecoderContextDecodeStartExt;
+    loader::loaderDispatch->pSysman->InfoLogDecoderContext->pfnReadFieldExt                             = loader::zesInfoLogDecoderContextReadFieldExt;
+    loader::loaderDispatch->pSysman->InfoLogDecoderContext->pfnDecodeStopExt                            = loader::zesInfoLogDecoderContextDecodeStopExt;
+    loader::loaderDispatch->pSysman->InfoLogDecoderContext->pfnDeleteExt                                = loader::zesInfoLogDecoderContextDeleteExt;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6389,6 +6628,28 @@ zesGetInfoLogProcAddrTableFromDriver(loader::driver_t *driver)
     if(!getTable) 
         return driver->initStatus;
     result = getTable( loader::context->ddi_init_version, &driver->dditable.zes.InfoLog);
+    return result;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's InfoLogDecoderContext table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal ze_result_t ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTableFromDriver(loader::driver_t *driver)
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(driver->initStatus != ZE_RESULT_SUCCESS)
+        return driver->initStatus;
+    auto getTable = reinterpret_cast<zes_pfnGetInfoLogDecoderContextProcAddrTable_t>(
+        GET_FUNCTION_PTR( driver->handle, "zesGetInfoLogDecoderContextProcAddrTable") );
+    if(!getTable) 
+        return driver->initStatus;
+    result = getTable( loader::context->ddi_init_version, &driver->dditable.zes.InfoLogDecoderContext);
     return result;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -7125,6 +7386,13 @@ zesGetDriverProcAddrTable(
                 pDdiTable->pfnGetPciDeviceProperties                   = loader::zesDriverGetPciDeviceProperties;
             }
             }
+            if (version >= ZE_API_VERSION_1_21) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetApiVersion                            = loader_driver_ddi::zesDriverGetApiVersion;
+            } else {
+                pDdiTable->pfnGetApiVersion                            = loader::zesDriverGetApiVersion;
+            }
+            }
             if (version >= ZE_API_VERSION_1_5) {
             pDdiTable->pfnGet                                      = loader::zesDriverGet;
             }
@@ -7167,6 +7435,9 @@ zesGetDriverProcAddrTable(
             }
             if (version >= ZE_API_VERSION_1_20) {
                 pDdiTable->pfnGetPciDeviceProperties                   = firstDriver->dditable.zes.Driver.pfnGetPciDeviceProperties;
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+                pDdiTable->pfnGetApiVersion                            = firstDriver->dditable.zes.Driver.pfnGetApiVersion;
             }
             if (version >= ZE_API_VERSION_1_5) {
                 pDdiTable->pfnGet                                      = firstDriver->dditable.zes.Driver.pfnGet;
@@ -9607,6 +9878,128 @@ zesGetInfoLogProcAddrTable(
     {
         auto getTable = reinterpret_cast<zes_pfnGetInfoLogProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetInfoLogProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's InfoLogDecoderContext table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetInfoLogDecoderContextProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_info_log_decoder_context_dditable_t* pDdiTable  ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    loader::context->ddi_init_version = version;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    auto driverCount = loader::context->sysmanInstanceDrivers->size();
+    auto firstDriver = &loader::context->sysmanInstanceDrivers->at(0);
+    if (driverCount == 1 && firstDriver && !loader::context->forceIntercept) {
+        result = zesGetInfoLogDecoderContextProcAddrTableFromDriver(firstDriver);
+    }
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->InfoLogDecoderContext = new zes_info_log_decoder_context_dditable_t;
+            if (version >= ZE_API_VERSION_1_21) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExt                                = loader_driver_ddi::zesInfoLogDecoderContextCreateExt;
+            } else {
+                pDdiTable->pfnCreateExt                                = loader::zesInfoLogDecoderContextCreateExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetFieldInfoExt                          = loader_driver_ddi::zesInfoLogDecoderContextGetFieldInfoExt;
+            } else {
+                pDdiTable->pfnGetFieldInfoExt                          = loader::zesInfoLogDecoderContextGetFieldInfoExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDecodeStartExt                           = loader_driver_ddi::zesInfoLogDecoderContextDecodeStartExt;
+            } else {
+                pDdiTable->pfnDecodeStartExt                           = loader::zesInfoLogDecoderContextDecodeStartExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReadFieldExt                             = loader_driver_ddi::zesInfoLogDecoderContextReadFieldExt;
+            } else {
+                pDdiTable->pfnReadFieldExt                             = loader::zesInfoLogDecoderContextReadFieldExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDecodeStopExt                            = loader_driver_ddi::zesInfoLogDecoderContextDecodeStopExt;
+            } else {
+                pDdiTable->pfnDecodeStopExt                            = loader::zesInfoLogDecoderContextDecodeStopExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDeleteExt                                = loader_driver_ddi::zesInfoLogDecoderContextDeleteExt;
+            } else {
+                pDdiTable->pfnDeleteExt                                = loader::zesInfoLogDecoderContextDeleteExt;
+            }
+            }
+            zesGetInfoLogDecoderContextProcAddrTableLegacy();
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            if (version >= ZE_API_VERSION_1_21) {
+                pDdiTable->pfnCreateExt                                = firstDriver->dditable.zes.InfoLogDecoderContext.pfnCreateExt;
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+                pDdiTable->pfnGetFieldInfoExt                          = firstDriver->dditable.zes.InfoLogDecoderContext.pfnGetFieldInfoExt;
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+                pDdiTable->pfnDecodeStartExt                           = firstDriver->dditable.zes.InfoLogDecoderContext.pfnDecodeStartExt;
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+                pDdiTable->pfnReadFieldExt                             = firstDriver->dditable.zes.InfoLogDecoderContext.pfnReadFieldExt;
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+                pDdiTable->pfnDecodeStopExt                            = firstDriver->dditable.zes.InfoLogDecoderContext.pfnDecodeStopExt;
+            }
+            if (version >= ZE_API_VERSION_1_21) {
+                pDdiTable->pfnDeleteExt                                = firstDriver->dditable.zes.InfoLogDecoderContext.pfnDeleteExt;
+            }
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<zes_pfnGetInfoLogDecoderContextProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetInfoLogDecoderContextProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );

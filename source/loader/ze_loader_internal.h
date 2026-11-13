@@ -116,6 +116,7 @@ namespace loader
         zes_fan_factory_t                   zes_fan_factory;
         zes_firmware_factory_t              zes_firmware_factory;
         zes_freq_factory_t                  zes_freq_factory;
+        zes_info_log_decoder_context_factory_t  zes_info_log_decoder_context_factory;
         zes_info_log_factory_t              zes_info_log_factory;
         zes_info_log_instance_factory_t     zes_info_log_instance_factory;
         zes_led_factory_t                   zes_led_factory;

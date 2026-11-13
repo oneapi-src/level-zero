@@ -1775,7 +1775,8 @@ namespace loader
     zetDeviceCreateMetricGroupsFromMetricsExp(
         zet_device_handle_t hDevice,                    ///< [in] handle of the device.
         uint32_t metricCount,                           ///< [in] number of metric handles.
-        zet_metric_handle_t * phMetrics,                ///< [in] metric handles to be added to the metric groups.
+        zet_metric_handle_t* phMetrics,                 ///< [in][range(0, metricCount)] array of metric handles to be added to the
+                                                        ///< metric groups.
         const char * pMetricGroupNamePrefix,            ///< [in] prefix to the name created for the metric groups. Must point to a
                                                         ///< null-terminated character array no longer than
                                                         ///< ::ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP.
@@ -1806,8 +1807,14 @@ namespace loader
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
 
+        // convert loader handles to driver handles, preserving a null input array
+        auto phMetricsLocal = ( phMetrics ) ? new zet_metric_handle_t [metricCount] : nullptr;
+        for( size_t i = 0; ( nullptr != phMetrics ) && ( i < metricCount ); ++i )
+            phMetricsLocal[ i ] = reinterpret_cast<zet_metric_object_t*>( phMetrics[ i ] )->handle;
+
         // forward to device-driver
-        result = pfnCreateMetricGroupsFromMetricsExp( hDevice, metricCount, phMetrics, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup );
+        result = pfnCreateMetricGroupsFromMetricsExp( hDevice, metricCount, phMetricsLocal, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup );
+        delete []phMetricsLocal;
 
         if( ZE_RESULT_SUCCESS != result )
             return result;

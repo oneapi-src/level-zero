@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.20-r1.20.41
+ @version v1.21-r1.21.26
 
  """
 import platform
@@ -15,6 +15,21 @@ from ze import *
 
 ###############################################################################
 __version__ = "1.0"
+
+###############################################################################
+## @brief Generates generic 'oneAPI' Sysman API versions
+def ZES_MAKE_VERSION( _major, _minor ):
+    return (( _major << 16 )|( _minor & 0x0000ffff))
+
+###############################################################################
+## @brief Extracts 'oneAPI' Sysman API major version
+def ZES_MAJOR_VERSION( _ver ):
+    return ( _ver >> 16 )
+
+###############################################################################
+## @brief Extracts 'oneAPI' Sysman API minor version
+def ZES_MINOR_VERSION( _ver ):
+    return ( _ver & 0x0000ffff )
 
 ###############################################################################
 ## @brief Handle to a driver instance
@@ -188,6 +203,8 @@ class zes_structure_type_v(IntEnum):
     DRIVER_PCI_DEVICE_PROPERTIES = 0x00020025                               ## ::zes_driver_pci_device_properties_t
     DEVICE_INDEX_EXT_PROPERTIES = 0x00020026                                ## ::zes_device_index_ext_properties_t
     DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES = 0x00020027                         ## ::zes_device_gpu_topology_ext_properties_t
+    DEVICE_SOC_UID_EXT_PROPERTIES = 0x00020028                              ## ::zes_device_soc_uid_ext_properties_t
+    INFO_LOG_DECODABLE_FIELD_INFO_EXT = 0x00020029                          ## ::zes_info_log_decodable_field_info_ext_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -280,6 +297,46 @@ class zes_driver_properties_t(Structure):
                                                                         ## The sysman driver version is a non-zero, monotonically increasing
                                                                         ## value where higher values always indicate a more recent version.
     ]
+
+###############################################################################
+## @brief Supported sysman API versions
+## 
+## @details
+##     - API versions contain major and minor attributes, use
+##       ::ZES_MAJOR_VERSION and ::ZES_MINOR_VERSION
+class zes_api_version_v(IntEnum):
+    _1_0 = ZES_MAKE_VERSION( 1, 0 )                                         ## version 1.0
+    _1_1 = ZES_MAKE_VERSION( 1, 1 )                                         ## version 1.1
+    _1_2 = ZES_MAKE_VERSION( 1, 2 )                                         ## version 1.2
+    _1_3 = ZES_MAKE_VERSION( 1, 3 )                                         ## version 1.3
+    _1_4 = ZES_MAKE_VERSION( 1, 4 )                                         ## version 1.4
+    _1_5 = ZES_MAKE_VERSION( 1, 5 )                                         ## version 1.5
+    _1_6 = ZES_MAKE_VERSION( 1, 6 )                                         ## version 1.6
+    _1_7 = ZES_MAKE_VERSION( 1, 7 )                                         ## version 1.7
+    _1_8 = ZES_MAKE_VERSION( 1, 8 )                                         ## version 1.8
+    _1_9 = ZES_MAKE_VERSION( 1, 9 )                                         ## version 1.9
+    _1_10 = ZES_MAKE_VERSION( 1, 10 )                                       ## version 1.10
+    _1_11 = ZES_MAKE_VERSION( 1, 11 )                                       ## version 1.11
+    _1_12 = ZES_MAKE_VERSION( 1, 12 )                                       ## version 1.12
+    _1_13 = ZES_MAKE_VERSION( 1, 13 )                                       ## version 1.13
+    _1_14 = ZES_MAKE_VERSION( 1, 14 )                                       ## version 1.14
+    _1_15 = ZES_MAKE_VERSION( 1, 15 )                                       ## version 1.15
+    _1_16 = ZES_MAKE_VERSION( 1, 16 )                                       ## version 1.16
+    _1_17 = ZES_MAKE_VERSION( 1, 17 )                                       ## version 1.17
+    _1_18 = ZES_MAKE_VERSION( 1, 18 )                                       ## version 1.18
+    _1_19 = ZES_MAKE_VERSION( 1, 19 )                                       ## version 1.19
+    _1_20 = ZES_MAKE_VERSION( 1, 20 )                                       ## version 1.20
+    _1_21 = ZES_MAKE_VERSION( 1, 21 )                                       ## version 1.21
+    CURRENT = ZES_MAKE_VERSION( 1, 21 )                                     ## latest known version
+
+class zes_api_version_t(c_int):
+    def __str__(self):
+        return str(zes_api_version_v(self.value))
+
+
+###############################################################################
+## @brief Current sysman API version as a macro
+ZES_API_VERSION_CURRENT_M = ZES_MAKE_VERSION( 1, 21 )
 
 ###############################################################################
 ## @brief Maximum extension name string size
@@ -411,13 +468,21 @@ class zes_device_property_flags_t(c_int):
 ##        topology of the device, pNext member of this structure should point to
 ##        an instance of ${s}_device_gpu_topology_ext_properties_t with its
 ##        stype set to ::ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES.
+##        To get the SOC unique ID of the device, pNext member of this structure
+##        should point to an instance of ::zes_device_soc_uid_ext_properties_t
+##        with its stype set to
+##        ::ZES_STRUCTURE_TYPE_DEVICE_SOC_UID_EXT_PROPERTIES. To get the UUID,
+##        type and flags of the device, pNext member of this structure should
+##        point to an instance of ::zes_device_ext_properties_t with its stype
+##        set to ::ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES.
 class zes_device_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("core", ze_device_properties_t),                               ## [out] [DEPRECATED since 1.7] Core device properties. Use
-                                                                        ## ::zes_device_ext_properties_t instead.
+        ("core", ze_device_properties_t),                               ## [out] [DEPRECATED since 1.7] Core device properties. Get the UUID,
+                                                                        ## type and flags through pNext. Use ::zes_device_ext_properties_t
+                                                                        ## instead.
         ("numSubdevices", c_uint32),                                    ## [out] Number of sub-devices. A value of 0 indicates that this device
                                                                         ## doesn't have sub-devices.
         ("serialNumber", c_char * ZES_STRING_PROPERTY_SIZE),            ## [out] Manufacturing serial number (NULL terminated string value). This
@@ -2354,7 +2419,11 @@ class zes_power_ext_properties_t(Structure):
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("domain", zes_power_domain_t),                                 ## [out] domain that the power limit belongs to.
-        ("defaultLimit", POINTER(zes_power_limit_ext_desc_t))           ## [out] the factory default limit of the part.
+        ("defaultLimit", POINTER(zes_power_limit_ext_desc_t))           ## [in,out][optional] pointer to a caller-allocated ::zes_power_limit_ext_desc_t
+                                                                        ## that the driver fills with the factory default limit of the part.
+                                                                        ## The application must allocate and initialize (including `stype`) the pointed-to
+                                                                        ## structure and assign its address before calling ::zesPowerGetProperties.
+                                                                        ## If this is null, the factory default limit will not be returned.
     ]
 
 ###############################################################################
@@ -2991,7 +3060,8 @@ ZES_INFO_LOGS_EXT_NAME = "ZES_extension_info_logs"
 ## @brief Info Logs Extension Version(s)
 class zes_info_logs_ext_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
+    CURRENT = ZE_MAKE_VERSION( 1, 1 )                                       ## latest known version
 
 class zes_info_logs_ext_version_t(c_int):
     def __str__(self):
@@ -3178,6 +3248,62 @@ class zes_info_log_read_status_ext_t(Structure):
     ]
 
 ###############################################################################
+## @brief Maximum number of characters in the description of a decodable field,
+##        including the null terminator.
+ZES_INFO_LOG_FIELD_DESC_SIZE = 256
+
+###############################################################################
+## @brief Handle for a Sysman info log decoder context
+class zes_info_log_decoder_context_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Data types of a field decoded from an info log record
+class zes_info_log_field_type_ext_v(IntEnum):
+    UINT32 = 0                                                              ## The value of the field is a `uint32_t`.
+    INT64 = 1                                                               ## The value of the field is an `int64_t`.
+    DOUBLE = 2                                                              ## The value of the field is a `double`.
+    STRING = 3                                                              ## The value of the field is a null terminated array of `char`.
+    RAW_BYTES = 4                                                           ## The value of the field is an array of uninterpreted bytes.
+
+class zes_info_log_field_type_ext_t(c_int):
+    def __str__(self):
+        return str(zes_info_log_field_type_ext_v(self.value))
+
+
+###############################################################################
+## @brief Description of one field that a decoder context can decode from an
+##        info log record
+## 
+## @details
+##     - An array of these structures is returned by
+##       ::zesInfoLogDecoderContextGetFieldInfoExt, one element per field.
+##     - The fields that are reported are a property of the format of the info
+##       log, reported in infoLogFormat of ::zes_info_log_ext_properties_t, and
+##       not of a batch of records. Whether a given record carries a given
+##       field is reported per record by
+##       ::zesInfoLogDecoderContextReadFieldExt.
+##     - The application must locate a field by `name`, and must then use the
+##       `fieldId`, `type` and `requiredBytes` that are reported for that name.
+class zes_info_log_decodable_field_info_ext_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("desc", c_char * ZES_INFO_LOG_FIELD_DESC_SIZE),                ## [out] human readable description of the field (NULL terminated string
+                                                                        ## value).
+        ("name", c_char * ZES_STRING_PROPERTY_SIZE),                    ## [out] name of the field (NULL terminated string value).
+        ("fieldId", c_uint32),                                          ## [out] identifier of the field, to be passed to
+                                                                        ## ::zesInfoLogDecoderContextReadFieldExt.
+        ("type", zes_info_log_field_type_ext_t),                        ## [out] data type of the value of the field.
+        ("requiredBytes", c_size_t),                                    ## [out] number of bytes that the application must provide to
+                                                                        ## ::zesInfoLogDecoderContextReadFieldExt to read this field.
+                                                                        ## For ::ZES_INFO_LOG_FIELD_TYPE_EXT_STRING this value includes the null terminator.
+        ("elementCount", c_size_t),                                     ## [out] number of elements of the data type that the field holds.
+        ("versionString", c_char * ZES_STRING_PROPERTY_SIZE)            ## [out] version of this extension in which the field was first reported.
+    ]
+
+###############################################################################
 ## @brief Device GPU Topology Extension Name
 ZES_DEVICE_GPU_TOPOLOGY_EXT_NAME = "ZES_extension_device_gpu_topology"
 
@@ -3274,6 +3400,38 @@ class zes_driver_pci_device_properties_t(Structure):
                                                                         ## lanes). Each member is -1 when it could not be determined.
         ("configProperties", zes_pci_config_properties_t),              ## [out] The PCI configuration space properties of the device.
         ("status", zes_pci_link_status_t)                               ## [out] The link status of the device.
+    ]
+
+###############################################################################
+## @brief Device SOC Unique ID Extension Name
+ZES_DEVICE_SOC_UID_EXT_NAME = "ZES_extension_device_soc_uid"
+
+###############################################################################
+## @brief Device SOC Unique ID Extension Version(s)
+class zes_device_soc_uid_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_soc_uid_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_soc_uid_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Device SOC Unique ID Extension structure
+## 
+## @details
+##     - This structure can be passed as an extension structure to
+##       ::zesDeviceGetProperties via pNext member
+##     - Returns the unique ID of the SOC on which the device resides
+##     - Applications must treat an all-zero socUid as unavailable rather than
+##       as a valid identifier
+class zes_device_soc_uid_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("socUid", zes_uuid_t)                                          ## [out] unique identifier of the SOC, most significant byte first.
     ]
 
 ###############################################################################
@@ -3722,6 +3880,13 @@ if __use_win_types:
 else:
     _zesDriverGetPciDeviceProperties_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_uint32), POINTER(zes_driver_pci_device_properties_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDriverGetApiVersion
+if __use_win_types:
+    _zesDriverGetApiVersion_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(zes_api_version_t) )
+else:
+    _zesDriverGetApiVersion_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(zes_api_version_t) )
+
 
 ###############################################################################
 ## @brief Table of Driver functions pointers
@@ -3736,7 +3901,8 @@ class _zes_driver_dditable_t(Structure):
         ("pfnEventRegisterExt", c_void_p),                              ## _zesDriverEventRegisterExt_t
         ("pfnEventListenExt", c_void_p),                                ## _zesDriverEventListenExt_t
         ("pfnEnumInfoLogsExt", c_void_p),                               ## _zesDriverEnumInfoLogsExt_t
-        ("pfnGetPciDeviceProperties", c_void_p)                         ## _zesDriverGetPciDeviceProperties_t
+        ("pfnGetPciDeviceProperties", c_void_p),                        ## _zesDriverGetPciDeviceProperties_t
+        ("pfnGetApiVersion", c_void_p)                                  ## _zesDriverGetApiVersion_t
     ]
 
 ###############################################################################
@@ -4814,6 +4980,61 @@ class _zes_info_log_instance_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zesInfoLogDecoderContextCreateExt
+if __use_win_types:
+    _zesInfoLogDecoderContextCreateExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_handle_t, POINTER(zes_info_log_decoder_context_handle_t) )
+else:
+    _zesInfoLogDecoderContextCreateExt_t = CFUNCTYPE( ze_result_t, zes_info_log_handle_t, POINTER(zes_info_log_decoder_context_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogDecoderContextGetFieldInfoExt
+if __use_win_types:
+    _zesInfoLogDecoderContextGetFieldInfoExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t, POINTER(c_uint32), POINTER(zes_info_log_decodable_field_info_ext_t) )
+else:
+    _zesInfoLogDecoderContextGetFieldInfoExt_t = CFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t, POINTER(c_uint32), POINTER(zes_info_log_decodable_field_info_ext_t) )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogDecoderContextDecodeStartExt
+if __use_win_types:
+    _zesInfoLogDecoderContextDecodeStartExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t, c_uint32, POINTER(c_uint8), c_uint32, POINTER(zes_info_log_metadata_ext_t) )
+else:
+    _zesInfoLogDecoderContextDecodeStartExt_t = CFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t, c_uint32, POINTER(c_uint8), c_uint32, POINTER(zes_info_log_metadata_ext_t) )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogDecoderContextReadFieldExt
+if __use_win_types:
+    _zesInfoLogDecoderContextReadFieldExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t, c_uint32, c_uint32, c_void_p, c_size_t, POINTER(c_size_t) )
+else:
+    _zesInfoLogDecoderContextReadFieldExt_t = CFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t, c_uint32, c_uint32, c_void_p, c_size_t, POINTER(c_size_t) )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogDecoderContextDecodeStopExt
+if __use_win_types:
+    _zesInfoLogDecoderContextDecodeStopExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t )
+else:
+    _zesInfoLogDecoderContextDecodeStopExt_t = CFUNCTYPE( ze_result_t, zes_info_log_decoder_context_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zesInfoLogDecoderContextDeleteExt
+if __use_win_types:
+    _zesInfoLogDecoderContextDeleteExt_t = WINFUNCTYPE( ze_result_t, zes_info_log_handle_t, zes_info_log_decoder_context_handle_t )
+else:
+    _zesInfoLogDecoderContextDeleteExt_t = CFUNCTYPE( ze_result_t, zes_info_log_handle_t, zes_info_log_decoder_context_handle_t )
+
+
+###############################################################################
+## @brief Table of InfoLogDecoderContext functions pointers
+class _zes_info_log_decoder_context_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateExt", c_void_p),                                     ## _zesInfoLogDecoderContextCreateExt_t
+        ("pfnGetFieldInfoExt", c_void_p),                               ## _zesInfoLogDecoderContextGetFieldInfoExt_t
+        ("pfnDecodeStartExt", c_void_p),                                ## _zesInfoLogDecoderContextDecodeStartExt_t
+        ("pfnReadFieldExt", c_void_p),                                  ## _zesInfoLogDecoderContextReadFieldExt_t
+        ("pfnDecodeStopExt", c_void_p),                                 ## _zesInfoLogDecoderContextDecodeStopExt_t
+        ("pfnDeleteExt", c_void_p)                                      ## _zesInfoLogDecoderContextDeleteExt_t
+    ]
+
+###############################################################################
 class _zes_dditable_t(Structure):
     _fields_ = [
         ("Global", _zes_global_dditable_t),
@@ -4841,7 +5062,8 @@ class _zes_dditable_t(Structure):
         ("Diagnostics", _zes_diagnostics_dditable_t),
         ("VFManagementExp", _zes_vf_management_exp_dditable_t),
         ("InfoLog", _zes_info_log_dditable_t),
-        ("InfoLogInstance", _zes_info_log_instance_dditable_t)
+        ("InfoLogInstance", _zes_info_log_instance_dditable_t),
+        ("InfoLogDecoderContext", _zes_info_log_decoder_context_dditable_t)
     ]
 
 ###############################################################################
@@ -4946,6 +5168,7 @@ class ZES_DDI:
         self.zesDriverEventListenExt = _zesDriverEventListenExt_t(self.__dditable.Driver.pfnEventListenExt)
         self.zesDriverEnumInfoLogsExt = _zesDriverEnumInfoLogsExt_t(self.__dditable.Driver.pfnEnumInfoLogsExt)
         self.zesDriverGetPciDeviceProperties = _zesDriverGetPciDeviceProperties_t(self.__dditable.Driver.pfnGetPciDeviceProperties)
+        self.zesDriverGetApiVersion = _zesDriverGetApiVersion_t(self.__dditable.Driver.pfnGetApiVersion)
 
         # call driver to get function pointers
         _DriverExp = _zes_driver_exp_dditable_t()
@@ -5259,5 +5482,20 @@ class ZES_DDI:
         self.zesInfoLogInstanceReadWithMetadataExt = _zesInfoLogInstanceReadWithMetadataExt_t(self.__dditable.InfoLogInstance.pfnReadWithMetadataExt)
         self.zesInfoLogInstancePeekWithMetadataExt = _zesInfoLogInstancePeekWithMetadataExt_t(self.__dditable.InfoLogInstance.pfnPeekWithMetadataExt)
         self.zesInfoLogInstanceDeleteExt = _zesInfoLogInstanceDeleteExt_t(self.__dditable.InfoLogInstance.pfnDeleteExt)
+
+        # call driver to get function pointers
+        _InfoLogDecoderContext = _zes_info_log_decoder_context_dditable_t()
+        r = ze_result_v(self.__dll.zesGetInfoLogDecoderContextProcAddrTable(version, byref(_InfoLogDecoderContext)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.InfoLogDecoderContext = _InfoLogDecoderContext
+
+        # attach function interface to function address
+        self.zesInfoLogDecoderContextCreateExt = _zesInfoLogDecoderContextCreateExt_t(self.__dditable.InfoLogDecoderContext.pfnCreateExt)
+        self.zesInfoLogDecoderContextGetFieldInfoExt = _zesInfoLogDecoderContextGetFieldInfoExt_t(self.__dditable.InfoLogDecoderContext.pfnGetFieldInfoExt)
+        self.zesInfoLogDecoderContextDecodeStartExt = _zesInfoLogDecoderContextDecodeStartExt_t(self.__dditable.InfoLogDecoderContext.pfnDecodeStartExt)
+        self.zesInfoLogDecoderContextReadFieldExt = _zesInfoLogDecoderContextReadFieldExt_t(self.__dditable.InfoLogDecoderContext.pfnReadFieldExt)
+        self.zesInfoLogDecoderContextDecodeStopExt = _zesInfoLogDecoderContextDecodeStopExt_t(self.__dditable.InfoLogDecoderContext.pfnDecodeStopExt)
+        self.zesInfoLogDecoderContextDeleteExt = _zesInfoLogDecoderContextDeleteExt_t(self.__dditable.InfoLogDecoderContext.pfnDeleteExt)
 
         # success!
