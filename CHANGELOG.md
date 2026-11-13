@@ -1,4 +1,8 @@
 # Level zero loader changelog
+## v1.36.0
+* Update to L0 Zero Spec v1.21.26: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-21-26
+* Fix: handle missing APIs on every static loader call (#555)
+* Find googletest from system if available (#442)
 ## v1.35.0
 * Update to L0 Zero Spec v1.20.41: https://oneapi-src.github.io/level-zero-spec/releases/index.html#level-zero-v1-20-41
 * Feature: Add optional build-time-configured driver search directory for Linux (#541)
