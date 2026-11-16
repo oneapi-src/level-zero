@@ -509,6 +509,8 @@ ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT = 0x00020022
 ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT = 0x00020023
 ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES = 0x2F
 ZES_STRUCTURE_TYPE_FIRMWARE_PROPERTIES = 0x8
+ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES = 0x00020026
+ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES = 0x00020027
 
 
 ## Core ze_device UUID struct ##
@@ -740,6 +742,27 @@ class zes_subdevice_exp_properties_t(_PrintableStructure):
         ("pNext", c_void_p),  # optional chain
         ("subdeviceId", c_uint32),  # Sub-device ID
         ("uuid", zes_uuid_t),  # Sub-device UUID
+    ]
+
+
+class zes_device_index_ext_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("deviceIndex", c_uint32),
+    ]
+
+
+class zes_device_gpu_topology_ext_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),
+        ("pNext", c_void_p),
+        ("numSlices", c_uint32),
+        ("numXeCores", c_uint32),
+        ("numVectorEngines", c_uint32),
+        ("numMatrixEngines", c_uint32),
+        ("numThreads", c_uint32),
+        ("generationName", c_char * ZES_STRING_PROPERTY_SIZE),
     ]
 
 

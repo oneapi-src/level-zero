@@ -177,6 +177,8 @@ The Linux Dependencies and Windows Dependencies columns list the external librar
 | `zesDriverGetDeviceByUuidExp` | Device | 0.1.0 | Experimental API | None | None |
 | `zesDeviceGetSubDevicePropertiesExp` | Device | 0.1.0 | Experimental API | None | None |
 | `zesDeviceProcessesGetState` | Device | 0.1.0 | None | None | None |
+| `zes_device_index_ext_properties_t` | Device | 0.1.5 | None | None | None |
+| `zes_device_gpu_topology_ext_properties_t` | Device | 0.1.5 | None | None | None |
 | **Driver Management** |-|-|-|-|-|
 | `zesDriverGetProperties` | Driver | 0.1.4 | None | None | None |
 | `zesDriverGetExtensionProperties` | Driver | 0.1.4 | None | None | None |
