@@ -9,6 +9,7 @@
 # Python bindings for the libze_intel_gpu.so / ze_intel_gpu.dll library
 ##
 
+import ctypes.util
 import glob
 import os
 import sys
@@ -56,6 +57,62 @@ class _PrintableStructure(Structure):
         return self.__class__.__name__ + "(" + ", ".join(result) + ")"
 
 
+## Sysman API version (zes_api_version_t) ##
+def ZES_MAKE_VERSION(major, minor):
+    return (major << 16) | (minor & 0x0000FFFF)
+
+
+def ZES_MAJOR_VERSION(ver):
+    return ver >> 16
+
+
+def ZES_MINOR_VERSION(ver):
+    return ver & 0x0000FFFF
+
+
+zes_api_version_t = c_int32
+ZES_API_VERSION_1_0 = ZES_MAKE_VERSION(1, 0)
+ZES_API_VERSION_1_1 = ZES_MAKE_VERSION(1, 1)
+ZES_API_VERSION_1_2 = ZES_MAKE_VERSION(1, 2)
+ZES_API_VERSION_1_3 = ZES_MAKE_VERSION(1, 3)
+ZES_API_VERSION_1_4 = ZES_MAKE_VERSION(1, 4)
+ZES_API_VERSION_1_5 = ZES_MAKE_VERSION(1, 5)
+ZES_API_VERSION_1_6 = ZES_MAKE_VERSION(1, 6)
+ZES_API_VERSION_1_7 = ZES_MAKE_VERSION(1, 7)
+ZES_API_VERSION_1_8 = ZES_MAKE_VERSION(1, 8)
+ZES_API_VERSION_1_9 = ZES_MAKE_VERSION(1, 9)
+ZES_API_VERSION_1_10 = ZES_MAKE_VERSION(1, 10)
+ZES_API_VERSION_1_11 = ZES_MAKE_VERSION(1, 11)
+ZES_API_VERSION_1_12 = ZES_MAKE_VERSION(1, 12)
+ZES_API_VERSION_1_13 = ZES_MAKE_VERSION(1, 13)
+ZES_API_VERSION_1_14 = ZES_MAKE_VERSION(1, 14)
+ZES_API_VERSION_1_15 = ZES_MAKE_VERSION(1, 15)
+ZES_API_VERSION_1_16 = ZES_MAKE_VERSION(1, 16)
+ZES_API_VERSION_1_17 = ZES_MAKE_VERSION(1, 17)
+ZES_API_VERSION_1_18 = ZES_MAKE_VERSION(1, 18)
+ZES_API_VERSION_1_19 = ZES_MAKE_VERSION(1, 19)
+ZES_API_VERSION_1_20 = ZES_MAKE_VERSION(1, 20)
+ZES_API_VERSION_1_21 = ZES_MAKE_VERSION(1, 21)
+ZES_API_VERSION_CURRENT = ZES_MAKE_VERSION(1, 21)
+ZES_API_VERSION_FORCE_UINT32 = 0x7FFFFFFF
+
+
+def _GetLinuxLoaderNames(libName):
+    """Return the loader library names to try on Linux, in order.
+
+    The soname major version is derived from ZES_API_VERSION_CURRENT, the spec
+    version these bindings were generated for.
+    """
+    major = ZES_MAJOR_VERSION(ZES_API_VERSION_CURRENT)
+    names = ["lib" + libName + ".so." + str(major)]
+    found = ctypes.util.find_library(libName)
+    if found:
+        names.append(found)
+    names.append("lib" + libName + ".so")
+    # drop duplicates, keep order
+    return list(dict.fromkeys(names))
+
+
 def _LoadZeLibrary():
     global gpuLib
     if gpuLib is not None:
@@ -69,7 +126,18 @@ def _LoadZeLibrary():
         # load the library
         libName = "ze_loader"
         if sys.platform.startswith("linux"):
-            libName = "/usr/lib/x86_64-linux-gnu/lib" + libName + ".so.1"
+            load_errors = []
+            for candidate in _GetLinuxLoaderNames(libName):
+                try:
+                    gpuLib = CDLL(candidate)
+                    break
+                except OSError as error:
+                    load_errors.append(f"{candidate}: {error}")
+            if gpuLib is None:
+                raise Exception(
+                    "Failed to load Level Zero loader on Linux. "
+                    f"Errors: {load_errors}"
+                )
         else:
             libName = libName + ".dll"
 
@@ -106,9 +174,6 @@ def _LoadZeLibrary():
                     "Failed to load Level Zero loader on Windows. "
                     f"Tried paths: {possible_paths}. Errors: {load_errors}"
                 )
-
-        if sys.platform.startswith("linux"):
-            gpuLib = CDLL(libName)
 
         if gpuLib is None:
             raise Exception("Failed to load library: " + str(libName))
@@ -509,6 +574,10 @@ ZES_STRUCTURE_TYPE_INFO_LOG_METADATA_EXT = 0x00020022
 ZES_STRUCTURE_TYPE_INFO_LOG_READ_STATUS_EXT = 0x00020023
 ZES_STRUCTURE_TYPE_DRIVER_PROPERTIES = 0x2F
 ZES_STRUCTURE_TYPE_FIRMWARE_PROPERTIES = 0x8
+ZES_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES = 0x00020024
+ZES_STRUCTURE_TYPE_DRIVER_PCI_DEVICE_PROPERTIES = 0x00020025
+ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES = 0x00020026
+ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES = 0x00020027
 
 
 ## Core ze_device UUID struct ##
@@ -668,6 +737,50 @@ class zes_pci_stats_t(_PrintableStructure):
     }
 
 
+zes_pci_link_speed_flags_t = c_uint32
+ZES_PCI_LINK_SPEED_FLAG_GEN1 = 1 << 0
+ZES_PCI_LINK_SPEED_FLAG_GEN2 = 1 << 1
+ZES_PCI_LINK_SPEED_FLAG_GEN3 = 1 << 2
+ZES_PCI_LINK_SPEED_FLAG_GEN4 = 1 << 3
+ZES_PCI_LINK_SPEED_FLAG_GEN5 = 1 << 4
+ZES_PCI_LINK_SPEED_FLAG_GEN6 = 1 << 5
+ZES_PCI_LINK_SPEED_FLAG_GEN7 = 1 << 6
+ZES_PCI_LINK_SPEED_FLAG_FORCE_UINT32 = 0x7FFFFFFF
+
+
+class zes_pci_config_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES
+        ("pNext", c_void_p),
+        ("vendorId", c_uint16),
+        ("deviceId", c_uint16),
+        ("subsystemVendorId", c_uint16),
+        ("subsystemDeviceId", c_uint16),
+        ("pcieCapabilityVersion", c_uint32),
+        ("supportedLinkSpeeds", zes_pci_link_speed_flags_t),
+        ("revision", c_ubyte),
+    ]
+    _fmt_ = {
+        "vendorId": "0x%04X",
+        "deviceId": "0x%04X",
+        "subsystemVendorId": "0x%04X",
+        "subsystemDeviceId": "0x%04X",
+        "supportedLinkSpeeds": "0x%08X",
+        "revision": "0x%02X",
+    }
+
+
+class zes_driver_pci_device_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_DRIVER_PCI_DEVICE_PROPERTIES
+        ("pNext", c_void_p),  # must be None; no extensions are supported
+        ("address", zes_pci_address_t),
+        ("maxSpeed", zes_pci_speed_t),
+        ("configProperties", zes_pci_config_properties_t),
+        ("status", zes_pci_link_status_t),
+    ]
+
+
 ## ECC enums and structures ##
 zes_device_ecc_state_t = c_int32
 ZES_DEVICE_ECC_STATE_UNAVAILABLE = 0
@@ -740,6 +853,39 @@ class zes_subdevice_exp_properties_t(_PrintableStructure):
         ("pNext", c_void_p),  # optional chain
         ("subdeviceId", c_uint32),  # Sub-device ID
         ("uuid", zes_uuid_t),  # Sub-device UUID
+    ]
+
+
+## Sysman zes_device_index_ext_properties_t (extension) ##
+ZES_DEVICE_INDEX_EXT_NAME = "ZES_extension_device_index"
+ZES_DEVICE_INDEX_EXT_VERSION_1_0 = ZES_MAKE_VERSION(1, 0)
+ZES_DEVICE_INDEX_EXT_VERSION_CURRENT = ZES_MAKE_VERSION(1, 0)
+
+
+class zes_device_index_ext_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES
+        ("pNext", c_void_p),  # optional chain
+        ("deviceIndex", c_uint32),  # integer identifier for the Sysman device handle
+    ]
+
+
+## Sysman zes_device_gpu_topology_ext_properties_t (extension) ##
+ZES_DEVICE_GPU_TOPOLOGY_EXT_NAME = "ZES_extension_device_gpu_topology"
+ZES_DEVICE_GPU_TOPOLOGY_EXT_VERSION_1_0 = ZES_MAKE_VERSION(1, 0)
+ZES_DEVICE_GPU_TOPOLOGY_EXT_VERSION_CURRENT = ZES_MAKE_VERSION(1, 0)
+
+
+class zes_device_gpu_topology_ext_properties_t(_PrintableStructure):
+    _fields_ = [
+        ("stype", c_int32),  # ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES
+        ("pNext", c_void_p),  # optional chain
+        ("numSlices", c_uint32),
+        ("numXeCores", c_uint32),
+        ("numVectorEngines", c_uint32),
+        ("numMatrixEngines", c_uint32),
+        ("numThreads", c_uint32),
+        ("generationName", c_char * ZES_STRING_PROPERTY_SIZE),
     ]
 
 
@@ -2729,6 +2875,57 @@ def zesDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties):
     funcPtr.restype = ze_result_t
 
     retVal = funcPtr(hDriver, pCount, pExtensionProperties)
+    return retVal
+
+
+def zesDriverGetApiVersion(hDriver, pVersion):
+    """Wraps API:
+    ze_result_t zesDriverGetApiVersion(
+        zes_driver_handle_t hDriver,
+        zes_api_version_t* pVersion)
+
+    Parameters:
+      hDriver: driver handle
+      pVersion: POINTER(zes_api_version_t) - filled with the Sysman API version.
+                Use ZES_MAJOR_VERSION / ZES_MINOR_VERSION to decode it.
+    Returns:
+      ze_result_t - return code only, the version is filled into pVersion
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetApiVersion")
+    funcPtr.argtypes = [zes_driver_handle_t, POINTER(zes_api_version_t)]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, pVersion)
+    return retVal
+
+
+def zesDriverGetPciDeviceProperties(hDriver, pCount, pProperties):
+    """Wraps API:
+    ze_result_t zesDriverGetPciDeviceProperties(
+        zes_driver_handle_t hDriver,
+        uint32_t* pCount,
+        zes_driver_pci_device_properties_t* pProperties)
+
+    Reports every device supported by the driver that is present on the PCI
+    bus, whether or not a kernel mode driver is bound to it.
+
+    Parameters:
+      hDriver: driver handle
+      pCount: POINTER(c_uint32) - if 0, updated with the number of PCI devices
+      pProperties: POINTER(zes_driver_pci_device_properties_t) or None.
+                   Each element's pNext must be None.
+    Returns:
+      ze_result_t - return code only, properties are filled into pProperties
+    """
+    funcPtr = getFunctionPointerList("zesDriverGetPciDeviceProperties")
+    funcPtr.argtypes = [
+        zes_driver_handle_t,
+        POINTER(c_uint32),
+        POINTER(zes_driver_pci_device_properties_t),
+    ]
+    funcPtr.restype = ze_result_t
+
+    retVal = funcPtr(hDriver, pCount, pProperties)
     return retVal
 
 
