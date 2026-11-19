@@ -33,6 +33,9 @@
 namespace tracing_layer {
 
 extern thread_local ze_bool_t tracingInProgress;
+// Points at the in-flight ze_result_t return value while epilogues run, so
+// zelTracerSetResultReturnValue can override it; nullptr at all other times.
+extern thread_local ze_result_t *pEpilogueResultReturnValue;
 extern struct APITracerContextImp *pGlobalAPITracerContextImp;
 
 // Keys registration and per-call fan-out by (hDriver, functionName) so a callback
@@ -279,6 +282,12 @@ class APITracerCallbackDataImp {
         }                                                                            \
     }
 
+// Only APIs returning ze_result_t expose their return value to
+// zelTracerSetResultReturnValue; other return types get no slot.
+template <typename TRet>
+inline ze_result_t *resultReturnValueSlot(TRet *) { return nullptr; }
+inline ze_result_t *resultReturnValueSlot(ze_result_t *pRet) { return pRet; }
+
 template <typename TRet, typename TFunction_pointer, typename TParams, typename TTracer,
           typename TTracerPrologCallbacks, typename TTracerEpilogCallbacks,
           typename... Args>
@@ -310,12 +319,14 @@ APITracerWrapperImp(TFunction_pointer zeApiPtr, TParams paramsStruct,
                 &ppTracerInstanceUserData[i]);
     }
     ret = zeApiPtr(args...);
+    tracing_layer::pEpilogueResultReturnValue = resultReturnValueSlot(&ret);
     for (size_t i = 0; i < callbacksEpilogs->size(); i++) {
         if (callbacksEpilogs->at(i).current_api_callback != nullptr)
             callbacksEpilogs->at(i).current_api_callback(
                 paramsStruct, ret, callbacksEpilogs->at(i).pUserData,
                 &ppTracerInstanceUserData[i]);
     }
+    tracing_layer::pEpilogueResultReturnValue = nullptr;
     tracing_layer::tracingInProgress = 0;
     tracing_layer::pGlobalAPITracerContextImp->releaseActivetracersList();
     return ret;

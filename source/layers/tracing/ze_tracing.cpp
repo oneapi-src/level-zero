@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -190,6 +190,21 @@ zelTracerDriverExtensionRegisterCallback(
     auto install = tracing_layer::updateLoaderExtensionInstall(
         hDriver, functionName, prologueDelta, epilogueDelta );
     return applyLoaderExtensionInstall( hDriver, functionName, install );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Overrides the value the traced API returns to the application. Only
+///        valid from an epilogue of an API that returns ze_result_t.
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerSetResultReturnValue(
+    ze_result_t value
+    )
+{
+    if( nullptr == tracing_layer::pEpilogueResultReturnValue )
+        return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+
+    *tracing_layer::pEpilogueResultReturnValue = value;
+    return ZE_RESULT_SUCCESS;
 }
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
