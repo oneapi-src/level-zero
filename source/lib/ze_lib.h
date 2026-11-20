@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2025 Intel Corporation
+ * Copyright (C) 2019-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -129,7 +129,7 @@ namespace ze_lib
     }
 
     //////////////////////////////////////////////////////////////////////////
-    __zedlllocal void debug_trace_message(std::string message, std::string result) {
+    __zedlllocal void debug_trace_message(const std::string &message, const std::string &result) {
         if (debugTraceEnabled){
             std::string debugTracePrefix = "ZE_LOADER_DEBUG_TRACE:";
             std::cerr << debugTracePrefix << message << result << std::endl;
