@@ -25,7 +25,7 @@ namespace loader
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
 
-    void context_t::debug_trace_message(std::string message, std::string result) {
+    void context_t::debug_trace_message(const std::string &message, const std::string &result) {
         if (debugTraceEnabled) {
             std::cerr << "ZE_LOADER_DEBUG_TRACE:" << message << result << std::endl;
         }
