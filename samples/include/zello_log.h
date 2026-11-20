@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -760,7 +760,7 @@ std::string to_string(const ze_image_format_layout_t layout) {
   }
 }
 
-ze_image_format_layout_t to_layout(const std::string layout) {
+ze_image_format_layout_t to_layout(const std::string &layout) {
   if (layout == "8") {
     return ZE_IMAGE_FORMAT_LAYOUT_8;
   } else if (layout == "16") {
@@ -840,7 +840,7 @@ std::string to_string(const ze_image_format_type_t type) {
   }
 }
 
-ze_image_format_type_t to_format_type(const std::string format_type) {
+ze_image_format_type_t to_format_type(const std::string &format_type) {
   if (format_type == "UINT") {
     return ZE_IMAGE_FORMAT_TYPE_UINT;
   } else if (format_type == "SINT") {
@@ -890,7 +890,7 @@ std::string to_string(const ze_image_flag_t flag) {
   return flags;
 }
 
-ze_image_flag_t to_flag(const std::string flag) {
+ze_image_flag_t to_flag(const std::string &flag) {
 
   // by default setting to READ
   ze_image_flag_t image_flags = {};
@@ -925,7 +925,7 @@ std::string to_string(const ze_image_type_t type) {
   }
 }
 
-ze_image_type_t to_image_type(const std::string type) {
+ze_image_type_t to_image_type(const std::string &type) {
   if (type == "1D") {
     return ZE_IMAGE_TYPE_1D;
   } else if (type == "2D") {
