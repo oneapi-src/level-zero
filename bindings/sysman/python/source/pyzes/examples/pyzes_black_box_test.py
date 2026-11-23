@@ -580,7 +580,13 @@ def test_global_operation(driver_handle, device_handle, device_index):
     # Initialize properties structure
     properties = pz.zes_device_properties_t()
     properties.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES
-    properties.pNext = None
+    index_properties = pz.zes_device_index_ext_properties_t()
+    index_properties.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES
+    topology_properties = pz.zes_device_gpu_topology_ext_properties_t()
+    topology_properties.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES
+    topology_properties.pNext = None
+    index_properties.pNext = cast(pointer(topology_properties), c_void_p)
+    properties.pNext = cast(pointer(index_properties), c_void_p)
 
     rc = pz.zesDeviceGetProperties(device_handle, byref(properties))
     if not check_rc(f"zesDeviceGetProperties(device {device_index})", rc):
@@ -615,6 +621,15 @@ def test_global_operation(driver_handle, device_handle, device_index):
     )
     print_verbose(f"  Vendor ID: 0x{properties.core.vendorId:04X}")
     print_verbose(f"  Device ID: 0x{properties.core.deviceId:04X}")
+    print_verbose(f"  Device Index: {index_properties.deviceIndex}")
+    print_verbose(f"  Slices: {topology_properties.numSlices}")
+    print_verbose(f"  Xe Cores: {topology_properties.numXeCores}")
+    print_verbose(f"  Vector Engines: {topology_properties.numVectorEngines}")
+    print_verbose(f"  Matrix Engines: {topology_properties.numMatrixEngines}")
+    print_verbose(f"  Threads: {topology_properties.numThreads}")
+    print_verbose(
+        f"  Generation Name: {topology_properties.generationName.decode('utf-8', errors='ignore')}"
+    )
 
     # Test Subdevice Properties (Experimental API)
     print_verbose("\n=== Subdevice Properties Test (Experimental) ===")

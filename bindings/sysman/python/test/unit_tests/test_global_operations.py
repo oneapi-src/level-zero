@@ -101,6 +101,93 @@ class TestGlobalOperations(unittest.TestCase):
         mock_get_func.assert_called_with("zesDeviceGetProperties")
         mock_func.assert_called_once()
 
+    def test_GivenDeviceIndexExtPropertiesInChainWhenCallingZesDeviceGetPropertiesThenDeviceIndexIsReturned(
+        self, mock_get_func
+    ):
+        mock_device_index = 1
+
+        def mock_get_properties(device_handle, properties_ptr):
+            index_props = cast(
+                properties_ptr._obj.pNext,
+                POINTER(self.pyzes.zes_device_index_ext_properties_t),
+            ).contents
+            self.assertEqual(
+                index_props.stype,
+                self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES,
+            )
+            index_props.deviceIndex = mock_device_index
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_get_func.return_value = mock_func
+
+        device_handle = self.pyzes.zes_device_handle_t()
+        index_props = self.pyzes.zes_device_index_ext_properties_t()
+        index_props.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES
+        index_props.pNext = None
+        device_props = self.pyzes.zes_device_properties_t()
+        device_props.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES
+        device_props.pNext = cast(pointer(index_props), c_void_p)
+
+        result = self.pyzes.zesDeviceGetProperties(device_handle, byref(device_props))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(index_props.deviceIndex, mock_device_index)
+        mock_get_func.assert_called_with("zesDeviceGetProperties")
+        mock_func.assert_called_once()
+
+    def test_GivenGpuTopologyExtPropertiesInChainWhenCallingZesDeviceGetPropertiesThenGpuTopologyIsReturned(
+        self, mock_get_func
+    ):
+        mock_num_slices = 1
+        mock_num_xe_cores = 20
+        mock_num_vector_engines = 160
+        mock_num_matrix_engines = 160
+        mock_num_threads = 1280
+        mock_generation_name = b"xe2"
+
+        def mock_get_properties(device_handle, properties_ptr):
+            topology_props = cast(
+                properties_ptr._obj.pNext,
+                POINTER(self.pyzes.zes_device_gpu_topology_ext_properties_t),
+            ).contents
+            self.assertEqual(
+                topology_props.stype,
+                self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES,
+            )
+            topology_props.numSlices = mock_num_slices
+            topology_props.numXeCores = mock_num_xe_cores
+            topology_props.numVectorEngines = mock_num_vector_engines
+            topology_props.numMatrixEngines = mock_num_matrix_engines
+            topology_props.numThreads = mock_num_threads
+            topology_props.generationName = mock_generation_name
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_get_func.return_value = mock_func
+
+        device_handle = self.pyzes.zes_device_handle_t()
+        topology_props = self.pyzes.zes_device_gpu_topology_ext_properties_t()
+        topology_props.stype = (
+            self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES
+        )
+        topology_props.pNext = None
+        device_props = self.pyzes.zes_device_properties_t()
+        device_props.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES
+        device_props.pNext = cast(pointer(topology_props), c_void_p)
+
+        result = self.pyzes.zesDeviceGetProperties(device_handle, byref(device_props))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(topology_props.numSlices, mock_num_slices)
+        self.assertEqual(topology_props.numXeCores, mock_num_xe_cores)
+        self.assertEqual(topology_props.numVectorEngines, mock_num_vector_engines)
+        self.assertEqual(topology_props.numMatrixEngines, mock_num_matrix_engines)
+        self.assertEqual(topology_props.numThreads, mock_num_threads)
+        self.assertEqual(topology_props.generationName, mock_generation_name)
+        mock_get_func.assert_called_with("zesDeviceGetProperties")
+        mock_func.assert_called_once()
+
     def test_GivenValidDeviceHandleWhenCallingZesDevicePciGetPropertiesThenCallSucceedsWithValidProperties(
         self, mock_get_func
     ):
