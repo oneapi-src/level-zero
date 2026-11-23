@@ -93,25 +93,7 @@ ZES_API_VERSION_1_18 = ZES_MAKE_VERSION(1, 18)
 ZES_API_VERSION_1_19 = ZES_MAKE_VERSION(1, 19)
 ZES_API_VERSION_1_20 = ZES_MAKE_VERSION(1, 20)
 ZES_API_VERSION_1_21 = ZES_MAKE_VERSION(1, 21)
-ZES_API_VERSION_CURRENT = ZES_MAKE_VERSION(1, 21)
 ZES_API_VERSION_FORCE_UINT32 = 0x7FFFFFFF
-
-
-def _GetLinuxLoaderNames(libName):
-    """Return the loader library names to try on Linux, in order.
-
-    The soname major version is derived from ZES_API_VERSION_CURRENT, the spec
-    version these bindings were generated for.
-    """
-    major = ZES_MAJOR_VERSION(ZES_API_VERSION_CURRENT)
-    names = ["lib" + libName + ".so." + str(major)]
-    found = ctypes.util.find_library(libName)
-    if found:
-        names.append(found)
-    names.append("lib" + libName + ".so")
-    # drop duplicates, keep order
-    return list(dict.fromkeys(names))
-
 
 def _LoadZeLibrary():
     global gpuLib
@@ -181,6 +163,8 @@ def _LoadZeLibrary():
                     "Failed to load Level Zero loader on Windows. "
                     f"Tried paths: {possible_paths}. Errors: {load_errors}"
                 )
+        if sys.platform.startswith("linux"):
+            gpuLib = CDLL(libName)
 
         if gpuLib is None:
             raise Exception("Failed to load library: " + str(libName))
