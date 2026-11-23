@@ -169,7 +169,7 @@ namespace loader
         std::vector<zel_component_version_t> compVersions;
         const char *LOADER_COMP_NAME = "loader";
 
-        void debug_trace_message(std::string errorMessage, std::string errorValue);
+        void debug_trace_message(const std::string &errorMessage, const std::string &errorValue);
         ze_result_t init();
         ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc);
         void add_loader_version();
