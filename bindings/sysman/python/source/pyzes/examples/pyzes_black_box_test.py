@@ -783,9 +783,13 @@ def test_pci_module(device_handle, device_index):
     """Test PCI properties, state, and stats operations"""
     print(f"\n---- Device {device_index} PCI Test ----")
 
+    config_props = pz.zes_pci_config_properties_t()
+    config_props.stype = pz.ZES_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES
+    config_props.pNext = None
+
     properties = pz.zes_pci_properties_t()
     properties.stype = pz.ZES_STRUCTURE_TYPE_PCI_PROPERTIES
-    properties.pNext = None
+    properties.pNext = cast(pointer(config_props), c_void_p)
 
     rc = pz.zesDevicePciGetProperties(device_handle, byref(properties))
     if not check_rc(f"zesDevicePciGetProperties(device {device_index})", rc):
@@ -804,6 +808,25 @@ def test_pci_module(device_handle, device_index):
     )
     print_verbose(f"  Have Packet Counters: {bool(properties.havePacketCounters)}")
     print_verbose(f"  Have Replay Counters: {bool(properties.haveReplayCounters)}")
+
+    print_verbose("\n=== PCI Config Properties (zes_pci_config_properties_t) ===")
+    if config_props.vendorId or config_props.deviceId:
+        print_verbose(f"  Vendor ID: 0x{config_props.vendorId:04X}")
+        print_verbose(f"  Device ID: 0x{config_props.deviceId:04X}")
+        print_verbose(f"  Subsystem Vendor ID: 0x{config_props.subsystemVendorId:04X}")
+        print_verbose(f"  Subsystem Device ID: 0x{config_props.subsystemDeviceId:04X}")
+        revision_note = (
+            " (device not responding)" if config_props.revision == 0xFF else ""
+        )
+        print_verbose(f"  Revision: 0x{config_props.revision:02X}{revision_note}")
+        print_verbose(
+            f"  PCIe Capability Version: {config_props.pcieCapabilityVersion}"
+        )
+        print_verbose(
+            f"  Supported Link Speeds: {get_pci_link_speeds_string(config_props.supportedLinkSpeeds)}"
+        )
+    else:
+        print_verbose("  PCI config properties not filled in by the driver")
 
     state = pz.zes_pci_state_t()
     state.stype = pz.ZES_STRUCTURE_TYPE_PCI_STATE
