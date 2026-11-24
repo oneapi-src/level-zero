@@ -218,7 +218,8 @@ class TestLinuxLoaderNames(unittest.TestCase):
     def setUp(self):
         import pyzes
 
-        self.pyzes = pyzes    
+        self.pyzes = pyzes
+
 
 if __name__ == "__main__":
     unittest.main()
