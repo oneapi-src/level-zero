@@ -273,8 +273,6 @@ Version 0.1.5 (unreleased)
   - `zes_device_gpu_topology_ext_properties_t` (`ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES`), chained on `zesDeviceGetProperties`
   - `zes_driver_pci_device_properties_t`, `zes_pci_config_properties_t` and the `ZES_PCI_LINK_SPEED_FLAG_*` flags
   - `zes_api_version_t` with `ZES_API_VERSION_*`, and the `ZES_MAKE_VERSION`, `ZES_MAJOR_VERSION` and `ZES_MINOR_VERSION` helpers
-- **Library Loading:**
-  - Linux: the loader is no longer loaded from the fixed path `/usr/lib/x86_64-linux-gnu/libze_loader.so.1`. pyzes tries `libze_loader.so.<major>`, where `<major>` comes from `ZES_API_VERSION_CURRENT`, then the name returned by `ctypes.util.find_library("ze_loader")`, then `libze_loader.so`.
 - **Examples:**
   - `pyzes_black_box_test.py`: the driver properties test (`-D`) prints the Sysman API version and the PCI device list, and the global operations test prints the device index and GPU topology extensions.
 - **Documentation:**

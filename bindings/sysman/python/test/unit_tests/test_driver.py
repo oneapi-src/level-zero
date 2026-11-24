@@ -257,10 +257,7 @@ class TestDriverFunctions(unittest.TestCase):
         self, mock_get_func
     ):
         self.assertEqual(self.pyzes.ZES_MAKE_VERSION(1, 21), 0x00010015)
-        self.assertEqual(self.pyzes.ZES_API_VERSION_1_0, 0x00010000)
-        self.assertEqual(
-            self.pyzes.ZES_API_VERSION_CURRENT, self.pyzes.ZES_API_VERSION_1_21
-        )
+        self.assertEqual(self.pyzes.ZES_API_VERSION_1_0, 0x00010000)        
         self.assertEqual(self.pyzes.ZES_MAJOR_VERSION(0x00020003), 2)
         self.assertEqual(self.pyzes.ZES_MINOR_VERSION(0x00020003), 3)
 

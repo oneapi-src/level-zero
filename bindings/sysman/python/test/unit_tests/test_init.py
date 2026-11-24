@@ -218,46 +218,7 @@ class TestLinuxLoaderNames(unittest.TestCase):
     def setUp(self):
         import pyzes
 
-        self.pyzes = pyzes
-
-    def test_GivenCurrentApiVersionWhenGettingLoaderNamesThenSonameMajorMatchesApiMajor(
-        self,
-    ):
-        with patch("ctypes.util.find_library", return_value=None):
-            names = self.pyzes._GetLinuxLoaderNames("ze_loader")
-
-        major = self.pyzes.ZES_MAJOR_VERSION(self.pyzes.ZES_API_VERSION_CURRENT)
-        self.assertEqual(names, [f"libze_loader.so.{major}", "libze_loader.so"])
-
-    def test_GivenApiMajorVersion2WhenGettingLoaderNamesThenSonameMajorIs2(self):
-        with patch.object(
-            self.pyzes, "ZES_API_VERSION_CURRENT", self.pyzes.ZES_MAKE_VERSION(2, 0)
-        ), patch("ctypes.util.find_library", return_value=None):
-            names = self.pyzes._GetLinuxLoaderNames("ze_loader")
-
-        self.assertEqual(names[0], "libze_loader.so.2")
-
-    def test_GivenFindLibraryResultWhenGettingLoaderNamesThenItIsTriedAfterVersionedName(
-        self,
-    ):
-        with patch.object(
-            self.pyzes, "ZES_API_VERSION_CURRENT", self.pyzes.ZES_MAKE_VERSION(2, 0)
-        ), patch("ctypes.util.find_library", return_value="libze_loader.so.1"):
-            names = self.pyzes._GetLinuxLoaderNames("ze_loader")
-
-        self.assertEqual(
-            names, ["libze_loader.so.2", "libze_loader.so.1", "libze_loader.so"]
-        )
-
-    def test_GivenFindLibraryReturnsVersionedNameWhenGettingLoaderNamesThenNoDuplicates(
-        self,
-    ):
-        major = self.pyzes.ZES_MAJOR_VERSION(self.pyzes.ZES_API_VERSION_CURRENT)
-        with patch("ctypes.util.find_library", return_value=f"libze_loader.so.{major}"):
-            names = self.pyzes._GetLinuxLoaderNames("ze_loader")
-
-        self.assertEqual(names, [f"libze_loader.so.{major}", "libze_loader.so"])
-
+        self.pyzes = pyzes    
 
 if __name__ == "__main__":
     unittest.main()

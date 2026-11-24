@@ -95,7 +95,6 @@ ZES_API_VERSION_1_20 = ZES_MAKE_VERSION(1, 20)
 ZES_API_VERSION_1_21 = ZES_MAKE_VERSION(1, 21)
 ZES_API_VERSION_FORCE_UINT32 = 0x7FFFFFFF
 
-
 def _LoadZeLibrary():
     global gpuLib
     if gpuLib is not None:
