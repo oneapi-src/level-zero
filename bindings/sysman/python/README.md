@@ -185,7 +185,7 @@ The Linux Dependencies and Windows Dependencies columns list the external librar
 | `zesDriverEventRegisterExt` | Driver | 0.1.4 | None | None | None |
 | `zesDriverEventListenExt` | Driver | 0.1.4 | Linux: Requires superuser | `libudev`, `libnl-genl-3`, `libtracefs` | None |
 | `zesDriverGetApiVersion` | Driver | 0.1.5 | None | None | None |
-| `zesDriverGetPciDeviceProperties` | Driver | 0.1.5 | Windows: Not supported | None | None |
+| `zesDriverGetPciDeviceProperties` | Driver | 0.1.5 | Linux: `configProperties.supportedLinkSpeeds` requires superuser, otherwise reported as 0. Windows: Not supported | None | None |
 | `zesDeviceGetState` | Device | 0.1.4 | None | `libigsc` | None |
 | `zesDeviceResetExt` | Device | 0.1.4 | Linux: Requires superuser; all device state is lost | None | None |
 | `zesDeviceEventRegister` | Device | 0.1.4 | Linux: Requires superuser | None | None |
