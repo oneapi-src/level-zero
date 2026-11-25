@@ -1058,6 +1058,10 @@ endif()
 
 
 
+# Fabric topology checker: writes a JSON Lines stream that the test reads back.
+add_test(NAME tests_fabric_topology_checker COMMAND tests --gtest_filter=FabricTopologyChecker.*)
+set_property(TEST tests_fabric_topology_checker PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1;ZE_ENABLE_VALIDATION_LAYER=1;ZEL_ENABLE_FABRIC_TOPOLOGY_CHECKER=1;ZEL_FABRIC_TOPOLOGY_INTERVAL_MS=0;ZEL_FABRIC_TOPOLOGY_OUTPUT=${CMAKE_CURRENT_BINARY_DIR}/fabric_topology_test_output")
+
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)
     add_test(NAME tests_event_deadlock COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeCommandListAppendMemoryCopyWithCircularDependencyOnEventsThenValidationLayerPrintsWarningOfDeadlock*)

@@ -11,9 +11,17 @@
 #include "ze_api.h"
 #include "zer_api.h"
 
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <string>
+#include <vector>
+
 #if defined(_WIN32)
+#include <windows.h>
 #define putenv_safe _putenv
 #else
+#include <unistd.h>
 #define putenv_safe putenv
 #endif
 
@@ -1055,4 +1063,182 @@ TEST(
     // A null handle is never registered; the handle lifetime checker must reject it.
     uint32_t deviceCount = 0;
     EXPECT_EQ(ZE_RESULT_ERROR_INVALID_NULL_HANDLE, zeDeviceGet(nullptr, &deviceCount, nullptr));
+}
+
+namespace {
+
+// Reads the JSON Lines stream written by the fabric topology checker for this process.
+std::vector<std::string> readFabricTopologyLog() {
+    const char *dir = getenv("ZEL_FABRIC_TOPOLOGY_OUTPUT");
+    if (dir == nullptr)
+        return {};
+#if defined(_WIN32)
+    char host[MAX_COMPUTERNAME_LENGTH + 1] = {};
+    DWORD hostLen = sizeof(host);
+    GetComputerNameA(host, &hostLen);
+    unsigned long pid = GetCurrentProcessId();
+#else
+    char host[256] = {};
+    gethostname(host, sizeof(host) - 1);
+    unsigned long pid = static_cast<unsigned long>(getpid());
+#endif
+    std::string path = std::string(dir) + "/fabric_topology_" + host + "_" + std::to_string(pid) + ".jsonl";
+    std::ifstream in(path);
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(in, line))
+        lines.push_back(line);
+    return lines;
+}
+
+size_t countLinesContaining(const std::vector<std::string> &lines, const std::string &a, const std::string &b = "") {
+    size_t n = 0;
+    for (const auto &l : lines)
+        if (l.find(a) != std::string::npos && (b.empty() || l.find(b) != std::string::npos))
+            ++n;
+    return n;
+}
+
+// Returns the value of a string field ("key":"value") from a JSON line.
+std::string jsonStringField(const std::string &line, const std::string &key) {
+    std::string tag = "\"" + key + "\":\"";
+    auto start = line.find(tag);
+    if (start == std::string::npos)
+        return "";
+    start += tag.size();
+    auto end = line.find('"', start);
+    return end == std::string::npos ? "" : line.substr(start, end - start);
+}
+
+} // namespace
+
+// The checker runs with ZEL_FABRIC_TOPOLOGY_INTERVAL_MS=0 so every submission is
+// written (and flushed) as its own traffic record.
+TEST(
+    FabricTopologyChecker,
+    GivenFabricTopologyCheckerEnabledWhenCopiesFillsAndIpcAreUsedThenTrafficIsAttributedToMemoryLocations) {
+
+    putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=GPU"));
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeInit(ZE_INIT_FLAG_GPU_ONLY));
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    uint32_t driverCount = 0;
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&driverCount, nullptr, &desc));
+    ASSERT_GT(driverCount, 0u);
+    // The topology is populated as soon as the loader completes zeInitDrivers,
+    // even when the application only asked for the driver count.
+    EXPECT_GE(countLinesContaining(readFabricTopologyLog(), "\"type\":\"topology\""), 1u);
+    EXPECT_GE(countLinesContaining(readFabricTopologyLog(), "\"fabric_query\":{"), 1u);
+    std::vector<ze_driver_handle_t> drivers(driverCount);
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&driverCount, drivers.data(), &desc));
+
+    // Use the null driver's device so the result does not depend on installed hardware.
+    ze_driver_handle_t hDriver = nullptr;
+    ze_device_handle_t hDevice = nullptr;
+    ze_device_properties_t deviceProps = {ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES};
+    for (auto driver : drivers) {
+        uint32_t deviceCount = 0;
+        ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(driver, &deviceCount, nullptr));
+        std::vector<ze_device_handle_t> devices(deviceCount);
+        ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(driver, &deviceCount, devices.data()));
+        for (auto device : devices) {
+            ze_device_properties_t props = {ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES};
+            ASSERT_EQ(ZE_RESULT_SUCCESS, zeDeviceGetProperties(device, &props));
+            if (hDevice == nullptr || strcmp(props.name, "Null Device") == 0) {
+                hDriver = driver;
+                hDevice = device;
+                deviceProps = props;
+            }
+        }
+    }
+    ASSERT_NE(nullptr, hDevice);
+    static const char digits[] = "0123456789abcdef";
+    std::string dev = "dev:";
+    for (uint32_t i = 0; i < ZE_MAX_DEVICE_UUID_SIZE; ++i) {
+        dev += digits[deviceProps.uuid.id[i] >> 4];
+        dev += digits[deviceProps.uuid.id[i] & 0xf];
+    }
+
+    ze_context_handle_t hContext = nullptr;
+    ze_context_desc_t contextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeContextCreate(hDriver, &contextDesc, &hContext));
+
+    void *hostBuf = nullptr;
+    void *devBuf = nullptr;
+    ze_host_mem_alloc_desc_t hostDesc = {ZE_STRUCTURE_TYPE_HOST_MEM_ALLOC_DESC};
+    ze_device_mem_alloc_desc_t devDesc = {ZE_STRUCTURE_TYPE_DEVICE_MEM_ALLOC_DESC};
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeMemAllocHost(hContext, &hostDesc, 4096, 64, &hostBuf));
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeMemAllocDevice(hContext, &devDesc, 4096, 64, hDevice, &devBuf));
+
+    // Immediate command list: accounted at append time.
+    ze_command_list_handle_t hImmediate = nullptr;
+    ze_command_queue_desc_t queueDesc = {ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC};
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeCommandListCreateImmediate(hContext, hDevice, &queueDesc, &hImmediate));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListAppendMemoryCopy(hImmediate, devBuf, hostBuf, 4096, nullptr, 0, nullptr));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListAppendMemoryCopy(hImmediate, hostBuf, devBuf, 1024, nullptr, 0, nullptr));
+    uint32_t pattern = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListAppendMemoryFill(hImmediate, devBuf, &pattern, sizeof(pattern), 256, nullptr, 0, nullptr));
+
+    // Regular command list: accounted on every execution, not at append time.
+    ze_command_list_handle_t hRegular = nullptr;
+    ze_command_list_desc_t listDesc = {ZE_STRUCTURE_TYPE_COMMAND_LIST_DESC};
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeCommandListCreate(hContext, hDevice, &listDesc, &hRegular));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListAppendMemoryCopy(hRegular, devBuf, hostBuf, 512, nullptr, 0, nullptr));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListClose(hRegular));
+    auto beforeExecute = readFabricTopologyLog();
+    EXPECT_EQ(0u, countLinesContaining(beforeExecute, "\"bytes\":512,"));
+    ze_command_queue_handle_t hQueue = nullptr;
+    ASSERT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueCreate(hContext, hDevice, &queueDesc, &hQueue));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueExecuteCommandLists(hQueue, 1, &hRegular, nullptr));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueExecuteCommandLists(hQueue, 1, &hRegular, nullptr));
+
+    // IPC: export the device buffer, then "import" it. The null driver does not
+    // fill IPC outputs, so seed the handle and the imported pointer.
+    ze_ipc_mem_handle_t ipcHandle;
+    memset(ipcHandle.data, 0x5a, sizeof(ipcHandle.data));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemGetIpcHandle(hContext, devBuf, &ipcHandle));
+    std::vector<char> importedStorage(4096);
+    void *imported = importedStorage.data();
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemOpenIpcHandle(hContext, hDevice, ipcHandle, 0, &imported));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListAppendMemoryCopy(hImmediate, hostBuf, imported, 128, nullptr, 0, nullptr));
+
+    auto lines = readFabricTopologyLog();
+    ASSERT_FALSE(lines.empty()) << "no fabric topology output written";
+
+    EXPECT_EQ(1u, countLinesContaining(lines, "\"type\":\"process_start\""));
+    EXPECT_GE(countLinesContaining(lines, "\"type\":\"topology\"", "\"" + dev + "\""), 1u);
+    EXPECT_EQ(1u, countLinesContaining(lines, "\"type\":\"device\"", "\"id\":\"" + dev + "\""));
+
+    const std::string exec = "{\"exec\":\"" + dev + "\",";
+    EXPECT_EQ(1u, countLinesContaining(lines, exec + "\"src\":\"host\",\"dst\":\"" + dev + "\",\"op\":\"copy\",\"bytes\":4096,\"ops\":1}"));
+    EXPECT_EQ(1u, countLinesContaining(lines, exec + "\"src\":\"" + dev + "\",\"dst\":\"host\",\"op\":\"copy\",\"bytes\":1024,\"ops\":1}"));
+    EXPECT_EQ(1u, countLinesContaining(lines, exec + "\"src\":null,\"dst\":\"" + dev + "\",\"op\":\"fill\",\"bytes\":256,\"ops\":1}"));
+    // Two executions of the regular list => two traffic records of 512 bytes.
+    EXPECT_EQ(2u, countLinesContaining(lines, exec + "\"src\":\"host\",\"dst\":\"" + dev + "\",\"op\":\"copy\",\"bytes\":512,\"ops\":1}"));
+
+    // Export and import carry the same join key; traffic from the import is attributed to it.
+    std::string exportHash, importHash, importLoc;
+    for (const auto &l : lines) {
+        if (l.find("\"type\":\"ipc_export\"") != std::string::npos) {
+            exportHash = jsonStringField(l, "handle_hash");
+            EXPECT_EQ(dev, jsonStringField(l, "loc"));
+        }
+        if (l.find("\"type\":\"ipc_import\"") != std::string::npos) {
+            importHash = jsonStringField(l, "handle_hash");
+            importLoc = jsonStringField(l, "loc");
+        }
+    }
+    EXPECT_FALSE(exportHash.empty());
+    EXPECT_EQ(exportHash, importHash);
+    EXPECT_EQ("ipc:0", importLoc);
+    EXPECT_EQ(1u, countLinesContaining(lines, exec + "\"src\":\"ipc:0\",\"dst\":\"host\",\"op\":\"copy\",\"bytes\":128,\"ops\":1}"));
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemCloseIpcHandle(hContext, imported));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandQueueDestroy(hQueue));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListDestroy(hRegular));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeCommandListDestroy(hImmediate));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemFree(hContext, devBuf));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeMemFree(hContext, hostBuf));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeContextDestroy(hContext));
+    EXPECT_EQ(1u, countLinesContaining(readFabricTopologyLog(), "\"type\":\"ipc_close\""));
 }

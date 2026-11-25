@@ -24,6 +24,7 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZEL_ENABLE_CERTIFICATION_CHECKER`
 - `ZEL_ENABLE_PERFORMANCE_CHECKER`
 - `ZEL_ENABLE_SYSTEM_RESOURCE_TRACKER_CHECKER`
+- `ZEL_ENABLE_FABRIC_TOPOLOGY_CHECKER`
 
 ## Validation Modes
 
@@ -152,3 +153,21 @@ It is desired to add new unit tests directly into validation layer repo that exe
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
+### `ZEL_ENABLE_FABRIC_TOPOLOGY_CHECKER`
+
+The Fabric Topology checker records the device and fabric topology each process sees, and how the workload moves data across it. This is intended for debugging scale-up and scale-out setups. Each process writes a JSON Lines stream with:
+
+- the devices, tiles, P2P matrix and fabric vertices/edges (`zeFabric*Exp`),
+- the bytes moved by copy and fill commands, attributed to the executing device and the source and destination memory (host, device, or another process's memory), and
+- IPC export and import events with join keys, so streams from many processes and hosts can be stitched together.
+
+```bash
+export ZE_ENABLE_VALIDATION_LAYER=1
+export ZEL_ENABLE_FABRIC_TOPOLOGY_CHECKER=1
+export ZEL_FABRIC_TOPOLOGY_OUTPUT=/shared/ftc   # one file per process
+export ZEL_FABRIC_TOPOLOGY_INTERVAL_MS=1000     # optional aggregation interval
+
+python3 scripts/fabric_topology_viewer.py /shared/ftc --html fabric.html [--watch 2]
+```
+
+The viewer merges the streams and produces an interactive HTML report. It contains a per-host ring of `card.tile` devices with MDFI and Xe Link links and switches; throughput and shared-memory views; a time scrubber; and a between-hosts summary. See [fabric_topology.md](checkers/fabric_topology/fabric_topology.md) for details, the record format and limitations.
