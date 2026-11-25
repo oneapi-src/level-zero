@@ -40,6 +40,17 @@ namespace ze_lib
         loaderTeardownCallbackReceived = true;
     }
     #endif
+#ifdef L0_STATIC_LOADER_BUILD_NO_DLL
+    void context_at_exit_destructor()
+    {
+        if (ze_lib::context) {
+            delete ze_lib::context;
+            ze_lib::context = nullptr;
+        }
+    }
+    bool delayContextDestruction = false;
+    std::once_flag embeddedContextAtExitOnce;
+#endif
     /**
      * @brief Removes a teardown callback from the context's callback registry.
      *
@@ -100,6 +111,13 @@ namespace ze_lib
     {
         ze_result_t result;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
+#ifdef L0_STATIC_LOADER_BUILD_NO_DLL
+        std::call_once(embeddedContextAtExitOnce, []() {
+            if (!delayContextDestruction) {
+                std::atexit(context_at_exit_destructor);
+            }
+        });
+#endif
 #ifdef L0_STATIC_LOADER_BUILD
         std::string loaderLibraryPath;
         auto loaderLibraryPathEnv = getenv_string("ZEL_LIBRARY_PATH");

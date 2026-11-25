@@ -7,13 +7,13 @@
  */
 
 #include "../ze_lib.h"
-#ifndef L0_STATIC_LOADER_BUILD
+#if !defined(L0_STATIC_LOADER_BUILD) && !defined(L0_STATIC_LOADER_BUILD_NO_DLL)
 #include "../loader/ze_loader_internal.h"
 #endif
 
 namespace ze_lib
 {
-#ifndef L0_STATIC_LOADER_BUILD
+#if !defined(L0_STATIC_LOADER_BUILD) && !defined(L0_STATIC_LOADER_BUILD_NO_DLL)
     /*
     * DllMain is called by the OS when the DLL is loaded or unloaded.
     * When modifying the code here, be aware of the restrictions on what can be done
