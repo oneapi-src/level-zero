@@ -46,6 +46,20 @@ jobs:
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/lib'
         working-directory: build
         run: ctest -V
+      - name: Stage libraries and headers for abicheck
+        if: matrix.container == 'ubuntu:24.04'
+        run: |
+          cmake --install build --prefix "$PWD/abi-inst"
+          # Only the shipped loader and layers; not the NULL test driver.
+          mkdir -p abi/lib
+          cp -a abi-inst/include abi/
+          cp -a abi-inst/lib/libze_loader.so* abi-inst/lib/libze_validation_layer.so* abi-inst/lib/libze_tracing_layer.so* abi/lib/
+      - if: matrix.container == 'ubuntu:24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: abicheck-inst
+          path: abi
+          retention-days: 3
       - name: Install loader and NULL driver
         working-directory: build
         run: make install
@@ -66,6 +80,75 @@ jobs:
       - name: Uninstall loader
         working-directory: build
         run: make uninstall || xargs rm -v < install_manifest.txt
+
+  # Advisory ABI scan with https://github.com/abicheck/abicheck, next to
+  # check-abi.yml. Compares the ubuntu:24.04 build above, as one directory
+  # (loader + both layers), against the facts that abicheck-baseline.yml
+  # stored on the latest release. Reports breaks, additions and removals;
+  # never fails the PR.
+  abicheck:
+    needs: build-linux
+    if: github.repository_owner == 'oneapi-src' && github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          sparse-checkout: .github
+      - uses: actions-ecosystem/action-get-latest-tag@b7c32daec3395a9616f88548363a42652b22d435 # v1.6.0
+        id: tag
+        with:
+          semver_only: true
+      - name: Fetch stored baseline of ${{ steps.tag.outputs.tag }}
+        id: baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          if gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p level-zero.abicheck-bundle.json.zst; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Release $TAG has no level-zero.abicheck-bundle.json.zst; run abicheck-baseline.yml with tag=$TAG to attach it." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - if: steps.baseline.outputs.found == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: abicheck-inst
+          path: new
+      - name: abicheck vs ${{ steps.tag.outputs.tag }}
+        if: steps.baseline.outputs.found == 'true'
+        id: abicheck
+        uses: abicheck/abicheck@ad964ac65f3352aa78e79c9b646fb70c620666dd # main 2026-10-23; keep in sync with abicheck-baseline.yml
+        with:
+          old-library: level-zero.abicheck-bundle.json.zst
+          new-library: new
+          new-header: new/include/level_zero
+          new-version: ${{ github.event.pull_request.head.sha }}
+          build-config: .github/abicheck.yml
+          # Accepts tail growth of the *_dditable_t tables, which are
+          # versioned through zeGet*ProcAddrTable.
+          policy-file: append_only_dispatch_tables
+          suppress: .github/abicheck-suppressions.yml
+          python-version: '3.15t'
+          extra-args: -o markdown=abicheck.md -o json=abicheck.json
+          annotate: 'true'
+          annotate-additions: 'true'
+          pr-comment: 'false'
+          fail-on-breaking: 'false'
+          fail-on-api-break: 'false'
+      - name: Job summary
+        if: always() && steps.baseline.outputs.found == 'true'
+        # The stored-facts markdown has no per-library counts; add them from JSON.
+        run: |
+          [ -f abicheck.json ] && jq -r '"| Library | Verdict | Breaking | Added | Suppressed |", "|---|---|---|---|---|",
+            (.libraries | to_entries[] | "| \(.key) | `\(.value.verdict)` | \(.value.summary.breaking) | \(.value.summary.compatible_additions) | \(.value.suppression.suppressed_count // 0) |")' \
+            abicheck.json >> "$GITHUB_STEP_SUMMARY" || true
+          [ -f abicheck.md ] && cat abicheck.md >> "$GITHUB_STEP_SUMMARY" || true
+      - if: always() && steps.baseline.outputs.found == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: abicheck-report
+          path: abicheck.*
 
   build-windows:
     if: github.repository_owner == 'oneapi-src'

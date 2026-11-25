@@ -1,0 +1,6 @@
+version: 1
+suppressions:
+  # check-abi.yml masks the same bump (scripts/update_ze_api_version.py).
+  - symbol: "_ze_api_version_t::ZE_API_VERSION_CURRENT"
+    change_kind: enum_member_value_changed
+    reason: "ZE_API_VERSION_CURRENT tracks the newest API version by design"
