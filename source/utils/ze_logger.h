@@ -108,6 +108,17 @@ std::string to_string(ze_result_t result);
 // Factory: reads ZEL_* env vars and constructs an appropriately configured logger.
 std::shared_ptr<ZeLogger> createLogger(const std::string &caller = "Loader");
 
+// Log-filename helpers, exposed for unit testing (not a stable public API).
+// baseNameFromPath() strips any directory prefix. sanitizeFileNameComponent()
+// replaces path-hostile characters with '_' (and maps empty input to
+// "process"). expandLogFilePattern() resolves the runtime tokens documented in
+// the README within ZEL_LOADER_LOG_FILE: %P (pid), %N (process base name),
+// %T (startup timestamp YYYYMMDD-HHMMSS) and %% (literal percent); a filename
+// with no '%' is returned unchanged.
+std::string baseNameFromPath(const std::string &path);
+std::string sanitizeFileNameComponent(std::string value);
+std::string expandLogFilePattern(const std::string &pattern);
+
 // A permanently-alive no-op logger instance suitable for use as a raw-pointer
 // default in components (e.g. the validation layer) that must never hold a
 // shared_ptr across dlclose/process-exit boundaries.
