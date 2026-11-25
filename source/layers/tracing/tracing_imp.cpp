@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 Intel Corporation
+ * Copyright (C) 2020-2026 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -12,6 +12,7 @@
 namespace tracing_layer {
 
 thread_local ze_bool_t tracingInProgress = 0;
+thread_local ze_result_t *pEpilogueResultReturnValue = nullptr;
 
 struct APITracerContextImp *pGlobalAPITracerContextImp;
 
