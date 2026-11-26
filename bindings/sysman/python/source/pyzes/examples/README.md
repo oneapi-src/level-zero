@@ -40,3 +40,16 @@ The scripts add `bindings/sysman/python/source` to `sys.path`, so they import th
 - Python 3.10+
 - Intel GPU with Level-Zero drivers installed
 - pyzes module
+
+---
+
+## pyzes_black_box_test.py Coverage
+
+| Option | Test | APIs exercised |
+|--------|------|----------------|
+| `-D`, `--driverproperties` | Driver properties | `zesDriverGetProperties`, `zesDriverGetApiVersion`, `zesDriverGetPciDeviceProperties`, `zesDriverGetExtensionProperties`, `zesDriverGetExtensionFunctionAddress` |
+| `-g`, `--global` | Global operations | `zesDeviceGetProperties` with the `zes_device_index_ext_properties_t` and `zes_device_gpu_topology_ext_properties_t` extensions chained, `zesDeviceGetSubDevicePropertiesExp`, `zesDriverGetDeviceByUuidExp`, `zesDeviceProcessesGetState` |
+
+`zesDriverGetPciDeviceProperties` lists every supported device on the PCI bus, including devices with no kernel mode driver bound. A revision of `0xFF` is flagged as "device not responding". On drivers that return `ZE_RESULT_ERROR_UNSUPPORTED_FEATURE`, the test reports it as not supported instead of failing.
+
+Run `python3 pyzes_black_box_test.py -h` for the full list of options.

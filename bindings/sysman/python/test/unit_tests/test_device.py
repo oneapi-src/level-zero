@@ -218,6 +218,132 @@ class TestDeviceFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesFirmwareGetProperties")
         mock_func.assert_called_once()
 
+    def _walk_device_properties_chain(self, properties):
+        """Fills chained extensions the way the driver would, keyed on stype."""
+        pyzes = self.pyzes
+        pNext = properties.pNext
+        while pNext:
+            base = cast(pNext, POINTER(pyzes.zes_device_index_ext_properties_t))
+            stype = base.contents.stype
+            if stype == pyzes.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES:
+                base.contents.deviceIndex = 2
+                pNext = base.contents.pNext
+            elif stype == pyzes.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES:
+                topo = cast(
+                    pNext, POINTER(pyzes.zes_device_gpu_topology_ext_properties_t)
+                ).contents
+                topo.numSlices = 1
+                topo.numXeCores = 32
+                topo.numVectorEngines = 256
+                topo.numMatrixEngines = 256
+                topo.numThreads = 2048
+                topo.generationName = b"xe3p"
+                pNext = topo.pNext
+            else:
+                self.fail(f"unexpected stype 0x{stype:X} in pNext chain")
+
+    def test_GivenDeviceIndexExtChainedWhenCallingZesDeviceGetPropertiesThenDeviceIndexIsReturned(
+        self, mock_get_func
+    ):
+        def mock_get_properties(device_handle, properties_ptr):
+            properties = properties_ptr._obj
+            properties.numSubdevices = 0
+            self._walk_device_properties_chain(properties)
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_get_func.return_value = mock_func
+
+        index_ext = self.pyzes.zes_device_index_ext_properties_t()
+        index_ext.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES
+        index_ext.pNext = None
+
+        properties = self.pyzes.zes_device_properties_t()
+        properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES
+        properties.pNext = cast(pointer(index_ext), c_void_p)
+
+        result = self.pyzes.zesDeviceGetProperties(
+            self.pyzes.zes_device_handle_t(), byref(properties)
+        )
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(index_ext.deviceIndex, 2)
+        self.assertEqual(
+            self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES, 0x00020026
+        )
+        mock_get_func.assert_called_with("zesDeviceGetProperties")
+        mock_func.assert_called_once()
+
+    def test_GivenGpuTopologyExtChainedWhenCallingZesDeviceGetPropertiesThenTopologyIsReturned(
+        self, mock_get_func
+    ):
+        def mock_get_properties(device_handle, properties_ptr):
+            self._walk_device_properties_chain(properties_ptr._obj)
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_properties)
+        mock_get_func.return_value = mock_func
+
+        topo_ext = self.pyzes.zes_device_gpu_topology_ext_properties_t()
+        topo_ext.stype = (
+            self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES
+        )
+        topo_ext.pNext = None
+
+        properties = self.pyzes.zes_device_properties_t()
+        properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES
+        properties.pNext = cast(pointer(topo_ext), c_void_p)
+
+        result = self.pyzes.zesDeviceGetProperties(
+            self.pyzes.zes_device_handle_t(), byref(properties)
+        )
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(topo_ext.numSlices, 1)
+        self.assertEqual(topo_ext.numXeCores, 32)
+        self.assertEqual(topo_ext.numVectorEngines, 256)
+        self.assertEqual(topo_ext.numMatrixEngines, 256)
+        self.assertEqual(topo_ext.numThreads, 2048)
+        self.assertEqual(topo_ext.generationName, b"xe3p")
+        self.assertEqual(
+            self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES,
+            0x00020027,
+        )
+        mock_get_func.assert_called_with("zesDeviceGetProperties")
+        mock_func.assert_called_once()
+
+    def test_GivenIndexAndTopologyExtsChainedWhenCallingZesDeviceGetPropertiesThenBothAreFilled(
+        self, mock_get_func
+    ):
+        def mock_get_properties(device_handle, properties_ptr):
+            self._walk_device_properties_chain(properties_ptr._obj)
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_get_func.return_value = MagicMock(side_effect=mock_get_properties)
+
+        topo_ext = self.pyzes.zes_device_gpu_topology_ext_properties_t()
+        topo_ext.stype = (
+            self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES
+        )
+        topo_ext.pNext = None
+
+        index_ext = self.pyzes.zes_device_index_ext_properties_t()
+        index_ext.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES
+        index_ext.pNext = cast(pointer(topo_ext), c_void_p)
+
+        properties = self.pyzes.zes_device_properties_t()
+        properties.stype = self.pyzes.ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES
+        properties.pNext = cast(pointer(index_ext), c_void_p)
+
+        result = self.pyzes.zesDeviceGetProperties(
+            self.pyzes.zes_device_handle_t(), byref(properties)
+        )
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(index_ext.deviceIndex, 2)
+        self.assertEqual(topo_ext.numXeCores, 32)
+        self.assertEqual(topo_ext.generationName, b"xe3p")
+
 
 if __name__ == "__main__":
     unittest.main()

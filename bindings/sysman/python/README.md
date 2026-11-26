@@ -145,7 +145,7 @@ HOW TO USE STRUCTURE CHAINING
 >>> ext = zes_device_ext_properties_t()
 >>> ext.stype = ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES
 >>> ext.pNext = None
->>> base.pNext = cast(pointer(ext), c_void_p)
+>>> props.pNext = cast(pointer(ext), c_void_p)
 >>> pyzes.zesDeviceGetProperties(devices[i], byref(props))
 >>> print(f"Extension properties flags: {ext.flags}")
 ```
@@ -173,7 +173,7 @@ The Linux Dependencies and Windows Dependencies columns list the external librar
 | `zesInit` | Device | 0.1.0 | None | None | None |
 | `zesDriverGet` | Device | 0.1.0 | None | None | None |
 | `zesDeviceGet` | Device | 0.1.0 | None | None | None |
-| `zesDeviceGetProperties` | Device | 0.1.0 | None | None | None |
+| `zesDeviceGetProperties` | Device | 0.1.0 | Extensions `zes_device_index_ext_properties_t` and `zes_device_gpu_topology_ext_properties_t` since 0.1.5 | None | None |
 | `zesDriverGetDeviceByUuidExp` | Device | 0.1.0 | Experimental API | None | None |
 | `zesDeviceGetSubDevicePropertiesExp` | Device | 0.1.0 | Experimental API | None | None |
 | `zesDeviceProcessesGetState` | Device | 0.1.0 | None | None | None |
@@ -184,6 +184,8 @@ The Linux Dependencies and Windows Dependencies columns list the external librar
 | `zesDriverEventListenEx` | Driver | 0.1.4 | Linux: Requires superuser | `libudev`, `libnl-genl-3` | None |
 | `zesDriverEventRegisterExt` | Driver | 0.1.4 | None | None | None |
 | `zesDriverEventListenExt` | Driver | 0.1.4 | Linux: Requires superuser | `libudev`, `libnl-genl-3`, `libtracefs` | None |
+| `zesDriverGetApiVersion` | Driver | 0.1.5 | None | None | None |
+| `zesDriverGetPciDeviceProperties` | Driver | 0.1.5 | Linux: `configProperties.supportedLinkSpeeds` requires superuser, otherwise reported as 0. Windows: Not supported | None | None |
 | `zesDeviceGetState` | Device | 0.1.4 | None | `libigsc` | None |
 | `zesDeviceResetExt` | Device | 0.1.4 | Linux: Requires superuser; all device state is lost | None | None |
 | `zesDeviceEventRegister` | Device | 0.1.4 | Linux: Requires superuser | None | None |
@@ -263,6 +265,19 @@ The Linux Dependencies and Windows Dependencies columns list the external librar
 
 RELEASE NOTES
 -------------
+Version 0.1.5 (unreleased)
+- **New API Functions:**
+  - Driver: `zesDriverGetApiVersion`, `zesDriverGetPciDeviceProperties`
+- **New Structures:**
+  - `zes_device_index_ext_properties_t` (`ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES`), chained on `zesDeviceGetProperties`
+  - `zes_device_gpu_topology_ext_properties_t` (`ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES`), chained on `zesDeviceGetProperties`
+  - `zes_driver_pci_device_properties_t`, `zes_pci_config_properties_t` and the `ZES_PCI_LINK_SPEED_FLAG_*` flags
+  - `zes_api_version_t` with `ZES_API_VERSION_*`, and the `ZES_MAKE_VERSION`, `ZES_MAJOR_VERSION` and `ZES_MINOR_VERSION` helpers
+- **Examples:**
+  - `pyzes_black_box_test.py`: the driver properties test (`-D`) prints the Sysman API version and the PCI device list, and the global operations test prints the device index and GPU topology extensions.
+- **Documentation:**
+  - Fixed the structure chaining example, which set `pNext` on an undefined `base` variable
+
 Version 0.1.4
 - **New API Functions:**
   - Driver: `zesDriverGetProperties`, `zesDriverGetExtensionProperties`, `zesDriverGetExtensionFunctionAddress`, `zesDriverEventListenEx`, `zesDriverEventRegisterExt`, `zesDriverEventListenExt`
