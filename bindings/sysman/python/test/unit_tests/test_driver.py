@@ -231,6 +231,137 @@ class TestDriverFunctions(unittest.TestCase):
         mock_get_func.assert_called_with("zesDriverEventListenExt")
         mock_func.assert_called_once()
 
+    def test_GivenValidDriverHandleWhenCallingZesDriverGetApiVersionThenCallSucceedsWithVersion(
+        self, mock_get_func
+    ):
+        def mock_get_api_version(driver_handle, version_ptr):
+            version_ptr._obj.value = self.pyzes.ZES_API_VERSION_1_21
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_api_version)
+        mock_get_func.return_value = mock_func
+
+        driver_handle = self.pyzes.zes_driver_handle_t()
+        version = self.pyzes.zes_api_version_t()
+
+        result = self.pyzes.zesDriverGetApiVersion(driver_handle, byref(version))
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(version.value, self.pyzes.ZES_API_VERSION_1_21)
+        self.assertEqual(self.pyzes.ZES_MAJOR_VERSION(version.value), 1)
+        self.assertEqual(self.pyzes.ZES_MINOR_VERSION(version.value), 21)
+        mock_get_func.assert_called_with("zesDriverGetApiVersion")
+        mock_func.assert_called_once()
+
+    def test_GivenApiVersionMacrosWhenComputingVersionsThenValuesMatchCHeader(
+        self, mock_get_func
+    ):
+        self.assertEqual(self.pyzes.ZES_MAKE_VERSION(1, 21), 0x00010015)
+        self.assertEqual(self.pyzes.ZES_API_VERSION_1_0, 0x00010000)
+        self.assertEqual(self.pyzes.ZES_MAJOR_VERSION(0x00020003), 2)
+        self.assertEqual(self.pyzes.ZES_MINOR_VERSION(0x00020003), 3)
+
+    def test_GivenValidDriverHandleWhenCallingZesDriverGetPciDevicePropertiesThenCallSucceedsWithValidCount(
+        self, mock_get_func
+    ):
+        mock_count = 2
+
+        def mock_get_pci_device_properties(driver_handle, count_ptr, properties_ptr):
+            self.assertFalse(bool(properties_ptr))
+            count_ptr._obj.value = mock_count
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_pci_device_properties)
+        mock_get_func.return_value = mock_func
+
+        driver_handle = self.pyzes.zes_driver_handle_t()
+        count = c_uint32(0)
+
+        result = self.pyzes.zesDriverGetPciDeviceProperties(
+            driver_handle, byref(count), None
+        )
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(count.value, mock_count)
+        mock_get_func.assert_called_with("zesDriverGetPciDeviceProperties")
+        mock_func.assert_called_once()
+
+    def test_GivenValidDriverHandleWhenCallingZesDriverGetPciDevicePropertiesWithArrayThenCallSucceedsWithProperties(
+        self, mock_get_func
+    ):
+        mock_count = 2
+
+        def mock_get_pci_device_properties(driver_handle, count_ptr, properties_ptr):
+            count_ptr._obj.value = mock_count
+            for i in range(mock_count):
+                props = properties_ptr[i]
+                props.address.domain = 0
+                props.address.bus = 0x03 + i
+                props.address.device = 0
+                props.address.function = 0
+                props.maxSpeed.gen = -1
+                props.maxSpeed.width = -1
+                props.maxSpeed.maxBandwidth = -1
+                props.status = self.pyzes.ZES_PCI_LINK_STATUS_GOOD
+                props.configProperties.stype = (
+                    self.pyzes.ZES_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES
+                )
+                props.configProperties.vendorId = 0x8086
+                props.configProperties.deviceId = 0x674C
+                props.configProperties.subsystemVendorId = 0x8086
+                props.configProperties.subsystemDeviceId = 0x1234
+                props.configProperties.supportedLinkSpeeds = (
+                    self.pyzes.ZES_PCI_LINK_SPEED_FLAG_GEN1
+                    | self.pyzes.ZES_PCI_LINK_SPEED_FLAG_GEN5
+                )
+            # second device has a revision of 0xFF (device fell off the bus)
+            properties_ptr[0].configProperties.revision = 0x01
+            properties_ptr[1].configProperties.revision = 0xFF
+            return self.pyzes.ZE_RESULT_SUCCESS
+
+        mock_func = MagicMock(side_effect=mock_get_pci_device_properties)
+        mock_get_func.return_value = mock_func
+
+        driver_handle = self.pyzes.zes_driver_handle_t()
+        count = c_uint32(mock_count)
+        properties = (self.pyzes.zes_driver_pci_device_properties_t * mock_count)()
+        for i in range(mock_count):
+            properties[i].stype = (
+                self.pyzes.ZES_STRUCTURE_TYPE_DRIVER_PCI_DEVICE_PROPERTIES
+            )
+            properties[i].pNext = None
+
+        result = self.pyzes.zesDriverGetPciDeviceProperties(
+            driver_handle, byref(count), properties
+        )
+
+        self.assertEqual(result, self.pyzes.ZE_RESULT_SUCCESS)
+        self.assertEqual(count.value, mock_count)
+        self.assertEqual(properties[0].address.bus, 0x03)
+        self.assertEqual(properties[1].address.bus, 0x04)
+        self.assertEqual(properties[0].maxSpeed.gen, -1)
+        self.assertEqual(properties[0].status, self.pyzes.ZES_PCI_LINK_STATUS_GOOD)
+        self.assertEqual(properties[0].configProperties.vendorId, 0x8086)
+        self.assertEqual(properties[0].configProperties.deviceId, 0x674C)
+        self.assertEqual(properties[0].configProperties.subsystemDeviceId, 0x1234)
+        self.assertEqual(properties[0].configProperties.supportedLinkSpeeds, 0x11)
+        self.assertEqual(properties[0].configProperties.revision, 0x01)
+        self.assertEqual(properties[1].configProperties.revision, 0xFF)
+        mock_get_func.assert_called_with("zesDriverGetPciDeviceProperties")
+        mock_func.assert_called_once()
+
+    def test_GivenPciConfigPropertiesStructWhenCheckingLayoutThenSizeMatchesCStruct(
+        self, mock_get_func
+    ):
+        # stype(4) + pad(4) + pNext(8) + 4*uint16(8) + 2*uint32(8) + uint8(1) + pad(7)
+        self.assertEqual(sizeof(self.pyzes.zes_pci_config_properties_t), 40)
+        self.assertEqual(
+            self.pyzes.ZES_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES, 0x00020024
+        )
+        self.assertEqual(
+            self.pyzes.ZES_STRUCTURE_TYPE_DRIVER_PCI_DEVICE_PROPERTIES, 0x00020025
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

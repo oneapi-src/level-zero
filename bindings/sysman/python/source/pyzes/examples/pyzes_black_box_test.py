@@ -161,6 +161,18 @@ def get_pci_link_status_string(link_status):
     return status_map.get(link_status, f"UNKNOWN_PCI_LINK_STATUS_{link_status}")
 
 
+def get_pci_link_speeds_string(link_speeds):
+    """Convert supported PCI link speed flags to string"""
+    if link_speeds == 0:
+        return "Unknown"
+    gens = [
+        f"Gen{gen}"
+        for gen in range(1, 8)
+        if link_speeds & getattr(pz, f"ZES_PCI_LINK_SPEED_FLAG_GEN{gen}")
+    ]
+    return ", ".join(gens) if gens else f"0x{link_speeds:08X}"
+
+
 def get_pci_quality_issues_string(quality_issues):
     """Convert PCI quality issue flags to string"""
     if quality_issues == 0:
@@ -577,10 +589,20 @@ def test_global_operation(driver_handle, device_handle, device_index):
     # Test Device Properties
     print_verbose("=== Device Properties Test ===")
 
+    # Chain the device index and GPU topology extensions:
+    # properties -> index_ext -> topology_ext
+    topology_ext = pz.zes_device_gpu_topology_ext_properties_t()
+    topology_ext.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_GPU_TOPOLOGY_EXT_PROPERTIES
+    topology_ext.pNext = None
+
+    index_ext = pz.zes_device_index_ext_properties_t()
+    index_ext.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_INDEX_EXT_PROPERTIES
+    index_ext.pNext = cast(pointer(topology_ext), c_void_p)
+
     # Initialize properties structure
     properties = pz.zes_device_properties_t()
     properties.stype = pz.ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES
-    properties.pNext = None
+    properties.pNext = cast(pointer(index_ext), c_void_p)
 
     rc = pz.zesDeviceGetProperties(device_handle, byref(properties))
     if not check_rc(f"zesDeviceGetProperties(device {device_index})", rc):
@@ -615,6 +637,26 @@ def test_global_operation(driver_handle, device_handle, device_index):
     )
     print_verbose(f"  Vendor ID: 0x{properties.core.vendorId:04X}")
     print_verbose(f"  Device ID: 0x{properties.core.deviceId:04X}")
+
+    # Drivers leave extension structures they don't support untouched
+    print_verbose(
+        "\n=== Device Index Extension (zes_device_index_ext_properties_t) ==="
+    )
+    print_verbose(f"  Device Index: {index_ext.deviceIndex}")
+
+    print_verbose(
+        "\n=== GPU Topology Extension (zes_device_gpu_topology_ext_properties_t) ==="
+    )
+    generation_name = topology_ext.generationName.decode("utf-8", errors="ignore")
+    if generation_name or topology_ext.numXeCores:
+        print_verbose(f"  Generation Name: {generation_name}")
+        print_verbose(f"  Slices: {topology_ext.numSlices}")
+        print_verbose(f"  Xe Cores: {topology_ext.numXeCores}")
+        print_verbose(f"  Vector Engines: {topology_ext.numVectorEngines}")
+        print_verbose(f"  Matrix Engines: {topology_ext.numMatrixEngines}")
+        print_verbose(f"  Hardware Threads: {topology_ext.numThreads}")
+    else:
+        print_verbose("  GPU topology extension not filled in by the driver")
 
     # Test Subdevice Properties (Experimental API)
     print_verbose("\n=== Subdevice Properties Test (Experimental) ===")
@@ -741,9 +783,13 @@ def test_pci_module(device_handle, device_index):
     """Test PCI properties, state, and stats operations"""
     print(f"\n---- Device {device_index} PCI Test ----")
 
+    config_props = pz.zes_pci_config_properties_t()
+    config_props.stype = pz.ZES_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES
+    config_props.pNext = None
+
     properties = pz.zes_pci_properties_t()
     properties.stype = pz.ZES_STRUCTURE_TYPE_PCI_PROPERTIES
-    properties.pNext = None
+    properties.pNext = cast(pointer(config_props), c_void_p)
 
     rc = pz.zesDevicePciGetProperties(device_handle, byref(properties))
     if not check_rc(f"zesDevicePciGetProperties(device {device_index})", rc):
@@ -762,6 +808,25 @@ def test_pci_module(device_handle, device_index):
     )
     print_verbose(f"  Have Packet Counters: {bool(properties.havePacketCounters)}")
     print_verbose(f"  Have Replay Counters: {bool(properties.haveReplayCounters)}")
+
+    print_verbose("\n=== PCI Config Properties (zes_pci_config_properties_t) ===")
+    if config_props.vendorId or config_props.deviceId:
+        print_verbose(f"  Vendor ID: 0x{config_props.vendorId:04X}")
+        print_verbose(f"  Device ID: 0x{config_props.deviceId:04X}")
+        print_verbose(f"  Subsystem Vendor ID: 0x{config_props.subsystemVendorId:04X}")
+        print_verbose(f"  Subsystem Device ID: 0x{config_props.subsystemDeviceId:04X}")
+        revision_note = (
+            " (device not responding)" if config_props.revision == 0xFF else ""
+        )
+        print_verbose(f"  Revision: 0x{config_props.revision:02X}{revision_note}")
+        print_verbose(
+            f"  PCIe Capability Version: {config_props.pcieCapabilityVersion}"
+        )
+        print_verbose(
+            f"  Supported Link Speeds: {get_pci_link_speeds_string(config_props.supportedLinkSpeeds)}"
+        )
+    else:
+        print_verbose("  PCI config properties not filled in by the driver")
 
     state = pz.zes_pci_state_t()
     state.stype = pz.ZES_STRUCTURE_TYPE_PCI_STATE
@@ -1920,8 +1985,77 @@ def print_received_events(device_count, num_device_events, events, driver_events
         )
 
 
+def test_driver_pci_device_properties(driver_handle, driver_index):
+    """List every supported device on the PCI bus, including devices with no KMD bound"""
+    pci_count = c_uint32(0)
+    rc = pz.zesDriverGetPciDeviceProperties(driver_handle, byref(pci_count), None)
+    if rc == pz.ZE_RESULT_ERROR_UNSUPPORTED_FEATURE:
+        print_verbose("  PCI Device Properties: Not supported by the driver")
+        return True
+    if not check_rc(
+        f"zesDriverGetPciDeviceProperties(driver {driver_index}, count)", rc
+    ):
+        return False
+
+    print_verbose(f"  Found {pci_count.value} PCI device(s)")
+    if pci_count.value == 0:
+        return True
+
+    pci_devices = (pz.zes_driver_pci_device_properties_t * pci_count.value)()
+    for i in range(pci_count.value):
+        pci_devices[i].stype = pz.ZES_STRUCTURE_TYPE_DRIVER_PCI_DEVICE_PROPERTIES
+        pci_devices[i].pNext = None
+        pci_devices[i].configProperties.stype = (
+            pz.ZES_STRUCTURE_TYPE_PCI_CONFIG_PROPERTIES
+        )
+        pci_devices[i].configProperties.pNext = None
+
+    rc = pz.zesDriverGetPciDeviceProperties(
+        driver_handle, byref(pci_count), pci_devices
+    )
+    if not check_rc(
+        f"zesDriverGetPciDeviceProperties(driver {driver_index}, data)", rc
+    ):
+        return False
+
+    for i in range(pci_count.value):
+        pci_device = pci_devices[i]
+        address = pci_device.address
+        config = pci_device.configProperties
+        print_verbose(
+            f"    PCI Device {i}: {address.domain:04x}:{address.bus:02x}:"
+            f"{address.device:02x}.{address.function:x}"
+        )
+        print_verbose(
+            f"      Vendor ID: 0x{config.vendorId:04X}, Device ID: 0x{config.deviceId:04X}"
+        )
+        print_verbose(
+            f"      Subsystem Vendor ID: 0x{config.subsystemVendorId:04X}, "
+            f"Subsystem Device ID: 0x{config.subsystemDeviceId:04X}"
+        )
+        revision_note = " (device not responding)" if config.revision == 0xFF else ""
+        print_verbose(f"      Revision: 0x{config.revision:02X}{revision_note}")
+        print_verbose(f"      PCIe Capability Version: {config.pcieCapabilityVersion}")
+        print_verbose(
+            f"      Supported Link Speeds: {get_pci_link_speeds_string(config.supportedLinkSpeeds)}"
+        )
+        max_speed = pci_device.maxSpeed
+        if max_speed.gen < 0 and max_speed.width < 0:
+            print_verbose("      Max Speed: Unknown")
+        else:
+            print_verbose(
+                f"      Max Speed: Gen {max_speed.gen}, Width x{max_speed.width}, "
+                f"Bandwidth {max_speed.maxBandwidth} bytes/s"
+            )
+        print_verbose(
+            f"      Link Status: {get_pci_link_status_string(pci_device.status)}"
+        )
+
+    return True
+
+
 def test_driver_properties_module(driver_handle, driver_index):
-    """Test driver properties, extensions, and the extension function lookup"""
+    """Test driver properties, API version, PCI device list, extensions, and the extension function lookup"""
     print(f"\n---- Driver {driver_index} Driver Properties Test ----")
 
     props = pz.zes_driver_properties_t()
@@ -1935,6 +2069,16 @@ def test_driver_properties_module(driver_handle, driver_index):
             f"    UUID: {'-'.join(f'{props.uuid.id[i]:02x}' for i in range(16))}"
         )
         print_verbose(f"    Driver Version: {props.driverVersion}")
+
+    api_version = pz.zes_api_version_t()
+    rc = pz.zesDriverGetApiVersion(driver_handle, byref(api_version))
+    if check_rc(f"zesDriverGetApiVersion(driver {driver_index})", rc):
+        print_verbose(
+            f"  Sysman API Version: {pz.ZES_MAJOR_VERSION(api_version.value)}."
+            f"{pz.ZES_MINOR_VERSION(api_version.value)}"
+        )
+
+    test_driver_pci_device_properties(driver_handle, driver_index)
 
     ext_count = c_uint32(0)
     rc = pz.zesDriverGetExtensionProperties(driver_handle, byref(ext_count), None)

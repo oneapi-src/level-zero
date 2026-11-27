@@ -214,5 +214,12 @@ class TestInitInfrastructure(unittest.TestCase):
         self.assertIsNotNone(self.pyzes.gpuLib)
 
 
+class TestLinuxLoaderNames(unittest.TestCase):
+    def setUp(self):
+        import pyzes
+
+        self.pyzes = pyzes
+
+
 if __name__ == "__main__":
     unittest.main()
